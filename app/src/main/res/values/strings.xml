@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">TaxApp</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+
+    <!--LoginFragment-->
+    <string name="buttonLoginSignIn">Войти</string>
+    <string name="buttonLoginRegister">Зарегистрироваться</string>
+    <string name="textLoginAppUnderBottom">Войдите в свою учетную запись</string>
+
+    <!--SignInFragment-->
+    <string name="editSignInEmail">E-mail</string>
+    <string name="editSignInPassword">Пароль</string>
+    <string name="buttonSignInOk">Войти</string>
+    <string name="buttonSignInCancel">Отменить</string>
+    <string name="textSignInUnderBottom">Войдите в свою учетную запись</string>
+
+    <!--SelectAccountFragment-->
+    <string name="buttonSelectOpen">Открыть</string>
+    <string name="buttonSelectCreate">Создать</string>
+    <string name="buttonSelectExit">Выйти</string>
+    <string name="textSelectUnderBottom">Выберете существующий или создайте новый счет</string>
+
+    <!--NewAccountFragment-->
+    <string name="editNewAccount">№ счета</string>
+    <string name="buttonNewAccountOk">Создать</string>
+    <string name="buttonNewAccountCancel">Отменить</string>
+    <string name="textNewAccountUnderBottom">Введите имя счета без пробелов</string>
+
+    <!--RegisterFragment-->
+    <string name="editRegisterName">Имя</string>
+    <string name="editRegisterTel">Телефон</string>
+    <string name="editRegisterEmail">E-mail</string>
+    <string name="editRegisterPassword">Пароль</string>
+    <string name="buttonRegisterOk">Зарегистрироваться</string>
+    <string name="buttonRegisterCancel">Отменить</string>
+    <string name="textRegisterUnderButton">Заполните все поля</string>
+
+    <!--FirstAccountFragment-->
+    <string name="editFirstAccount">№ счета</string>
+    <string name="buttonFirstAccountOk">Создать</string>
+    <string name="buttonFirstAccountCancel">Пропустить</string>
+    <string name="textFirstAccountUnderBottom">Введите имя счета</string>
+
+</resources>

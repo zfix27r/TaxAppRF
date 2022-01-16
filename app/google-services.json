@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "210915561264",
+    "firebase_url": "https://taxrfapp-default-rtdb.firebaseio.com",
+    "project_id": "taxrfapp",
+    "storage_bucket": "taxrfapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:210915561264:android:837aaf74e86e2f1a1142f5",
+        "android_client_info": {
+          "package_name": "com.harman.taxapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "210915561264-0uarinqbo2cr529gb0e35mgdau4gpcd4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.harman.taxapp",
+            "certificate_hash": "bf7648b14df06be6305b0ac1a9a6743fe1655b4f"
+          }
+        },
+        {
+          "client_id": "210915561264-e57utfuq147dacfb81go6fhfbu641ejd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFg5VZSXXo2FP0NHVRpQnEzW4gWDES0a0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "210915561264-e57utfuq147dacfb81go6fhfbu641ejd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:210915561264:android:2016051b75c53d0a1142f5",
+        "android_client_info": {
+          "package_name": "com.taxapprf.taxapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "210915561264-4leuihon0k54eq8278bbfeubabqeuij4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.taxapprf.taxapp",
+            "certificate_hash": "bf7648b14df06be6305b0ac1a9a6743fe1655b4f"
+          }
+        },
+        {
+          "client_id": "210915561264-e57utfuq147dacfb81go6fhfbu641ejd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFg5VZSXXo2FP0NHVRpQnEzW4gWDES0a0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "210915561264-e57utfuq147dacfb81go6fhfbu641ejd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
