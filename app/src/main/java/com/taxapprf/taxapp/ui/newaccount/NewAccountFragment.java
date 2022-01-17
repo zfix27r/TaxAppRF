@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentNewAccountBinding;
-import com.taxapprf.taxapp.ui.activity.MainActivity;
+import com.taxapprf.taxapp.activities.MainActivity;
 import com.taxapprf.taxapp.usersdata.Settings;
 
 public class NewAccountFragment extends Fragment {
@@ -38,7 +38,7 @@ public class NewAccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentNewAccountBinding.inflate(inflater, container, false);
-        View viewRoot = binding.getRoot();
+        View rootView = binding.getRoot();
 
         EditText account = binding.editNewAccountName;
         settingsEditor = getActivity().getSharedPreferences(Settings.ALLACCOUNT.name(), Context.MODE_PRIVATE).edit();
@@ -67,6 +67,6 @@ public class NewAccountFragment extends Fragment {
             }
         });
 
-        return viewRoot;
+        return rootView;
     }
 }

@@ -20,7 +20,7 @@ import android.widget.Spinner;
 import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentSelectAccountBinding;
-import com.taxapprf.taxapp.ui.activity.MainActivity;
+import com.taxapprf.taxapp.activities.MainActivity;
 import com.taxapprf.taxapp.usersdata.Settings;
 
 
@@ -42,7 +42,7 @@ public class SelectAccountFragment extends Fragment {
                              Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(SelectAccountViewModel.class);
         binding = FragmentSelectAccountBinding.inflate(inflater, container, false);
-        View viewRoot = binding.getRoot();
+        View rootView = binding.getRoot();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item);
         viewModel.getAllAccounts().observe(getViewLifecycleOwner(), new Observer<String[]>() {
@@ -91,6 +91,6 @@ public class SelectAccountFragment extends Fragment {
         });
 
 
-        return viewRoot;
+        return rootView;
     }
 }

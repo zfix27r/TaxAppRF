@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.activity;
+package com.taxapprf.taxapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 

@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.taxapprf.taxapp.databinding.FragmentFirstAccountBinding;
-import com.taxapprf.taxapp.ui.activity.MainActivity;
+import com.taxapprf.taxapp.activities.MainActivity;
 import com.taxapprf.taxapp.usersdata.Settings;
 
 public class FirstAccountFragment extends Fragment {

@@ -7,15 +7,21 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
     <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+
+    <!--Menu-->
+    <string name="menu_home">Home</string>
+    <string name="menuExit">Выйти</string>
+    <string name="menuRatesToday">Курсы валют на сегодня</string>
+    <string name="menuNewTransaction">Новая сделка</string>
+    <string name="menuTaxes">Налоги</string>
+    <string name="menuTransactionDetail">Редактирование сделки</string>
+    <string name="menuTransactions">Годовой отчет</string>
+
 
     <!--LoginFragment-->
     <string name="buttonLoginSignIn">Войти</string>
@@ -55,5 +61,21 @@
     <string name="buttonFirstAccountOk">Создать</string>
     <string name="buttonFirstAccountCancel">Пропустить</string>
     <string name="textFirstAccountUnderBottom">Введите имя счета</string>
+
+    <!-- TaxesFragment-->
+    <string name="textTaxesYear">Отчетный год:</string>
+    <string name="textTaxesTax">Сумма налога:</string>
+    <string name="buttonTaxesAddTransaction">Добавить сделку</string>
+    <string name="buttonTaxesLoadingStatement">Загрузить отчет</string>
+
+    <!-- TransactionsFragment-->
+    <string name="buttonTransAdd">Добавить сделку</string>
+    <string name="buttonTransDelete">Удалить все</string>
+    <string name="buttonTransDownload">Скачать отчет</string>
+    <string name="buttonTransSendEmail">Отправить на E-mail</string>
+
+    <!-- transaction_list_item-->
+    <string name="textCB">Курс ЦБ: </string>
+    <string name="textSumRub">Налог, руб.: </string>
 
 </resources>

@@ -39,7 +39,7 @@ public class RegisterFragment extends Fragment {
                              Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
         binding = FragmentRegisterBinding.inflate(inflater, container, false);
-        View viewRoot = binding.getRoot();
+        View rootView = binding.getRoot();
 
         viewModel.getMessage().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -55,7 +55,7 @@ public class RegisterFragment extends Fragment {
             @Override
             public void onChanged(Boolean loggedIn) {
                 if (loggedIn){
-                    Navigation.findNavController(viewRoot).navigate(R.id.action_registerFragment_to_firstAccountFragment);
+                    Navigation.findNavController(rootView).navigate(R.id.action_registerFragment_to_firstAccountFragment);
                 }
             }
         });
@@ -104,6 +104,6 @@ public class RegisterFragment extends Fragment {
             }
         });
 
-        return viewRoot;
+        return rootView;
     }
 }

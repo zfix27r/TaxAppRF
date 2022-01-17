@@ -10,16 +10,61 @@
         android:name="com.taxapprf.taxapp.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/exitFragment"
+        android:name="com.taxapprf.taxapp.ui.exit.ExitFragment"
+        android:label="@string/menuExit"
+        tools:layout="@layout/fragment_exit" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.taxapprf.taxapp.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/ratesTodayFragment"
+        android:name="com.taxapprf.taxapp.ui.rates.today.RatesTodayFragment"
+        android:label="@string/menuRatesToday"
+        tools:layout="@layout/fragment_rates_today" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.taxapprf.taxapp.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/taxesFragment"
+        android:name="com.taxapprf.taxapp.ui.taxes.TaxesFragment"
+        android:label="@string/menuTaxes"
+        tools:layout="@layout/fragment_taxes">
+        <action
+            android:id="@+id/action_taxesFragment_to_transactionsFragment"
+            app:destination="@id/transactionsFragment" />
+        <action
+            android:id="@+id/action_taxesFragment_to_newTransactionFragment"
+            app:destination="@id/newTransactionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/transactionsFragment"
+        android:name="com.taxapprf.taxapp.ui.transactions.TransactionsFragment"
+        android:label="@string/menuTransactions"
+        tools:layout="@layout/fragment_transactions" >
+        <action
+            android:id="@+id/action_transactionsFragment_to_taxesFragment"
+            app:destination="@id/taxesFragment" />
+        <action
+            android:id="@+id/action_transactionsFragment_to_newTransactionFragment"
+            app:destination="@id/newTransactionFragment" />
+        <action
+            android:id="@+id/action_transactionsFragment_to_transactionDetailsFragment"
+            app:destination="@id/transactionDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/newTransactionFragment"
+        android:name="com.taxapprf.taxapp.ui.newtransaction.NewTransactionFragment"
+        android:label="@string/menuNewTransaction"
+        tools:layout="@layout/fragment_new_transaction" />
+
+    <fragment
+        android:id="@+id/transactionDetailsFragment"
+        android:name="com.taxapprf.taxapp.ui.transactiondetails.TransactionDetailsFragment"
+        android:label="@string/menuTransactionDetail"
+        tools:layout="@layout/fragment_transaction_details" >
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_taxesFragment"
+            app:destination="@id/taxesFragment" />
+    </fragment>
+
 </navigation>

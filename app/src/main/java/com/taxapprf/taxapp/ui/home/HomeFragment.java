@@ -26,7 +26,7 @@ public class HomeFragment extends Fragment {
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        View rootView = binding.getRoot();
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -35,7 +35,7 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });
-        return root;
+        return rootView;
     }
 
     @Override
