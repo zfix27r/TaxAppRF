@@ -69,6 +69,9 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_taxesFragment"
             app:destination="@id/taxesFragment" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_transactionsFragment"
+            app:destination="@id/transactionsFragment" />
     </fragment>
 
 </navigation>

@@ -34,7 +34,6 @@ public class NewTransactionViewModel extends AndroidViewModel {
     }
 
     public void addTransaction(String year, Transaction trans) {
-        Log.d("OLGA", "addTransaction: вошли11111");
         this.transaction = trans;
         Controller ctrl = new Controller(transaction.getDate());
         Call<Currencies> currenciesCall = ctrl.prepareCurrenciesCall();
@@ -42,7 +41,6 @@ public class NewTransactionViewModel extends AndroidViewModel {
             @Override
             public void onResponse(Call<Currencies> call, Response<Currencies> response) {
                 if (response.isSuccessful()) {
-                    Log.d("OLGA", "onResponse: ok2222222222");
                     Currencies cur = response.body();
                     rateCentralBankDouble = cur.getCurrencyRate(transaction.getCurrency());
                     transaction.setRateCentralBank(rateCentralBankDouble);
@@ -62,7 +60,6 @@ public class NewTransactionViewModel extends AndroidViewModel {
     }
 
     private void addToFirebase(String year, Transaction transaction){
-        Log.d("OLGA", "addToFirebase: ok333333");
         SharedPreferences settings = getApplication().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
         String account = settings.getString(Settings.ACCOUNT.name(), "");
         new FirebaseTransactions(new UserLivaData().getFirebaseUser(), account).addTransaction(year, transaction, new FirebaseTransactions.DataStatus() {

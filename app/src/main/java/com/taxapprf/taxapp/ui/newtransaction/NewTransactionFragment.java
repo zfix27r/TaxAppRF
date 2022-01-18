@@ -141,7 +141,7 @@ public class NewTransactionFragment extends Fragment {
             @Override
             public void onChanged(String message) {
                 if (message != null) {
-                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                 }
             }
         });

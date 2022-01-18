@@ -53,16 +53,13 @@ public class FirebaseYearSum {
     }
 
     public void readYearSumOnce (String year, final DataStatus dataStatus) {
-        Log.d("OLGA", "readYearSumOnce: 444444");
         DatabaseReference referenceYearSum = referenceYearStatements.child(year).child("sumTaxes");
         referenceYearSum.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
-                    Log.e("OLGA - firebase", "Error getting data", task.getException()); //Удалить!!!
                 }
                 else {
-                    Log.d("OLGA", "onComplete: 6565666");
                     if (task.getResult().getValue() == null) {
                         sumTaxes = 0.0;
                     } else {
@@ -72,17 +69,17 @@ public class FirebaseYearSum {
                     dataStatus.DataIsLoaded(sumTaxes);
                 }
             }
+
         });
     }
 
     public void updateYearSum (String year, Double sum){
-        Log.d("OLGA", "updateYearSum: 777777");
         DatabaseReference referenceYearSum = referenceYearStatements.child(year).child("sumTaxes");
         referenceYearSum.setValue(sum)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Log.d("OLGA", "onSuccess: 888888");
+
                     }
                 });
     }

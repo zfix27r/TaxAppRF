@@ -91,7 +91,7 @@
     <string name="editDetailDate">Дата сделки ДД/ММ/ГГГГ</string>
     <string name="editDetailSum">Сумма</string>
     <string name="buttonDetailUpdate">Обновить</string>
-    <string name="buttonDerailDelete">Удалить</string>
+    <string name="buttonDetailDelete">Удалить</string>
     <string name="buttonDetailCancel">Отменить</string>
 
 </resources>

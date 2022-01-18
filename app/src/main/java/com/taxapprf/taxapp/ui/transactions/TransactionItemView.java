@@ -48,7 +48,7 @@ public class TransactionItemView extends RecyclerView.ViewHolder{
                 bundle.putString("id", (String) idTrans.getText());
                 bundle.putString("type", (String) type.getText());
                 bundle.putString("date", (String) date.getText());
-                bundle.putString("valuta", String.valueOf(currency.getText())); //Поменять на currency!!!!
+                bundle.putString("currency", String.valueOf(currency.getText()));
                 bundle.putDouble("sum", Double.parseDouble(String.valueOf(sum.getText())));
                 bundle.putDouble("sumRub", Double.parseDouble(String.valueOf(sumRub.getText())));
 

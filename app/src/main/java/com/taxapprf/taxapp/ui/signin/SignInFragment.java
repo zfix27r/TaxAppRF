@@ -37,7 +37,7 @@ public class SignInFragment extends Fragment {
                              Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(SignInViewModel.class);
         binding = FragmentSignInBinding.inflate(inflater, container, false);
-        View rootView = binding.getRoot();
+        View viewRoot = binding.getRoot();
 
         viewModel.getMessage().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -54,7 +54,7 @@ public class SignInFragment extends Fragment {
             @Override
             public void onChanged(Boolean loggedIn) {
                 if (loggedIn){
-                    Navigation.findNavController(rootView).navigate(R.id.action_signInFragment_to_selectAccountFragment);
+                    Navigation.findNavController(viewRoot).navigate(R.id.action_signInFragment_to_selectAccountFragment);
                 }
             }
         });
@@ -86,6 +86,6 @@ public class SignInFragment extends Fragment {
             }
         });
 
-        return rootView;
+        return viewRoot;
     }
 }
