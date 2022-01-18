@@ -78,4 +78,20 @@
     <string name="textCB">Курс ЦБ: </string>
     <string name="textSumRub">Налог, руб.: </string>
 
+    <!-- NewTransactionFragment-->
+    <string name="editNewTransId"> Сделка</string>
+    <string name="editNewTransDate">Дата сделки ДД/ММ/ГГГГ</string>
+    <string name="editNewTransSum">Сумма</string>
+    <string name="buttonNewTransAdd">Добавить</string>
+    <string name="buttonNewTransCancel">Отменить</string>
+
+
+    <!-- TransactionDetailFragment-->
+    <string name="editDetailId"> Сделка</string>
+    <string name="editDetailDate">Дата сделки ДД/ММ/ГГГГ</string>
+    <string name="editDetailSum">Сумма</string>
+    <string name="buttonDetailUpdate">Обновить</string>
+    <string name="buttonDerailDelete">Удалить</string>
+    <string name="buttonDetailCancel">Отменить</string>
+
 </resources>

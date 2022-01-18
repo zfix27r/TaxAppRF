@@ -21,8 +21,8 @@
         android:id="@+id/recyclerTransactions"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toTopOf="@+id/linearTrans"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,8 +35,8 @@
         android:id="@+id/linearTrans"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,28 +46,52 @@
             android:id="@+id/buttonTransAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_weight="1"
+            android:background="@drawable/button_ok"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:src="@drawable/ic_baseline_add_circle_24" />
 
         <ImageButton
             android:id="@+id/buttonTransDeleteYear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_weight="1"
+            android:background="@drawable/button_ok"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:src="@drawable/ic_baseline_delete_24" />
 
         <ImageButton
             android:id="@+id/buttonTransDownload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_weight="1"
+            android:background="@drawable/button_ok"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:src="@drawable/ic_baseline_download_24" />
 
         <ImageButton
             android:id="@+id/buttonTransSendEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_weight="1"
+            android:background="@drawable/button_ok"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:src="@drawable/ic_baseline_email_24" />
     </LinearLayout>
 

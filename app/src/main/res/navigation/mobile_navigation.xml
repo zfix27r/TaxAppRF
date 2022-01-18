@@ -55,7 +55,11 @@
         android:id="@+id/newTransactionFragment"
         android:name="com.taxapprf.taxapp.ui.newtransaction.NewTransactionFragment"
         android:label="@string/menuNewTransaction"
-        tools:layout="@layout/fragment_new_transaction" />
+        tools:layout="@layout/fragment_new_transaction" >
+        <action
+            android:id="@+id/action_newTransactionFragment_to_taxesFragment"
+            app:destination="@id/taxesFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/transactionDetailsFragment"

@@ -1,5 +1,7 @@
 package com.taxapprf.taxapp.firebase;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -66,7 +68,7 @@ public class FirebaseTransactions {
                         dataStatus.DataIsInserted();
                     }
                 });
-        referenceTransactions.child("year").setValue(year);
+        referenceYearStatements.child(year).child("year").setValue(year);
     }
 
     public void updateTransaction (String year, String key, Transaction transaction, final DataStatus dataStatus){

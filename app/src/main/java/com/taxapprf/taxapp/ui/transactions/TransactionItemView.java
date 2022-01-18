@@ -64,7 +64,8 @@ public class TransactionItemView extends RecyclerView.ViewHolder{
         sum.setText(String.valueOf(transaction.getSum()));
         currency.setText(String.valueOf(transaction.getCurrency()));
         cb.setText(String.valueOf(transaction.getRateCentralBank()));
-        String sumRubString = String.format("%.2f", transaction.getSumRub());
+        String sumRubString = transaction.getSumRub().toString();
+        //String sumRubString = String.format("%.2f", transaction.getSumRub());
         sumRub.setText(sumRubString);
         this.key = key;
     }

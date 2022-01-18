@@ -78,7 +78,7 @@ public class TransactionsFragment extends Fragment {
         viewModel.getSumTaxes().observe(getViewLifecycleOwner(), new Observer<Double>() {
             @Override
             public void onChanged(Double yearTax) {
-                String s = String.format(" Налог за %s год: %.2f", year, yearTax);
+                String s = String.format(" Налог за %s год: %,3f", year, yearTax);
                 textYearTax.setText(s);
             }
         });
@@ -101,9 +101,13 @@ public class TransactionsFragment extends Fragment {
         });
 
         ImageButton buttonDownload= binding.buttonTransDownload;
+
         buttonDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!new CheckPermission(getContext()).isStoragePermissionGranted()){
+                    return;
+                }
                 viewModel.getTransactions().observe(getViewLifecycleOwner(), new Observer<List<Transaction>>() {
                     @Override
                     public void onChanged(List<Transaction> transactions) {
