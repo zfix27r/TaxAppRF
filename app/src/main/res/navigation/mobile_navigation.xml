@@ -3,13 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/taxesFragment">
 
-    <fragment
-        android:id="@+id/nav_home"
-        android:name="com.taxapprf.taxapp.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/exitFragment"
         android:name="com.taxapprf.taxapp.ui.exit.ExitFragment"
@@ -29,10 +24,14 @@
         tools:layout="@layout/fragment_taxes">
         <action
             android:id="@+id/action_taxesFragment_to_transactionsFragment"
-            app:destination="@id/transactionsFragment" />
+            app:destination="@id/transactionsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
         <action
             android:id="@+id/action_taxesFragment_to_newTransactionFragment"
-            app:destination="@id/newTransactionFragment" />
+            app:destination="@id/newTransactionFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
     </fragment>
 
     <fragment
@@ -71,7 +70,22 @@
             app:destination="@id/taxesFragment" />
         <action
             android:id="@+id/action_transactionDetailsFragment_to_transactionsFragment"
-            app:destination="@id/transactionsFragment" />
+            app:destination="@id/transactionsFragment"/>
     </fragment>
+    <fragment
+        android:id="@+id/currencyConverterFragment"
+        android:name="com.taxapprf.taxapp.CurrencyConverterFragment"
+        android:label="fragment_currency_converter"
+        tools:layout="@layout/fragment_currency_converter" />
+    <fragment
+        android:id="@+id/changeAccountFragment"
+        android:name="com.taxapprf.taxapp.ui.changeaccount.ChangeAccountFragment"
+        android:label="fragment_change_account"
+        tools:layout="@layout/fragment_change_account" >
+        <action
+            android:id="@+id/action_changeAccountFragment_to_taxesFragment"
+            app:destination="@id/taxesFragment" />
+    </fragment>
+
 
 </navigation>

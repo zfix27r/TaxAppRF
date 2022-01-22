@@ -9,7 +9,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,6 +19,8 @@
             android:id="@+id/spinnerDetailType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="15dp"
             android:entries="@array/type_transaction"
             android:minHeight="48dp"
@@ -29,6 +30,8 @@
             android:id="@+id/editDetailId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="15dp"
             android:ems="10"
             android:hint="@string/editDetailId"
@@ -39,6 +42,8 @@
             android:id="@+id/editDetailDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="15dp"
             android:ems="10"
             android:hint="@string/editDetailDate"
@@ -49,6 +54,8 @@
             android:id="@+id/editDetailSum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="15dp"
             android:ems="10"
             android:hint="@string/editDetailSum"
@@ -59,6 +66,8 @@
             android:id="@+id/spinnerDetailCurrencies"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="15dp"
             android:entries="@array/currencies"
             android:minHeight="48dp"
@@ -69,6 +78,8 @@
             style="@style/StyleButtonOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="15dp"
             android:text="@string/buttonDetailUpdate" />
 
@@ -77,6 +88,8 @@
             style="@style/StyleButtonOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="15dp"
             android:text="@string/buttonDetailDelete" />
 
@@ -85,6 +98,9 @@
             style="@style/StyleButtonCancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
             android:text="@string/buttonDetailCancel" />
     </LinearLayout>
 

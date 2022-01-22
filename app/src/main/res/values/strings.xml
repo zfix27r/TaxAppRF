@@ -16,7 +16,9 @@
     <!--Menu-->
     <string name="menu_home">Home</string>
     <string name="menuExit">Выйти</string>
+    <string name="menuChangeAccount">Другой счёт</string>
     <string name="menuRatesToday">Курсы валют на сегодня</string>
+    <string name="menuConverter">Конвертер валют</string>
     <string name="menuNewTransaction">Новая сделка</string>
     <string name="menuTaxes">Налоги</string>
     <string name="menuTransactionDetail">Редактирование сделки</string>
@@ -52,7 +54,7 @@
     <string name="editRegisterTel">Телефон</string>
     <string name="editRegisterEmail">E-mail</string>
     <string name="editRegisterPassword">Пароль</string>
-    <string name="buttonRegisterOk">Зарегистрироваться</string>
+    <string name="buttonRegisterOk">Подтвердить</string>
     <string name="buttonRegisterCancel">Отменить</string>
     <string name="textRegisterUnderButton">Заполните все поля</string>
 
@@ -93,5 +95,11 @@
     <string name="buttonDetailUpdate">Обновить</string>
     <string name="buttonDetailDelete">Удалить</string>
     <string name="buttonDetailCancel">Отменить</string>
+
+    <!--ChangeAccountFragment-->
+    <string name="buttonChangeAccountOpen">Открыть</string>
+    <string name="buttonChangeAccountCreate">Создать</string>
+    <string name="editChangeAccountName">Id нового счета</string>
+    <string name="textChangeAccountUnderBottom">Выберете существующий или создайте новый счет</string>
 
 </resources>

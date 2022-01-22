@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/tablet"
     android:elevation="10dp"
-    android:paddingLeft="50dp"
-    android:paddingRight="50dp"
+    android:translationZ="4dp"
     tools:context=".ui.signin.SignInFragment">
 
     <TextView
@@ -29,6 +28,8 @@
         android:id="@+id/editSignInEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
         android:layout_marginBottom="20dp"
         android:hint="@string/editSignInEmail"
         android:inputType="textEmailAddress"
@@ -40,10 +41,12 @@
         app:layout_constraintVertical_bias="0.41000003"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editSignInPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
         android:focusableInTouchMode="true"
         android:hint="@string/editSignInPassword"
         android:inputType="textPassword"
@@ -53,32 +56,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editSignInEmail" />
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/textUnderBottomSignIn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editSignInPassword">
+        app:layout_constraintTop_toBottomOf="@+id/editSignInPassword"
+        app:layout_constraintVertical_bias="0.0">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/buttonSignInOk"
             style="@style/StyleButtonOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginBottom="20dp"
             android:layout_weight="1"
-            android:text="@string/buttonSignInOk"/>
+            android:text="@string/buttonSignInOk" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/buttonSignInCancel"
             style="@style/StyleButtonCancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="20dp"
             android:layout_weight="1"
             android:text="@string/buttonSignInCancel" />
     </LinearLayout>

@@ -20,6 +20,8 @@ import com.taxapprf.taxapp.usersdata.Settings;
 import com.taxapprf.taxapp.usersdata.Transaction;
 import com.taxapprf.taxapp.usersdata.YearStatement;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import retrofit2.Call;
@@ -67,7 +69,9 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
             public void DataIsLoaded(Double sumTaxes) {
                 Log.d("OLGA", "DataIsLoaded: sumTaxes" + sumTaxes.toString());
                 Double oldYearSum = sumTaxes;
-                currentYearSum = oldYearSum - oldSumRub;
+                BigDecimal currentYearSumBigDecimal = new BigDecimal(oldYearSum - oldSumRub);
+                currentYearSumBigDecimal = currentYearSumBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                currentYearSum = currentYearSumBigDecimal.doubleValue();
                 Log.d("OLGA", "DataIsLoaded: currentYearSum " + currentYearSum.toString());
                 if (currentYearSum == 0) {
                     new FirebaseYearStatements(user, account).deleteYearStatement(year, new FirebaseYearStatements.DataStatus() {
@@ -90,7 +94,7 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
 
         new FirebaseTransactions(user, account).deleteTransaction(year, key, new FirebaseTransactions.DataStatus() {
             @Override
-            public void DataIsLoaded(List<Transaction> transactions, List<String> keys) {
+            public void DataIsLoaded(List<Transaction> transactions) {
             }
 
             @Override
@@ -135,12 +139,15 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
                     Currencies cur = response.body();
                     rateCentralBankDouble = cur.getCurrencyRate(currency);
                     transaction.setRateCentralBank(rateCentralBankDouble);
-                    Double sumRubDouble = sumDouble * rateCentralBankDouble * 0.13;
+                    BigDecimal sumRubBigDecimal = new BigDecimal(sumDouble * rateCentralBankDouble * 0.13);
+                    sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                    Double sumRubDouble = sumRubBigDecimal.doubleValue();
+                    transaction.setSumRub(sumRubDouble);
                     transaction.setSumRub(sumRubDouble);
 
                     new FirebaseTransactions(user, account).updateTransaction(year, key, transaction, new FirebaseTransactions.DataStatus() {
                         @Override
-                        public void DataIsLoaded(List<Transaction> transactions, List<String> keys) {
+                        public void DataIsLoaded(List<Transaction> transactions) {
                         }
 
                         @Override
@@ -185,12 +192,16 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
                     Currencies cur = response.body();
                     rateCentralBankDouble = cur.getCurrencyRate(currency);
                     transaction.setRateCentralBank(rateCentralBankDouble);
-                    Double sumRubDouble = sumDouble * rateCentralBankDouble * 0.13;
+                    BigDecimal sumRubBigDecimal = new BigDecimal(sumDouble * rateCentralBankDouble * 0.13);
+                    sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                    Double sumRubDouble = sumRubBigDecimal.doubleValue();
+                    transaction.setSumRub(sumRubDouble);
+                    //Double sumRubDouble = sumDouble * rateCentralBankDouble * 0.13;
                     transaction.setSumRub(sumRubDouble);
 
                     new FirebaseTransactions(user, account).addTransaction(year, transaction, new FirebaseTransactions.DataStatus() {
                         @Override
-                        public void DataIsLoaded(List<Transaction> transactions, List<String> keys) {
+                        public void DataIsLoaded(List<Transaction> transactions) {
                         }
 
                         @Override

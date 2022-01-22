@@ -24,7 +24,7 @@ public class FirebaseTransactions {
     private List<Transaction> transactions = new ArrayList<>();
 
     public interface DataStatus{
-        void DataIsLoaded(List<Transaction> transactions, List<String> keys);
+        void DataIsLoaded(List<Transaction> transactions);
         void DataIsInserted();
         void DataIsUpdated();
         void DataIsDeleted();
@@ -42,14 +42,14 @@ public class FirebaseTransactions {
         referenceTransactions.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<String> keys = new ArrayList<>();
+                //List<String> keys = new ArrayList<>();
                 transactions.clear();
                 for (DataSnapshot keyNode: snapshot.getChildren()) {
-                    keys.add(keyNode.getKey());
+                    //keys.add(keyNode.getKey());
                     Transaction transaction = keyNode.getValue(Transaction.class);
                     transactions.add(transaction);
                 }
-                dataStatus.DataIsLoaded(transactions, keys);
+                dataStatus.DataIsLoaded(transactions);
             }
 
             @Override
@@ -61,6 +61,7 @@ public class FirebaseTransactions {
     public void addTransaction(String year, Transaction transaction, final DataStatus dataStatus){
         referenceTransactions = referenceYearStatements.child(year).child("transactions");
         String key = referenceTransactions.push().getKey();
+        transaction.setKey(key);
         referenceTransactions.child(key).setValue(transaction)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

@@ -17,6 +17,8 @@ import com.taxapprf.taxapp.retrofit2.Currencies;
 import com.taxapprf.taxapp.usersdata.Settings;
 import com.taxapprf.taxapp.usersdata.Transaction;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import retrofit2.Call;
@@ -44,7 +46,9 @@ public class NewTransactionViewModel extends AndroidViewModel {
                     Currencies cur = response.body();
                     rateCentralBankDouble = cur.getCurrencyRate(transaction.getCurrency());
                     transaction.setRateCentralBank(rateCentralBankDouble);
-                    Double sumRubDouble = transaction.getSum() * rateCentralBankDouble * 0.13;
+                    BigDecimal sumRubBigDecimal = new BigDecimal(transaction.getSum() * rateCentralBankDouble * 0.13);
+                    sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                    Double sumRubDouble = sumRubBigDecimal.doubleValue();
                     transaction.setSumRub(sumRubDouble);
                     addToFirebase(year, transaction);
                 } else {
@@ -64,7 +68,7 @@ public class NewTransactionViewModel extends AndroidViewModel {
         String account = settings.getString(Settings.ACCOUNT.name(), "");
         new FirebaseTransactions(new UserLivaData().getFirebaseUser(), account).addTransaction(year, transaction, new FirebaseTransactions.DataStatus() {
             @Override
-            public void DataIsLoaded(List<Transaction> transactions, List<String> keys) {
+            public void DataIsLoaded(List<Transaction> transactions) {
             }
 
             @Override
@@ -84,7 +88,9 @@ public class NewTransactionViewModel extends AndroidViewModel {
             @Override
             public void DataIsLoaded(Double sumTaxes) {
                 Double oldSumYear = sumTaxes;
-                Double currentSumYear = oldSumYear + transaction.getSumRub();
+                BigDecimal currentSumYearBigDecimal = new BigDecimal(oldSumYear + transaction.getSumRub());
+                currentSumYearBigDecimal = currentSumYearBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                Double currentSumYear = currentSumYearBigDecimal.doubleValue();
                 new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).updateYearSum(year, currentSumYear);
             }
         });

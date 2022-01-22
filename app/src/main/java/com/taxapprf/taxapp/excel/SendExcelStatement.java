@@ -67,6 +67,7 @@ public class SendExcelStatement {
         });
         thread1.start();
         thread1.join();
+
         Thread thread2 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -81,8 +82,10 @@ public class SendExcelStatement {
             }
         });
         thread2.start();
+
+
         Log.d("OLGA", "send: отправили письмо");
-        //context.deleteFile(filePath); //переместить за пределы функции
+        context.deleteFile(filePath); //переместить за пределы функции
 
     }
 

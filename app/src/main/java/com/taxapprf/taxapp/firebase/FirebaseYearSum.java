@@ -39,8 +39,8 @@ public class FirebaseYearSum {
                 if (snapshot.getValue() == null) {
                     sumTaxes = 0.0;
                 } else {
-                    String s = snapshot.getValue().toString();
-                    sumTaxes = Double.parseDouble(s);
+                    //String s = snapshot.getValue().toString();
+                    sumTaxes = (Double) snapshot.getValue();
                 }
                 dataStatus.DataIsLoaded(sumTaxes);
             }
@@ -63,8 +63,8 @@ public class FirebaseYearSum {
                     if (task.getResult().getValue() == null) {
                         sumTaxes = 0.0;
                     } else {
-                        String s = String.valueOf(task.getResult().getValue());
-                        sumTaxes = Double.parseDouble(s);
+                        //String s = String.valueOf(task.getResult().getValue());
+                        sumTaxes = (Double) task.getResult().getValue();
                     }
                     dataStatus.DataIsLoaded(sumTaxes);
                 }

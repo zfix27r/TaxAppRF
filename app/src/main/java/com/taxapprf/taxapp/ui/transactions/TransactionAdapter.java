@@ -14,12 +14,12 @@ import java.util.List;
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionItemView> {
     private Context context;
     private List<Transaction> transactions;
-    private List<String> keys;
+    //private List<String> keys;
 
-    public TransactionAdapter(Context context, List<Transaction> transactions, List<String> keys) {
+    public TransactionAdapter(Context context, List<Transaction> transactions) {
         this.context = context;
         this.transactions = transactions;
-        this.keys = keys;
+        //this.keys = keys;
     }
 
     @NonNull
@@ -30,7 +30,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionItemView
 
     @Override
     public void onBindViewHolder(@NonNull TransactionItemView holder, int position) {
-        holder.bind(transactions.get(position), keys.get(position));
+        holder.bind(transactions.get(position));
     }
 
     @Override

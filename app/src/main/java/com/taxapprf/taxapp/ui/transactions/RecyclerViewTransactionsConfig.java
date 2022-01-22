@@ -14,9 +14,9 @@ public class RecyclerViewTransactionsConfig {
     private Context context;
     private TransactionAdapter transactionAdapter;
 
-    public void setConfig (Context context, RecyclerView recyclerView, List<Transaction> transactions, List<String> keys){
+    public void setConfig (Context context, RecyclerView recyclerView, List<Transaction> transactions){
         this.context = context;
-        transactionAdapter = new TransactionAdapter (context, transactions, keys);
+        transactionAdapter = new TransactionAdapter (context, transactions);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(transactionAdapter);
     }

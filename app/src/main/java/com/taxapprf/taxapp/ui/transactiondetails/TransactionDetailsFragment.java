@@ -10,12 +10,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailsBinding;
+import com.taxapprf.taxapp.ui.VerificationDialog;
 import com.taxapprf.taxapp.ui.newtransaction.DateCheck;
 import com.taxapprf.taxapp.ui.newtransaction.DoubleCheck;
 import com.taxapprf.taxapp.usersdata.Settings;
@@ -75,6 +78,7 @@ public class TransactionDetailsFragment extends Fragment {
         final String[] arrayCurrencies = getResources().getStringArray(R.array.currencies);
 
         final ArrayAdapter<String> currenciesArrayAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, arrayCurrencies);
+        currenciesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         currencies.setAdapter(currenciesArrayAdapter);
         currencies.setSelection(currenciesArrayAdapter.getPosition(oldCurrency));
 
@@ -98,7 +102,7 @@ public class TransactionDetailsFragment extends Fragment {
             }
         };
 
-        typeTransArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item); //Удалить???
+        typeTransArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typeTransaction.setAdapter(typeTransArrayAdapter);
         typeTransaction.setSelection(typeTransArrayAdapter.getPosition(oldType));
 
@@ -106,13 +110,15 @@ public class TransactionDetailsFragment extends Fragment {
         Button buttonCancel = binding.buttonDetailCancel;
         Button buttonDelete = binding.buttonDetailDelete;
 
-        String account = settings.getString(Settings.ACCOUNT.name(), "");
+        //String account = settings.getString(Settings.ACCOUNT.name(), "");
         String oldYear = settings.getString(Settings.YEAR.name(), "");
 
 
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //NavOptions.Builder navBuilder = new NavOptions.Builder();
+                //NavOptions navOptions = navBuilder.setPopUpTo(R.id.transactionsFragment, false).build();
                 Navigation.findNavController(v).navigate(R.id.action_transactionDetailsFragment_to_transactionsFragment);
             }
         });
@@ -120,7 +126,17 @@ public class TransactionDetailsFragment extends Fragment {
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModel.deleteTransaction(oldYear, key, oldSumRub);
+                VerificationDialog dialog = new VerificationDialog();
+                dialog.show(getChildFragmentManager(), "deleteTransDialog");
+                dialog.getVerificationStatus().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean status) {
+                        if (status) {
+                            viewModel.deleteTransaction(oldYear, key, oldSumRub);
+                        }
+                    }
+                });
+
             }
         });
 
@@ -183,7 +199,9 @@ public class TransactionDetailsFragment extends Fragment {
             @Override
             public void onChanged(Boolean isSuccessDelete) {
                 if (isSuccessDelete) {
-                    Navigation.findNavController(viewRoot).navigate(R.id.action_transactionDetailsFragment_to_transactionsFragment);
+                    NavOptions.Builder navBuilder = new NavOptions.Builder();
+                    NavOptions navOptions = navBuilder.setPopUpTo(R.id.transactionsFragment, false).build();
+                    Navigation.findNavController(viewRoot).navigate(R.id.action_transactionDetailsFragment_to_transactionsFragment, null, navOptions);
                 }
             }
         });
@@ -192,11 +210,20 @@ public class TransactionDetailsFragment extends Fragment {
             @Override
             public void onChanged(Boolean isSuccessUpdate) {
                 if (isSuccessUpdate) {
+//                    NavOptions.Builder navBuilder = new NavOptions.Builder();
+//                    NavOptions navOptions = navBuilder.setPopUpTo(R.id.taxesFragment, false).build();
                     Navigation.findNavController(viewRoot).navigate(R.id.action_transactionDetailsFragment_to_taxesFragment);
                 }
             }
         });
 
         return viewRoot;
+    }
+
+    @Override
+    public void onStop() {
+        InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(requireView().getWindowToken(), 0);
+        super.onStop();
     }
 }

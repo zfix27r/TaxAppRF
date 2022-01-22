@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.exitFragment, R.id.ratesTodayFragment, R.id.taxesFragment )
+                R.id.exitFragment, R.id.ratesTodayFragment, R.id.taxesFragment, R.id.changeAccountFragment )
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -60,6 +60,17 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
         View header = navigationView.getHeaderView(0);
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Navigation.findNavController(v).navigate(R.id.changeAccountFragment);
+
+                navController.navigate(R.id.changeAccountFragment);
+                navigationView.setVisibility(View.GONE);
+                //Navigation.findNavController(v).navigate(R.id.changeAccountFragment);
+            }
+        });
+
         TextView userName = header.findViewById(R.id.textNavHeaderUserName);
         TextView userAccount = header.findViewById(R.id.textNavHeaderUserAccount);
         TextView userEmail= header.findViewById(R.id.textNavHeaderUserEmail);

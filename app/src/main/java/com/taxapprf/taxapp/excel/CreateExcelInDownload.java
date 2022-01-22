@@ -3,6 +3,8 @@ package com.taxapprf.taxapp.excel;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.taxapprf.taxapp.usersdata.Transaction;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -21,20 +23,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateExcelStatement {
+public class CreateExcelInDownload {
     private String year;
     private Double yearTax;
     private List<Transaction> transactions;
 
-    private File fileName;
-
-    public CreateExcelStatement(String year, Double yearTax, List<Transaction> transactions) {
+    public CreateExcelInDownload(String year, Double yearTax, List<Transaction> transactions) {
         this.year = year;
         this.yearTax = yearTax;
         this.transactions = transactions;
+
     }
 
-    public void create () throws IOException {
+    public File create () throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("Отчет");
 
@@ -115,23 +116,18 @@ public class CreateExcelStatement {
             cell.setCellValue(transaction.getSumRub());
         }
         Date currentDate = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm", Locale.getDefault());
         String dateText = dateFormat.format(currentDate);
 
-        String statementName = "/Statement-" + dateText + ".xls";
+        String statementName = "/Statement-" + dateText + ".xlsx";
         String dirPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
         File file = new File(dirPath + statementName);
+
         Log.d("OLGA", "create: ПУТЬ!!!!!!!!!: " + file.getPath());
 
         FileOutputStream outFile = new FileOutputStream(file);
         workbook.write(outFile);
         outFile.close();
-
+        return file;
     }
-
-    public File getFileName() {
-        return fileName;
-    }
-
-
 }

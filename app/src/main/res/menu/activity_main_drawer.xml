@@ -5,11 +5,6 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
-
-        <item
             android:id="@+id/taxesFragment"
             android:icon="@drawable/ic_baseline_monetization_on_24"
             android:title="@string/menuTaxes" />
@@ -18,6 +13,16 @@
             android:id="@+id/ratesTodayFragment"
             android:icon="@drawable/ic_baseline_timeline_24"
             android:title="@string/menuRatesToday" />
+
+        <item
+            android:id="@+id/currencyConverterFragment"
+            android:icon="@drawable/ic_baseline_currency_exchange_24"
+            android:title="@string/menuConverter" />
+
+        <item
+            android:id="@+id/changeAccountFragment"
+            android:icon="@drawable/ic_baseline_wifi_protected_setup_24"
+            android:title="@string/menuChangeAccount" />
 
         <item
             android:id="@+id/exitFragment"

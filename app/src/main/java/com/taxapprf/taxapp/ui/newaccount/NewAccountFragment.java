@@ -41,7 +41,7 @@ public class NewAccountFragment extends Fragment {
         View rootView = binding.getRoot();
 
         EditText account = binding.editNewAccountName;
-        settingsEditor = getActivity().getSharedPreferences(Settings.ALLACCOUNT.name(), Context.MODE_PRIVATE).edit();
+        settingsEditor = getActivity().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE).edit();
 
         Button buttonCreate = binding.buttonNewAccountCreate;
         buttonCreate.setOnClickListener(new View.OnClickListener() {

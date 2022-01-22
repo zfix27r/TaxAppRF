@@ -1,7 +1,11 @@
 package com.taxapprf.taxapp.usersdata;
 
-public class Transaction {
-    private String id, type, date, currency;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Transaction implements Comparable<Transaction>{
+    private String key, id, type, date, currency;
     private Double rateCentralBank;
     private Double sum, sumRub;
 
@@ -14,6 +18,14 @@ public class Transaction {
         this.date = date;
         this.currency = currency;
         this.sum = sum;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getId() {
@@ -76,5 +88,24 @@ public class Transaction {
     public String toString() {
         String s = getType() + getId() + getSum().toString() + getCurrency() + getRateCentralBank().toString() + getSumRub().toString();
         return s;
+    }
+
+    @Override
+    public int compareTo(Transaction o) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String date1Str = this.date;
+        String date2Str = o.getDate();
+        try {
+            Date date1 = formatter.parse(date1Str);
+            Date date2 = formatter.parse(date2Str);
+            if (date1.before(date2)){
+                return 1;
+            }else if (date1.after(date2)){
+                return -1;
+            }else return 0;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

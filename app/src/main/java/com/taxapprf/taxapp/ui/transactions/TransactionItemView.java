@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.usersdata.Transaction;
 
+import java.text.DecimalFormat;
+
 public class TransactionItemView extends RecyclerView.ViewHolder{
     private Context context;
 
@@ -26,6 +28,7 @@ public class TransactionItemView extends RecyclerView.ViewHolder{
     private TextView sumRub;
 
     private String key;
+    private Transaction transaction;
 
 
     public TransactionItemView(Context context, ViewGroup parent) {
@@ -45,28 +48,38 @@ public class TransactionItemView extends RecyclerView.ViewHolder{
                 String s = itemView.getTransitionName();
                 Bundle bundle = new Bundle();
                 bundle.putString("key", key);
-                bundle.putString("id", (String) idTrans.getText());
-                bundle.putString("type", (String) type.getText());
-                bundle.putString("date", (String) date.getText());
-                bundle.putString("currency", String.valueOf(currency.getText()));
-                bundle.putDouble("sum", Double.parseDouble(String.valueOf(sum.getText())));
-                bundle.putDouble("sumRub", Double.parseDouble(String.valueOf(sumRub.getText())));
+                bundle.putString("id", transaction.getId());
+                bundle.putString("type", transaction.getType());
+                bundle.putString("date", transaction.getDate());
+                bundle.putString("currency", transaction.getCurrency());
+                bundle.putDouble("sum", transaction.getSum());
+                bundle.putDouble("sumRub", transaction.getSumRub());
 
                 Navigation.findNavController(v).navigate(R.id.action_transactionsFragment_to_transactionDetailsFragment, bundle);
             }
         });
     }
 
-    public void bind (Transaction transaction, String key) {
-        idTrans.setText(String.valueOf(transaction.getId()));
-        type.setText(String.valueOf(transaction.getType()));
-        date.setText(String.valueOf(transaction.getDate()));
-        sum.setText(String.valueOf(transaction.getSum()));
+    public void bind (Transaction transaction) {
+        idTrans.setText(transaction.getId());
+        type.setText(transaction.getType());
+        date.setText(transaction.getDate());
+
+        String sumString = transaction.getSum().toString();
+        //String sumString = new DecimalFormat("#0.00").format(transaction.getSum());
+        sum.setText(sumString );
+
         currency.setText(String.valueOf(transaction.getCurrency()));
-        cb.setText(String.valueOf(transaction.getRateCentralBank()));
+        String cbString = transaction.getRateCentralBank().toString();
+        //String cbString = new DecimalFormat("#0.0000").format(transaction.getRateCentralBank());
+        cb.setText(cbString);
+
         String sumRubString = transaction.getSumRub().toString();
-        //String sumRubString = String.format("%.2f", transaction.getSumRub());
+        //String sumRubString = new DecimalFormat("#0.00").format(transaction.getSumRub());
         sumRub.setText(sumRubString);
-        this.key = key;
+
+        this.key = transaction.getKey();
+        this.transaction = transaction;
+
     }
 }

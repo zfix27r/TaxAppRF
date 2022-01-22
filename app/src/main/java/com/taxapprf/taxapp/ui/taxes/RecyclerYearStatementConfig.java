@@ -16,6 +16,7 @@ import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.usersdata.Settings;
 import com.taxapprf.taxapp.usersdata.YearStatement;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class RecyclerYearStatementConfig {
@@ -60,7 +61,7 @@ public class RecyclerYearStatementConfig {
 
         public void bind (YearStatement yearStatement) {
             String yearSumStr = yearStatement.getSumTaxes().toString();
-            //String yearSumStr = String.format("%.2f", yearStatement.getSumTaxes());
+            //String yearSumStr = new DecimalFormat("#0.00").format(yearStatement.getSumTaxes());
             year.setText(String.valueOf(yearStatement.getYear()));
             yearSum.setText(yearSumStr);
         }

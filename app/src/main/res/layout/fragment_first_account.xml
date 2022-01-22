@@ -28,17 +28,18 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
         android:layout_marginEnd="60dp"
-        android:layout_marginBottom="230dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSelect">
+        app:layout_constraintTop_toBottomOf="@+id/textViewSelect"
+        app:layout_constraintVertical_bias="0.35000002">
 
         <EditText
             android:id="@+id/editFirstAccountName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:hint="@string/editFirstAccount"
             android:inputType="text"
             android:textSize="20sp" />
@@ -47,31 +48,34 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="60dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayoutNewAccount">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_first_account_create"
             style="@style/StyleButtonOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginBottom="20dp"
             android:layout_weight="1"
             android:text="@string/buttonFirstAccountOk"
             android:textSize="14sp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_first_account_cancel"
             style="@style/StyleButtonCancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="60dp"
+            android:layout_marginBottom="20dp"
             android:layout_weight="1"
             android:text="@string/buttonFirstAccountCancel" />
     </LinearLayout>

@@ -55,6 +55,7 @@ public class NewTransactionFragment extends Fragment {
         final String[] arrayTypeTrans = getResources().getStringArray(R.array.type_transaction);
         final String[] arrayCurrencies = getResources().getStringArray(R.array.currencies);
         ArrayAdapter<String> currenciesArrayAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, arrayCurrencies);
+        currenciesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         currencies.setAdapter(currenciesArrayAdapter);
         currencies.setSelection(currenciesArrayAdapter.getPosition("USD"));
 
@@ -77,7 +78,7 @@ public class NewTransactionFragment extends Fragment {
                 return view;
             }
         };
-        typeTransArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item); //Удалить??
+        typeTransArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typeTransaction.setAdapter(typeTransArrayAdapter);
 
         Button buttonCancel = binding.buttonNewTransCancel;

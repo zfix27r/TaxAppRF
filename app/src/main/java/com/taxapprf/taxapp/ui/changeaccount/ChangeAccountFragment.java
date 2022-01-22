@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.select.account;
+package com.taxapprf.taxapp.ui.changeaccount;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,26 +10,29 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
-import com.taxapprf.taxapp.databinding.FragmentSelectAccountBinding;
 import com.taxapprf.taxapp.activities.MainActivity;
+import com.taxapprf.taxapp.databinding.FragmentChangeAccountBinding;
 import com.taxapprf.taxapp.usersdata.Settings;
 
+public class ChangeAccountFragment extends Fragment {
+    private FragmentChangeAccountBinding binding;
+    private ChangeAccountViewModel viewModel;
 
-public class SelectAccountFragment extends Fragment {
-    private SelectAccountViewModel viewModel;
-    private FragmentSelectAccountBinding binding;
 
-    public SelectAccountFragment() {
+    public ChangeAccountFragment() {
     }
 
 
@@ -41,9 +44,9 @@ public class SelectAccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        viewModel = new ViewModelProvider(this).get(SelectAccountViewModel.class);
-        binding = FragmentSelectAccountBinding.inflate(inflater, container, false);
-        View rootView = binding.getRoot();
+        viewModel = new ViewModelProvider(this).get(ChangeAccountViewModel.class);
+        binding = FragmentChangeAccountBinding.inflate(inflater, container, false);
+        View viewRoot = binding.getRoot();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item);
         viewModel.getAllAccounts().observe(getViewLifecycleOwner(), new Observer<String[]>() {
@@ -54,11 +57,11 @@ public class SelectAccountFragment extends Fragment {
             }
         });
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner spinner = binding.spinnerSelectAccount;
+        Spinner spinner = binding.spinnerChangeAccount;
         spinner.setAdapter(adapter);
 
-        Button buttonOpen = binding.buttonSelectOpen;
-        SharedPreferences.Editor preferenceEditor = getContext().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE).edit();
+        Button buttonOpen = binding.buttonChangeAccountOpen;
+        SharedPreferences.Editor settingsEditor = getContext().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE).edit();
         buttonOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,32 +70,32 @@ public class SelectAccountFragment extends Fragment {
                     return;
                 }
                 String item = spinner.getSelectedItem().toString();
-                preferenceEditor.putString(Settings.ACCOUNT.name(), item);
+                settingsEditor.putString(Settings.ACCOUNT.name(), item);
                 Log.d("OLGA", "onClick: item account: " + item);
-                preferenceEditor.apply();
-                startActivity(new Intent(getActivity(), MainActivity.class));
-                getActivity().finish();
+                settingsEditor.apply();
+                Navigation.findNavController(v).navigate(R.id.action_changeAccountFragment_to_taxesFragment);
             }
         });
 
-        Button buttonCreate = binding.buttonSelectNewAccountCreate;
+
+        EditText account = binding.editChangeAccountName;
+
+        Button buttonCreate = binding.buttonChangeAccountCreate;
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.action_selectAccountFragment_to_newAccountFragment);
+                String name = account.getText().toString();
+                if(TextUtils.isEmpty(name)) {
+                    Toast.makeText(getContext(), "Введите имя счета (без пробелов)", Toast.LENGTH_SHORT).show();
+                } else {
+                    settingsEditor.putString(Settings.ACCOUNT.name(), account.getText().toString());
+                    settingsEditor.apply();
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+                    getActivity().finish();
+                }
             }
         });
 
-        Button buttonExit = binding.buttonSelectExit;
-        buttonExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewModel.exitDataBase();
-                Navigation.findNavController(v).navigate(R.id.action_selectAccountFragment_to_loginFragment);
-            }
-        });
-
-
-        return rootView;
+        return viewRoot;
     }
 }

@@ -1,13 +1,18 @@
 package com.taxapprf.taxapp.ui.taxes;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +24,15 @@ import com.taxapprf.taxapp.databinding.FragmentTaxesBinding;
 import com.taxapprf.taxapp.usersdata.YearStatement;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class TaxesFragment extends Fragment {
     private FragmentTaxesBinding binding;
     private TaxesViewModel viewModel;
+    private static final int PICKFILE_RESULT_CODE = 1;
+    private String filePath;
 
     public TaxesFragment() {
     }
@@ -65,10 +74,26 @@ public class TaxesFragment extends Fragment {
                 Snackbar.make(v, "click loading", Snackbar.LENGTH_SHORT).show();
                 //написать обработчик
                 //прописать логику обработки отчета xls or ...
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("application/vnd.ms-excel");
+                startActivityForResult(intent, PICKFILE_RESULT_CODE);
             }
         });
 
 
         return viewRoot;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch(requestCode){
+            case PICKFILE_RESULT_CODE:
+                if(resultCode == RESULT_OK){
+                    filePath = data.getData().getPath();
+                    Log.d("OLGA", "onActivityResult: " + filePath);
+                }
+                break;
+        }
+    }
 }
+

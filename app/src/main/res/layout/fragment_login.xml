@@ -23,13 +23,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonLoginSignIn"
         style="@style/StyleButtonOK"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center_horizontal"
         android:layout_marginBottom="40dp"
+        android:stateListAnimator="@animator/button_elevation"
         android:text="@string/buttonLoginSignIn"
         android:textColor="@color/white"
         android:textSize="16sp"
@@ -40,12 +41,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonLoginRegister"
-        style="@style/StyleButtonOK"
+        style="@style/StyleButtonRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#FF8A65"
         android:text="@string/buttonLoginRegister"
         android:textColor="@color/white"
         android:textSize="16sp"

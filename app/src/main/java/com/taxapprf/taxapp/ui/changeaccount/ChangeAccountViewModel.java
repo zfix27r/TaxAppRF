@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.select.account;
+package com.taxapprf.taxapp.ui.changeaccount;
 
 import android.app.Application;
 
@@ -9,10 +9,11 @@ import androidx.lifecycle.MutableLiveData;
 import com.taxapprf.taxapp.firebase.FirebaseAccounts;
 import com.taxapprf.taxapp.firebase.UserLivaData;
 
-public class SelectAccountViewModel extends AndroidViewModel {
+
+public class ChangeAccountViewModel extends AndroidViewModel {
     private MutableLiveData<String[]> allAccounts;
 
-    public SelectAccountViewModel(@NonNull Application application) {
+    public ChangeAccountViewModel(@NonNull Application application) {
         super(application);
         allAccounts = new MutableLiveData<>();
 
@@ -27,10 +28,6 @@ public class SelectAccountViewModel extends AndroidViewModel {
 
             }
         });
-    }
-
-    public void exitDataBase(){
-        new UserLivaData().getFirebaseAuth().signOut();
     }
 
     public MutableLiveData<String[]> getAllAccounts() {

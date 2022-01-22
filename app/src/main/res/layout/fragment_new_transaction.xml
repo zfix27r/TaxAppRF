@@ -9,7 +9,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,6 +19,8 @@
             android:id="@+id/spinnerNewTransType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="15dp"
             android:entries="@array/type_transaction"
             android:minHeight="48dp"
@@ -29,52 +30,66 @@
             android:id="@+id/editNewTransId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="15dp"
             android:ems="10"
             android:hint="@string/editNewTransId"
             android:inputType="text"
-            android:layout_marginBottom="15dp"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/editNewTransDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="15dp"
             android:ems="10"
             android:hint="@string/editNewTransDate"
-            android:layout_marginBottom="15dp"
             android:inputType="date"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/editNewTransSum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="15dp"
             android:ems="10"
             android:hint="@string/editNewTransSum"
-            android:layout_marginBottom="15dp"
-            android:textSize="20sp"
-            android:inputType="numberDecimal" />
+            android:inputType="numberDecimal"
+            android:textSize="20sp" />
 
-        <Spinner
+        <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spinnerNewTransCurrencies"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:entries="@array/currencies"
             android:minHeight="48dp"
             android:textSize="20sp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/buttonNewTransAdd"
+            style="@style/StyleButtonOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/buttonNewTransAdd"
-            android:layout_marginBottom="15dp"/>
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/buttonNewTransAdd" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/buttonNewTransCancel"
+            style="@style/StyleButtonCancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:text="@string/buttonNewTransCancel" />
     </LinearLayout>
 

@@ -13,6 +13,7 @@ import com.taxapprf.taxapp.firebase.UserLivaData;
 import com.taxapprf.taxapp.usersdata.Settings;
 import com.taxapprf.taxapp.usersdata.YearStatement;
 
+import java.util.Collections;
 import java.util.List;
 
 public class TaxesViewModel extends AndroidViewModel {
@@ -29,6 +30,7 @@ public class TaxesViewModel extends AndroidViewModel {
         new FirebaseYearStatements(new UserLivaData().getFirebaseUser(), account).readYearStatements(new FirebaseYearStatements.DataStatus() {
             @Override
             public void DataIsLoaded(List<YearStatement> statements) {
+                Collections.reverse(statements);
                 yearStatements.setValue(statements);
             }
 
