@@ -99,16 +99,16 @@ public class NewTransactionViewModel extends AndroidViewModel {
             public void DataIsDeleted() {
             }
         });
-//        new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).readYearSumOnce(year, new FirebaseYearSum.DataStatus() {
-//            @Override
-//            public void DataIsLoaded(Double sumTaxes) {
-//                Double oldSumYear = sumTaxes;
-//                BigDecimal currentSumYearBigDecimal = new BigDecimal(oldSumYear + transaction.getSumRub());
-//                currentSumYearBigDecimal = currentSumYearBigDecimal.setScale(2, RoundingMode.HALF_UP);
-//                Double currentSumYear = currentSumYearBigDecimal.doubleValue();
-//                new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).updateYearSum(year, currentSumYear);
-//            }
-//        });
+        new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).readYearSumOnce(year, new FirebaseYearSum.DataStatus() {
+            @Override
+            public void DataIsLoaded(Double sumTaxes) {
+                Double oldSumYear = sumTaxes;
+                BigDecimal currentSumYearBigDecimal = new BigDecimal(oldSumYear + transaction.getSumRub());
+                currentSumYearBigDecimal = currentSumYearBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                Double currentSumYear = currentSumYearBigDecimal.doubleValue();
+                new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).updateYearSum(year, currentSumYear);
+            }
+        });
     }
 
     public MutableLiveData<String> getMessage() {

@@ -80,7 +80,7 @@ public class TaxesViewModel extends AndroidViewModel {
                     //e.printStackTrace();
                     //обработать
                 }
-                //Map<String, Double> sumMap = new HashMap<String, Double>();
+                Map<String, Double> sumMap = new HashMap<String, Double>();
                 for (Transaction transaction : transactions) {
                     String year = new DateCheck(transaction.getDate()).getYear();
                     Controller ctrl = new Controller(transaction.getDate());
@@ -113,10 +113,10 @@ public class TaxesViewModel extends AndroidViewModel {
                                 sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
                                 Double sumRubDouble = sumRubBigDecimal.doubleValue();
                                 //Log.d(TAG, "onResponse: sumRubDouble " + sumRubDouble.toString());
-//                                Double mapValue = sumMap.get(year);
-//                                if (mapValue == null) mapValue = 0.0;
-//                                sumRubBigDecimal = sumRubBigDecimal.add(new BigDecimal(mapValue));
-//                                sumMap.put(year, sumRubBigDecimal.doubleValue());
+                                Double mapValue = sumMap.get(year);
+                                if (mapValue == null) mapValue = 0.0;
+                                sumRubBigDecimal = sumRubBigDecimal.add(new BigDecimal(mapValue));
+                                sumMap.put(year, sumRubBigDecimal.doubleValue());
                                 transaction.setSumRub(sumRubDouble);
                                 addToFirebase(account, year, transaction);
                             } else {
@@ -130,7 +130,7 @@ public class TaxesViewModel extends AndroidViewModel {
                         }
                     });
                 }
-                //addToFirebaseYearSum(account, sumMap);
+                addToFirebaseYearSum(account, sumMap);
             }
         };
         Thread thread = new Thread(null, task, "Background");
@@ -159,25 +159,25 @@ public class TaxesViewModel extends AndroidViewModel {
         });
     }
 
-//    private void addToFirebaseYearSum(String account, Map<String, Double> sumMap) {
-//        for (Map.Entry<String, Double> entry: sumMap.entrySet()) {
-//            Log.d(TAG, "MAP!!!! addToFirebaseYearSum: + sumMap.size()" + sumMap.size());
-//            String year = entry.getKey();
-//            Double sum = entry.getValue();
-//            new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).readYearSumOnce(year, new FirebaseYearSum.DataStatus() {
-//                @Override
-//                public void DataIsLoaded(Double sumTaxes) {
-//                    Log.d(TAG, "DataIsLoaded: readYearSumOnce " + sumTaxes.toString());
-//                    BigDecimal oldSumYear = new BigDecimal(sumTaxes);
-//                    BigDecimal currentSumYearBigDecimal = oldSumYear.add(new BigDecimal(sum));
-//                    currentSumYearBigDecimal = currentSumYearBigDecimal.setScale(2, RoundingMode.HALF_UP);
-//                    Double currentSumYear = currentSumYearBigDecimal.doubleValue();
-//                    new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).updateYearSum(year, currentSumYear);
-//                }
-//            });
-//        }
-//
-//    }
+    private void addToFirebaseYearSum(String account, Map<String, Double> sumMap) {
+        for (Map.Entry<String, Double> entry: sumMap.entrySet()) {
+            Log.d(TAG, "MAP!!!! addToFirebaseYearSum: + sumMap.size()" + sumMap.size());
+            String year = entry.getKey();
+            Double sum = entry.getValue();
+            new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).readYearSumOnce(year, new FirebaseYearSum.DataStatus() {
+                @Override
+                public void DataIsLoaded(Double sumTaxes) {
+                    Log.d(TAG, "DataIsLoaded: readYearSumOnce " + sumTaxes.toString());
+                    BigDecimal oldSumYear = new BigDecimal(sumTaxes);
+                    BigDecimal currentSumYearBigDecimal = oldSumYear.add(new BigDecimal(sum));
+                    currentSumYearBigDecimal = currentSumYearBigDecimal.setScale(2, RoundingMode.HALF_UP);
+                    Double currentSumYear = currentSumYearBigDecimal.doubleValue();
+                    new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).updateYearSum(year, currentSumYear);
+                }
+            });
+        }
+
+    }
 
 
 }

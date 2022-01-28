@@ -71,7 +71,8 @@ public class ChangeAccountFragment extends Fragment {
                 String item = spinner.getSelectedItem().toString();
                 settingsEditor.putString(Settings.ACCOUNT.name(), item);
                 settingsEditor.apply();
-                Navigation.findNavController(v).navigate(R.id.action_changeAccountFragment_to_taxesFragment);
+                startActivity(new Intent(getActivity(), MainActivity.class));
+                getActivity().finish();
             }
         });
 
