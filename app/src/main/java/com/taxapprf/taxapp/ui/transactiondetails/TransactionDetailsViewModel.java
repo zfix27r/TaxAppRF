@@ -127,7 +127,7 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
         Transaction transaction = trans;
         String date = transaction.getDate();
         String currency = transaction.getCurrency();
-        Double sumDouble = transaction.getSum();
+
 
         Controller ctrl = new Controller(date);
         Call<Currencies> currenciesCall = ctrl.prepareCurrenciesCall();
@@ -139,7 +139,22 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
                     Currencies cur = response.body();
                     rateCentralBankDouble = cur.getCurrencyRate(currency);
                     transaction.setRateCentralBank(rateCentralBankDouble);
-                    BigDecimal sumRubBigDecimal = new BigDecimal(sumDouble * rateCentralBankDouble * 0.13);
+                    Double sumDouble = transaction.getSum();
+                    int k;
+                    switch (transaction.getType()){
+                        case "TRADE":
+                            k = 1;
+                            break;
+                        case "FUNDING/WITHDRAWAL":
+                            k = 0;
+                            break;
+                        case "COMMISSION":
+                            sumDouble = Math.abs(sumDouble);
+                            k = -1;
+                            break;
+                        default: k = 1;
+                    }
+                    BigDecimal sumRubBigDecimal = new BigDecimal(sumDouble * rateCentralBankDouble * 0.13 * k);
                     sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
                     Double sumRubDouble = sumRubBigDecimal.doubleValue();
                     transaction.setSumRub(sumRubDouble);
@@ -181,7 +196,7 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
         Transaction transaction = trans;
         String date = transaction.getDate();
         String currency = transaction.getCurrency();
-        Double sumDouble = transaction.getSum();
+
         Controller ctrl = new Controller(date);
         Call<Currencies> currenciesCall = ctrl.prepareCurrenciesCall();
         currenciesCall.enqueue(new Callback<Currencies>() {
@@ -192,11 +207,26 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
                     Currencies cur = response.body();
                     rateCentralBankDouble = cur.getCurrencyRate(currency);
                     transaction.setRateCentralBank(rateCentralBankDouble);
-                    BigDecimal sumRubBigDecimal = new BigDecimal(sumDouble * rateCentralBankDouble * 0.13);
+                    Double sumDouble = transaction.getSum();
+                    int k;
+                    switch (transaction.getType()){
+                        case "TRADE":
+                            k = 1;
+                            break;
+                        case "FUNDING/WITHDRAWAL":
+                            k = 0;
+                            break;
+                        case "COMMISSION":
+                            sumDouble = Math.abs(sumDouble);
+                            k = -1;
+                            break;
+                        default: k = 1;
+                    }
+
+                    BigDecimal sumRubBigDecimal = new BigDecimal(sumDouble * rateCentralBankDouble * 0.13 * k);
                     sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
                     Double sumRubDouble = sumRubBigDecimal.doubleValue();
                     transaction.setSumRub(sumRubDouble);
-                    //Double sumRubDouble = sumDouble * rateCentralBankDouble * 0.13;
                     transaction.setSumRub(sumRubDouble);
 
                     new FirebaseTransactions(user, account).addTransaction(year, transaction, new FirebaseTransactions.DataStatus() {

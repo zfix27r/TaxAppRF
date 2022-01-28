@@ -68,7 +68,6 @@ public class SelectAccountFragment extends Fragment {
                 }
                 String item = spinner.getSelectedItem().toString();
                 preferenceEditor.putString(Settings.ACCOUNT.name(), item);
-                Log.d("OLGA", "onClick: item account: " + item);
                 preferenceEditor.apply();
                 startActivity(new Intent(getActivity(), MainActivity.class));
                 getActivity().finish();

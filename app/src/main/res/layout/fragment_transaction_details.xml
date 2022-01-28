@@ -73,7 +73,7 @@
             android:minHeight="48dp"
             android:textSize="20sp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/buttonDetailUpdate"
             style="@style/StyleButtonOK"
             android:layout_width="match_parent"
@@ -83,25 +83,16 @@
             android:layout_marginBottom="15dp"
             android:text="@string/buttonDetailUpdate" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/buttonDetailDelete"
             style="@style/StyleButtonOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="20dp"
             android:text="@string/buttonDetailDelete" />
 
-        <Button
-            android:id="@+id/buttonDetailCancel"
-            style="@style/StyleButtonCancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:text="@string/buttonDetailCancel" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

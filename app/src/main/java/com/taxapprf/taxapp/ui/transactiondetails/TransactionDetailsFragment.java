@@ -14,6 +14,7 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,21 +108,10 @@ public class TransactionDetailsFragment extends Fragment {
         typeTransaction.setSelection(typeTransArrayAdapter.getPosition(oldType));
 
         Button buttonUpdate = binding.buttonDetailUpdate;
-        Button buttonCancel = binding.buttonDetailCancel;
         Button buttonDelete = binding.buttonDetailDelete;
 
         //String account = settings.getString(Settings.ACCOUNT.name(), "");
         String oldYear = settings.getString(Settings.YEAR.name(), "");
-
-
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //NavOptions.Builder navBuilder = new NavOptions.Builder();
-                //NavOptions navOptions = navBuilder.setPopUpTo(R.id.transactionsFragment, false).build();
-                Navigation.findNavController(v).navigate(R.id.action_transactionDetailsFragment_to_transactionsFragment);
-            }
-        });
 
         buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,6 +122,7 @@ public class TransactionDetailsFragment extends Fragment {
                     @Override
                     public void onChanged(Boolean status) {
                         if (status) {
+                            Log.d("OLGA", "onChanged: key " + key);
                             viewModel.deleteTransaction(oldYear, key, oldSumRub);
                         }
                     }
@@ -144,17 +135,17 @@ public class TransactionDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(typeTransaction.getSelectedItemPosition() == 0) {
-                    Toast.makeText(getContext(), "Выберите тип сделки.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Выберите тип сделки.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 if(currencies.getSelectedItemPosition() == 0) {
-                    Toast.makeText(getContext(), "Выберите валюту сделки.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Выберите валюту сделки.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 DateCheck dateCheck = new DateCheck(date.getText().toString());
                 String currentYear;
                 if (!dateCheck.check()) {
-                    Toast.makeText(getContext(), "Неправильный формат даты!", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Неправильный формат даты!", Snackbar.LENGTH_SHORT).show();
                     return;
                 } else {
                     currentYear = dateCheck.getYear();
@@ -162,14 +153,14 @@ public class TransactionDetailsFragment extends Fragment {
                 DoubleCheck doubleCheck = new DoubleCheck(sum.getText().toString());
                 Double sumDouble;
                 if (!doubleCheck.isCheck()) {
-                    Toast.makeText(getContext(), "Неправильно введена сумма!", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Неправильно введена сумма!", Snackbar.LENGTH_SHORT).show();
                     return;
                 } else {
                     sumDouble = doubleCheck.getNumDouble();
                 }
 
                 if (TextUtils.isEmpty(idTrans.getText())) {
-                    Toast.makeText(getContext(), "Введите наименование сделки", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите наименование сделки", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -190,7 +181,7 @@ public class TransactionDetailsFragment extends Fragment {
             @Override
             public void onChanged(String message) {
                 if (message != null) {
-                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(viewRoot, message, Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -199,9 +190,7 @@ public class TransactionDetailsFragment extends Fragment {
             @Override
             public void onChanged(Boolean isSuccessDelete) {
                 if (isSuccessDelete) {
-                    NavOptions.Builder navBuilder = new NavOptions.Builder();
-                    NavOptions navOptions = navBuilder.setPopUpTo(R.id.transactionsFragment, false).build();
-                    Navigation.findNavController(viewRoot).navigate(R.id.action_transactionDetailsFragment_to_transactionsFragment, null, navOptions);
+                    Navigation.findNavController(viewRoot).navigate(R.id.action_transactionDetailsFragment_to_transactionsFragment);
                 }
             }
         });
@@ -210,8 +199,6 @@ public class TransactionDetailsFragment extends Fragment {
             @Override
             public void onChanged(Boolean isSuccessUpdate) {
                 if (isSuccessUpdate) {
-//                    NavOptions.Builder navBuilder = new NavOptions.Builder();
-//                    NavOptions navOptions = navBuilder.setPopUpTo(R.id.taxesFragment, false).build();
                     Navigation.findNavController(viewRoot).navigate(R.id.action_transactionDetailsFragment_to_taxesFragment);
                 }
             }

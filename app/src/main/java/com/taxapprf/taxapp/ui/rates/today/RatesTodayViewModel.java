@@ -31,7 +31,7 @@ public class RatesTodayViewModel extends ViewModel {
                 if (response.isSuccessful()) {
                     currencies.setValue(response.body());
                 } else {
-                    //написать что-то
+                    //....
                 }
             }
 

@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentRatesTodayBinding;
 import com.taxapprf.taxapp.retrofit2.Currencies;
 import com.taxapprf.taxapp.retrofit2.CurrencyRate;
@@ -45,7 +44,7 @@ public class RatesTodayFragment extends Fragment {
         RecyclerView recyclerView = binding.recyclerviewCurrencies;
         recyclerViewConfig.setConfig(recyclerView, getContext(), currencies);
 
-        viewModel.getCurrencies().observe(getViewLifecycleOwner(), new Observer<Currencies>() {
+        viewModel.getCurrencies().observe(getActivity(), new Observer<Currencies>() {
             @Override
             public void onChanged(Currencies currencies) {
                 recyclerViewConfig.setConfig(recyclerView, getContext(), currencies);

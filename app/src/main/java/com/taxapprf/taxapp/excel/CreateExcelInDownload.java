@@ -119,11 +119,11 @@ public class CreateExcelInDownload {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm", Locale.getDefault());
         String dateText = dateFormat.format(currentDate);
 
-        String statementName = "/Statement-" + dateText + ".xlsx";
+        String statementName = "/Statement-" + dateText + ".xls";
         String dirPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
         File file = new File(dirPath + statementName);
 
-        Log.d("OLGA", "create: ПУТЬ!!!!!!!!!: " + file.getPath());
+        Log.d("OLGA - CreateExcelInDownload", "create: " + file.getPath());
 
         FileOutputStream outFile = new FileOutputStream(file);
         workbook.write(outFile);

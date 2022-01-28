@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentNewTransactionBinding;
 import com.taxapprf.taxapp.usersdata.Transaction;
@@ -81,13 +81,13 @@ public class NewTransactionFragment extends Fragment {
         typeTransArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typeTransaction.setAdapter(typeTransArrayAdapter);
 
-        Button buttonCancel = binding.buttonNewTransCancel;
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.action_newTransactionFragment_to_taxesFragment);
-            }
-        });
+//        Button buttonCancel = binding.buttonNewTransCancel;
+//        buttonCancel.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Navigation.findNavController(v).navigate(R.id.action_newTransactionFragment_to_taxesFragment);
+//            }
+//        });
 
         Button buttonAdd = binding.buttonNewTransAdd;
         buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -95,19 +95,19 @@ public class NewTransactionFragment extends Fragment {
             public void onClick(View v) {
 
                 if(typeTransaction.getSelectedItemPosition() == 0) {
-                    Toast.makeText(getContext(), "Выберите тип сделки.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Выберите тип сделки.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(currencies.getSelectedItemPosition() == 0) {
-                    Toast.makeText(getContext(), "Выберите валюту сделки.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Выберите валюту сделки.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
                 DateCheck dateCheck = new DateCheck(date.getText().toString());
                 String year;
                 if (!dateCheck.check()) {
-                    Toast.makeText(getContext(), "Неправильный формат даты!", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Неправильный формат даты!", Snackbar.LENGTH_SHORT).show();
                     return;
                 } else {
                     year = dateCheck.getYear();
@@ -116,14 +116,14 @@ public class NewTransactionFragment extends Fragment {
                 DoubleCheck doubleCheck = new DoubleCheck(sum.getText().toString());
                 Double sumDouble;
                 if (!doubleCheck.isCheck()) {
-                    Toast.makeText(getContext(), "Неправильно введена сумма!", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Неправильно введена сумма!", Snackbar.LENGTH_SHORT).show();
                     return;
                 } else {
                     sumDouble = doubleCheck.getNumDouble();
                 }
 
                 if (TextUtils.isEmpty(idTrans.getText())) {
-                    Toast.makeText(getContext(), "Введите наименование сделки", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите наименование сделки", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -142,7 +142,7 @@ public class NewTransactionFragment extends Fragment {
             @Override
             public void onChanged(String message) {
                 if (message != null) {
-                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(viewRoot, message, Snackbar.LENGTH_SHORT).show();
                 }
             }
         });

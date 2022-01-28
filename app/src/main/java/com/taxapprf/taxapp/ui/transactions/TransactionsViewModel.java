@@ -94,16 +94,16 @@ public class  TransactionsViewModel extends AndroidViewModel {
     }
 
     public File downloadStatement (){
-        if (!new CheckPermission(getApplication()).isStoragePermissionGranted()){
-            return null;
-        }
+//        if (!new CheckPermission(getApplication()).isStoragePermissionGranted()){
+//            return null;
+//        }
         year = settings.getString(Settings.YEAR.name(), "");
         try {
             CreateExcelInDownload excelStatement = new CreateExcelInDownload(year, msumTaxes, mtransactions);
             File file = excelStatement.create();
             return file;
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); //...
             return null;
         }
     }

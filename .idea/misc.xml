@@ -22,7 +22,7 @@
         <entry key="..\:/Users/79524/AndroidStudioProjects/TaxApp/app/src/main/res/layout/content_main.xml" value="0.2916666666666667" />
         <entry key="..\:/Users/79524/AndroidStudioProjects/TaxApp/app/src/main/res/layout/currency_rate_list_item.xml" value="0.536" />
         <entry key="..\:/Users/79524/AndroidStudioProjects/TaxApp/app/src/main/res/layout/fragment_change_account.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/79524/AndroidStudioProjects/TaxApp/app/src/main/res/layout/fragment_currency_converter.xml" value="0.264" />
+        <entry key="..\:/Users/79524/AndroidStudioProjects/TaxApp/app/src/main/res/layout/fragment_currency_converter.xml" value="0.536" />
         <entry key="..\:/Users/79524/AndroidStudioProjects/TaxApp/app/src/main/res/layout/fragment_first_account.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/79524/AndroidStudioProjects/TaxApp/app/src/main/res/layout/fragment_gallery.xml" value="0.36102564102564105" />
         <entry key="..\:/Users/79524/AndroidStudioProjects/TaxApp/app/src/main/res/layout/fragment_home.xml" value="0.36666666666666664" />
@@ -59,6 +59,7 @@
         <entry key="..\:/Users/79524/AndroidStudioProjects/app/src/main/res/layout/fragment_sign_in.xml" value="0.264" />
         <entry key="..\:/Users/79524/AndroidStudioProjects/app/src/main/res/layout/fragment_slideshow.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/79524/AndroidStudioProjects/app/src/main/res/layout/nav_header_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/79524/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/simple_spinner_item.xml" value="0.36666666666666664" />
       </map>
     </option>
   </component>

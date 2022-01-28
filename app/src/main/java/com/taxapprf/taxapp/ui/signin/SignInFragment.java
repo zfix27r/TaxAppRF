@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentSignInBinding;
 
@@ -43,8 +44,7 @@ public class SignInFragment extends Fragment {
             @Override
             public void onChanged(String message) {
                 if (message != null) {
-                    //Snackbar.make(viewRoot, message, Snackbar.LENGTH_SHORT).show();
-                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(viewRoot, message, Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -71,14 +71,12 @@ public class SignInFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(email.getText().toString())) {
-                    Toast.makeText(getContext(), "Введите ваш email", Toast.LENGTH_SHORT).show();
-                    //Snackbar.make(v, "Введите ваш email", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите ваш email", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (password.getText().toString().length() < 8) {
-                    Toast.makeText(getContext(), "Неверные параметры входа! Повторите попытку.", Toast.LENGTH_SHORT).show();
-                    //Snackbar.make(v, "Неверные параметры входа! Повторите попытку.", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Неверные параметры входа! Повторите попытку.", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 

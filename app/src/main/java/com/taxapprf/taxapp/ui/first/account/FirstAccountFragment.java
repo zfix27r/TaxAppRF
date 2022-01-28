@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.databinding.FragmentFirstAccountBinding;
 import com.taxapprf.taxapp.activities.MainActivity;
 import com.taxapprf.taxapp.usersdata.Settings;
@@ -60,7 +61,7 @@ public class FirstAccountFragment extends Fragment {
             public void onClick(View v) {
                 String nameNewAccount = account.getText().toString();
                 if(TextUtils.isEmpty(nameNewAccount)) {
-                    Toast.makeText(getContext(), "Введите имя счета (без пробелов)", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите имя счета (без пробелов)", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 preferenceEditor.putString(Settings.ACCOUNT.name(), nameNewAccount);

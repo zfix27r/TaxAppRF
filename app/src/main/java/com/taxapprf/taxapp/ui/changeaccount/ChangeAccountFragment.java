@@ -19,7 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
@@ -71,7 +70,6 @@ public class ChangeAccountFragment extends Fragment {
                 }
                 String item = spinner.getSelectedItem().toString();
                 settingsEditor.putString(Settings.ACCOUNT.name(), item);
-                Log.d("OLGA", "onClick: item account: " + item);
                 settingsEditor.apply();
                 Navigation.findNavController(v).navigate(R.id.action_changeAccountFragment_to_taxesFragment);
             }
@@ -86,7 +84,7 @@ public class ChangeAccountFragment extends Fragment {
             public void onClick(View v) {
                 String name = account.getText().toString();
                 if(TextUtils.isEmpty(name)) {
-                    Toast.makeText(getContext(), "Введите имя счета (без пробелов)", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите имя счета (без пробелов)", Snackbar.LENGTH_SHORT).show();
                 } else {
                     settingsEditor.putString(Settings.ACCOUNT.name(), account.getText().toString());
                     settingsEditor.apply();

@@ -49,10 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.exitFragment, R.id.ratesTodayFragment, R.id.taxesFragment, R.id.changeAccountFragment )
+                R.id.exitFragment, R.id.ratesTodayFragment, R.id.taxesFragment, R.id.changeAccountFragment, R.id.currencyConverterFragment, R.id.changeAccountFragment)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -63,11 +64,9 @@ public class MainActivity extends AppCompatActivity {
         header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Navigation.findNavController(v).navigate(R.id.changeAccountFragment);
 
                 navController.navigate(R.id.changeAccountFragment);
                 navigationView.setVisibility(View.GONE);
-                //Navigation.findNavController(v).navigate(R.id.changeAccountFragment);
             }
         });
 

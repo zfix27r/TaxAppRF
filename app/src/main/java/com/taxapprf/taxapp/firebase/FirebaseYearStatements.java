@@ -37,9 +37,7 @@ public class FirebaseYearStatements {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 yearStatements.clear();
-                //List<String> keys = new ArrayList<>();
                 for (DataSnapshot keyNode: snapshot.getChildren()) {
-                    //keys.add(keyNode.getKey());
                     YearStatement yearStatement = keyNode.getValue(YearStatement.class);
                     yearStatements.add(yearStatement);
                 }

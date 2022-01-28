@@ -65,8 +65,8 @@
     <string name="textFirstAccountUnderBottom">Введите имя счета</string>
 
     <!-- TaxesFragment-->
-    <string name="textTaxesYear">Отчетный год:</string>
-    <string name="textTaxesTax">Сумма налога:</string>
+    <string name="textTaxesYear">Отчетный год</string>
+    <string name="textTaxesTax">Сумма налога</string>
     <string name="buttonTaxesAddTransaction">Добавить сделку</string>
     <string name="buttonTaxesLoadingStatement">Загрузить отчет</string>
 

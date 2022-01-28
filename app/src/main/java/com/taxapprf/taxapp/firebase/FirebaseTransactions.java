@@ -13,10 +13,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.taxapprf.taxapp.usersdata.Transaction;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseTransactions {
+    private FirebaseUser user;
+    private String account;
     private FirebaseDatabase database;
     private DatabaseReference referenceUser;
     private DatabaseReference referenceYearStatements;
@@ -31,6 +34,8 @@ public class FirebaseTransactions {
     }
 
     public FirebaseTransactions (FirebaseUser user, String account){
+        this.user = user;
+        this.account = account;
         database = FirebaseDatabase.getInstance();
         referenceUser = database.getReference("Users").child(user.getUid());
         referenceYearStatements = referenceUser.child("accounts").child(account);
@@ -43,13 +48,21 @@ public class FirebaseTransactions {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //List<String> keys = new ArrayList<>();
+                BigDecimal currentYearSumBigDecimal = new BigDecimal(0);
                 transactions.clear();
                 for (DataSnapshot keyNode: snapshot.getChildren()) {
                     //keys.add(keyNode.getKey());
                     Transaction transaction = keyNode.getValue(Transaction.class);
                     transactions.add(transaction);
+                    Log.d("OLGA", "onDataChange: transaction.getSumRub() " + transaction.getSumRub().toString());
+                    currentYearSumBigDecimal = currentYearSumBigDecimal.add(BigDecimal.valueOf(transaction.getSumRub()));
+                    Log.d("OLGA", "onDataChange: currentYearSumBigDecimal " + currentYearSumBigDecimal.doubleValue());
                 }
                 dataStatus.DataIsLoaded(transactions);
+                Log.d("OLGA", "onDataChange currentYearSumBigDecimal: " + currentYearSumBigDecimal.toString());
+                if (!transactions.isEmpty()) {
+                    new FirebaseYearSum(user, account).updateYearSum(year, currentYearSumBigDecimal.doubleValue());
+                }
             }
 
             @Override

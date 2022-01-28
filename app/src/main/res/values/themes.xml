@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TaxApp" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.TaxApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
 
         <!--<item name="colorPrimary">@color/purple_500</item>-->
@@ -16,6 +16,20 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="snackbarStyle">@style/Widget.MyApp.SnackbarStyle</item>
+<!--        <item name="cardViewStyle">@style/Widget.MyApp.CardViewStyle</item>-->
+
+
+    </style>
+
+<!--    <style name="Widget.MyApp.CardViewStyle" parent="Widget.MaterialComponents.CardView">-->
+<!--        <item name="android:elevation">6dp</item>-->
+<!--        <item name="android:translationZ">4dp</item>-->
+<!--    </style>-->
+
+    <style name="Widget.MyApp.SnackbarStyle" parent="Widget.MaterialComponents.Snackbar">
+        <item name="backgroundTint">#2B422C</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="Theme.TaxApp.NoActionBar">

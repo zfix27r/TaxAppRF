@@ -3,7 +3,6 @@ package com.taxapprf.taxapp.ui.newtransaction;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -46,7 +45,23 @@ public class NewTransactionViewModel extends AndroidViewModel {
                     Currencies cur = response.body();
                     rateCentralBankDouble = cur.getCurrencyRate(transaction.getCurrency());
                     transaction.setRateCentralBank(rateCentralBankDouble);
-                    BigDecimal sumRubBigDecimal = new BigDecimal(transaction.getSum() * rateCentralBankDouble * 0.13);
+                    Double sum = transaction.getSum();
+                    int k;
+                    switch (transaction.getType()){
+                        case "TRADE":
+                            k = 1;
+                            break;
+                        case "FUNDING/WITHDRAWAL":
+                            k = 0;
+                            break;
+                        case "COMMISSION":
+                            sum = Math.abs(sum);
+                            k = -1;
+                            break;
+                        default: k = 1;
+                    }
+
+                    BigDecimal sumRubBigDecimal = new BigDecimal(sum * rateCentralBankDouble * 0.13 * k);
                     sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
                     Double sumRubDouble = sumRubBigDecimal.doubleValue();
                     transaction.setSumRub(sumRubDouble);

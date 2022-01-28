@@ -39,13 +39,13 @@ public class RegisterFragment extends Fragment {
                              Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
         binding = FragmentRegisterBinding.inflate(inflater, container, false);
-        View rootView = binding.getRoot();
+        View viewRoot = binding.getRoot();
 
         viewModel.getMessage().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String message) {
                 if (message != null) {
-                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(viewRoot, message, Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -55,7 +55,7 @@ public class RegisterFragment extends Fragment {
             @Override
             public void onChanged(Boolean loggedIn) {
                 if (loggedIn){
-                    Navigation.findNavController(rootView).navigate(R.id.action_registerFragment_to_firstAccountFragment);
+                    Navigation.findNavController(viewRoot).navigate(R.id.action_registerFragment_to_firstAccountFragment);
                 }
             }
         });
@@ -77,33 +77,33 @@ public class RegisterFragment extends Fragment {
                 String sPhone = phone.getText().toString();
                 String sPassword = password.getText().toString();
                 if (TextUtils.isEmpty(sEmail)) {
-                    Toast.makeText(getContext(), "Введите ваш email", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите ваш email", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (TextUtils.isEmpty(sName)) {
-                    Toast.makeText(getContext(), "Введите ваше имя", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите ваше имя", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (TextUtils.isEmpty(sPhone)) {
-                    Toast.makeText(getContext(), "Введите ваш телефон", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите ваш телефон", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (sPassword.length() < 8 ) {
-                    Toast.makeText(getContext(), "Введите пароль, который больше 8 символов", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Введите пароль, который больше 8 символов", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
                 if (!new EmailCheck(sEmail).check()) {
-                    Toast.makeText(getContext(), "Некорректный email", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v, "Некорректный email", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
                 viewModel.register(sName, sEmail, sPassword, sPhone);
             }
         });
 
-        return rootView;
+        return viewRoot;
     }
 }

@@ -1,11 +1,17 @@
 package com.taxapprf.taxapp.ui.transactions;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -20,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding;
 import com.taxapprf.taxapp.excel.CreateExcelInLocal;
@@ -38,7 +45,7 @@ public class TransactionsFragment extends Fragment {
 
     private String year;
     private SharedPreferences settings;
-    private File fileName; // или удалить или прописать потом автоматическое открытие файла
+    private File fileName;
     private  CreateExcelInLocal createExcelInLocal;
 
     public TransactionsFragment() {
@@ -71,12 +78,6 @@ public class TransactionsFragment extends Fragment {
             public void onChanged(List<Transaction> transactions) {
                 Collections.sort(transactions);
                 recyclerViewConfig.setConfig(getContext(), recyclerView, transactions);
-//                viewModel.getKeys().observe(getViewLifecycleOwner(), new Observer<List<String>>() {
-//                    @Override
-//                    public void onChanged(List<String> keys) {
-//                        recyclerViewConfig.setConfig(getContext(), recyclerView, transactions, keys);
-//                    }
-//                });
             }
         });
 
@@ -122,15 +123,17 @@ public class TransactionsFragment extends Fragment {
         buttonDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fileName = viewModel.downloadStatement();
-                if (fileName.exists()){
-                    Toast.makeText(getContext(), "Отчет скачан.", Toast.LENGTH_SHORT).show();
-                    Uri uri = FileProvider.getUriForFile(getContext(), getContext().getApplicationContext().getPackageName() + ".provider", fileName);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getContext(), "Не удалось скачать отчет.", Toast.LENGTH_SHORT).show();
+                if (isStoragePermissionGranted()) {
+                    fileName = viewModel.downloadStatement();
+                    if (fileName.exists()){
+                        Snackbar.make(v, "Отчет скачан.", Snackbar.LENGTH_SHORT).show();
+                        Uri uri = FileProvider.getUriForFile(getContext(), getContext().getApplicationContext().getPackageName() + ".provider", fileName);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(intent);
+                    } else {
+                        Snackbar.make(v, "Не удалось скачать отчет.", Snackbar.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -140,17 +143,19 @@ public class TransactionsFragment extends Fragment {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fileName = viewModel.downloadStatement();
-                if (fileName.exists()){
-                    Uri uri = FileProvider.getUriForFile(getContext(), getContext().getApplicationContext().getPackageName() + ".provider", fileName);
-                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                    emailIntent.setType("vnd.android.cursor.dir/email");
-                    emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Расчёт налога от TaxApp");
-                    startActivity(Intent.createChooser(emailIntent, "Send email..."));
-                    //ileName.delete();
-                } else {
-                    Toast.makeText(getContext(), "Не удалось отправить отчет.", Toast.LENGTH_SHORT).show();
+                if (isStoragePermissionGranted()) {
+                    fileName = viewModel.downloadStatement();
+                    if (fileName.exists()){
+                        Uri uri = FileProvider.getUriForFile(getContext(), getContext().getApplicationContext().getPackageName() + ".provider", fileName);
+                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                        emailIntent.setType("vnd.android.cursor.dir/email");
+                        emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Расчёт налога от TaxApp");
+                        startActivity(Intent.createChooser(emailIntent, "Send email..."));
+                        fileName.delete();
+                    } else {
+                        Snackbar.make(v, "Не удалось отправить отчет.", Snackbar.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -158,6 +163,19 @@ public class TransactionsFragment extends Fragment {
         return viewRoot;
     }
 
-
+    public  boolean isStoragePermissionGranted(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            return true;
+        }
+    }
 
 }
