@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,7 +86,7 @@ public class TransactionsFragment extends Fragment {
         viewModel.getSumTaxes().observe(getViewLifecycleOwner(), new Observer<Double>() {
             @Override
             public void onChanged(Double yearTax) {
-                String s = String.format("Налог за %s год: %.2f", year, yearTax);
+                String s = String.format("Налог за %s год: %s", year, yearTax.toString());
                 textYearTax.setText(s);
             }
         });
@@ -128,6 +129,7 @@ public class TransactionsFragment extends Fragment {
                     if (fileName.exists()){
                         Snackbar.make(v, "Отчет скачан.", Snackbar.LENGTH_SHORT).show();
                         Uri uri = FileProvider.getUriForFile(getContext(), getContext().getApplicationContext().getPackageName() + ".provider", fileName);
+                        Log.d("OLGA", "onClick download uri: " + uri.getPath());
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         startActivity(intent);
@@ -144,15 +146,15 @@ public class TransactionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (isStoragePermissionGranted()) {
-                    fileName = viewModel.downloadStatement();
+                    fileName = viewModel.createLocalStatement();
                     if (fileName.exists()){
                         Uri uri = FileProvider.getUriForFile(getContext(), getContext().getApplicationContext().getPackageName() + ".provider", fileName);
                         Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                        Log.d("OLGA", "onClick emailIntent uri: " + uri.getPath());
                         emailIntent.setType("vnd.android.cursor.dir/email");
                         emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
                         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Расчёт налога от TaxApp");
                         startActivity(Intent.createChooser(emailIntent, "Send email..."));
-                        fileName.delete();
                     } else {
                         Snackbar.make(v, "Не удалось отправить отчет.", Snackbar.LENGTH_SHORT).show();
                     }
@@ -161,6 +163,15 @@ public class TransactionsFragment extends Fragment {
         });
 
         return viewRoot;
+    }
+
+    @Override
+    public void onResume() {
+        if (fileName != null) {
+            fileName.delete();
+            Log.d("OLGA", "onResume: DELETE FILE");
+        }
+        super.onResume();
     }
 
     public  boolean isStoragePermissionGranted(){

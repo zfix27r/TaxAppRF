@@ -64,6 +64,7 @@ public class TransactionDetailsFragment extends Fragment {
         Spinner currencies = binding.spinnerDetailCurrencies;
 
         final String key = getArguments().getString("key");
+        Log.d("OLGA - TransDetail", "key = getArguments(): " + key);
         final Double oldSum = getArguments().getDouble("sum", 0.00);
         final Double oldSumRub = getArguments().getDouble("sumRub", 0.00);
         final String oldCurrency = getArguments().getString("currency");
@@ -122,7 +123,7 @@ public class TransactionDetailsFragment extends Fragment {
                     @Override
                     public void onChanged(Boolean status) {
                         if (status) {
-                            Log.d("OLGA", "onChanged: key " + key);
+                            Log.d("OLGA - TransDetail", "onChanged: key " + key);
                             viewModel.deleteTransaction(oldYear, key, oldSumRub);
                         }
                     }

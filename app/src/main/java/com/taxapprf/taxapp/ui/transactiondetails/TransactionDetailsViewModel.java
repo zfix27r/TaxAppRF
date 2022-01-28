@@ -32,24 +32,28 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
     private MutableLiveData<String> message;
     private MutableLiveData<Boolean> isSuccessUpdate;
     private MutableLiveData<Boolean> isSuccessDelete;
-    //private Double oldYearSum;
+    private MutableLiveData<String> keyLiveData;
     private Double currentYearSum;
     private boolean deleteFlag = false;
+    private String key;
 
     public TransactionDetailsViewModel(@NonNull Application application) {
         super(application);
+        keyLiveData = new MutableLiveData<>();
         message = new MutableLiveData<>();
         isSuccessUpdate = new MutableLiveData<>(false);
         isSuccessDelete = new MutableLiveData<>(false);
     }
 
-    public void deleteTransaction (String oldYear, String key, Double oldSumRub) {
+    public void deleteTransaction (String oldYear, String keyD, Double oldSumRub) {
+        this.key = keyD;
         deleteFlag = true;
         deleteFromFirebase(oldYear, key, oldSumRub);
 
     }
 
-    public void updateTransaction (Transaction transaction, String oldYear, String currentYear, String key, Double oldSumRub){
+    public void updateTransaction (Transaction transaction, String oldYear, String currentYear, String keyD, Double oldSumRub){
+        this.key = keyD;
         if (!oldYear.equals(currentYear)) {
             deleteFromFirebase(oldYear, key, oldSumRub);
             addToFirebase(currentYear, transaction);
@@ -59,6 +63,7 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
     }
 
     private void deleteFromFirebase (String year, String key, Double oldSumRub){
+
         isSuccessDelete.setValue(false);
         isSuccessUpdate.setValue(false);
         SharedPreferences settings = getApplication().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
@@ -107,6 +112,7 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
 
             @Override
             public void DataIsDeleted() {
+                Log.d("OLGA - TransactionDetail ", "DataIsDeleted: key " + key);
                 message.setValue("Сделка удалена");
                 if (deleteFlag) {
                     isSuccessDelete.setValue(true);
@@ -116,15 +122,15 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
         });
     }
 
-    private void updateToFirebase (Transaction trans, String year, String key, Double oldSumRub) {
+    private void updateToFirebase (Transaction transaction, String year, String key, Double oldSumRub) {
         isSuccessDelete.setValue(false);
         isSuccessUpdate.setValue(false);
         SharedPreferences settings = getApplication().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
         String account = settings.getString(Settings.ACCOUNT.name(), "");
-        Log.d("OLGA", "updateToFirebase: account: " + account);
+        Log.d("OLGA - TransDetail", "updateToFirebase: key " + key);
         FirebaseUser user = new UserLivaData().getFirebaseUser();
 
-        Transaction transaction = trans;
+        //Transaction transaction = trans;
         String date = transaction.getDate();
         String currency = transaction.getCurrency();
 
@@ -158,7 +164,7 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
                     sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
                     Double sumRubDouble = sumRubBigDecimal.doubleValue();
                     transaction.setSumRub(sumRubDouble);
-                    transaction.setSumRub(sumRubDouble);
+                    transaction.setKey(key);
 
                     new FirebaseTransactions(user, account).updateTransaction(year, key, transaction, new FirebaseTransactions.DataStatus() {
                         @Override
@@ -227,7 +233,7 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
                     sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
                     Double sumRubDouble = sumRubBigDecimal.doubleValue();
                     transaction.setSumRub(sumRubDouble);
-                    transaction.setSumRub(sumRubDouble);
+                    //transaction.setSumRub(sumRubDouble);
 
                     new FirebaseTransactions(user, account).addTransaction(year, transaction, new FirebaseTransactions.DataStatus() {
                         @Override
@@ -251,8 +257,8 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
                     new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).readYearSumOnce(year, new FirebaseYearSum.DataStatus() {
                         @Override
                         public void DataIsLoaded(Double sumTaxes) {
-                            Double oldSumYear = sumTaxes;
-                            Double currentSumYear = oldSumYear + transaction.getSumRub();
+                            BigDecimal oldSumYear = new BigDecimal(sumTaxes);
+                            Double currentSumYear = oldSumYear.add(new BigDecimal(transaction.getSumRub())).doubleValue();
                             new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).updateYearSum(year, currentSumYear);
                         }
                     });

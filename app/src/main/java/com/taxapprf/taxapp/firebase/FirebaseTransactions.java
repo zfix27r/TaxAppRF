@@ -54,9 +54,7 @@ public class FirebaseTransactions {
                     //keys.add(keyNode.getKey());
                     Transaction transaction = keyNode.getValue(Transaction.class);
                     transactions.add(transaction);
-                    Log.d("OLGA", "onDataChange: transaction.getSumRub() " + transaction.getSumRub().toString());
                     currentYearSumBigDecimal = currentYearSumBigDecimal.add(BigDecimal.valueOf(transaction.getSumRub()));
-                    Log.d("OLGA", "onDataChange: currentYearSumBigDecimal " + currentYearSumBigDecimal.doubleValue());
                 }
                 dataStatus.DataIsLoaded(transactions);
                 Log.d("OLGA", "onDataChange currentYearSumBigDecimal: " + currentYearSumBigDecimal.toString());
@@ -87,6 +85,7 @@ public class FirebaseTransactions {
 
     public void updateTransaction (String year, String key, Transaction transaction, final DataStatus dataStatus){
         referenceTransactions = referenceYearStatements.child(year).child("transactions");
+        Log.d("OLGA", "FirebaseTranscations updateTransaction: key " + key);
         referenceTransactions.child(key).setValue(transaction)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

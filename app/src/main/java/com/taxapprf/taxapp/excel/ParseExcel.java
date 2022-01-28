@@ -49,11 +49,11 @@ public class ParseExcel {
         HSSFWorkbook workBook =  new HSSFWorkbook(fileInputStream);
         Sheet sheet = workBook.getSheetAt(0);
         Iterator<Row> rowIterator = sheet.iterator();
-        int jj = 0;
+        //int jj = 0;
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            jj++;
-            if (jj > 3){
+            //jj++;
+            //if (jj > 3){
                 String id;
                 String type;
                 String date;
@@ -110,7 +110,7 @@ public class ParseExcel {
                 } catch (Exception e) {
                     //....
                 }
-            }
+            //}
         }
         return transactions;
     }

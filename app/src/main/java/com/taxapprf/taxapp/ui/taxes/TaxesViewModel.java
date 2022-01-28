@@ -29,7 +29,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +47,7 @@ public class TaxesViewModel extends AndroidViewModel {
 
         yearStatements = new MutableLiveData<List<YearStatement>>();
         settings = getApplication().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
-        String account = settings.getString(Settings.ACCOUNT.name(),  "");
+        String account = settings.getString(Settings.ACCOUNT.name(), "");
 
         new FirebaseYearStatements(new UserLivaData().getFirebaseUser(), account).readYearStatements(new FirebaseYearStatements.DataStatus() {
             @Override
@@ -66,6 +68,8 @@ public class TaxesViewModel extends AndroidViewModel {
     }
 
     public void addTransactions(String filePath) throws IOException {
+        SharedPreferences settings = getApplication().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
+        String account = settings.getString(Settings.ACCOUNT.name(), "");
         Runnable task = new Runnable() {
             @Override
             public void run() {
@@ -76,7 +80,8 @@ public class TaxesViewModel extends AndroidViewModel {
                     //e.printStackTrace();
                     //обработать
                 }
-                for (Transaction transaction: transactions) {
+                //Map<String, Double> sumMap = new HashMap<String, Double>();
+                for (Transaction transaction : transactions) {
                     String year = new DateCheck(transaction.getDate()).getYear();
                     Controller ctrl = new Controller(transaction.getDate());
                     Call<Currencies> currenciesCall = ctrl.prepareCurrenciesCall();
@@ -89,7 +94,7 @@ public class TaxesViewModel extends AndroidViewModel {
                                 transaction.setRateCentralBank(rateCentralBankDouble);
                                 Double sum = transaction.getSum();
                                 int k;
-                                switch (transaction.getType()){
+                                switch (transaction.getType()) {
                                     case "TRADE":
                                         k = 1;
                                         break;
@@ -100,15 +105,20 @@ public class TaxesViewModel extends AndroidViewModel {
                                         sum = Math.abs(sum);
                                         k = -1;
                                         break;
-                                    default: k = 1;
+                                    default:
+                                        k = 1;
                                 }
 
                                 BigDecimal sumRubBigDecimal = new BigDecimal(sum * rateCentralBankDouble * 0.13 * k);
                                 sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
                                 Double sumRubDouble = sumRubBigDecimal.doubleValue();
-                                Log.d(TAG, "onResponse: sumRubDouble " + sumRubDouble.toString());
+                                //Log.d(TAG, "onResponse: sumRubDouble " + sumRubDouble.toString());
+//                                Double mapValue = sumMap.get(year);
+//                                if (mapValue == null) mapValue = 0.0;
+//                                sumRubBigDecimal = sumRubBigDecimal.add(new BigDecimal(mapValue));
+//                                sumMap.put(year, sumRubBigDecimal.doubleValue());
                                 transaction.setSumRub(sumRubDouble);
-                                addToFirebase(year, transaction);
+                                addToFirebase(account, year, transaction);
                             } else {
                                 //message.setValue("Не удалось загрузить курс валюты. Сделка не добавлена!");
                             }
@@ -120,16 +130,15 @@ public class TaxesViewModel extends AndroidViewModel {
                         }
                     });
                 }
+                //addToFirebaseYearSum(account, sumMap);
             }
         };
-        Thread thread = new Thread(null, task,"Background");
+        Thread thread = new Thread(null, task, "Background");
         thread.start();
 
     }
 
-    private void addToFirebase(String year, Transaction transaction){
-        SharedPreferences settings = getApplication().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
-        String account = settings.getString(Settings.ACCOUNT.name(), "");
+    private void addToFirebase(String account, String year, Transaction transaction) {
         new FirebaseTransactions(new UserLivaData().getFirebaseUser(), account).addTransaction(year, transaction, new FirebaseTransactions.DataStatus() {
             @Override
             public void DataIsLoaded(List<Transaction> transactions) {
@@ -148,18 +157,27 @@ public class TaxesViewModel extends AndroidViewModel {
             public void DataIsDeleted() {
             }
         });
-        new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).readYearSumOnce(year, new FirebaseYearSum.DataStatus() {
-            @Override
-            public void DataIsLoaded(Double sumTaxes) {
-                Log.d(TAG, "DataIsLoaded: readYearSumOnce " + sumTaxes.toString());
-                BigDecimal oldSumYear = new BigDecimal (sumTaxes);
-                BigDecimal currentSumYearBigDecimal = oldSumYear.add(new BigDecimal(transaction.getSumRub()));
-                currentSumYearBigDecimal = currentSumYearBigDecimal.setScale(2, RoundingMode.HALF_UP);
-                Double currentSumYear = currentSumYearBigDecimal.doubleValue();
-                new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).updateYearSum(year, currentSumYear);
-            }
-        });
     }
+
+//    private void addToFirebaseYearSum(String account, Map<String, Double> sumMap) {
+//        for (Map.Entry<String, Double> entry: sumMap.entrySet()) {
+//            Log.d(TAG, "MAP!!!! addToFirebaseYearSum: + sumMap.size()" + sumMap.size());
+//            String year = entry.getKey();
+//            Double sum = entry.getValue();
+//            new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).readYearSumOnce(year, new FirebaseYearSum.DataStatus() {
+//                @Override
+//                public void DataIsLoaded(Double sumTaxes) {
+//                    Log.d(TAG, "DataIsLoaded: readYearSumOnce " + sumTaxes.toString());
+//                    BigDecimal oldSumYear = new BigDecimal(sumTaxes);
+//                    BigDecimal currentSumYearBigDecimal = oldSumYear.add(new BigDecimal(sum));
+//                    currentSumYearBigDecimal = currentSumYearBigDecimal.setScale(2, RoundingMode.HALF_UP);
+//                    Double currentSumYear = currentSumYearBigDecimal.doubleValue();
+//                    new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).updateYearSum(year, currentSumYear);
+//                }
+//            });
+//        }
+//
+//    }
 
 
 }

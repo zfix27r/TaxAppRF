@@ -65,24 +65,17 @@ public class FirebaseYearSum {
         referenceYearSum.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                Log.d("OLGA", "readYearSumOnce onComplete: ok");
                 if (!task.isSuccessful()) {
                     //обработать
                 }
                 else {
                     if (task.getResult().getValue() == null) {
                         sumTaxes = 0.0;
-                        Log.d("OLGA - FirebaseYearSum", "onComplete: sumTaxes = 0.0");
                     } else {
                         if (task.getResult().getValue() instanceof Long) {
-                            Log.d("OLGA - FirebaseYearSum", "onComplete: task.getResult().getValue()222: " + task.getResult().getValue());
                             sumTaxes = (Long) task.getResult().getValue() + 0.0;
-                            Log.d("OLGA - FirebaseYearSum", "onComplete: if LONG ");
                         } else {
-                            //String s = String.valueOf(task.getResult().getValue());
-                            Log.d("OLGA - FirebaseYearSum", "onComplete: task.getResult().getValue(): " + task.getResult().getValue());
                             sumTaxes = (Double) task.getResult().getValue();
-                            Log.d("OLGA - FirebaseYearSum", "onComplete: sumTaxes Double:" + sumTaxes.toString());
                         }
                     }
                     dataStatus.DataIsLoaded(sumTaxes);

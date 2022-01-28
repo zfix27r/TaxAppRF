@@ -49,8 +49,6 @@ public class  TransactionsViewModel extends AndroidViewModel {
             public void DataIsLoaded(List<Transaction> transactionsDB) {
                 transactions.setValue(transactionsDB);
                 mtransactions = transactionsDB;
-                //keys.setValue(keysDB);
-                //mkeys = keysDB;
             }
 
             @Override
@@ -94,31 +92,26 @@ public class  TransactionsViewModel extends AndroidViewModel {
     }
 
     public File downloadStatement (){
-//        if (!new CheckPermission(getApplication()).isStoragePermissionGranted()){
-//            return null;
-//        }
         year = settings.getString(Settings.YEAR.name(), "");
         try {
             CreateExcelInDownload excelStatement = new CreateExcelInDownload(year, msumTaxes, mtransactions);
             File file = excelStatement.create();
             return file;
+
         } catch (IOException e) {
-            e.printStackTrace(); //...
+            //e.printStackTrace(); //...
             return null;
         }
     }
 
     public File createLocalStatement(){
-        if (!new CheckPermission(getApplication()).isStoragePermissionGranted()){
-            return null;
-        }
         try {
             CreateExcelInLocal excelStatement = new CreateExcelInLocal(getApplication(), year, msumTaxes, mtransactions);
             File file = null;
             file = excelStatement.create();
             return file;
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
 
