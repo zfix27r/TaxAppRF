@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 public class ParseExcel {
     private String filePath;
@@ -49,11 +48,8 @@ public class ParseExcel {
         HSSFWorkbook workBook =  new HSSFWorkbook(fileInputStream);
         Sheet sheet = workBook.getSheetAt(0);
         Iterator<Row> rowIterator = sheet.iterator();
-        //int jj = 0;
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            //jj++;
-            //if (jj > 3){
                 String id;
                 String type;
                 String date;
@@ -71,38 +67,31 @@ public class ParseExcel {
                             case 0:
                                 id = cell.getStringCellValue();
                                 transaction.setId(id);
-                                Log.d(TAG, "parse: id " + id);
                                 break;
                             case 1:
                                 type = cell.getStringCellValue();
                                 transaction.setType(type);
-                                Log.d(TAG, "parse: type " + type);
                                 break;
                             case 2:
                                 if (cell.getCellType() == CellType.NUMERIC) {
                                     Date currentDate = cell.getDateCellValue();
-                                    Log.d(TAG, "parse: currentdate " + currentDate);
                                     DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                                     date = dateFormat.format(currentDate);
                                     transaction.setDate(date);
-                                    Log.d(TAG, "parse: date " + date);
                                     break;
                                 } else {
                                     date = cell.getStringCellValue();
                                     date.replaceAll("\\.", "/");
                                     transaction.setDate(date);
-                                    Log.d(TAG, "parse: date " + date);
                                     break;
                                 }
                             case 3:
                                 sum = cell.getNumericCellValue();
                                 transaction.setSum(sum);
-                                Log.d(TAG, "parse: sum " + sum);
                                 break;
                             case 4:
                                 currency = cell.getStringCellValue();
                                 transaction.setCurrency(currency);
-                                Log.d(TAG, "parse: currency " + currency);
                                 break;
                         }
                     }

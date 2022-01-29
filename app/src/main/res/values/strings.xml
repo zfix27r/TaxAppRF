@@ -47,7 +47,7 @@
     <string name="editNewAccount">№ счета</string>
     <string name="buttonNewAccountOk">Создать</string>
     <string name="buttonNewAccountCancel">Отменить</string>
-    <string name="textNewAccountUnderBottom">Введите имя счета без пробелов</string>
+    <string name="textNewAccountUnderBottom">Введите имя нового счета</string>
 
     <!--RegisterFragment-->
     <string name="editRegisterName">Имя</string>
