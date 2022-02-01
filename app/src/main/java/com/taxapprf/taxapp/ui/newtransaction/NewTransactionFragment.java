@@ -1,6 +1,8 @@
 package com.taxapprf.taxapp.ui.newtransaction;
 
+import android.app.DatePickerDialog;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,7 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,9 +29,16 @@ import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentNewTransactionBinding;
 import com.taxapprf.taxapp.usersdata.Transaction;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class NewTransactionFragment extends Fragment {
     private FragmentNewTransactionBinding binding;
     private NewTransactionViewModel viewModel;
+    Calendar dateAndTime=Calendar.getInstance();
+    EditText date;
 
 
     public NewTransactionFragment() {
@@ -48,7 +59,7 @@ public class NewTransactionFragment extends Fragment {
 
         Spinner typeTransaction = binding.spinnerNewTransType;
         EditText idTrans = binding.editNewTransId;
-        EditText date = binding.editNewTransDate;
+        date = binding.editNewTransDate;
         EditText sum = binding.editNewTransSum;
         Spinner currencies = binding.spinnerNewTransCurrencies;
 
@@ -80,6 +91,16 @@ public class NewTransactionFragment extends Fragment {
         };
         typeTransArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typeTransaction.setAdapter(typeTransArrayAdapter);
+
+        ImageView image = binding.imageNewTransDate;
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDate(v);
+            }
+        });
+
+
 
 //        Button buttonCancel = binding.buttonNewTransCancel;
 //        buttonCancel.setOnClickListener(new View.OnClickListener() {
@@ -151,5 +172,29 @@ public class NewTransactionFragment extends Fragment {
         return viewRoot;
     }
 
+    private void setDate(View v){
+        new DatePickerDialog(requireContext(), d,
+                dateAndTime.get(Calendar.YEAR),
+                dateAndTime.get(Calendar.MONTH),
+                dateAndTime.get(Calendar.DAY_OF_MONTH))
+                .show();
+    }
+
+    private DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            dateAndTime.set(Calendar.YEAR, year);
+            dateAndTime.set(Calendar.MONTH, month);
+            dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            setInitialDateTime();
+        }
+    };
+
+    private void setInitialDateTime(){
+        Date mDate = dateAndTime.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String dateStr = dateFormat.format(mDate);
+        date.setText(dateStr);
+    }
 
 }

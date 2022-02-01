@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseAccounts {
-    private FirebaseDatabase database;
-    private DatabaseReference referenceUser;
+    private final DatabaseReference referenceUser;
     private String[] accounts;
 
     public interface DataStatus{
@@ -25,7 +24,7 @@ public class FirebaseAccounts {
     }
 
     public FirebaseAccounts(FirebaseUser firebaseUser) {
-        this.database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         this.referenceUser = database.getReference().child("Users").child(firebaseUser.getUid());
     }
 

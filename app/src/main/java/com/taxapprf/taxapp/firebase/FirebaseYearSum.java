@@ -18,7 +18,9 @@ public class FirebaseYearSum {
     private FirebaseDatabase database;
     private DatabaseReference referenceUser;
     private DatabaseReference referenceYearStatements;
+    private DatabaseReference referenceYearSum;
     private Double sumTaxes = new Double(0.0);
+    private ValueEventListener valueEventListener;
 
 
     public interface DataStatus{
@@ -32,17 +34,15 @@ public class FirebaseYearSum {
     }
 
     public void readYearSum (String year, final DataStatus dataStatus) {
-        DatabaseReference referenceYearSum = referenceYearStatements.child(year).child("sumTaxes");
-        referenceYearSum.addValueEventListener(new ValueEventListener() {
+        referenceYearSum = referenceYearStatements.child(year).child("sumTaxes");
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() == null) {
                     sumTaxes = 0.0;
                 } else {
-                    //String s = snapshot.getValue().toString();
                     if (snapshot.getValue() instanceof Long) {
                         Long l = new Long(String.valueOf(snapshot.getValue()));
-                        //double d = l.doubleValue();
                         sumTaxes = l.doubleValue();
                     }
                     else {
@@ -56,11 +56,15 @@ public class FirebaseYearSum {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+        referenceYearSum.addValueEventListener(valueEventListener);
+    }
+
+    public void removeListener(){
+        referenceYearSum.removeEventListener(valueEventListener);
     }
 
     public void readYearSumOnce (String year, final DataStatus dataStatus) {
-        Log.d("OLGA", "readYearSumOnce: readYearSumOnce вошли ");
         DatabaseReference referenceYearSum = referenceYearStatements.child(year).child("sumTaxes");
         referenceYearSum.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override

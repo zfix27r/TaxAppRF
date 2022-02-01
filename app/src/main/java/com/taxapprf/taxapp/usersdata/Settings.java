@@ -10,3 +10,5 @@ public enum Settings {
     TAXSUM,
     ALLACCOUNT
 }
+
+

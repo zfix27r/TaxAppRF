@@ -36,11 +36,11 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class SendExcelStatement {
-    private Context context;
-    private String email;
-    private String year;
-    private Double yearTax;
-    private List<Transaction> transactions;
+    private final Context context;
+    private final String email;
+    private final String year;
+    private final Double yearTax;
+    private final List<Transaction> transactions;
 
 
     private String filePath;
@@ -59,9 +59,7 @@ public class SendExcelStatement {
             public void run() {
                 try {
                     createFile(); //io exp
-                    Log.d("OLGA", "run: удалось создать файл");
                 } catch (IOException e) {
-                    Log.d("OLGA", "run: не удалось создать файл");
                 }
             }
         });

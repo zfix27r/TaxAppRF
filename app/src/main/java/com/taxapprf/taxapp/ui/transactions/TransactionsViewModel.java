@@ -29,9 +29,10 @@ public class  TransactionsViewModel extends AndroidViewModel {
     private MutableLiveData<List<String>> keys;
     private MutableLiveData<List<Transaction>> transactions;
     private MutableLiveData<Double> sumTaxes;
-    private List<String> mkeys;
     private List<Transaction> mtransactions;
     private Double msumTaxes;
+    private FirebaseTransactions firebaseTransactions;
+    private FirebaseYearSum firebaseYearSum;
 
     public TransactionsViewModel(@NonNull Application application) {
         super(application);
@@ -44,7 +45,8 @@ public class  TransactionsViewModel extends AndroidViewModel {
         String account = settings.getString(Settings.ACCOUNT.name(), "");
         year = settings.getString(Settings.YEAR.name(), "");
 
-        new FirebaseTransactions(new UserLivaData().getFirebaseUser(), account).readTransactions(year, new FirebaseTransactions.DataStatus() {
+        firebaseTransactions = new FirebaseTransactions(new UserLivaData().getFirebaseUser(), account);
+        firebaseTransactions.readTransactions(year, new FirebaseTransactions.DataStatus() {
             @Override
             public void DataIsLoaded(List<Transaction> transactionsDB) {
                 transactions.setValue(transactionsDB);
@@ -67,13 +69,19 @@ public class  TransactionsViewModel extends AndroidViewModel {
             }
         });
 
-        new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account).readYearSum(year, new FirebaseYearSum.DataStatus() {
+        firebaseYearSum = new FirebaseYearSum(new UserLivaData().getFirebaseUser(), account);
+        firebaseYearSum.readYearSum(year, new FirebaseYearSum.DataStatus() {
             @Override
             public void DataIsLoaded(Double sumTaxesDB) {
                 sumTaxes.setValue(sumTaxesDB);
                 msumTaxes = sumTaxesDB;
             }
         });
+    }
+
+    public void removeListener(){
+        firebaseTransactions.removeListener();
+        firebaseYearSum.removeListener();
     }
 
     public void deleteYear (String year) {
@@ -117,10 +125,6 @@ public class  TransactionsViewModel extends AndroidViewModel {
 
     }
 
-
-    public List<String> getMkeys() {
-        return mkeys;
-    }
 
     public List<Transaction> getMtransactions() {
         return mtransactions;

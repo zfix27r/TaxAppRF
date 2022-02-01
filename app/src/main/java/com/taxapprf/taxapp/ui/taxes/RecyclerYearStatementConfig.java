@@ -62,12 +62,11 @@ public class RecyclerYearStatementConfig {
         public void bind (YearStatement yearStatement) {
             String yearSumStr;
             if (yearStatement.getSumTaxes() != null) {
-                yearSumStr = yearStatement.getSumTaxes().toString();
+                yearSumStr = String.format("%.2f", yearStatement.getSumTaxes()).replace(",", ".");
             } else {
-                yearSumStr = "идет загрузка";
+                yearSumStr = "загрузка...";
             }
 
-            //String yearSumStr = new DecimalFormat("#0.00").format(yearStatement.getSumTaxes());
             year.setText(String.valueOf(yearStatement.getYear()));
             yearSum.setText(yearSumStr);
         }

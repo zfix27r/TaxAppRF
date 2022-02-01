@@ -31,6 +31,7 @@ public class FirebaseUserEmail {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
+                    //...
                 }
                 else {
                     userEmail = String.valueOf(task.getResult().getValue());

@@ -35,7 +35,7 @@ public class RatesTodayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentRatesTodayBinding.inflate(inflater, container, false);
-        viewModel = new ViewModelProvider(this).get(RatesTodayViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(RatesTodayViewModel.class);
         View rootView = binding.getRoot();
 
         Currencies currencies = new Currencies();
@@ -44,7 +44,7 @@ public class RatesTodayFragment extends Fragment {
         RecyclerView recyclerView = binding.recyclerviewCurrencies;
         recyclerViewConfig.setConfig(recyclerView, getContext(), currencies);
 
-        viewModel.getCurrencies().observe(getActivity(), new Observer<Currencies>() {
+        viewModel.getCurrencies().observe(getViewLifecycleOwner(), new Observer<Currencies>() {
             @Override
             public void onChanged(Currencies currencies) {
                 recyclerViewConfig.setConfig(recyclerView, getContext(), currencies);

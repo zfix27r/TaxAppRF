@@ -66,16 +66,13 @@ public class TransactionItemView extends RecyclerView.ViewHolder{
         date.setText(transaction.getDate());
 
         String sumString = transaction.getSum().toString();
-        //String sumString = new DecimalFormat("#0.00").format(transaction.getSum());
         sum.setText(sumString );
 
         currency.setText(String.valueOf(transaction.getCurrency()));
         String cbString = transaction.getRateCentralBank().toString();
-        //String cbString = new DecimalFormat("#0.0000").format(transaction.getRateCentralBank());
         cb.setText(cbString);
 
         String sumRubString = transaction.getSumRub().toString();
-        //String sumRubString = new DecimalFormat("#0.00").format(transaction.getSumRub());
         sumRub.setText(sumRubString);
 
         this.key = transaction.getKey();

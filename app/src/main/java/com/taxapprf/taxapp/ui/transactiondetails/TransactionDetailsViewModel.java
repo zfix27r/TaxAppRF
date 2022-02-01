@@ -29,17 +29,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TransactionDetailsViewModel extends AndroidViewModel {
-    private MutableLiveData<String> message;
-    private MutableLiveData<Boolean> isSuccessUpdate;
-    private MutableLiveData<Boolean> isSuccessDelete;
-    private MutableLiveData<String> keyLiveData;
+    private final MutableLiveData<String> message;
+    private final MutableLiveData<Boolean> isSuccessUpdate;
+    private final MutableLiveData<Boolean> isSuccessDelete;
+    //private MutableLiveData<String> keyLiveData;
     private Double currentYearSum;
     private boolean deleteFlag = false;
     private String key;
 
     public TransactionDetailsViewModel(@NonNull Application application) {
         super(application);
-        keyLiveData = new MutableLiveData<>();
+        //keyLiveData = new MutableLiveData<>();
         message = new MutableLiveData<>();
         isSuccessUpdate = new MutableLiveData<>(false);
         isSuccessDelete = new MutableLiveData<>(false);
@@ -72,12 +72,10 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
         new FirebaseYearSum(user, account).readYearSumOnce(year, new FirebaseYearSum.DataStatus() {
             @Override
             public void DataIsLoaded(Double sumTaxes) {
-                Log.d("OLGA", "DataIsLoaded: sumTaxes" + sumTaxes.toString());
                 Double oldYearSum = sumTaxes;
                 BigDecimal currentYearSumBigDecimal = new BigDecimal(oldYearSum - oldSumRub);
                 currentYearSumBigDecimal = currentYearSumBigDecimal.setScale(2, RoundingMode.HALF_UP);
                 currentYearSum = currentYearSumBigDecimal.doubleValue();
-                Log.d("OLGA", "DataIsLoaded: currentYearSum " + currentYearSum.toString());
                 if (currentYearSum == 0) {
                     new FirebaseYearStatements(user, account).deleteYearStatement(year, new FirebaseYearStatements.DataStatus() {
                         @Override
@@ -112,7 +110,6 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
 
             @Override
             public void DataIsDeleted() {
-                Log.d("OLGA - TransactionDetail ", "DataIsDeleted: key " + key);
                 message.setValue("Сделка удалена");
                 if (deleteFlag) {
                     isSuccessDelete.setValue(true);
@@ -127,10 +124,8 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
         isSuccessUpdate.setValue(false);
         SharedPreferences settings = getApplication().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
         String account = settings.getString(Settings.ACCOUNT.name(), "");
-        Log.d("OLGA - TransDetail", "updateToFirebase: key " + key);
         FirebaseUser user = new UserLivaData().getFirebaseUser();
 
-        //Transaction transaction = trans;
         String date = transaction.getDate();
         String currency = transaction.getCurrency();
 
@@ -233,9 +228,9 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
                     sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP);
                     Double sumRubDouble = sumRubBigDecimal.doubleValue();
                     transaction.setSumRub(sumRubDouble);
-                    //transaction.setSumRub(sumRubDouble);
 
-                    new FirebaseTransactions(user, account).addTransaction(year, transaction, new FirebaseTransactions.DataStatus() {
+                    new FirebaseTransactions(user, account)
+                            .addTransaction(year, transaction, new FirebaseTransactions.DataStatus() {
                         @Override
                         public void DataIsLoaded(List<Transaction> transactions) {
                         }
@@ -269,7 +264,7 @@ public class TransactionDetailsViewModel extends AndroidViewModel {
 
             @Override
             public void onFailure(Call<Currencies> call, Throwable t) {
-                Log.d("TAG", "onFailure: ");
+                //
             }
         });
     }

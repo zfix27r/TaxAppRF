@@ -9,3 +9,7 @@ public interface CbrAPI {
     @GET("XML_daily.asp")
     Call<Currencies> loadCurrencies(@Query("date_req") String date);
 }
+
+
+
+

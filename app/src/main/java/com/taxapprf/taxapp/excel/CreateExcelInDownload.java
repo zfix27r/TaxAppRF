@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class CreateExcelInDownload {
-    private String year;
-    private Double yearTax;
-    private List<Transaction> transactions;
+    private final String year;
+    private final Double yearTax;
+    private final List<Transaction> transactions;
 
     public CreateExcelInDownload(String year, Double yearTax, List<Transaction> transactions) {
         this.year = year;

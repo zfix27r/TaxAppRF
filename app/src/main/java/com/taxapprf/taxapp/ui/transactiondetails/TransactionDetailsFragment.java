@@ -1,5 +1,6 @@
 package com.taxapprf.taxapp.ui.transactiondetails;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -21,7 +22,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,9 +38,16 @@ import com.taxapprf.taxapp.ui.newtransaction.DoubleCheck;
 import com.taxapprf.taxapp.usersdata.Settings;
 import com.taxapprf.taxapp.usersdata.Transaction;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class TransactionDetailsFragment extends Fragment {
     private FragmentTransactionDetailsBinding binding;
     private TransactionDetailsViewModel viewModel;
+    private Calendar dateAndTime;
+    private EditText date;
 
 
     public TransactionDetailsFragment() {
@@ -57,14 +67,14 @@ public class TransactionDetailsFragment extends Fragment {
         View viewRoot = binding.getRoot();
         SharedPreferences settings = getContext().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
 
+        dateAndTime = Calendar.getInstance();
         Spinner typeTransaction = binding.spinnerDetailType;
         EditText idTrans = binding.editDetailId;
-        EditText date = binding.editDetailDate;
+        date = binding.editDetailDate;
         EditText sum = binding.editDetailSum;
         Spinner currencies = binding.spinnerDetailCurrencies;
 
         final String key = getArguments().getString("key");
-        Log.d("OLGA - TransDetail", "key = getArguments(): " + key);
         final Double oldSum = getArguments().getDouble("sum", 0.00);
         final Double oldSumRub = getArguments().getDouble("sumRub", 0.00);
         final String oldCurrency = getArguments().getString("currency");
@@ -111,6 +121,14 @@ public class TransactionDetailsFragment extends Fragment {
         Button buttonUpdate = binding.buttonDetailUpdate;
         Button buttonDelete = binding.buttonDetailDelete;
 
+        ImageView image = binding.imageDetailDate;
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDate(v);
+            }
+        });
+
         //String account = settings.getString(Settings.ACCOUNT.name(), "");
         String oldYear = settings.getString(Settings.YEAR.name(), "");
 
@@ -123,7 +141,6 @@ public class TransactionDetailsFragment extends Fragment {
                     @Override
                     public void onChanged(Boolean status) {
                         if (status) {
-                            Log.d("OLGA - TransDetail", "onChanged: key " + key);
                             viewModel.deleteTransaction(oldYear, key, oldSumRub);
                         }
                     }
@@ -213,5 +230,30 @@ public class TransactionDetailsFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(requireView().getWindowToken(), 0);
         super.onStop();
+    }
+
+    private void setDate(View v){
+        new DatePickerDialog(requireContext(), d,
+                dateAndTime.get(Calendar.YEAR),
+                dateAndTime.get(Calendar.MONTH),
+                dateAndTime.get(Calendar.DAY_OF_MONTH))
+                .show();
+    }
+
+    private DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            dateAndTime.set(Calendar.YEAR, year);
+            dateAndTime.set(Calendar.MONTH, month);
+            dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            setInitialDateTime();
+        }
+    };
+
+    private void setInitialDateTime(){
+        Date mDate = dateAndTime.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String dateStr = dateFormat.format(mDate);
+        date.setText(dateStr);
     }
 }

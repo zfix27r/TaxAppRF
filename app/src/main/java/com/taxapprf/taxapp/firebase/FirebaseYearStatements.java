@@ -19,6 +19,7 @@ public class FirebaseYearStatements {
     private DatabaseReference referenceUser;
     private DatabaseReference referenceYearStatements;
     private List<YearStatement> yearStatements = new ArrayList<>();
+    private ValueEventListener valueEventListener;
 
 
     public interface DataStatus{
@@ -33,7 +34,7 @@ public class FirebaseYearStatements {
     }
 
     public void readYearStatements(final DataStatus dataStatus){
-        referenceYearStatements.addValueEventListener(new ValueEventListener() {
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 yearStatements.clear();
@@ -48,7 +49,12 @@ public class FirebaseYearStatements {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+        referenceYearStatements.addValueEventListener(valueEventListener);
+    }
+
+    public void removeListener(){
+        referenceYearStatements.removeEventListener(valueEventListener);
     }
 
     public void deleteYearStatement (String year, final DataStatus dataStatus){
@@ -60,5 +66,4 @@ public class FirebaseYearStatements {
                     }
                 });
     }
-
 }

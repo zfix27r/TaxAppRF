@@ -166,10 +166,15 @@ public class TransactionsFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        viewModel.removeListener();
+    }
+
+    @Override
     public void onResume() {
         if (fileName != null) {
             fileName.delete();
-            Log.d("OLGA", "onResume: DELETE FILE");
         }
         super.onResume();
     }

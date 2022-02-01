@@ -58,7 +58,8 @@ public class SelectAccountFragment extends Fragment {
         spinner.setAdapter(adapter);
 
         Button buttonOpen = binding.buttonSelectOpen;
-        SharedPreferences.Editor preferenceEditor = getContext().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE).edit();
+        SharedPreferences.Editor preferenceEditor = getContext()
+                .getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE).edit();
         buttonOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

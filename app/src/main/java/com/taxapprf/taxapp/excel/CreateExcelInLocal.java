@@ -1,11 +1,6 @@
 package com.taxapprf.taxapp.excel;
 
 import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
-
-import androidx.lifecycle.MutableLiveData;
-
 import com.taxapprf.taxapp.usersdata.Transaction;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -25,10 +20,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class CreateExcelInLocal {
-    private Context context;
-    private String year;
-    private Double yearTax;
-    private List<Transaction> transactions;
+    private final Context context;
+    private final String year;
+    private final Double yearTax;
+    private final List<Transaction> transactions;
 
 
     public CreateExcelInLocal(Context context, String year, Double yearTax, List<Transaction> transactions) {

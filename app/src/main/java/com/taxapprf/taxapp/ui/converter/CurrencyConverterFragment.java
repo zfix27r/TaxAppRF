@@ -30,14 +30,8 @@ import java.math.RoundingMode;
 
 public class CurrencyConverterFragment extends Fragment {
     private FragmentCurrencyConverterBinding binding;
-    private RatesTodayViewModel viewModel;
-    private Currencies rates;
-    private Double rate;
-    private String currency;
-    private String value;
-    private String rub;
-
-
+    private ConverterViewModel viewModel;
+    private RatesTodayViewModel viewModelRates;
 
     public CurrencyConverterFragment() {
     }
@@ -51,7 +45,8 @@ public class CurrencyConverterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        viewModel = new ViewModelProvider(this).get(RatesTodayViewModel.class);
+        //viewModel = new ViewModelProvider(this, new ConverterViewModelFactory(getViewLifecycleOwner())).get(ConverterViewModel.class);
+
         binding = FragmentCurrencyConverterBinding.inflate(inflater, container, false);
         View viewRoot = binding.getRoot();
 
@@ -65,96 +60,69 @@ public class CurrencyConverterFragment extends Fragment {
         EditText amount = binding.editConverterUp;
         EditText amountRub = binding.editConverterDown;
 
-
-
-        currency = currencies.getSelectedItem().toString();
-        viewModel.getCurrencies().observe(getViewLifecycleOwner(), new Observer<Currencies>() {
+        viewModel = new ViewModelProvider(this).get(ConverterViewModel.class);
+        viewModelRates = new ViewModelProvider(requireActivity()).get(RatesTodayViewModel.class);
+        viewModelRates.getCurrencies().observe(getViewLifecycleOwner(), new Observer<Currencies>() {
             @Override
-            public void onChanged(Currencies cur) {
-                rates = cur;
-                value = "1";
-                rate = rates.getCurrencyRate(currency);
-                Double sum = Double.parseDouble(amount.getText().toString()) * rate;
-                rub = sum.toString().replaceAll(",", "\\.");
-                amountRub.setText(rub);
-
-                amount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if (!hasFocus) {
-                            String amountStr = amount.getText().toString();
-                            DoubleCheck doubleCheck = new DoubleCheck(amountStr);
-                            if (!doubleCheck.isCheck()){
-                                amount.setText(value);
-                                hideKeyboard();
-                                return;
-                            }
-                            value = amountStr.replaceAll(",", "\\.");
-                            amount.setText(value);
-                            //currency = currencies.getSelectedItem().toString();
-                            rate = rates.getCurrencyRate(currency);
-                            Double sum = new BigDecimal(doubleCheck.getNumDouble()).multiply(BigDecimal.valueOf(rate)).doubleValue();
-                            rub = sum.toString().replaceAll(",", "\\.");
-                            amountRub.setText(rub);
-                            hideKeyboard();
-                        }
-                    }
-                });
-
-
-                amountRub.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if (!hasFocus) {
-                            String amountRubStr = amountRub.getText().toString();
-                            DoubleCheck doubleCheck = new DoubleCheck(amountRubStr);
-                            if (!doubleCheck.isCheck()){
-                                amountRub.setText(rub);
-                                hideKeyboard();
-                                return;
-                            }
-                            rub = amountRubStr.replaceAll(",", "\\.");
-                            amountRub.setText(rub);
-                            //currency = currencies.getSelectedItem().toString();
-                            rate = rates.getCurrencyRate(currency);
-                            BigDecimal sumBigDecimal = new BigDecimal(doubleCheck.getNumDouble());
-                            sumBigDecimal = sumBigDecimal.divide(BigDecimal.valueOf(rate), 4, RoundingMode.HALF_UP);
-                            //sumBigDecimal.setScale(4, RoundingMode.HALF_UP);
-                            Double sum = sumBigDecimal.doubleValue();
-                            value = sum.toString().replaceAll(",", "\\.");
-                            amount.setText(value);
-                            hideKeyboard();
-                        }
-                    }
-                });
-
-
-                currencies.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        currency = currencies.getSelectedItem().toString();
-                        rate = rates.getCurrencyRate(currency);
-                        amount.setText("1");
-                        Double sum = 1 * rate;
-                        value = "1";
-                        rub = String.format("%.2f", sum).replaceAll(",", "\\.");
-                        amountRub.setText(rub);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-
-
+            public void onChanged(Currencies rates) {
+                viewModel.setRates(rates);
+                String currency = currencies.getSelectedItem().toString();
+                viewModel.calculate(currency);
             }
         });
 
+        viewModel.getRub().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                amountRub.setText(s);
+            }
+        });
+
+        viewModel.getValue().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                amount.setText(s);
+            }
+        });
+
+        amount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    String amountStr = amount.getText().toString();
+                    viewModel.calculateRub(amountStr);
+                    hideKeyboard();
+                }
+            }
+        });
+
+        amountRub.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    String amountRubStr = amountRub.getText().toString();
+                    viewModel.calculateValue(amountRubStr);
+                    hideKeyboard();
+                }
+            }
+        });
+
+        currencies.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String currency = currencies.getSelectedItem().toString();
+                viewModel.calculate(currency);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         return viewRoot;
     }
-    private void hideKeyboard(){
+
+    private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(requireView().getWindowToken(), 0);
     }

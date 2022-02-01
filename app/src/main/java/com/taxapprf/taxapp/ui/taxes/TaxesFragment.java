@@ -30,8 +30,6 @@ import com.taxapprf.taxapp.usersdata.YearStatement;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class TaxesFragment extends Fragment {
@@ -84,8 +82,19 @@ public class TaxesFragment extends Fragment {
             }
         });
 
-
         return viewRoot;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.createListener();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        viewModel.removeListener();
     }
 
     @Override
@@ -94,7 +103,6 @@ public class TaxesFragment extends Fragment {
             case PICKFILE_RESULT_CODE:
                 if(resultCode == RESULT_OK){
                     filePath = data.getData().getPath();
-                    Log.d("OLGA", "onActivityResult: filePath " + filePath);
 
                 }
                 try {
@@ -121,5 +129,6 @@ public class TaxesFragment extends Fragment {
             return true;
         }
     }
+
 }
 
