@@ -17,8 +17,8 @@ import android.widget.EditText;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
-import com.taxapprf.taxapp.databinding.FragmentNewAccountBinding;
 import com.taxapprf.taxapp.activities.MainActivity;
+import com.taxapprf.taxapp.databinding.FragmentNewAccountBinding;
 import com.taxapprf.taxapp.usersdata.Settings;
 
 public class NewAccountFragment extends Fragment {

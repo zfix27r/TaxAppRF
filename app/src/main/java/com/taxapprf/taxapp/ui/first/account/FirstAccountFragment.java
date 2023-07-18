@@ -13,11 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.taxapprf.taxapp.databinding.FragmentFirstAccountBinding;
 import com.taxapprf.taxapp.activities.MainActivity;
+import com.taxapprf.taxapp.databinding.FragmentFirstAccountBinding;
 import com.taxapprf.taxapp.usersdata.Settings;
 
 public class FirstAccountFragment extends Fragment {
