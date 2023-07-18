@@ -7,7 +7,7 @@ import android.os.Bundle;
 import com.taxapprf.taxapp.R;
 
 public class LoginActivity extends AppCompatActivity {
-
+    //TEST
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
