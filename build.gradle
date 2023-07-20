@@ -1,12 +1,47 @@
 buildscript {
+    ext {
+        gradleVersion = '8.0.2'
+
+        kotlinVersion = '1.8.20'
+        kotlinCoroutinesVersion = '1.7.2'
+
+        googleServicesVersion = '4.3.12'
+
+        androidxAppCompatVersion = '1.6.1'
+        androidxNavigationVersion = '2.6.0'
+        androidxLifecycleVersion = '2.6.1'
+        androidxConstraintlayoutVersion = '2.1.4'
+        androidxMaterialVersion = '1.9.0'
+        androidxLegacyVersion = '1.0.0'
+        androidxRoomVersion = '2.5.2'
+        androidxSwiperefreshlayoutVersion = '1.1.0'
+
+        hiltVersion = '2.46.1'
+
+        retrofit2Version = '2.9.0'
+
+        poiVersion = '5.1.0'
+
+        mailVersion = '1.6.6'
+
+        firebaseBomVersion = '29.0.2'
+        firebaseDatabaseVersrion = '20.0.3'
+        firebaseAuthVersrion = '21.0.1'
+
+        viewBindingDelegateVersion = '1.5.9'
+    }
+
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
+
     dependencies {
-        classpath "com.android.tools.build:gradle:8.0.2"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20"
-        classpath 'com.google.gms:google-services:4.3.12'
+        classpath "com.android.tools.build:gradle:$gradleVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "com.google.gms:google-services:$googleServicesVersion"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
     }
 }
 

@@ -17,13 +17,10 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.usersdata.Settings
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
-    // предлогаю использовать делигат lazy
-    // чтобы далее по коду переменная была неизменяемой, не требовалось писать !!
-    // или иметь возможность чтото поменять случайно
-    // Я использую библиотеку которая создает биндинг привязываясь
-    // к жизненному циклу, можно использовать ее
     private val binding by viewBinding(ActivityMainBinding::bind)
     private val drawer by lazy { binding.drawerLayout }
     private val mAppBarConfiguration by lazy {
@@ -68,7 +65,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             navController.navigate(R.id.changeAccountFragment)
             binding.navView.visibility = View.GONE
         }
-        // эти все данные по хорошму тоже должны идти с вьюмодел
+
         val userAccount = header.findViewById<TextView>(R.id.textNavHeaderUserAccount)
         val settings: SharedPreferences =
             this.getSharedPreferences(Settings.SETTINGSFILE.name, Context.MODE_PRIVATE)

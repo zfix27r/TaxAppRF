@@ -26,16 +26,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@HiltViewModel
 public class TaxesViewModel extends AndroidViewModel {
     private final SharedPreferences settings;
     private MutableLiveData<List<YearStatement>> yearStatements;
     private final FirebaseYearStatements firebaseYearStatements;
-
-    public TaxesViewModel(@NonNull Application application) {
+    @Inject
+    public TaxesViewModel (@NonNull Application application) {
         super(application);
 
         yearStatements = new MutableLiveData<List<YearStatement>>();

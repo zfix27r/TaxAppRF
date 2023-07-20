@@ -32,6 +32,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class TaxesFragment extends Fragment {
     private FragmentTaxesBinding binding;
     private TaxesViewModel viewModel;
@@ -99,9 +102,9 @@ public class TaxesFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        switch(requestCode){
+        switch (requestCode) {
             case PICKFILE_RESULT_CODE:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     filePath = data.getData().getPath();
 
                 }
@@ -115,7 +118,7 @@ public class TaxesFragment extends Fragment {
 
     }
 
-    public  boolean isStoragePermissionGranted(){
+    public boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
@@ -124,8 +127,7 @@ public class TaxesFragment extends Fragment {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 return false;
             }
-        }
-        else { //permission is automatically granted on sdk<23 upon installation
+        } else { //permission is automatically granted on sdk<23 upon installation
             return true;
         }
     }

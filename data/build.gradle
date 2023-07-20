@@ -1,13 +1,17 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
-    namespace 'ru.zfix27r.data'
+    namespace 'com.taxapprf.taxapp'
+
     compileSdk 33
 
     defaultConfig {
-        minSdk 24
+        minSdk 26
         targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -20,12 +24,31 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
     }
 }
 
 dependencies {
+    implementation project(path: ':domain')
 
+    implementation "com.google.dagger:hilt-android:$hiltVersion"
+    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
+
+    implementation "com.google.firebase:firebase-bom:$firebaseBomVersion"
+    implementation "com.google.firebase:firebase-database:$firebaseDatabaseVersrion"
+    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersrion"
+
+    implementation "com.squareup.retrofit2:retrofit:$retrofit2Version"
+    implementation "com.squareup.retrofit2:converter-simplexml:$retrofit2Version"
+
+    implementation "androidx.room:room-runtime:$androidxRoomVersion"
+    kapt "androidx.room:room-compiler:$androidxRoomVersion"
+    implementation "androidx.room:room-ktx:$androidxRoomVersion"
 }

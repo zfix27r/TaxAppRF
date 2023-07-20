@@ -1,17 +1,26 @@
 package com.taxapprf.taxapp.activities
 
-import android.app.Application
-import android.content.Context
-import androidx.core.content.edit
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.taxapprf.taxapp.firebase.FirebaseUserEmail
-import com.taxapprf.taxapp.firebase.FirebaseUserName
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.taxapprf.domain.activity.GetAccountModelUseCase
+import com.taxapprf.domain.activity.AccountModel
 import com.taxapprf.taxapp.firebase.UserLivaData
-import com.taxapprf.taxapp.usersdata.Settings
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val getAccountModel: GetAccountModelUseCase
+) : ViewModel() {
+    val account = getAccountModel.execute()
+        .asLiveData(viewModelScope.coroutineContext)
+
     private var _userName = MutableLiveData<String>()
     val userName: LiveData<String> = _userName
 
@@ -22,15 +31,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         // Здесь желательно сделать один запрос к фаербейз и получить все разом
         // и создать одну модель
         // и ее одну наблюдать в активити
-        application
-            .getSharedPreferences(Settings.SETTINGSFILE.name, Context.MODE_PRIVATE)
-            .edit {
-                FirebaseUserName(UserLivaData().firebaseUser).readName { name ->
-                    _userName.postValue(name)
-                }
-                FirebaseUserEmail(UserLivaData().firebaseUser).readEmail { email ->
+//        val user = UserLivaData().firebaseUser
+//        println("@@@@@@@@@@@@@2 " + user.uid)
+        //Firebase.database.setPersistenceEnabled(true)
+//        val reference = Firebase.database.getReference("Users").child(user.uid)
+
+//        FirebaseUserName(reference).readName { name ->
+//            _userName.postValue(name)
+//        }
+
+        /*        FirebaseUserEmail(UserLivaData().firebaseUser).readEmail { email ->
                     _userEmail.postValue(email)
-                }
-            }
+                }*/
     }
+
 }
