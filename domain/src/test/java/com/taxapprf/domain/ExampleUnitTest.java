@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp;
+package com.taxapprf.domain;
 
 import org.junit.Test;
 
