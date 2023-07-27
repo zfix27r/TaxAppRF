@@ -13,8 +13,9 @@ import com.taxapprf.data.local.model.FirebaseAccountModel
 import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.transaction.GetTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.domain.user.SignInModel
+import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.year.SaveYearSumModel
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.math.BigDecimal
 
@@ -39,6 +40,29 @@ class FirebaseAPI {
         get() = refUsersUidAccountAidYear.child(PATH_TRANSACTIONS)
     private val refUsersUidAccountAidYearSum
         get() = refUsersUidAccountAidYear.child(PATH_SUM_TAXES)
+
+    fun isSignIn() = auth.currentUser != null
+    suspend fun signIn(signInModel: SignInModel): Unit = safeCall {
+        with(signInModel) {
+            auth.signInWithEmailAndPassword(email, password).await()
+        }
+        return
+    }
+
+    suspend fun signUp(signUpModel: SignUpModel): Unit = safeCall {
+        with(signUpModel) {
+            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+            authResult.user?.let {
+                refUsersUid.setValue(signUpModel).await()
+            }
+        }
+        return
+    }
+
+    suspend fun signOut(): Unit = safeCall {
+        auth.signOut()
+        return
+    }
 
     suspend fun getAccounts() = safeCall {
         refUsersUidAccount
