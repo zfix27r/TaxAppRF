@@ -12,7 +12,6 @@ import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     private val binding by viewBinding(FragmentSignUpBinding::bind)

@@ -11,6 +11,7 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentAccountSelectBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.BaseState
+import com.taxapprf.taxapp.ui.LoginActivity
 import com.taxapprf.taxapp.ui.MainActivity
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,7 +45,7 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
 
     private fun BaseState.execute() =
         when (this) {
-            is BaseState.LogOut -> popBackStack()
+            is BaseState.LogOut -> navToLoginActivity()
             is BaseState.AccountSelect -> navToMainActivity()
             else -> {}
         }
@@ -60,6 +61,12 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerSelectAccount.adapter = adapter
+    }
+
+    private fun navToLoginActivity() {
+        // TODO переделать на одну активити
+        startActivity(Intent(activity, LoginActivity::class.java))
+        requireActivity().finish()
     }
 
     private fun navToMainActivity() {

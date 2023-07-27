@@ -24,10 +24,10 @@ class SignInViewModel @Inject constructor(
         if (email.isErrorInputEmailChecker()) return
         if (password.isErrorInputPasswordChecker()) return
 
-        val userLogInModel = SignInModel(email, password)
+        val signInModel = SignInModel(email, password)
 
         viewModelScope.launch(Dispatchers.IO) {
-            singInUseCase.execute(userLogInModel)
+            singInUseCase.execute(signInModel)
                 .onStart { loading() }
                 .catch { error(it) }
                 .collectLatest { success() }
