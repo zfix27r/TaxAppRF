@@ -42,14 +42,14 @@ class FirebaseAPI {
         get() = refUsersUidAccountAidYear.child(PATH_SUM_TAXES)
 
     fun isSignIn() = auth.currentUser != null
-    suspend fun signIn(signInModel: SignInModel): Unit = safeCall {
+    suspend fun signIn(signInModel: SignInModel): Unit = safeCallWithoutAuth {
         with(signInModel) {
             auth.signInWithEmailAndPassword(email, password).await()
         }
         return
     }
 
-    suspend fun signUp(signUpModel: SignUpModel): Unit = safeCall {
+    suspend fun signUp(signUpModel: SignUpModel): Unit = safeCallWithoutAuth {
         with(signUpModel) {
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             authResult.user?.let {
@@ -59,7 +59,8 @@ class FirebaseAPI {
         return
     }
 
-    suspend fun signOut(): Unit = safeCall {
+
+    fun signOut(): Unit = safeCall {
         auth.signOut()
         return
     }
@@ -163,18 +164,28 @@ class FirebaseAPI {
             .await()
     }
 
+    private inline fun <T> safeCallWithoutAuth(call: () -> T): T {
+        return try {
+            call()
+        } catch (e: Exception) {
+            throw e.getAppError()
+        }
+    }
+
     private inline fun <T> safeCall(call: () -> T): T {
         return try {
             auth.currentUser?.let { uid = it.uid } ?: throw UserErrorSessionExpire()
             call()
         } catch (e: Exception) {
-            throw when (e) {
-                is FirebaseAuthUserCollisionException -> SignUpErrorEmailAlreadyUse()
-                is FirebaseAuthInvalidCredentialsException -> SignInErrorWrongPassword()
-                is FirebaseAuthInvalidUserException -> SignInErrorWrongPassword()
-                else -> e
-            }
+            throw e.getAppError()
         }
+    }
+
+    private fun Exception.getAppError() = when (this) {
+        is FirebaseAuthUserCollisionException -> SignUpErrorEmailAlreadyUse()
+        is FirebaseAuthInvalidCredentialsException -> SignInErrorWrongPassword()
+        is FirebaseAuthInvalidUserException -> SignInErrorWrongPassword()
+        else -> this
     }
 
     companion object {
