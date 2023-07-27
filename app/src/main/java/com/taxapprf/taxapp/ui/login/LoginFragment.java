@@ -16,9 +16,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.taxapprf.taxapp.R;
-import com.taxapprf.taxapp.activities.MainActivity;
 import com.taxapprf.taxapp.databinding.FragmentLoginBinding;
-import com.taxapprf.taxapp.firebase.UserLivaData;
+import com.taxapprf.taxapp.ui.MainActivity;
 import com.taxapprf.taxapp.usersdata.Settings;
 
 
