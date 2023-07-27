@@ -6,27 +6,18 @@ import androidx.room.PrimaryKey
 
 
 const val ACCOUNT_TABLE = "account"
-
 @Entity(tableName = ACCOUNT_TABLE)
-data class UserEntity(
-    @PrimaryKey(autoGenerate = false)
+data class AccountEntity(
     @ColumnInfo(name = ID)
+    @PrimaryKey
     val id: String,
 
-    @ColumnInfo(name = ACTIVE)
+    @ColumnInfo(name = ACTIVE, defaultValue = "0")
     val active: Boolean,
-
-    @ColumnInfo(name = NAME)
-    val name: String,
-    @ColumnInfo(name = EMAIL)
-    val email: String,
-    ) {
+) {
     companion object {
         const val ID = "id"
 
         const val ACTIVE = "active"
-
-        const val NAME = "name"
-        const val EMAIL = "email"
     }
 }

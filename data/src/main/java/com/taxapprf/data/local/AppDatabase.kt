@@ -4,10 +4,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.taxapprf.data.local.dao.ActivityDao
 import com.taxapprf.data.local.dao.MainDao
-import com.taxapprf.data.local.entity.UserEntity
+import com.taxapprf.data.local.entity.AccountEntity
 
 @Database(
-    entities = [UserEntity::class],
+    entities = [AccountEntity::class],
     version = 1,
     exportSchema = false,
 )

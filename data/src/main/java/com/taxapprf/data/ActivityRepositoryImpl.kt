@@ -14,13 +14,27 @@ import com.taxapprf.domain.ActivityRepository
 import com.taxapprf.domain.transaction.GetTransactionModel
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.SignInModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onEmpty
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.concurrent.thread
+import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.suspendCoroutine
 
 
 class ActivityRepositoryImpl @Inject constructor(
+    private val firebaseAPI: FirebaseAPI,
     private val dao: ActivityDao
 ) : ActivityRepository {
     private val auth = FirebaseAuth.getInstance()
@@ -55,20 +69,16 @@ class ActivityRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAccounts() = flow {
-        auth.currentUser?.let { user ->
-            safeCall {
-                val accountsSnapshot = Firebase.database.reference
-                    .child(PATH_USERS)
-                    .child(user.uid)
-                    .child(PATH_ACCOUNTS)
-                    .get()
-                    .await()
-
-                emit(accountsSnapshot.children.filter { it.key != null }.map { it.key!! })
+    override fun getAccounts() = dao.getAccounts()
+        .onEach {
+            if (it.isEmpty()) {
+                runBlocking {
+                    launch(Dispatchers.IO) {
+                        dao.save(firebaseAPI.getAccounts())
+                    }
+                }
             }
         }
-    }
 
     override fun signOut() = flow {
         auth.signOut()

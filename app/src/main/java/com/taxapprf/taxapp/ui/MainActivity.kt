@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun prepDrawer() {
         val header = binding.navView.getHeaderView(0)
         header.setOnClickListener {
-//            navController.navigate(R.id.account_change)
+            navController.navigate(R.id.account_change)
             binding.navView.visibility = View.GONE
         }
 

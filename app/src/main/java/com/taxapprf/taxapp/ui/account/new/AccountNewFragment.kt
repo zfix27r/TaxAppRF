@@ -13,20 +13,20 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AccountNewFragment : BaseFragment(R.layout.fragment_account_new) {
-    private val binding by viewBinding(FragmentAccountNewBinding::bind)
-    private val viewModel by viewModels<AccountNewViewModel>()
+    //private val binding by viewBinding(FragmentAccountNewBinding::bind)
+    //private val viewModel by viewModels<AccountNewViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.attachToBaseFragment()
+/*        viewModel.attachToBaseFragment()
 
         binding.buttonNewAccountCreate.setOnClickListener {
             val account = binding.editNewAccountName.text.toString()
             viewModel.save(account)
             navToMainActivity()
         }
-        binding.buttonNewAccountCancel.setOnClickListener { popBackStack() }
+        binding.buttonNewAccountCancel.setOnClickListener { popBackStack() }*/
     }
 
     private fun navToMainActivity() {

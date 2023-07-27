@@ -33,7 +33,6 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
             viewModel.save(account)
             navToMainActivity()
         }
-        binding.buttonChangeAccountCreate.setOnClickListener { popBackStack() }
         binding.buttonChangeAccountOpen.setOnClickListener {
             binding.spinnerChangeAccount.selectedItem?.let {
                 viewModel.save(it as String)

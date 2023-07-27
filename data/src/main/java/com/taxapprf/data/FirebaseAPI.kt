@@ -4,17 +4,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.data.error.TransactionErrorNotGetNewKey
 import com.taxapprf.data.error.UserErrorSessionExpire
+import com.taxapprf.data.local.model.FirebaseAccountModel
 import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.transaction.GetTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.year.SaveYearSumModel
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.math.BigDecimal
 
@@ -22,12 +22,36 @@ class FirebaseAPI {
     private val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.reference
+    private var uid = ""
+    private var account = ""
+    private var year = ""
+    private val refUsers
+        get() = reference.child(PATH_USERS)
+    private val refUsersUid
+        get() = refUsers.child(uid)
+    private val refUsersUidAccount
+        get() = refUsersUid.child(PATH_ACCOUNTS)
+    private val refUsersUidAccountAid
+        get() = refUsersUidAccount.child(account)
+    private val refUsersUidAccountAidYear
+        get() = refUsersUidAccountAid.child(year)
+    private val refUsersUidAccountAidYearTransactions
+        get() = refUsersUidAccountAidYear.child(PATH_TRANSACTIONS)
+    private val refUsersUidAccountAidYearSum
+        get() = refUsersUidAccountAidYear.child(PATH_SUM_TAXES)
+
+    suspend fun getAccounts() = safeCall {
+        refUsersUidAccount
+            .get()
+            .await()
+            .children
+            .mapNotNull { ds -> ds.key?.let { FirebaseAccountModel(it) } }
+    }
 
     suspend fun getTransaction(request: FirebaseRequestModel) =
-        safeCall { user ->
+        safeCall {
             with(request) {
-                reference
-                    .toTransactionPath(user.uid, account, year)
+                refUsersUidAccountAidYearTransactions
                     .child(key)
                     .get()
                     .await()
@@ -38,20 +62,19 @@ class FirebaseAPI {
         }
 
     suspend fun saveTransaction(transaction: SaveTransactionModel) =
-        safeCall { user ->
+        safeCall {
             transaction.key?.let {
-                transaction.updateFirebaseTransaction(user.uid)
+                transaction.updateFirebaseTransaction()
             } ?: run {
-                transaction.addFirebaseTransaction(user.uid)
-                transaction.updateFirebaseYear(user.uid)
+                transaction.addFirebaseTransaction()
+                transaction.updateFirebaseYear()
             }
         }
 
     suspend fun deleteTransaction(request: FirebaseRequestModel): Unit =
-        safeCall { user ->
+        safeCall {
             with(request) {
-                reference
-                    .toTransactionPath(user.uid, account, year)
+                refUsersUidAccountAidYearTransactions
                     .child(key)
                     .setValue(null)
                     .await()
@@ -59,10 +82,9 @@ class FirebaseAPI {
         }
 
     suspend fun getYearSum(firebaseModel: FirebaseRequestModel): Double =
-        safeCall { user ->
+        safeCall {
             with(firebaseModel) {
-                reference
-                    .toSumTaxesPath(user.uid, account, year)
+                refUsersUidAccountAidYearSum
                     .get()
                     .await()
                     ?.let { it.value as Double }
@@ -71,15 +93,14 @@ class FirebaseAPI {
         }
 
     suspend fun saveYearSum(saveYearSumModel: SaveYearSumModel) {
-        safeCall { user ->
+        safeCall {
             with(saveYearSumModel) {
                 val firebaseModel = FirebaseRequestModel(account, year)
                 val oldYearSum = getYearSum(firebaseModel)
                 val bigYearSum = BigDecimal(oldYearSum)
                 bigYearSum.add(BigDecimal(yearSum))
 
-                reference
-                    .toSumTaxesPath(user.uid, account, year)
+                refUsersUidAccountAidYearSum
                     .setValue(bigYearSum.toDouble())
                     .await()
             }
@@ -87,77 +108,41 @@ class FirebaseAPI {
     }
 
     suspend fun deleteYearSum(request: FirebaseRequestModel): Unit =
-        safeCall { user ->
+        safeCall {
             with(request) {
-                reference
-                    .toYear(user.uid, account, year)
+                refUsersUidAccountAidYear
                     .child(key)
                     .setValue(null)
                     .await()
             }
         }
 
-    private suspend fun SaveTransactionModel.updateFirebaseTransaction(uid: String) {
-        reference
-            .toTransactionPath(uid, account, year)
+    private suspend fun SaveTransactionModel.updateFirebaseTransaction() {
+        refUsersUidAccountAidYearTransactions
             .child(key!!)
             .setValue(this)
             .await()
     }
 
-    private suspend fun SaveTransactionModel.addFirebaseTransaction(uid: String) {
-        val path = reference.toTransactionPath(uid, account, year)
-
-        path.push().key?.let { key ->
+    private suspend fun SaveTransactionModel.addFirebaseTransaction() {
+        refUsersUidAccountAidYearTransactions.push().key?.let { key ->
             this.key = key
-            path.child(key)
+            refUsersUidAccountAidYearTransactions.child(key)
                 .setValue(this)
                 .await()
         } ?: run { throw TransactionErrorNotGetNewKey() }
     }
 
-    private suspend fun SaveTransactionModel.updateFirebaseYear(uid: String) {
-        reference
-            .toYearPath(uid, account, year)
+    private suspend fun SaveTransactionModel.updateFirebaseYear() {
+        refUsersUidAccountAidYear
             .setValue(year)
             .await()
     }
 
-    private fun DatabaseReference.toYear(uid: String, account: String, year: String) = this
-        .child(PATH_USERS)
-        .child(uid)
-        .child(PATH_ACCOUNTS)
-        .child(account)
-        .child(year)
-
-    private fun DatabaseReference.toYearPath(uid: String, account: String, year: String) = this
-        .child(PATH_USERS)
-        .child(uid)
-        .child(PATH_ACCOUNTS)
-        .child(account)
-        .child(year)
-        .child(PATH_YEAR)
-
-    private fun DatabaseReference.toTransactionPath(uid: String, account: String, year: String) =
-        this
-            .child(PATH_USERS)
-            .child(uid)
-            .child(PATH_ACCOUNTS)
-            .child(account)
-            .child(year)
-            .child(PATH_TRANSACTIONS)
-
-    private fun DatabaseReference.toSumTaxesPath(uid: String, account: String, year: String) = this
-        .child(PATH_USERS)
-        .child(uid)
-        .child(PATH_ACCOUNTS)
-        .child(account)
-        .child(year)
-        .child(PATH_SUM_TAXES)
-
-    private inline fun <T> safeCall(call: (FirebaseUser) -> T): T {
+    private inline fun <T> safeCall(call: () -> T): T {
         return try {
-            auth.currentUser?.let { call(it) } ?: run { throw UserErrorSessionExpire() }
+            auth.currentUser?.let { uid = it.uid } ?: throw UserErrorSessionExpire()
+            call()
         } catch (e: Exception) {
             throw when (e) {
                 is FirebaseAuthUserCollisionException -> SignUpErrorEmailAlreadyUse()

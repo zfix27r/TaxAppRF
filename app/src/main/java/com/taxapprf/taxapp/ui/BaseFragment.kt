@@ -9,6 +9,7 @@ import com.taxapprf.data.error.InputErrorEmailIncorrect
 import com.taxapprf.data.error.InputErrorNameEmpty
 import com.taxapprf.data.error.InputErrorPasswordLength
 import com.taxapprf.data.error.InputErrorPhoneEmpty
+import com.taxapprf.data.error.UserErrorSessionExpire
 import com.taxapprf.taxapp.R
 
 open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
@@ -31,6 +32,7 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
         mainActivity.onLoadingStop()
 
         val stringResId = when (t) {
+            is UserErrorSessionExpire -> R.string.auth_error_session_expire
             is InputErrorNameEmpty -> R.string.error_name_empty
             is InputErrorPhoneEmpty -> R.string.error_phone_empty
             is InputErrorEmailEmpty -> R.string.error_email_empty
