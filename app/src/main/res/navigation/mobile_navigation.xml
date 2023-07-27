@@ -3,35 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/taxesFragment">
+    app:startDestination="@+id/taxes">
 
     <fragment
-        android:id="@+id/exitFragment"
+        android:id="@+id/exit"
         android:name="com.taxapprf.taxapp.ui.exit.ExitFragment"
         android:label="@string/menuExit"
         tools:layout="@layout/fragment_exit" />
 
     <fragment
-        android:id="@+id/ratesTodayFragment"
+        android:id="@+id/rates_today"
         android:name="com.taxapprf.taxapp.ui.rates.today.RatesTodayFragment"
         android:label="@string/menuRatesToday"
         tools:layout="@layout/fragment_rates_today" />
 
     <fragment
-        android:id="@+id/taxesFragment"
+        android:id="@+id/taxes"
         android:name="com.taxapprf.taxapp.ui.taxes.TaxesFragment"
         android:label="@string/menuTaxes"
         tools:layout="@layout/fragment_taxes">
         <action
             android:id="@+id/action_taxesFragment_to_transactionsFragment"
-            app:destination="@id/transactionsFragment"
+            app:destination="@id/transactions"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_taxesFragment_to_newTransactionFragment"
-            app:destination="@id/newTransactionFragment"
+            app:destination="@id/transaction_new"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -39,13 +39,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/transactionsFragment"
+        android:id="@+id/transactions"
         android:name="com.taxapprf.taxapp.ui.transactions.TransactionsFragment"
         android:label="@string/menuTransactions"
-        tools:layout="@layout/fragment_transactions" >
+        tools:layout="@layout/fragment_transactions">
         <action
             android:id="@+id/action_transactionsFragment_to_taxesFragment"
-            app:destination="@id/taxesFragment"
+            app:destination="@id/taxes"
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_out_right"
             app:popEnterAnim="@anim/slide_in_right"
@@ -53,14 +53,14 @@
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_transactionsFragment_to_newTransactionFragment"
-            app:destination="@id/newTransactionFragment"
+            app:destination="@id/transaction_new"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_transactionsFragment_to_transactionDetailsFragment"
-            app:destination="@id/transactionDetailsFragment"
+            app:destination="@id/transaction_detail"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -69,52 +69,54 @@
     </fragment>
 
     <fragment
-        android:id="@+id/newTransactionFragment"
+        android:id="@+id/transaction_new"
         android:name="com.taxapprf.taxapp.ui.newtransaction.NewTransactionFragment"
         android:label="@string/menuNewTransaction"
-        tools:layout="@layout/fragment_new_transaction" >
+        tools:layout="@layout/fragment_new_transaction">
         <action
             android:id="@+id/action_newTransactionFragment_to_taxesFragment"
-            app:destination="@id/taxesFragment"
+            app:destination="@id/taxes"
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/taxesFragment"
+            app:popUpTo="@id/taxes"
             app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
-        android:id="@+id/transactionDetailsFragment"
+        android:id="@+id/transaction_detail"
         android:name="com.taxapprf.taxapp.ui.transactiondetails.TransactionDetailsFragment"
         android:label="@string/menuTransactionDetail"
-        tools:layout="@layout/fragment_transaction_details" >
+        tools:layout="@layout/fragment_transaction_details">
         <action
             android:id="@+id/action_transactionDetailsFragment_to_taxesFragment"
-            app:destination="@id/taxesFragment"
-            app:popUpTo="@id/taxesFragment"
+            app:destination="@id/taxes"
+            app:popUpTo="@id/taxes"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_transactionDetailsFragment_to_transactionsFragment"
-            app:destination="@id/transactionsFragment"
+            app:destination="@id/transactions"
             app:enterAnim="@anim/slide_in_left"
             app:exitAnim="@anim/slide_out_right"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/transactionsFragment"
+            app:popUpTo="@id/transactions"
             app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
-        android:id="@+id/currencyConverterFragment"
+        android:id="@+id/currency_converter"
         android:name="com.taxapprf.taxapp.ui.converter.CurrencyConverterFragment"
         android:label="@string/menuConverter"
         tools:layout="@layout/fragment_currency_converter" />
+
     <fragment
-        android:id="@+id/changeAccountFragment"
-        android:name="com.taxapprf.taxapp.ui.changeaccount.ChangeAccountFragment"
+        android:id="@+id/account_change"
+        android:name="com.taxapprf.taxapp.ui.account.change.AccountChangeFragment"
         android:label="@string/menuChangeAccount"
         tools:layout="@layout/fragment_account_change">
         <action
             android:id="@+id/action_changeAccountFragment_to_taxesFragment"
-            app:destination="@id/taxesFragment" />
+            app:destination="@id/taxes" />
     </fragment>
 
 

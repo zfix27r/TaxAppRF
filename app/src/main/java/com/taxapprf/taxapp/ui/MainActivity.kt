@@ -26,11 +26,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val mAppBarConfiguration by lazy {
         AppBarConfiguration(
             setOf(
-/*                R.id.rates_today,
+                R.id.rates_today,
                 R.id.taxes,
                 R.id.account_change,
                 R.id.currency_converter,
-                R.id.account_change*/
             ),
             drawer
         )

@@ -13,7 +13,6 @@ import com.taxapprf.taxapp.ui.MainActivity
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
     private val binding by viewBinding(FragmentAccountChangeBinding::bind)
