@@ -10,6 +10,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="error_not_found">Не найдено</string>
+    <string name="sign_up_error_email_already_use">The email address is already in use by another account.</string>
+
 
     <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 
@@ -36,12 +39,17 @@
     <string name="buttonSignInOk">Войти</string>
     <string name="buttonSignInCancel">Отменить</string>
     <string name="textSignInUnderBottom">Войдите в свою учетную запись</string>
+    <string name="authSuccess">Пользователь авторизован</string>
+    <string name="authFailure">Ошибка авторизации. %s</string>
+    <string name="authAccountDefault">Основной аккаунт</string>
+    <string name="error_sign_in">Неверные параметры входа! Повторите попытку.</string>
 
     <!--SelectAccountFragment-->
     <string name="buttonSelectOpen">Открыть</string>
     <string name="buttonSelectCreate">Создать</string>
     <string name="buttonSelectExit">Выйти</string>
     <string name="textSelectUnderBottom">Выберете существующий или создайте новый счет</string>
+    <string name="loading">Идет загрузка доступных счетов. Пожалуйста, подождите.</string>
 
     <!--NewAccountFragment-->
     <string name="editNewAccount">№ счета</string>
@@ -49,7 +57,7 @@
     <string name="buttonNewAccountCancel">Отменить</string>
     <string name="textNewAccountUnderBottom">Введите имя нового счета</string>
 
-    <!--RegisterFragment-->
+    <!--Registration Fragment-->
     <string name="editRegisterName">Имя</string>
     <string name="editRegisterTel">Телефон</string>
     <string name="editRegisterEmail">E-mail</string>
@@ -57,12 +65,19 @@
     <string name="buttonRegisterOk">Подтвердить</string>
     <string name="buttonRegisterCancel">Отменить</string>
     <string name="textRegisterUnderButton">Заполните все поля</string>
+    <string name="error_email_empty">Введите ваш email</string>
+    <string name="error_email_incorrect">Некорректный email</string>
+    <string name="error_name_empty">Введите ваше имя</string>
+    <string name="error_phone_empty">Введите ваш телефон</string>
+    <string name="error_password_length">Введите пароль, который больше 8 символов</string>
+    <string name="messageRegistrationSuccess">"Пользователь добавлен!"</string>
 
     <!--FirstAccountFragment-->
     <string name="editFirstAccount">№ счета</string>
     <string name="buttonFirstAccountOk">Создать</string>
     <string name="buttonFirstAccountCancel">Пропустить</string>
     <string name="textFirstAccountUnderBottom">Введите имя счета</string>
+    <string name="error_input_account_incorrect">Введите имя счета (без пробелов)</string>
 
     <!-- TaxesFragment-->
     <string name="textTaxesYear">Отчетный год</string>
@@ -95,11 +110,17 @@
     <string name="buttonDetailUpdate">Обновить</string>
     <string name="buttonDetailDelete">Удалить</string>
     <string name="buttonDetailCancel">Отменить</string>
+    <string name="transaction_detail_delete_success">Сделка удалена</string>
+    <string name="transaction_detail_save_success">Сделка обновлена</string>
+    <string name="transaction_detail_add_error_load_rate">Не удалось загрузить курс валюты. Сделка не добавлена!</string>
+    <string name="transaction_detail_save_fail">Не удалось обновить сделку</string>
+
 
     <!--ChangeAccountFragment-->
     <string name="buttonChangeAccountOpen">Открыть</string>
     <string name="buttonChangeAccountCreate">Создать</string>
     <string name="editChangeAccountName">Id нового счета</string>
     <string name="textChangeAccountUnderBottom">Выберете существующий или создайте новый счет</string>
+    <string name="account_change_message_waite_loading">Идет загрузка доступных счетов. Пожалуйста, подождите.</string>
 
 </resources>

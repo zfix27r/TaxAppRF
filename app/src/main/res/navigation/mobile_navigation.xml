@@ -111,7 +111,7 @@
         android:id="@+id/changeAccountFragment"
         android:name="com.taxapprf.taxapp.ui.changeaccount.ChangeAccountFragment"
         android:label="@string/menuChangeAccount"
-        tools:layout="@layout/fragment_change_account">
+        tools:layout="@layout/fragment_account_change">
         <action
             android:id="@+id/action_changeAccountFragment_to_taxesFragment"
             app:destination="@id/taxesFragment" />
