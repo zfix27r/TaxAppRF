@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.usersdata;
+package com.taxapprf.domain;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -51,4 +51,6 @@ dependencies {
     implementation "androidx.room:room-runtime:$androidxRoomVersion"
     kapt "androidx.room:room-compiler:$androidxRoomVersion"
     implementation "androidx.room:room-ktx:$androidxRoomVersion"
+
+    implementation "org.apache.poi:poi:$poiVersion"
 }

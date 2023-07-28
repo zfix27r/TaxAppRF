@@ -1,5 +1,7 @@
 package com.taxapprf.taxapp.usersdata;
 
+import com.taxapprf.domain.Transaction;
+
 import java.util.HashMap;
 
 public class YearStatement {

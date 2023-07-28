@@ -1,7 +1,6 @@
 package com.taxapprf.taxapp.di
 
 import com.taxapprf.data.ActivityRepositoryImpl
-import com.taxapprf.data.CentralBankRepositoryImpl
 import com.taxapprf.data.TaxesRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.user.SignInUseCase
@@ -12,6 +11,7 @@ import com.taxapprf.domain.user.SignUpUseCase
 import com.taxapprf.domain.account.SetActiveAccountUseCase
 import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
 import com.taxapprf.domain.taxes.GetTaxesUseCase
+import com.taxapprf.domain.taxes.SaveTaxesFromExcel
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.year.DeleteYearSumUseCase
 import com.taxapprf.domain.transaction.GetTransactionUseCase
@@ -52,7 +52,7 @@ object DomainModule {
         SetActiveAccountUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetRateCentralBankUseCase(repositoryImpl: CentralBankRepositoryImpl) =
+    fun provideGetRateCentralBankUseCase(repositoryImpl: TaxesRepositoryImpl) =
         GetRateCentralBankUseCase(repositoryImpl)
 
     @Provides
@@ -78,6 +78,10 @@ object DomainModule {
     @Provides
     fun provideGetTaxesUseCase(repositoryImpl: TaxesRepositoryImpl) =
         GetTaxesUseCase(repositoryImpl)
+
+    @Provides
+    fun provideSaveTaxesFromExcel(repositoryImpl: TaxesRepositoryImpl) =
+        SaveTaxesFromExcel(repositoryImpl)
 
     @Provides
     fun provideSaveYearSumUseCase(repositoryImpl: TransactionRepositoryImpl) =

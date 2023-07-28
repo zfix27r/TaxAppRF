@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
@@ -12,6 +13,7 @@ import com.taxapprf.data.error.UserErrorSessionExpire
 import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.model.FirebaseAccountModel
 import com.taxapprf.domain.FirebaseRequestModel
+import com.taxapprf.domain.Transaction
 import com.taxapprf.domain.taxes.TaxesAdapterModel
 import com.taxapprf.domain.transaction.GetTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
@@ -137,6 +139,23 @@ class FirebaseAPI @Inject constructor(
             }
         }
 
+    suspend fun sumTaxes() = safeCall {
+/*        var currentYearSumBigDecimal = BigDecimal(0)
+
+        refUsersUidAccountAidYearTransactions
+            .get()
+            .await()
+            .children
+            .mapNotNull {ds ->
+                val transaction: Transaction? = ds.getValue(Transaction::class.java)
+                currentYearSumBigDecimal =
+                    currentYearSumBigDecimal.add(BigDecimal.valueOf(transaction.sumRub))
+            }
+
+        saveYearSum()*/
+
+    }
+
     suspend fun getTaxes() = safeCall {
         refUsersUidAccountAidYear
             .get()
@@ -146,7 +165,7 @@ class FirebaseAPI @Inject constructor(
                 ds.key?.let {
                     TaxesAdapterModel(
                         year = it,
-                        sum = ds.child(KEY_YEAR_SUM_TAXES).getValue(Double::class.java).toString()
+                        sum = ds.child(KEY_YEAR_SUM_TAXES).value.toString()
                     )
                 }
             }
