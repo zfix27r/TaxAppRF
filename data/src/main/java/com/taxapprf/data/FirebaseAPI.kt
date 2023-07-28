@@ -9,22 +9,30 @@ import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.data.error.TransactionErrorNotGetNewKey
 import com.taxapprf.data.error.UserErrorSessionExpire
+import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.model.FirebaseAccountModel
 import com.taxapprf.domain.FirebaseRequestModel
+import com.taxapprf.domain.taxes.TaxesAdapterModel
 import com.taxapprf.domain.transaction.GetTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.year.SaveYearSumModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.math.BigDecimal
+import javax.inject.Inject
 
-class FirebaseAPI {
+class FirebaseAPI @Inject constructor(
+    private val dao: AccountDao,
+) {
     private val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.reference
     private var uid = ""
-    private var account = ""
+    private var accountId = ""
     private var year = ""
     private val refUsers
         get() = reference.child(PATH_USERS)
@@ -33,7 +41,7 @@ class FirebaseAPI {
     private val refUsersUidAccount
         get() = refUsersUid.child(PATH_ACCOUNTS)
     private val refUsersUidAccountAid
-        get() = refUsersUidAccount.child(account)
+        get() = refUsersUidAccount.child(accountId)
     private val refUsersUidAccountAidYear
         get() = refUsersUidAccountAid.child(year)
     private val refUsersUidAccountAidYearTransactions
@@ -41,7 +49,19 @@ class FirebaseAPI {
     private val refUsersUidAccountAidYearSum
         get() = refUsersUidAccountAidYear.child(PATH_SUM_TAXES)
 
-    fun isSignIn() = auth.currentUser != null
+    fun isSignIn(): Boolean {
+        auth.currentUser?.let {
+            uid = it.uid
+            runBlocking {
+                launch(Dispatchers.IO) {
+                    accountId = dao.getActiveAccountKey() ?: DEFAULT_ACCOUNT
+                }
+            }
+            return true
+        }
+        return false
+    }
+
     suspend fun signIn(signInModel: SignInModel): Unit = safeCallWithoutAuth {
         with(signInModel) {
             auth.signInWithEmailAndPassword(email, password).await()
@@ -117,6 +137,21 @@ class FirebaseAPI {
             }
         }
 
+    suspend fun getTaxes() = safeCall {
+        refUsersUidAccountAidYear
+            .get()
+            .await()
+            .children
+            .mapNotNull { ds ->
+                ds.key?.let {
+                    TaxesAdapterModel(
+                        year = it,
+                        sum = ds.child(KEY_YEAR_SUM_TAXES).getValue(Double::class.java).toString()
+                    )
+                }
+            }
+    }
+
     suspend fun saveYearSum(saveYearSumModel: SaveYearSumModel) {
         safeCall {
             with(saveYearSumModel) {
@@ -174,7 +209,7 @@ class FirebaseAPI {
 
     private inline fun <T> safeCall(call: () -> T): T {
         return try {
-            auth.currentUser?.let { uid = it.uid } ?: throw UserErrorSessionExpire()
+            if (auth.currentUser == null) throw UserErrorSessionExpire()
             call()
         } catch (e: Exception) {
             throw e.getAppError()
@@ -191,8 +226,12 @@ class FirebaseAPI {
     companion object {
         const val PATH_USERS = "Users"
         const val PATH_ACCOUNTS = "accounts"
+        const val KEY_YEAR_SUM_TAXES = "sumTaxes"
+
         const val PATH_TRANSACTIONS = "transactions"
         const val PATH_SUM_TAXES = "sumTaxes"
         const val PATH_YEAR = "year"
+
+        const val DEFAULT_ACCOUNT = "DefaultAccount"
     }
 }

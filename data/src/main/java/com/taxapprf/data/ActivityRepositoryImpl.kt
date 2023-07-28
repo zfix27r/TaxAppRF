@@ -1,6 +1,6 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.local.dao.ActivityDao
+import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.domain.ActivityRepository
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class ActivityRepositoryImpl @Inject constructor(
     private val firebaseAPI: FirebaseAPI,
-    private val dao: ActivityDao
+    private val dao: AccountDao
 ) : ActivityRepository {
     override fun isSignIn() = firebaseAPI.isSignIn()
 
@@ -30,7 +30,7 @@ class ActivityRepositoryImpl @Inject constructor(
         emit(firebaseAPI.signOut())
     }
 
-    override fun getAccounts() = dao.getAccounts()
+    override fun getAccounts() = dao.getAccountsKey()
         .onEach {
             if (it.isEmpty()) {
                 runBlocking {

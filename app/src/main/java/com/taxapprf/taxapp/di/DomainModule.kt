@@ -2,6 +2,7 @@ package com.taxapprf.taxapp.di
 
 import com.taxapprf.data.ActivityRepositoryImpl
 import com.taxapprf.data.CentralBankRepositoryImpl
+import com.taxapprf.data.TaxesRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
@@ -10,6 +11,7 @@ import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SignUpUseCase
 import com.taxapprf.domain.account.SetActiveAccountUseCase
 import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
+import com.taxapprf.domain.taxes.GetTaxesUseCase
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.year.DeleteYearSumUseCase
 import com.taxapprf.domain.transaction.GetTransactionUseCase
@@ -38,7 +40,7 @@ object DomainModule {
         SignUpUseCase(repositoryImpl)
 
     @Provides
-    fun provideLogOutUseCase(repositoryImpl: ActivityRepositoryImpl) =
+    fun provideSignOutUseCase(repositoryImpl: ActivityRepositoryImpl) =
         SignOutUseCase(repositoryImpl)
 
     @Provides
@@ -48,27 +50,39 @@ object DomainModule {
     @Provides
     fun provideSetActiveAccountUseCase(repositoryImpl: ActivityRepositoryImpl) =
         SetActiveAccountUseCase(repositoryImpl)
+
     @Provides
     fun provideGetRateCentralBankUseCase(repositoryImpl: CentralBankRepositoryImpl) =
         GetRateCentralBankUseCase(repositoryImpl)
+
     @Provides
     fun provideGetTransactionUseCase(repositoryImpl: TransactionRepositoryImpl) =
         GetTransactionUseCase(repositoryImpl)
+
     @Provides
     fun provideGetTransactionsUseCase(repositoryImpl: TransactionRepositoryImpl) =
         GetTransactionsUseCase(repositoryImpl)
+
     @Provides
     fun provideSaveTransactionUseCase(repositoryImpl: TransactionRepositoryImpl) =
         SaveTransactionUseCase(repositoryImpl)
+
     @Provides
     fun provideDeleteTransactionUseCase(repositoryImpl: TransactionRepositoryImpl) =
         DeleteTransactionUseCase(repositoryImpl)
+
     @Provides
     fun provideGetYearSumUseCase(repositoryImpl: TransactionRepositoryImpl) =
         GetYearSumUseCase(repositoryImpl)
+
+    @Provides
+    fun provideGetTaxesUseCase(repositoryImpl: TaxesRepositoryImpl) =
+        GetTaxesUseCase(repositoryImpl)
+
     @Provides
     fun provideSaveYearSumUseCase(repositoryImpl: TransactionRepositoryImpl) =
         SaveYearSumUseCase(repositoryImpl)
+
     @Provides
     fun provideDeleteYearSumUseCase(repositoryImpl: TransactionRepositoryImpl) =
         DeleteYearSumUseCase(repositoryImpl)

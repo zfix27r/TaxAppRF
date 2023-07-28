@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.taxapprf.data.FirebaseAPI
 import com.taxapprf.data.local.AppDatabase
+import com.taxapprf.data.local.dao.AccountDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,7 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideActivityDao(db: AppDatabase) = db.activityDao()
+    fun provideActivityDao(db: AppDatabase) = db.accountDao()
 
     @Singleton
     @Provides
@@ -31,5 +32,5 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideFirebase() = FirebaseAPI()
+    fun provideFirebase(dao: AccountDao) = FirebaseAPI(dao)
 }
