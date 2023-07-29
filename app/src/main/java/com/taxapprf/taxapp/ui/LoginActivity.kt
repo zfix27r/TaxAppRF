@@ -9,23 +9,22 @@ import com.taxapprf.taxapp.databinding.ActivityLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LoginActivity : AppCompatActivity(R.layout.activity_login) {
+class LoginActivity : AppCompatActivity(R.layout.activity_login), Loading {
     val binding by viewBinding(ActivityLoginBinding::bind)
     val viewModel by viewModels<MainViewModel>()
-
-    fun onLoadingStart() {
+    override fun onLoadingStart() {
         binding.loading.isVisible = true
     }
 
-    fun onLoadingStop() {
+    override fun onLoadingStop() {
         binding.loading.isVisible = false
     }
 
-    fun onLoadingError(stringResId: Int) {
+    override fun onLoadingError(stringResId: Int) {
         onLoadingStop()
     }
 
-    fun onLoadingSuccess() {
+    override fun onLoadingSuccess() {
         onLoadingStop()
     }
 }

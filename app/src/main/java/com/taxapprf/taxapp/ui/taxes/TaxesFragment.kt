@@ -30,10 +30,12 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         binding.buttonTaxesAddTrans.setOnClickListener { navToTransactionNew() }
         binding.buttonTaxesLoading.setOnClickListener { navToSystemStorage() }
         binding.recyclerYearStatements.adapter = adapter
 
+        viewModel.attachToBaseFragment()
         viewModel.taxes.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }

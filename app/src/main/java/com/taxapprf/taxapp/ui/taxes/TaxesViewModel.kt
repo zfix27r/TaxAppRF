@@ -11,6 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +26,9 @@ class TaxesViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val taxes = getYearsUseCase.execute()
+        .onStart { loading() }
+        .catch { error(it) }
+        .onCompletion { success() }
         .asLiveData(viewModelScope.coroutineContext)
 
     fun saveTaxesFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {

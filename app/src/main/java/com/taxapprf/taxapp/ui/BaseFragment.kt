@@ -13,23 +13,23 @@ import com.taxapprf.data.error.UserErrorSessionExpire
 import com.taxapprf.taxapp.R
 
 open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
-    private val mainActivity by lazy { requireActivity() as LoginActivity }
+    private val loading by lazy { requireActivity() as Loading }
     private lateinit var baseViewModel: BaseViewModel
 
     protected fun BaseViewModel.attachToBaseFragment() {
         baseViewModel = this
         baseViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
-                is BaseState.Loading -> mainActivity.onLoadingStart()
+                is BaseState.Loading -> loading.onLoadingStart()
                 is BaseState.Error -> prepOnLoadingError(it.t)
-                is BaseState.Success -> mainActivity.onLoadingSuccess()
+                is BaseState.Success -> loading.onLoadingSuccess()
                 else -> {}
             }
         }
     }
 
     private fun prepOnLoadingError(t: Throwable) {
-        mainActivity.onLoadingStop()
+        loading.onLoadingStop()
 
         val stringResId = when (t) {
             is UserErrorSessionExpire -> R.string.auth_error_session_expire
@@ -47,7 +47,7 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
     }
 
     protected open fun onLoadingError(stringResId: Int) {
-        mainActivity.onLoadingError(stringResId)
+        loading.onLoadingError(stringResId)
     }
 
     protected fun popBackStack() {

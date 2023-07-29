@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.navigateUp
@@ -20,7 +21,7 @@ import com.taxapprf.taxapp.usersdata.Settings
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
     private val binding by viewBinding(ActivityMainBinding::bind)
     private val drawer by lazy { binding.drawerLayout }
     private val mAppBarConfiguration by lazy {
@@ -79,5 +80,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(this, R.id.nav_host_fragment_content_main)
         return (navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp())
+    }
+
+    override fun onLoadingStart() {
+        binding.appBarMain.content.loading.isVisible = true
+    }
+
+    override fun onLoadingStop() {
+        binding.appBarMain.content.loading.isVisible = false
+    }
+
+    override fun onLoadingError(stringResId: Int) {
+        onLoadingStop()
+    }
+
+    override fun onLoadingSuccess() {
+        onLoadingStop()
     }
 }
