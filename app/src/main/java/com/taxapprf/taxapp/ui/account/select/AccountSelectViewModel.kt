@@ -2,7 +2,7 @@ package com.taxapprf.taxapp.ui.account.select
 
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.GetAccountsNameUseCase
+import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.account.SetActiveAccountUseCase
 import com.taxapprf.taxapp.ui.BaseState
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountSelectViewModel @Inject constructor(
-    private val getAccountsNameUseCase: GetAccountsNameUseCase,
+    private val getAccountsNameUseCase: GetAccountsUseCase,
     private val setActiveAccountUseCase: SetActiveAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
 ) : BaseViewModel() {

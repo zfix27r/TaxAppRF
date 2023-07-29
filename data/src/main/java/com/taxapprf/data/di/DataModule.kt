@@ -52,6 +52,10 @@ object DataModule {
 
     @Singleton
     @Provides
+    fun provideUserDao(db: AppDatabase) = db.userDao()
+
+    @Singleton
+    @Provides
     fun provideActivityDao(db: AppDatabase) = db.accountDao()
 
     @Singleton

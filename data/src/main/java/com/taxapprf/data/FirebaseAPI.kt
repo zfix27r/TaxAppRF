@@ -6,12 +6,13 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
-import com.taxapprf.data.error.FirebaseErrorResponseDataIncorrect
+import com.taxapprf.data.error.FirebaseErrorUndefined
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.data.error.TransactionErrorNotGetNewKey
 import com.taxapprf.data.error.UserErrorSessionExpire
 import com.taxapprf.data.local.dao.AccountDao
+import com.taxapprf.data.local.entity.UserEntity
 import com.taxapprf.data.local.model.FirebaseAccountModel
 import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.taxes.TaxesAdapterModel
@@ -20,9 +21,6 @@ import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.year.SaveYearSumModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -34,7 +32,7 @@ class FirebaseAPI @Inject constructor(
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.reference
     private var uid = ""
-    private var accountId = ""
+    var accountId = ""
     private var year = ""
     private val refUsers
         get() = reference.child(PATH_USERS)
@@ -53,41 +51,46 @@ class FirebaseAPI @Inject constructor(
     private val refUsersUidAccountAidYearSum
         get() = refUsersUidAccountAidYear.child(PATH_SUM_TAXES)
 
-    fun isSignIn(): Boolean {
-        auth.currentUser?.let {
-            uid = it.uid
-            runBlocking {
-                launch(Dispatchers.IO) {
-                    accountId = dao.getActiveAccountKey() ?: DEFAULT_ACCOUNT
-                }
+    fun isSignIn() = auth.currentUser?.let { true } ?: run { false }
+
+    suspend fun signIn(signInModel: SignInModel) =
+        safeCallWithoutAuth {
+            with(signInModel) {
+                uid = auth
+                    .signInWithEmailAndPassword(email, password)
+                    .await()
+                    .user!!.uid
             }
-            return true
         }
-        return false
-    }
 
-    suspend fun signIn(signInModel: SignInModel): Unit = safeCallWithoutAuth {
-        with(signInModel) {
-            auth.signInWithEmailAndPassword(email, password).await()
-        }
-        return
-    }
-
-    suspend fun signUp(signUpModel: SignUpModel): Unit = safeCallWithoutAuth {
+    suspend fun signUp(signUpModel: SignUpModel): Boolean = safeCallWithoutAuth {
         with(signUpModel) {
-            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            authResult.user?.let {
-                refUsersUid.setValue(signUpModel).await()
-            }
+            auth
+                .createUserWithEmailAndPassword(email, password)
+                .await()
+                .user?.let {
+                    this@FirebaseAPI.uid = it.uid
+                    refUsersUid
+                        .setValue(signUpModel)
+                        .await()
+                    return true
+                }
         }
-        return
+        throw FirebaseErrorUndefined()
     }
-
 
     fun signOut(): Unit = safeCall {
         auth.signOut()
         return
     }
+
+    suspend fun getUserEntity(): UserEntity =
+        safeCall {
+            refUsersUid
+                .get()
+                .await()
+                .getUserEntity()
+        }
 
     suspend fun getAccounts() = safeCall {
         refUsersUidAccounts
@@ -96,7 +99,8 @@ class FirebaseAPI @Inject constructor(
             .children
             .mapNotNull { ds ->
                 println("@@" + ds)
-                ds.key?.let { FirebaseAccountModel(it) } }
+                ds.key?.let { FirebaseAccountModel(it) }
+            }
     }
 
     suspend fun getTransaction(transactionKey: String) =
@@ -254,6 +258,14 @@ class FirebaseAPI @Inject constructor(
         else -> this
     }
 
+    private fun DataSnapshot.getUserEntity() = UserEntity(
+        id = 0,
+        active = true,
+        name = getAsString(KEY_USER_NAME),
+        email = getAsString(KEY_USER_EMAIL),
+        phone = getAsString(KEY_USER_PHONE),
+    )
+
     private fun DataSnapshot.getTransactionModel() = TransactionModel(
         key = getAsString(KEY_TRANSACTION_KEY),
         type = getAsString(KEY_TRANSACTION_TYPE),
@@ -267,15 +279,19 @@ class FirebaseAPI @Inject constructor(
 
     private fun DataSnapshot.getAsString(path: String) =
         child(path).getValue(String::class.java)
-            ?: throw FirebaseErrorResponseDataIncorrect()
+            ?: throw FirebaseErrorUndefined()
 
     private fun DataSnapshot.getAsDouble(path: String) =
         child(path).getValue(Double::class.java)
-            ?: throw FirebaseErrorResponseDataIncorrect()
+            ?: throw FirebaseErrorUndefined()
 
 
     companion object {
         const val PATH_USERS = "Users"
+        const val KEY_USER_NAME = "name"
+        const val KEY_USER_EMAIL = "email"
+        const val KEY_USER_PHONE = "phone"
+
         const val PATH_ACCOUNTS = "accounts"
         const val KEY_YEAR_SUM_TAXES = "sumTaxes"
 

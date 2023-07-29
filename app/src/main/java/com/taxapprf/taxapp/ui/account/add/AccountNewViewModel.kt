@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.account.new
+package com.taxapprf.taxapp.ui.account.add
 
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.error.InputErrorEmailEmpty

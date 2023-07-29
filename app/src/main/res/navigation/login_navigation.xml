@@ -19,6 +19,9 @@
             app:destination="@id/sign_up"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_sign_to_account_new"
+            app:destination="@id/account_new" />
     </fragment>
 
     <fragment
@@ -56,7 +59,7 @@
 
     <fragment
         android:id="@+id/account_new"
-        android:name="com.taxapprf.taxapp.ui.account.new.AccountNewFragment"
+        android:name="com.taxapprf.taxapp.ui.account.add.AccountNewFragment"
         tools:layout="@layout/fragment_account_new" />
 
     <fragment

@@ -4,7 +4,7 @@ import com.taxapprf.domain.ActivityRepository
 import javax.inject.Inject
 
 
-class GetAccountsNameUseCase @Inject constructor(
+class GetAccountsUseCase @Inject constructor(
     private val repository: ActivityRepository
 ) {
     fun execute() = repository.getAccounts()

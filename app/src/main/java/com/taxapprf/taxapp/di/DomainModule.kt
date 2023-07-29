@@ -5,7 +5,7 @@ import com.taxapprf.data.TaxesRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
-import com.taxapprf.domain.account.GetAccountsNameUseCase
+import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SignUpUseCase
 import com.taxapprf.domain.account.SetActiveAccountUseCase
@@ -45,7 +45,7 @@ object DomainModule {
 
     @Provides
     fun provideGetAccountsNameUseCase(repositoryImpl: ActivityRepositoryImpl) =
-        GetAccountsNameUseCase(repositoryImpl)
+        GetAccountsUseCase(repositoryImpl)
 
     @Provides
     fun provideSetActiveAccountUseCase(repositoryImpl: ActivityRepositoryImpl) =
