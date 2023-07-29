@@ -3,91 +3,68 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_navigation"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/sign">
 
     <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.taxapprf.taxapp.ui.login.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        android:id="@+id/sign"
+        android:name="com.taxapprf.taxapp.ui.sign.SignFragment"
+        tools:layout="@layout/fragment_sign">
         <action
-            android:id="@+id/action_loginFragment_to_signInFragment"
-            app:destination="@id/signInFragment"
+            android:id="@+id/action_sign_to_sign_in"
+            app:destination="@id/sign_in"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_loginFragment_to_registerFragment"
-            app:destination="@id/registerFragment"
+            android:id="@+id/action_sign_to_sign_up"
+            app:destination="@id/sign_up"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_loginFragment_to_selectAccountFragment"
-            app:destination="@id/selectAccountFragment"
+            android:id="@+id/action_sign_to_account_new"
+            app:destination="@id/account_new" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/sign_in"
+        android:name="com.taxapprf.taxapp.ui.sign.in.SignInFragment"
+        tools:layout="@layout/fragment_sign_in">
+        <action
+            android:id="@+id/action_sign_in_to_select_account"
+            app:destination="@id/account_select"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
+
     <fragment
-        android:id="@+id/signInFragment"
-        android:name="com.taxapprf.taxapp.ui.signin.SignInFragment"
-        android:label="fragment_sign_in"
-        tools:layout="@layout/fragment_sign_in" >
+        android:id="@+id/sign_up"
+        android:name="com.taxapprf.taxapp.ui.sign.up.SignUpFragment"
+        tools:layout="@layout/fragment_sign_up">
         <action
-            android:id="@+id/action_signInFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
-        <action
-            android:id="@+id/action_signInFragment_to_selectAccountFragment"
-            app:destination="@id/selectAccountFragment"
+            android:id="@+id/action_sign_up_to_account_first"
+            app:destination="@id/account_first"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
+
     <fragment
-        android:id="@+id/registerFragment"
-        android:name="com.taxapprf.taxapp.ui.register.RegisterFragment"
-        android:label="fragment_register"
-        tools:layout="@layout/fragment_register" >
+        android:id="@+id/account_select"
+        android:name="com.taxapprf.taxapp.ui.account.select.AccountSelectFragment"
+        tools:layout="@layout/fragment_account_select">
         <action
-            android:id="@+id/action_registerFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
-        <action
-            android:id="@+id/action_registerFragment_to_firstAccountFragment"
-            app:destination="@id/firstAccountFragment"
+            android:id="@+id/action_account_select_to_account_new"
+            app:destination="@id/account_new"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
     </fragment>
+
     <fragment
-        android:id="@+id/selectAccountFragment"
-        android:name="com.taxapprf.taxapp.ui.select.account.SelectAccountFragment"
-        android:label="fragment_select_account"
-        tools:layout="@layout/fragment_select_account" >
-        <action
-            android:id="@+id/action_selectAccountFragment_to_newAccountFragment"
-            app:destination="@id/newAccountFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
-        <action
-            android:id="@+id/action_selectAccountFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
-    </fragment>
+        android:id="@+id/account_new"
+        android:name="com.taxapprf.taxapp.ui.account.add.AccountNewFragment"
+        tools:layout="@layout/fragment_account_new" />
+
     <fragment
-        android:id="@+id/newAccountFragment"
-        android:name="com.taxapprf.taxapp.ui.newaccount.NewAccountFragment"
-        android:label="fragment_new_account"
-        tools:layout="@layout/fragment_new_account" >
-        <action
-            android:id="@+id/action_newAccountFragment_to_selectAccountFragment"
-            app:destination="@id/selectAccountFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
-    </fragment>
-    <fragment
-        android:id="@+id/firstAccountFragment"
-        android:name="com.taxapprf.taxapp.ui.first.account.FirstAccountFragment"
-        android:label="fragment_first_account"
-        tools:layout="@layout/fragment_first_account" />
+        android:id="@+id/account_first"
+        android:name="com.taxapprf.taxapp.ui.account.first.AccountFirstFragment"
+        tools:layout="@layout/fragment_account_first" />
+
 </navigation>

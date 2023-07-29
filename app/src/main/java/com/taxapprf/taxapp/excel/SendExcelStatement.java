@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;

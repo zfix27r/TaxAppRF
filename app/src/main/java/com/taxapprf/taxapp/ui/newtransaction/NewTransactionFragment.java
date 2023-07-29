@@ -1,8 +1,8 @@
+/*
 package com.taxapprf.taxapp.ui.newtransaction;
 
 import android.app.DatePickerDialog;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,12 +22,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
 import com.taxapprf.taxapp.databinding.FragmentNewTransactionBinding;
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -197,4 +196,4 @@ public class NewTransactionFragment extends Fragment {
         date.setText(dateStr);
     }
 
-}
+}*/

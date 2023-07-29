@@ -1,7 +1,5 @@
 package com.taxapprf.taxapp.firebase;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -13,7 +11,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

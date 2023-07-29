@@ -3,9 +3,7 @@ package com.taxapprf.taxapp.excel;
 import android.os.Environment;
 import android.util.Log;
 
-import androidx.lifecycle.MutableLiveData;
-
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;

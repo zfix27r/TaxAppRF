@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
 public class TaxesFragment extends Fragment {
     private FragmentTaxesBinding binding;
     private TaxesViewModel viewModel;
@@ -132,3 +133,4 @@ public class TaxesFragment extends Fragment {
 
 }
 
+*/

@@ -1,3 +1,4 @@
+/*
 package com.taxapprf.taxapp.ui.newtransaction;
 
 import android.app.Application;
@@ -14,7 +15,7 @@ import com.taxapprf.taxapp.firebase.UserLivaData;
 import com.taxapprf.taxapp.retrofit2.Controller;
 import com.taxapprf.taxapp.retrofit2.Currencies;
 import com.taxapprf.taxapp.usersdata.Settings;
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -115,3 +116,4 @@ public class NewTransactionViewModel extends AndroidViewModel {
         return message;
     }
 }
+*/

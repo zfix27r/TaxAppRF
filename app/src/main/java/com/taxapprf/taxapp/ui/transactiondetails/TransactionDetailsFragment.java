@@ -5,17 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavOptions;
-import androidx.navigation.Navigation;
-
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +17,22 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.taxapprf.domain.Transaction;
 import com.taxapprf.taxapp.R;
-import com.taxapprf.taxapp.databinding.FragmentTransactionDetailsBinding;
+import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding;
 import com.taxapprf.taxapp.ui.VerificationDialog;
 import com.taxapprf.taxapp.ui.newtransaction.DateCheck;
 import com.taxapprf.taxapp.ui.newtransaction.DoubleCheck;
 import com.taxapprf.taxapp.usersdata.Settings;
-import com.taxapprf.taxapp.usersdata.Transaction;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,7 +40,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class TransactionDetailsFragment extends Fragment {
-    private FragmentTransactionDetailsBinding binding;
+    private FragmentTransactionDetailBinding binding;
     private TransactionDetailsViewModel viewModel;
     private Calendar dateAndTime;
     private EditText date;
@@ -63,7 +59,7 @@ public class TransactionDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(TransactionDetailsViewModel.class);
-        binding = FragmentTransactionDetailsBinding.inflate(inflater, container, false);
+        binding = FragmentTransactionDetailBinding.inflate(inflater, container, false);
         View viewRoot = binding.getRoot();
         SharedPreferences settings = getContext().getSharedPreferences(Settings.SETTINGSFILE.name(), Context.MODE_PRIVATE);
 
@@ -86,8 +82,8 @@ public class TransactionDetailsFragment extends Fragment {
         date.setText(oldDate);
         sum.setText(oldSum.toString());
 
-        final String[] arrayTypeTrans = getResources().getStringArray(R.array.type_transaction);
-        final String[] arrayCurrencies = getResources().getStringArray(R.array.currencies);
+        final String[] arrayTypeTrans = getResources().getStringArray(R.array.transaction_types);
+        final String[] arrayCurrencies = getResources().getStringArray(R.array.transaction_currencies);
 
         final ArrayAdapter<String> currenciesArrayAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, arrayCurrencies);
         currenciesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -1,3 +1,4 @@
+/*
 package com.taxapprf.taxapp.ui.transactions;
 
 import android.app.Application;
@@ -15,7 +16,7 @@ import com.taxapprf.taxapp.firebase.FirebaseYearStatements;
 import com.taxapprf.taxapp.firebase.FirebaseYearSum;
 import com.taxapprf.taxapp.firebase.UserLivaData;
 import com.taxapprf.taxapp.usersdata.Settings;
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 import com.taxapprf.taxapp.usersdata.YearStatement;
 
 import java.io.File;
@@ -146,3 +147,4 @@ public class  TransactionsViewModel extends AndroidViewModel {
         return sumTaxes;
     }
 }
+*/

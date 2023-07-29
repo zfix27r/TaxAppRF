@@ -1,7 +1,7 @@
+/*
 package com.taxapprf.taxapp.ui.transactions;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.taxapprf.taxapp.R;
@@ -33,7 +32,7 @@ import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding;
 import com.taxapprf.taxapp.excel.CreateExcelInLocal;
 import com.taxapprf.taxapp.ui.VerificationDialog;
 import com.taxapprf.taxapp.usersdata.Settings;
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -194,4 +193,4 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-}
+}*/

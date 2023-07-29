@@ -3,7 +3,6 @@ package com.taxapprf.taxapp.ui.transactiondetails;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -17,7 +16,7 @@ import com.taxapprf.taxapp.firebase.UserLivaData;
 import com.taxapprf.taxapp.retrofit2.Controller;
 import com.taxapprf.taxapp.retrofit2.Currencies;
 import com.taxapprf.taxapp.usersdata.Settings;
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 import com.taxapprf.taxapp.usersdata.YearStatement;
 
 import java.math.BigDecimal;

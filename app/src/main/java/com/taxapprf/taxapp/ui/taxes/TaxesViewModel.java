@@ -1,3 +1,4 @@
+/*
 package com.taxapprf.taxapp.ui.taxes;
 
 import android.app.Application;
@@ -8,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.taxapprf.taxapp.excel.ParseExcel;
+import com.taxapprf.data.local.excel.ParseExcel;
 import com.taxapprf.taxapp.firebase.FirebaseTransactions;
 import com.taxapprf.taxapp.firebase.FirebaseYearStatements;
 import com.taxapprf.taxapp.firebase.UserLivaData;
@@ -16,7 +17,7 @@ import com.taxapprf.taxapp.retrofit2.Controller;
 import com.taxapprf.taxapp.retrofit2.Currencies;
 import com.taxapprf.taxapp.ui.newtransaction.DateCheck;
 import com.taxapprf.taxapp.usersdata.Settings;
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 import com.taxapprf.taxapp.usersdata.YearStatement;
 
 import java.io.IOException;
@@ -163,3 +164,4 @@ public class TaxesViewModel extends AndroidViewModel {
     }
 }
 
+*/

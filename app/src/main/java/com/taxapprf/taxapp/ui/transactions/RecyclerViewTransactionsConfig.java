@@ -1,12 +1,11 @@
 package com.taxapprf.taxapp.ui.transactions;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.taxapprf.taxapp.usersdata.Transaction;
+import com.taxapprf.domain.Transaction;
 
 import java.util.List;
 
