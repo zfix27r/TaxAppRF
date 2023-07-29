@@ -1,3 +1,4 @@
+/*
 package com.taxapprf.taxapp.ui.newtransaction;
 
 import android.app.Application;
@@ -115,3 +116,4 @@ public class NewTransactionViewModel extends AndroidViewModel {
         return message;
     }
 }
+*/

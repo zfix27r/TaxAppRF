@@ -51,7 +51,7 @@ public class CurrencyConverterFragment extends Fragment {
         View viewRoot = binding.getRoot();
 
         Spinner currencies = binding.spinnerConverter;
-        final String[] arrayCurrencies = getResources().getStringArray(R.array.currencies);
+        final String[] arrayCurrencies = getResources().getStringArray(R.array.transaction_currencies);
         ArrayAdapter<String> currenciesArrayAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, arrayCurrencies);
         currenciesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         currencies.setAdapter(currenciesArrayAdapter);

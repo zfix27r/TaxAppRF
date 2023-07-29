@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="currencies">
+    <string-array name="transaction_currencies">
         <item>AUD</item>
         <item>AZN</item>
         <item>AMD</item>
@@ -11,7 +11,7 @@
         <item>KRW</item>
         <item>HKD</item>
         <item>DKK</item>
-        <item>USD</item>
+        <item>@string/transaction_currency_usd</item>
         <item>EUR</item>
         <item>INR</item>
         <item>KZT</item>
@@ -36,4 +36,5 @@
         <item>ZAR</item>
         <item>JPY</item>
     </string-array>
+    <string name="transaction_currency_usd">USD</string>
 </resources>

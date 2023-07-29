@@ -70,7 +70,7 @@
 
     <fragment
         android:id="@+id/transaction_new"
-        android:name="com.taxapprf.taxapp.ui.newtransaction.NewTransactionFragment"
+        android:name="com.taxapprf.taxapp.ui.transaction.edit.TransactionEditorFragment"
         android:label="@string/menuNewTransaction"
         tools:layout="@layout/fragment_new_transaction">
         <action
@@ -86,7 +86,7 @@
         android:id="@+id/transaction_detail"
         android:name="com.taxapprf.taxapp.ui.transactiondetails.TransactionDetailsFragment"
         android:label="@string/menuTransactionDetail"
-        tools:layout="@layout/fragment_transaction_details">
+        tools:layout="@layout/fragment_transaction_detail">
         <action
             android:id="@+id/action_transactionDetailsFragment_to_taxesFragment"
             app:destination="@id/taxes"

@@ -1,3 +1,4 @@
+/*
 package com.taxapprf.taxapp.ui.newtransaction;
 
 import android.app.DatePickerDialog;
@@ -195,4 +196,4 @@ public class NewTransactionFragment extends Fragment {
         date.setText(dateStr);
     }
 
-}
+}*/

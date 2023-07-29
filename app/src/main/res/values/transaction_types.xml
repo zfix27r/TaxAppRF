@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="transaction_types">
+        <item>@string/transaction_type_trade</item>
+        <item>COMMISSION</item>
+        <item>FUNDING/WITHDRAWAL</item>
+    </string-array>
+    <string name="transaction_type_trade">TRADE</string>
+</resources>

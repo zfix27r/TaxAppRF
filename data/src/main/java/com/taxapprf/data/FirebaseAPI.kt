@@ -99,17 +99,15 @@ class FirebaseAPI @Inject constructor(
                 ds.key?.let { FirebaseAccountModel(it) } }
     }
 
-    suspend fun getTransaction(request: FirebaseRequestModel) =
+    suspend fun getTransaction(transactionKey: String) =
         safeCall {
-            with(request) {
-                refUsersUidAccountAidYearTransactions
-                    .child(key)
-                    .get()
-                    .await()
-                    .getValue(TransactionModel::class.java)!! // TODO доделать перехват ошибки
+            refUsersUidAccountAidYearTransactions
+                .child(transactionKey)
+                .get()
+                .await()
+                .getValue(TransactionModel::class.java)!! // TODO доделать перехват ошибки
 
-                // TODO здесь так же было сохранение суммы
-            }
+            // TODO здесь так же было сохранение суммы
         }
 
     suspend fun getTransactions(year: String) =
