@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
+import com.taxapprf.data.error.FirebaseErrorResponseDataIncorrect
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.data.error.TransactionErrorNotGetNewKey
@@ -13,9 +14,8 @@ import com.taxapprf.data.error.UserErrorSessionExpire
 import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.model.FirebaseAccountModel
 import com.taxapprf.domain.FirebaseRequestModel
-import com.taxapprf.domain.Transaction
 import com.taxapprf.domain.taxes.TaxesAdapterModel
-import com.taxapprf.domain.transaction.GetTransactionModel
+import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
@@ -40,12 +40,14 @@ class FirebaseAPI @Inject constructor(
         get() = reference.child(PATH_USERS)
     private val refUsersUid
         get() = refUsers.child(uid)
-    private val refUsersUidAccount
+    private val refUsersUidAccounts
         get() = refUsersUid.child(PATH_ACCOUNTS)
-    private val refUsersUidAccountAid
-        get() = refUsersUidAccount.child(accountId)
+    private val refUsersUidAccountsAid
+        get() = refUsersUidAccounts.child(accountId)
     private val refUsersUidAccountAidYear
-        get() = refUsersUidAccountAid.child(year)
+        get() = refUsersUidAccountsAid.child(year)
+    private val refUsersUidAccountAidYearYId
+        get() = refUsersUidAccountAidYear.child(PATH_YEAR)
     private val refUsersUidAccountAidYearTransactions
         get() = refUsersUidAccountAidYear.child(PATH_TRANSACTIONS)
     private val refUsersUidAccountAidYearSum
@@ -88,11 +90,13 @@ class FirebaseAPI @Inject constructor(
     }
 
     suspend fun getAccounts() = safeCall {
-        refUsersUidAccount
+        refUsersUidAccounts
             .get()
             .await()
             .children
-            .mapNotNull { ds -> ds.key?.let { FirebaseAccountModel(it) } }
+            .mapNotNull { ds ->
+                println("@@" + ds)
+                ds.key?.let { FirebaseAccountModel(it) } }
     }
 
     suspend fun getTransaction(request: FirebaseRequestModel) =
@@ -102,10 +106,20 @@ class FirebaseAPI @Inject constructor(
                     .child(key)
                     .get()
                     .await()
-                    .getValue(GetTransactionModel::class.java)!! // TODO доделать перехват ошибки
+                    .getValue(TransactionModel::class.java)!! // TODO доделать перехват ошибки
 
                 // TODO здесь так же было сохранение суммы
             }
+        }
+
+    suspend fun getTransactions(year: String) =
+        safeCall {
+            this.year = year
+            refUsersUidAccountAidYearTransactions
+                .get()
+                .await()
+                .children
+                .mapNotNull { it.getTransactionModel() }
         }
 
     suspend fun saveTransaction(transaction: SaveTransactionModel) =
@@ -157,7 +171,7 @@ class FirebaseAPI @Inject constructor(
     }
 
     suspend fun getTaxes() = safeCall {
-        refUsersUidAccountAidYear
+        refUsersUidAccounts
             .get()
             .await()
             .children
@@ -242,14 +256,45 @@ class FirebaseAPI @Inject constructor(
         else -> this
     }
 
+    private fun DataSnapshot.getTransactionModel() = TransactionModel(
+        key = getAsString(KEY_TRANSACTION_KEY),
+        type = getAsString(KEY_TRANSACTION_TYPE),
+        id = getAsString(KEY_TRANSACTION_ID),
+        date = getAsString(KEY_TRANSACTION_DATE),
+        currency = getAsString(KEY_TRANSACTION_CURRENCY),
+        rateCentralBank = getAsDouble(KEY_TRANSACTION_RATE_CENTRAL_BANK),
+        sum = getAsDouble(KEY_TRANSACTION_SUM),
+        sumRub = getAsDouble(KEY_TRANSACTION_SUM_RUB),
+    )
+
+    private fun DataSnapshot.getAsString(path: String) =
+        child(path).getValue(String::class.java)
+            ?: throw FirebaseErrorResponseDataIncorrect()
+
+    private fun DataSnapshot.getAsDouble(path: String) =
+        child(path).getValue(Double::class.java)
+            ?: throw FirebaseErrorResponseDataIncorrect()
+
+
     companion object {
         const val PATH_USERS = "Users"
         const val PATH_ACCOUNTS = "accounts"
         const val KEY_YEAR_SUM_TAXES = "sumTaxes"
 
-        const val PATH_TRANSACTIONS = "transactions"
+
         const val PATH_SUM_TAXES = "sumTaxes"
         const val PATH_YEAR = "year"
+
+        const val PATH_TRANSACTIONS = "transactions"
+        const val KEY_TRANSACTION_KEY = "key"
+        const val KEY_TRANSACTION_TYPE = "type"
+        const val KEY_TRANSACTION_ID = "id"
+        const val KEY_TRANSACTION_SUM = "sum"
+        const val KEY_TRANSACTION_CURRENCY = "currency"
+        const val KEY_TRANSACTION_RATE_CENTRAL_BANK = "rateCentralBank"
+        const val KEY_TRANSACTION_SUM_RUB = "sumRub"
+        const val KEY_TRANSACTION_DATE = "date"
+
 
         const val DEFAULT_ACCOUNT = "DefaultAccount"
     }

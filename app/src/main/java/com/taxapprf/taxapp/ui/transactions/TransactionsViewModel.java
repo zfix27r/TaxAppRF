@@ -1,3 +1,4 @@
+/*
 package com.taxapprf.taxapp.ui.transactions;
 
 import android.app.Application;
@@ -146,3 +147,4 @@ public class  TransactionsViewModel extends AndroidViewModel {
         return sumTaxes;
     }
 }
+*/

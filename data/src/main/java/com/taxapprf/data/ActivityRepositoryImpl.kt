@@ -1,6 +1,7 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.local.dao.AccountDao
+import com.taxapprf.data.local.model.FirebaseAccountModel
 import com.taxapprf.domain.ActivityRepository
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
@@ -30,16 +31,20 @@ class ActivityRepositoryImpl @Inject constructor(
         emit(firebaseAPI.signOut())
     }
 
-    override fun getAccounts() = dao.getAccountsKey()
-        .onEach {
-            if (it.isEmpty()) {
-                runBlocking {
-                    launch(Dispatchers.IO) {
-                        dao.save(firebaseAPI.getAccounts())
+    override fun getAccounts() = flow<List<String>> {
+        firebaseAPI.getAccounts()
+    }
+
+    /*        dao.getAccountsKey()
+            .onEach {
+                if (it.isEmpty()) {
+                    runBlocking {
+                        launch(Dispatchers.IO) {
+                            dao.save(firebaseAPI.getAccounts())
+                        }
                     }
                 }
-            }
-        }
+            }*/
 
     override fun setActiveAccount(accountName: String) = flow {
         val request = dao.save(accountName)

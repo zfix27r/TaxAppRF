@@ -1,13 +1,8 @@
 package com.taxapprf.taxapp.ui.taxes
 
-import android.Manifest
-import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -16,8 +11,8 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTaxesBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
+import com.taxapprf.taxapp.ui.transactions.TransactionsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.IOException
 
 
 @AndroidEntryPoint
@@ -27,11 +22,7 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
     private val adapter = TaxesAdapter {
         object : TaxesAdapterCallback {
             override fun onClick(year: String) {
-                /*editor.putString(Settings.YEAR.name, year!!.text.toString())
-                editor.apply()
-                editor.putString(Settings.TAXSUM.name, yearSum!!.text.toString())
-                editor.apply()
-                findNavController(v).navigate(R.id.action_taxesFragment_to_transactionsFragment)*/
+                navToTransactions(year)
             }
         }
     }
@@ -52,17 +43,6 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
         when (requestCode) {
             PICK_FILE_RESULT_CODE -> {
                 viewModel.saveTaxesFromExcel(data)
-                try {
-                    if (resultCode == Activity.RESULT_OK) {
-                        val filePath = data!!.data!!.path
-                    }
-                } catch (e: IOException) {
-                    /*                    Snackbar.make(
-                                            getView(),
-                                            "Не удалось конвертипровать файл",
-                                            Snackbar.LENGTH_SHORT
-                                        ).show()*/
-                }
             }
         }
     }
@@ -76,7 +56,8 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
     }
 
     private fun navToTransactions(year: String) {
-        findNavController().navigate(R.id.action_taxesFragment_to_transactionsFragment)
+        val bundle = bundleOf(TransactionsViewModel.YEAR to year)
+        findNavController().navigate(R.id.action_taxesFragment_to_transactionsFragment, bundle)
     }
 
     private fun navToTransactionNew() {

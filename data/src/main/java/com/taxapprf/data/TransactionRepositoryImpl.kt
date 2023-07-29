@@ -1,11 +1,11 @@
 package com.taxapprf.data
 
+import com.taxapprf.data.error.InitErrorBundleIsEmpty
 import com.taxapprf.domain.FirebaseRequestModel
-import com.taxapprf.domain.transaction.GetTransactionModel
-import com.taxapprf.domain.transaction.SaveTransactionModel
-import com.taxapprf.domain.year.SaveYearSumModel
 import com.taxapprf.domain.TransactionRepository
-import kotlinx.coroutines.flow.Flow
+import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.year.SaveYearSumModel
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -16,8 +16,9 @@ class TransactionRepositoryImpl @Inject constructor(
         emit(firebase.getTransaction(requestModel))
     }
 
-    override fun getTransactionModels(requestModel: FirebaseRequestModel): Flow<List<GetTransactionModel>> {
-        TODO("Not yet implemented")
+    override fun getTransactionModels(year: String) = flow {
+        if (year.isEmpty()) throw InitErrorBundleIsEmpty()
+        emit(firebase.getTransactions(year))
     }
 
     override fun saveTransactionModel(saveTransactionModel: SaveTransactionModel) = flow {

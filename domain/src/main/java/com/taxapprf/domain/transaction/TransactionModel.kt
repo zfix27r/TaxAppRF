@@ -3,23 +3,23 @@ package com.taxapprf.domain.transaction
 import java.text.ParseException
 import java.text.SimpleDateFormat
 
-data class GetTransactionModel(
-    val id: String,
+data class TransactionModel(
     val key: String,
     val type: String,
+    val id: String,
     val date: String,
     val currency: String,
     val rateCentralBank: Double,
     val sum: Double,
     val sumRub: Double
-) : Comparable<GetTransactionModel> {
+) {
 
 
 /*    override fun toString(): String {
         return getType() + getId() + getSum().toString() + getCurrency() + getRateCentralBank().toString() + getSumRub().toString()
     }*/
 
-    override operator fun compareTo(o: GetTransactionModel): Int {
+/*    override operator fun compareTo(o: TransactionModel): Int {
         val formatter = SimpleDateFormat("dd/MM/yyyy")
         val date1Str: String = this.date
         val date2Str = o.date
@@ -35,5 +35,5 @@ data class GetTransactionModel(
             e.printStackTrace()
         }
         return 0
-    }
+    }*/
 }

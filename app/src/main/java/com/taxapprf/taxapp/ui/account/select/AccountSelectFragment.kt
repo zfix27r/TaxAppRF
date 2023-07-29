@@ -26,7 +26,6 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
             android.R.layout.simple_spinner_item
         )
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

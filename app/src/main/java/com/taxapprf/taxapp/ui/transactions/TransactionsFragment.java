@@ -1,3 +1,4 @@
+/*
 package com.taxapprf.taxapp.ui.transactions;
 
 import android.Manifest;
@@ -192,4 +193,4 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-}
+}*/

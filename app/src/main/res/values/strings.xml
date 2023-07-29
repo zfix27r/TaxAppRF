@@ -85,6 +85,8 @@
     <string name="textTaxesTax">Сумма налога</string>
     <string name="buttonTaxesAddTransaction">Добавить сделку</string>
     <string name="buttonTaxesLoadingStatement">Загрузить отчет</string>
+    <string name="taxes_error_parse_report_from_excel">Не удалось конвертипровать файл</string>
+
 
     <!-- TransactionsFragment-->
     <string name="buttonTransAdd">Добавить сделку</string>
