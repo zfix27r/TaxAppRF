@@ -5,18 +5,11 @@ import com.taxapprf.data.error.FirebaseErrorUndefined
 import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.dao.UserDao
 import com.taxapprf.data.local.entity.UserEntity
-import com.taxapprf.data.local.model.FirebaseAccountModel
 import com.taxapprf.domain.ActivityRepository
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
-import com.taxapprf.domain.user.UserModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
-
 
 class ActivityRepositoryImpl @Inject constructor(
     private val firebaseAPI: FirebaseAPI,
@@ -27,8 +20,8 @@ class ActivityRepositoryImpl @Inject constructor(
 
     override fun signIn(signInModel: SignInModel) = flow {
         firebaseAPI.signIn(signInModel)
-        dao.getActiveAccountKey()
-            ?.let { firebaseAPI.accountId = it }
+        dao.getActiveAccount()
+            ?.let { firebaseAPI.accountKey = it }
             ?: run { userDao.save(firebaseAPI.getUserEntity()) }
         emit(Unit)
     }
@@ -48,6 +41,20 @@ class ActivityRepositoryImpl @Inject constructor(
 
     override fun getAccounts() = flow<List<String>> {
         firebaseAPI.getAccounts().ifEmpty { throw AuthErrorAccountEmpty() }
+    }
+
+    override fun saveAccount(accountName: String?) = flow {
+        accountName?.let { name ->
+            dao.getAccount(name)?.let {
+                firebaseAPI.accountKey = it
+            }
+        }
+        TODO("дописать логику")
+
+        dao.getActiveAccount()?.let {
+            firebaseAPI.saveAccount(accountName)
+        }
+
     }
 
     /*        dao.getAccountsKey()

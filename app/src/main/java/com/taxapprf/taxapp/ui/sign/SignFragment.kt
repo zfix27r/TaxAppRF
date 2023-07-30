@@ -24,10 +24,9 @@ class SignFragment : BaseFragment(R.layout.fragment_sign) {
         binding.buttonLoginSignIn.setOnClickListener { navToSignIn() }
         binding.buttonLoginRegister.setOnClickListener { navToSignUp() }
 
-        navToAccountNew()
-/*        if (activityViewModel.isSignIn)
-            if (activityViewModel.isAccountEmpty) navToAccountNew()
-            else navToMainActivity()*/
+        if (activityViewModel.isSignIn)
+            if (activityViewModel.isAccountEmpty) navToAccountFirst()
+            else navToMainActivity()
     }
 
     private fun navToSignIn() {
@@ -38,8 +37,8 @@ class SignFragment : BaseFragment(R.layout.fragment_sign) {
         findNavController().navigate(R.id.action_sign_to_sign_up)
     }
 
-    private fun navToAccountNew() {
-        findNavController().navigate(R.id.action_sign_to_account_new)
+    private fun navToAccountFirst() {
+        findNavController().navigate(R.id.action_sign_to_account_first)
     }
 
     private fun navToMainActivity() {

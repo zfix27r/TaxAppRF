@@ -11,10 +11,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AccountDao {
     @Query("SELECT id FROM account WHERE active = 1 LIMIT 1")
-    fun getActiveAccountKey(): String?
+    fun getActiveAccount(): String?
+
+    @Query("SELECT firebase_key FROM account WHERE firebase_key = :accountName LIMIT 1")
+    fun getAccount(accountName: String): String?
 
     @Query("SELECT id FROM account")
-    fun getAccountsKey(): Flow<List<String>>
+    fun getAccounts(): Flow<List<String>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = AccountEntity::class)
     fun save(accounts: List<FirebaseAccountModel>): List<Long>

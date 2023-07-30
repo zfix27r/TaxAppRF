@@ -12,16 +12,15 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class AccountFirstViewModel @Inject constructor(
     private val setActiveAccountUseCase: SetActiveAccountUseCase,
 ) : BaseViewModel() {
-    fun save(account: String = "") {
-        if (account.isErrorInputAccountChecker()) return
+    fun save(accountName: String = "") {
+        if (accountName.isErrorInputAccountChecker()) return
 
         viewModelScope.launch(Dispatchers.IO) {
-            setActiveAccountUseCase.execute(account)
+            setActiveAccountUseCase.execute(accountName)
                 .onStart { loading() }
                 .catch { error(it) }
                 .collectLatest { success() }

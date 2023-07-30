@@ -9,7 +9,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.taxapprf.data.error.FirebaseErrorUndefined
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
-import com.taxapprf.data.error.TransactionErrorNotGetNewKey
+import com.taxapprf.data.error.FirebaseErrorKeyIsEmpty
 import com.taxapprf.data.error.UserErrorSessionExpire
 import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.entity.UserEntity
@@ -32,7 +32,7 @@ class FirebaseAPI @Inject constructor(
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.reference
     private var uid = ""
-    var accountId = ""
+    var accountKey = ""
     private var year = ""
     private val refUsers
         get() = reference.child(PATH_USERS)
@@ -41,7 +41,7 @@ class FirebaseAPI @Inject constructor(
     private val refUsersUidAccounts
         get() = refUsersUid.child(PATH_ACCOUNTS)
     private val refUsersUidAccountsAid
-        get() = refUsersUidAccounts.child(accountId)
+        get() = refUsersUidAccounts.child(accountKey)
     private val refUsersUidAccountAidYear
         get() = refUsersUidAccountsAid.child(year)
     private val refUsersUidAccountAidYearYId
@@ -102,6 +102,16 @@ class FirebaseAPI @Inject constructor(
                 ds.key?.let { FirebaseAccountModel(it) }
             }
     }
+
+    suspend fun saveAccount(accountName: String?) =
+        safeCall {
+            refUsersUidAccounts.push().key?.let {
+                accountKey = it
+                refUsersUidAccountsAid
+                    .setValue(accountName ?: DEFAULT_ACCOUNT)
+                    .await()
+            } ?: run { throw FirebaseErrorKeyIsEmpty() }
+        }
 
     suspend fun getTransaction(transactionKey: String) =
         safeCall {
@@ -225,7 +235,7 @@ class FirebaseAPI @Inject constructor(
             refUsersUidAccountAidYearTransactions.child(key)
                 .setValue(this)
                 .await()
-        } ?: run { throw TransactionErrorNotGetNewKey() }
+        } ?: run { throw FirebaseErrorKeyIsEmpty() }
     }
 
     private suspend fun SaveTransactionModel.updateFirebaseYear() {

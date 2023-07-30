@@ -10,5 +10,6 @@ interface ActivityRepository {
     fun signOut(): Flow<Unit>
     fun isSignIn(): Boolean
     fun getAccounts(): Flow<List<String>>
+    fun saveAccount(accountName: String?): Flow<Unit>
     fun setActiveAccount(accountName: String): Flow<Unit>
 }

@@ -26,30 +26,21 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
             android.R.layout.simple_spinner_item
         )
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.prepSpinner()
+        binding.prepSelectSpinner()
 
         binding.buttonSelectNewAccountCreate.setOnClickListener { navToNewAccount() }
         binding.buttonSelectExit.setOnClickListener { viewModel.logOut() }
 
         viewModel.attachToBaseFragment()
-        viewModel.state.observe(viewLifecycleOwner) { it.execute() }
-        viewModel.accounts.observe(viewLifecycleOwner) {
-            adapter.clear()
-            adapter.addAll(it)
-        }
+        viewModel.observeState()
+        viewModel.observeAccounts()
     }
 
-    private fun BaseState.execute() =
-        when (this) {
-            is BaseState.LogOut -> navToLoginActivity()
-            is BaseState.AccountSelect -> navToMainActivity()
-            else -> {}
-        }
-
-    private fun FragmentAccountSelectBinding.prepSpinner() {
+    private fun FragmentAccountSelectBinding.prepSelectSpinner() {
         buttonSelectOpen.setOnClickListener {
             if (spinnerSelectAccount.selectedItem == null)
                 it.showSnackBar(R.string.loading)
@@ -62,8 +53,22 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
         spinnerSelectAccount.adapter = adapter
     }
 
+    private fun AccountSelectViewModel.observeState() =
+        state.observe(viewLifecycleOwner) {
+            when (it) {
+                is BaseState.LogOut -> navToLoginActivity()
+                is BaseState.AccountSelect -> navToMainActivity()
+                else -> {}
+            }
+        }
+
+    private fun AccountSelectViewModel.observeAccounts() =
+        accounts.observe(viewLifecycleOwner) {
+            adapter.clear()
+            adapter.addAll(it)
+        }
+
     private fun navToLoginActivity() {
-        // TODO переделать на одну активити
         startActivity(Intent(activity, LoginActivity::class.java))
         requireActivity().finish()
     }

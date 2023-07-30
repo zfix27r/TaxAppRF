@@ -17,11 +17,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountSelectViewModel @Inject constructor(
-    private val getAccountsNameUseCase: GetAccountsUseCase,
+    getAccountsNameUseCase: GetAccountsUseCase,
     private val setActiveAccountUseCase: SetActiveAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
 ) : BaseViewModel() {
-    val accounts = getAccountsNameUseCase.execute().asLiveData(viewModelScope.coroutineContext)
+    val accounts = getAccountsNameUseCase.execute()
+        .asLiveData(viewModelScope.coroutineContext)
 
     fun logOut() = viewModelScope.launch(Dispatchers.IO) {
         signOutUseCase.execute()
