@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
@@ -11,6 +12,7 @@ import com.taxapprf.taxapp.databinding.FragmentAccountChangeBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.MainActivity
+import com.taxapprf.taxapp.ui.MainViewModel
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
     private val binding by viewBinding(FragmentAccountChangeBinding::bind)
     private val viewModel by viewModels<AccountChangeViewModel>()
+    private val activityViewModel by activityViewModels<MainViewModel>()
     private val adapter by lazy {
         ArrayAdapter<String>(
             requireContext(),
@@ -34,7 +37,7 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
 
         viewModel.attachToBaseFragment()
         viewModel.observeState()
-        viewModel.observeAccounts()
+        activityViewModel.observeAccounts()
     }
 
     private fun prepSpinner() {
@@ -50,10 +53,10 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
             }
         }
 
-    private fun AccountChangeViewModel.observeAccounts() =
-        accounts.observe(viewLifecycleOwner) {
+    private fun MainViewModel.observeAccounts() =
+        accounts.observe(viewLifecycleOwner) { l ->
             adapter.clear()
-            adapter.addAll(it)
+            adapter.addAll(l.map { it.name })
         }
 
     private fun accountCreate() {

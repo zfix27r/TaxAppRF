@@ -21,7 +21,7 @@ class AccountFirstFragment : BaseFragment(R.layout.fragment_account_first) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirstAccountCreate.setOnClickListener { accountCreate() }
-        binding.buttonFirstAccountCancel.setOnClickListener { viewModel.save() }
+        binding.buttonFirstAccountCancel.setOnClickListener { accountCreate() }
 
         viewModel.attachToBaseFragment()
         viewModel.observeState()
@@ -37,7 +37,7 @@ class AccountFirstFragment : BaseFragment(R.layout.fragment_account_first) {
 
     private fun accountCreate() {
         val account = binding.editFirstAccountName.text.toString()
-        viewModel.save(account)
+        viewModel.save(account, getString(R.string.default_account_name))
     }
 
     private fun navToMainActivity() {

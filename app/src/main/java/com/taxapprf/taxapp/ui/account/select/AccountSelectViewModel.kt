@@ -1,10 +1,9 @@
 package com.taxapprf.taxapp.ui.account.select
 
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.GetAccountsUseCase
+import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.account.SaveAccountUseCase
 import com.taxapprf.domain.user.SignOutUseCase
-import com.taxapprf.domain.account.SetActiveAccountUseCase
 import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,13 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountSelectViewModel @Inject constructor(
-    getAccountsNameUseCase: GetAccountsUseCase,
-    private val setActiveAccountUseCase: SetActiveAccountUseCase,
+    private val saveAccountUseCase: SaveAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
 ) : BaseViewModel() {
-    val accounts = getAccountsNameUseCase.execute()
-        .asLiveData(viewModelScope.coroutineContext)
-
     fun logOut() = viewModelScope.launch(Dispatchers.IO) {
         signOutUseCase.execute()
             .onStart { loading() }
@@ -32,7 +27,8 @@ class AccountSelectViewModel @Inject constructor(
     }
 
     fun setActiveAccount(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
-        setActiveAccountUseCase.execute(accountName)
+        val accountModel = AccountModel(accountName, true)
+        saveAccountUseCase.execute(accountModel)
             .onStart { loading() }
             .catch { error(it) }
             .collectLatest { success(BaseState.AccountSelect) }

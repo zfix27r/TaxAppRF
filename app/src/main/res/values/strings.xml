@@ -13,6 +13,8 @@
     <string name="error_not_found">Не найдено</string>
     <string name="sign_up_error_email_already_use">The email address is already in use by another account.</string>
     <string name="auth_error_session_expire">Сессия истекла</string>
+    <string name="auth_error_undefined">Незивестная ошибка</string>
+    <string name="default_account_name">По умолчанию</string>
 
 
     <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->

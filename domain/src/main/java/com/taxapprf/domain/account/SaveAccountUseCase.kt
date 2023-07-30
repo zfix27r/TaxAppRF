@@ -6,5 +6,5 @@ import javax.inject.Inject
 class SaveAccountUseCase @Inject constructor(
     private val repository: ActivityRepository
 ) {
-    fun execute(accountName: String) = repository.saveAccount(accountName)
+    fun execute(accountModel: AccountModel) = repository.saveAccount(accountModel)
 }

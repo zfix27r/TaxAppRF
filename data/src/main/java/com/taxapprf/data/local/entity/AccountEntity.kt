@@ -12,8 +12,8 @@ data class AccountEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
 
-    @ColumnInfo(name = FIREBASE_KEY)
-    val firebaseKey: String,
+    @ColumnInfo(name = NAME)
+    val name: String,
 
     @ColumnInfo(name = ACTIVE, defaultValue = "0")
     val active: Boolean,
@@ -21,7 +21,7 @@ data class AccountEntity(
     companion object {
         const val ID = "id"
 
-        const val FIREBASE_KEY = "firebase_key"
+        const val NAME = "name"
 
         const val ACTIVE = "active"
     }

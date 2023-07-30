@@ -1,30 +1,35 @@
 package com.taxapprf.taxapp.ui.account.change
 
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.error.InputErrorEmailEmpty
+import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.account.GetAccountsUseCase
-import com.taxapprf.domain.account.SetActiveAccountUseCase
+import com.taxapprf.domain.account.SaveAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountChangeViewModel @Inject constructor(
     private val getAccountsNameUseCase: GetAccountsUseCase,
-    private val setActiveAccountUseCase: SetActiveAccountUseCase,
+    private val saveAccountUseCase: SaveAccountUseCase,
 ) : BaseViewModel() {
-    val accounts = getAccountsNameUseCase.execute().asLiveData(viewModelScope.coroutineContext)
+    fun save(accountName: String) {
+        if (accountName.isErrorInputAccountChecker()) return
 
-    fun save(account: String) {
-/*        if (account.isErrorInputAccountChecker()) return
+        val accountModel = AccountModel(accountName, true)
 
         viewModelScope.launch(Dispatchers.IO) {
-            setActiveAccountUseCase.execute(account)
+            saveAccountUseCase.execute(accountModel)
                 .onStart { loading() }
                 .catch { error(it) }
                 .collectLatest { success() }
-        }*/
+        }
     }
 
     private fun String.isErrorInputAccountChecker(): Boolean {
