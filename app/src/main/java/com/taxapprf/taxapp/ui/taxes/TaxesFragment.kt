@@ -14,7 +14,6 @@ import com.taxapprf.taxapp.ui.checkStoragePermission
 import com.taxapprf.taxapp.ui.transactions.TransactionsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
     private val binding by viewBinding(FragmentTaxesBinding::bind)
@@ -29,7 +28,6 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         binding.buttonTaxesAddTrans.setOnClickListener { navToTransactionNew() }
         binding.buttonTaxesLoading.setOnClickListener { navToSystemStorage() }

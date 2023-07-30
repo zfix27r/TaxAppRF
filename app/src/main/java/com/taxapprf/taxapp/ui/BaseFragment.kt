@@ -2,6 +2,7 @@ package com.taxapprf.taxapp.ui
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.taxapprf.data.error.AuthErrorUndefined
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.InputErrorEmailEmpty
@@ -32,6 +33,7 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
         loading.onLoadingStop()
 
         val stringResId = when (t) {
+            is AuthErrorUndefined -> R.string.auth_error_undefined
             is UserErrorSessionExpire -> R.string.auth_error_session_expire
             is InputErrorNameEmpty -> R.string.error_name_empty
             is InputErrorPhoneEmpty -> R.string.error_phone_empty

@@ -8,20 +8,22 @@ import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val isSignInUseCase: IsSignInUseCase,
-    private val getAccountsUseCase: GetAccountsUseCase
+    getAccountsUseCase: GetAccountsUseCase
 ) : ViewModel() {
     val isSignIn
         get() = isSignInUseCase.execute()
 
-    private val accounts = getAccountsUseCase.execute().asLiveData(viewModelScope.coroutineContext)
+    val accounts = getAccountsUseCase.execute().asLiveData(viewModelScope.coroutineContext)
     val isAccountEmpty
         get() = accounts.value?.isEmpty() ?: true
+
+    val activeAccount
+        get() = accounts.value?.find { it.active }
 
     private var _userName = MutableLiveData<String>()
     val userName: LiveData<String> = _userName
