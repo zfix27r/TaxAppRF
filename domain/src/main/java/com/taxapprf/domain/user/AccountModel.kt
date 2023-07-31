@@ -1,4 +1,4 @@
-package com.taxapprf.domain.account
+package com.taxapprf.domain.user
 
 data class AccountModel(
     val name: String,

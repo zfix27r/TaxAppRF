@@ -54,16 +54,16 @@ class FirebaseAPI @Inject constructor(
     fun isSignIn() =
         auth.currentUser?.let {
             uid = it.uid
-            true
-        } ?: run { false }
+            uid
+        } ?: run { null }
 
-    suspend fun signIn(signInModel: SignInModel) =
+    suspend fun signIn(email: String, password: String) =
         safeCallWithoutAuth {
-            with(signInModel) {
-                auth
-                    .signInWithEmailAndPassword(email, password)
-                    .await()
-            }
+            uid = auth
+                .signInWithEmailAndPassword(email, password)
+                .await()
+                .user!!
+                .uid
         }
 
     suspend fun signUp(signUpModel: SignUpModel): Boolean = safeCallWithoutAuth {
@@ -251,9 +251,8 @@ class FirebaseAPI @Inject constructor(
     }
 
     private fun DataSnapshot.getUserEntity() = UserEntity(
-        id = 0,
-        active = true,
         name = getAsString(KEY_USER_NAME),
+        isSignIn = true,
         email = getAsString(KEY_USER_EMAIL),
         phone = getAsString(KEY_USER_PHONE),
     )

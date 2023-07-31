@@ -1,11 +1,9 @@
 package com.taxapprf.domain.user
 
 import com.taxapprf.domain.ActivityRepository
-import javax.inject.Inject
 
-
-class IsSignInUseCase @Inject constructor(
+class GetUserUseCase(
     private val repository: ActivityRepository
 ) {
-    fun execute() = repository.isSignIn()
+    fun execute() = repository.getUser()
 }

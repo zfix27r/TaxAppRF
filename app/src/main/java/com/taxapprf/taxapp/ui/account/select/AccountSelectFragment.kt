@@ -46,7 +46,8 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
         buttonSelectOpen.setOnClickListener {
             if (spinnerSelectAccount.selectedItem == null)
                 it.showSnackBar(R.string.account_select_accounts_loading)
-
+            // TODO() без проверки на наличие данных в спинере по нажатии открыть ошибка
+            // TODO проверить смежные фрагменты
             val item = spinnerSelectAccount.selectedItem.toString()
             viewModel.saveAccount(item)
         }
@@ -65,9 +66,12 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
         }
 
     private fun MainViewModel.observeAccounts() =
-        accounts.observe(viewLifecycleOwner) { l ->
-            adapter.clear()
-            adapter.addAll(l.map { it.name })
+        user.observe(viewLifecycleOwner) { u ->
+            u?.let { user ->
+                user.accounts.map { it.name }
+                adapter.clear()
+                adapter.addAll()
+            }
         }
 
     private fun navToLoginActivity() {

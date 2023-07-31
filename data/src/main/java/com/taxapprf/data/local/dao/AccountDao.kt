@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AccountDao {
-    @Query("SELECT * FROM account")
-    fun getAccounts(): Flow<List<AccountEntity>>
+    @Query("SELECT * FROM account WHERE user = :userName")
+    fun getAccounts(userName: String): Flow<List<AccountEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(accountEntity: AccountEntity): Long

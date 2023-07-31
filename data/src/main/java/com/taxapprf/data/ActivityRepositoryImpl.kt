@@ -5,8 +5,9 @@ import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.dao.UserDao
 import com.taxapprf.data.local.entity.AccountEntity
 import com.taxapprf.data.local.entity.UserEntity
+import com.taxapprf.data.local.model.UserWithAccountModel
 import com.taxapprf.domain.ActivityRepository
-import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.UserModel
@@ -20,16 +21,30 @@ class ActivityRepositoryImpl @Inject constructor(
     private val userDao: UserDao,
     private val accountDao: AccountDao
 ) : ActivityRepository {
-    override fun isSignIn() = firebaseAPI.isSignIn()
-    override fun getUser(): Flow<UserModel> {
-        TODO("Not yet implemented")
+    override fun getUser() = userDao.getSignIn().map { models ->
+        if (models.isNotEmpty()) {
+            val accounts = models.mapNotNull {
+                it.accountActive?.let { _ ->
+                    if (it.accountActive) firebaseAPI.accountKey = it.accountName!!
+                    it.toAccountModel()
+                }
+            }
+
+            UserModel(
+                name = models.first().name,
+                email = models.first().email,
+                phone = models.first().phone,
+                accounts = accounts
+            )
+        } else null
     }
 
     override fun signIn(signInModel: SignInModel) = flow {
-        firebaseAPI.signIn(signInModel)
-        /*        accountDao.getActiveAccount()
-                    ?.let { firebaseAPI.accountKey = it }
-                    ?: run { userDao.save(firebaseAPI.getUserEntity()) }*/
+        with(signInModel) {
+            firebaseAPI.signIn(email, password)
+            userDao.save(firebaseAPI.getUserEntity())
+            // TODO как нибудь потом отделить класс фаербейза от приложения
+        }
         emit(Unit)
     }
 
@@ -44,19 +59,15 @@ class ActivityRepositoryImpl @Inject constructor(
         emit(firebaseAPI.signOut())
     }
 
-    override fun getAccounts() = accountDao.getAccounts().map { l ->
-        l.map {
-            if (it.active) firebaseAPI.accountKey = it.name
-            it.toAccountModel()
-        }
-    }
-
-    override fun saveAccount(accountModel: AccountModel) = flow {
-        accountDao.save(accountModel.toAccountEntity())
+    override fun saveAccount(accountModel: AccountModel): Flow<Unit> = flow {
+        val user = userDao.getNameActiveUser()
+        accountDao.save(accountModel.toAccountEntity(user))
         emit(Unit)
     }
 
-    private fun AccountEntity.toAccountModel() = AccountModel(name, active)
-    private fun AccountModel.toAccountEntity() = AccountEntity(0, name, active)
-    private fun SignUpModel.toUserEntity() = UserEntity(0, true, name, email, phone)
+    private fun UserWithAccountModel.toAccountModel() = AccountModel(accountName!!, accountActive!!)
+    private fun AccountModel.toAccountEntity(user: String) =
+        AccountEntity(name = name, user = user, active = active)
+
+    private fun SignUpModel.toUserEntity() = UserEntity(name, true, email, phone)
 }

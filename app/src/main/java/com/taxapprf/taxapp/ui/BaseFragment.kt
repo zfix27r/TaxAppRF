@@ -21,9 +21,9 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
         baseViewModel = this
         baseViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
-                is BaseState.Loading -> loading.onLoadingStart()
+                is BaseState.Loading -> onLoading()
                 is BaseState.Error -> prepOnLoadingError(it.t)
-                is BaseState.Success -> loading.onLoadingSuccess()
+                is BaseState.Success -> onSuccess()
                 else -> {}
             }
         }
@@ -48,8 +48,16 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
         onLoadingError(stringResId)
     }
 
+    protected open fun onLoading() {
+        loading.onLoadingStart()
+    }
+
     protected open fun onLoadingError(stringResId: Int) {
         loading.onLoadingError(stringResId)
+    }
+
+    protected open fun onSuccess() {
+        loading.onLoadingSuccess()
     }
 
     protected fun popBackStack() {

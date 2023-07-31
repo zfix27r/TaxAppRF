@@ -2,8 +2,8 @@ package com.taxapprf.taxapp.ui.account.add
 
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.error.InputErrorEmailEmpty
-import com.taxapprf.domain.account.AccountModel
-import com.taxapprf.domain.account.SaveAccountUseCase
+import com.taxapprf.domain.user.AccountModel
+import com.taxapprf.domain.user.SaveAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

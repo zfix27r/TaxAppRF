@@ -54,9 +54,12 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
         }
 
     private fun MainViewModel.observeAccounts() =
-        accounts.observe(viewLifecycleOwner) { l ->
-            adapter.clear()
-            adapter.addAll(l.map { it.name })
+        user.observe(viewLifecycleOwner) { u ->
+            u?.let { user ->
+                user.accounts.map { it.name }
+                adapter.clear()
+                adapter.addAll()
+            }
         }
 
     private fun accountCreate() {

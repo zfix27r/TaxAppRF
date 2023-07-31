@@ -9,15 +9,13 @@ const val USER_TABLE = "user"
 
 @Entity(tableName = USER_TABLE)
 data class UserEntity(
-    @ColumnInfo(name = ID)
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
-
-    @ColumnInfo(name = ACTIVE, defaultValue = "0")
-    val active: Boolean,
-
     @ColumnInfo(name = NAME)
+    @PrimaryKey
     val name: String,
+
+    @ColumnInfo(name = IS_SIGN_IN)
+    val isSignIn: Boolean,
+
 
     @ColumnInfo(name = EMAIL)
     val email: String,
@@ -26,12 +24,10 @@ data class UserEntity(
     val phone: String,
 ) {
     companion object {
-        const val ID = "id"
+        const val IS_SIGN_IN = "is_sign_in"
 
         const val NAME = "name"
         const val EMAIL = "email"
         const val PHONE = "phone"
-
-        const val ACTIVE = "active"
     }
 }

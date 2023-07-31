@@ -3,21 +3,20 @@ package com.taxapprf.taxapp.di
 import com.taxapprf.data.ActivityRepositoryImpl
 import com.taxapprf.data.TaxesRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
-import com.taxapprf.domain.user.SignInUseCase
-import com.taxapprf.domain.user.IsSignInUseCase
-import com.taxapprf.domain.account.GetAccountsUseCase
-import com.taxapprf.domain.account.SaveAccountUseCase
-import com.taxapprf.domain.user.SignOutUseCase
-import com.taxapprf.domain.user.SignUpUseCase
 import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
 import com.taxapprf.domain.taxes.GetTaxesUseCase
 import com.taxapprf.domain.taxes.SaveTaxesFromExcel
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
-import com.taxapprf.domain.year.DeleteYearSumUseCase
 import com.taxapprf.domain.transaction.GetTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
-import com.taxapprf.domain.year.GetYearSumUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.user.GetUserUseCase
+import com.taxapprf.domain.user.SaveAccountUseCase
+import com.taxapprf.domain.user.SignInUseCase
+import com.taxapprf.domain.user.SignOutUseCase
+import com.taxapprf.domain.user.SignUpUseCase
+import com.taxapprf.domain.year.DeleteYearSumUseCase
+import com.taxapprf.domain.year.GetYearSumUseCase
 import com.taxapprf.domain.year.SaveYearSumUseCase
 import dagger.Module
 import dagger.Provides
@@ -27,10 +26,6 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 @InstallIn(ViewModelComponent::class)
 object DomainModule {
-    @Provides
-    fun provideIsSignInUseCase(repositoryImpl: ActivityRepositoryImpl) =
-        IsSignInUseCase(repositoryImpl)
-
     @Provides
     fun provideSignInUseCase(repositoryImpl: ActivityRepositoryImpl) =
         SignInUseCase(repositoryImpl)
@@ -44,8 +39,8 @@ object DomainModule {
         SignOutUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetAccountsNameUseCase(repositoryImpl: ActivityRepositoryImpl) =
-        GetAccountsUseCase(repositoryImpl)
+    fun provideGetUserUseCase(repositoryImpl: ActivityRepositoryImpl) =
+        GetUserUseCase(repositoryImpl)
 
     @Provides
     fun provideSaveAccountUseCase(repositoryImpl: ActivityRepositoryImpl) =

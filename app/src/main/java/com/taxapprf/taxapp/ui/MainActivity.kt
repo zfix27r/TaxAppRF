@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.Navigation.findNavController
@@ -39,8 +38,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
         findNavController(this, R.id.nav_host_fragment_content_main)
     }
 
-    private val viewModel by viewModels<MainViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -48,14 +45,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
         setupActionBarWithNavController(this, navController, mAppBarConfiguration)
         setupWithNavController(binding.navView, navController)
         prepDrawer()
-
-        viewModel.userName.observe(this) {
-            drawer.findViewById<TextView>(R.id.textNavHeaderUserName).text = it
-        }
-
-        viewModel.userEmail.observe(this) {
-            drawer.findViewById<TextView>(R.id.textNavHeaderUserEmail).text = it
-        }
     }
 
     private fun prepDrawer() {
