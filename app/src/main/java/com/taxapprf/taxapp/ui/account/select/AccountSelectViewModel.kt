@@ -26,7 +26,7 @@ class AccountSelectViewModel @Inject constructor(
             .collectLatest { success(BaseState.LogOut) }
     }
 
-    fun setActiveAccount(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun saveAccount(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
         val accountModel = AccountModel(accountName, true)
         saveAccountUseCase.execute(accountModel)
             .onStart { loading() }

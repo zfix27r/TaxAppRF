@@ -48,7 +48,7 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
     private fun AccountChangeViewModel.observeState() =
         state.observe(viewLifecycleOwner) {
             when (it) {
-                is BaseState.Success -> TODO("какая должна быть реакция?")
+                is BaseState.Success -> navToMainActivity()
                 else -> {}
             }
         }
@@ -61,14 +61,12 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
 
     private fun accountCreate() {
         val account = binding.editChangeAccountName.text.toString()
-        viewModel.save(account)
-        navToMainActivity()
+        viewModel.saveAccount(account)
     }
 
     private fun accountOpen() {
         binding.spinnerChangeAccount.selectedItem?.let {
-            viewModel.save(it as String)
-            navToMainActivity()
+            viewModel.saveAccount(it as String)
         } ?: run {
             binding.root.showSnackBar(R.string.account_change_message_waite_loading)
         }

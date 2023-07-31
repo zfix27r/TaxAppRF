@@ -20,22 +20,29 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.attachToBaseFragment()
-
         binding.buttonSignInCancel.setOnClickListener { popBackStack() }
-        binding.buttonSignInOk.setOnClickListener {
-            val inputEmail = binding.editSignInEmail.text.toString()
-            val inputPassword = binding.editSignInPassword.text.toString()
-            viewModel.signIn(inputEmail, inputPassword)
-        }
+        binding.buttonSignInOk.setOnClickListener { signIn() }
 
-        viewModel.state.observe(viewLifecycleOwner) {
-            if (it is BaseState.Success) navToAccountSelect()
-        }
+        viewModel.attachToBaseFragment()
+        viewModel.observeState()
     }
+
+    private fun SignInViewModel.observeState() =
+        state.observe(viewLifecycleOwner) {
+            when (it) {
+                is BaseState.Success -> navToAccountSelect()
+                else -> {}
+            }
+        }
 
     override fun onLoadingError(stringResId: Int) {
         binding.root.showSnackBar(stringResId)
+    }
+
+    private fun signIn() {
+        val inputEmail = binding.editSignInEmail.text.toString()
+        val inputPassword = binding.editSignInPassword.text.toString()
+        viewModel.signIn(inputEmail, inputPassword)
     }
 
     private fun navToAccountSelect() {

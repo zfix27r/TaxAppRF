@@ -52,7 +52,7 @@
     <string name="buttonSelectCreate">Создать</string>
     <string name="buttonSelectExit">Выйти</string>
     <string name="textSelectUnderBottom">Выберете существующий или создайте новый счет</string>
-    <string name="loading">Идет загрузка доступных счетов. Пожалуйста, подождите.</string>
+    <string name="account_select_accounts_loading">Идет загрузка доступных счетов. Пожалуйста, подождите.</string>
 
     <!--NewAccountFragment-->
     <string name="editNewAccount">№ счета</string>

@@ -34,7 +34,6 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.prepSelectSpinner()
-
         binding.buttonSelectNewAccountCreate.setOnClickListener { navToNewAccount() }
         binding.buttonSelectExit.setOnClickListener { viewModel.logOut() }
 
@@ -46,10 +45,10 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
     private fun FragmentAccountSelectBinding.prepSelectSpinner() {
         buttonSelectOpen.setOnClickListener {
             if (spinnerSelectAccount.selectedItem == null)
-                it.showSnackBar(R.string.loading)
+                it.showSnackBar(R.string.account_select_accounts_loading)
 
             val item = spinnerSelectAccount.selectedItem.toString()
-            viewModel.setActiveAccount(item)
+            viewModel.saveAccount(item)
         }
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

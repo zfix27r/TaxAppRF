@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/tablet"
-    tools:context=".ui.first.account.FirstAccountFragment">
+    tools:context=".ui.account.first.AccountFirstFragment">
 
     <TextView
         android:id="@+id/textViewSelect"

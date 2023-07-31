@@ -30,15 +30,14 @@ class AccountAddFragment : BaseFragment(R.layout.fragment_account_add) {
     private fun AccountAddViewModel.observeState() =
         state.observe(viewLifecycleOwner) {
             when (it) {
-                is BaseState.Success -> TODO("какая должна быть реакция?")
+                is BaseState.Success -> navToMainActivity()
                 else -> {}
             }
         }
 
     private fun accountCreate() {
         val account = binding.editNewAccountName.text.toString()
-        viewModel.save(account)
-        navToMainActivity()
+        viewModel.saveAccount(account)
     }
 
     private fun navToMainActivity() {

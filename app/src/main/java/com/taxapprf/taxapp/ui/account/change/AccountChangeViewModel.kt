@@ -3,7 +3,6 @@ package com.taxapprf.taxapp.ui.account.change
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.error.InputErrorEmailEmpty
 import com.taxapprf.domain.account.AccountModel
-import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.account.SaveAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,10 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountChangeViewModel @Inject constructor(
-    private val getAccountsNameUseCase: GetAccountsUseCase,
     private val saveAccountUseCase: SaveAccountUseCase,
 ) : BaseViewModel() {
-    fun save(accountName: String) {
+    fun saveAccount(accountName: String) {
         if (accountName.isErrorInputAccountChecker()) return
 
         val accountModel = AccountModel(accountName, true)

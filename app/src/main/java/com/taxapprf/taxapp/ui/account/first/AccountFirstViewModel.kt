@@ -1,7 +1,6 @@
 package com.taxapprf.taxapp.ui.account.first
 
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.data.error.InputErrorEmailEmpty
 import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.account.SaveAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
@@ -17,7 +16,7 @@ import javax.inject.Inject
 class AccountFirstViewModel @Inject constructor(
     private val saveAccountUseCase: SaveAccountUseCase,
 ) : BaseViewModel() {
-    fun save(accountName: String, defaultAccountName: String) {
+    fun saveAccount(accountName: String, defaultAccountName: String) {
         val name = accountName.ifEmpty { defaultAccountName }
         val accountModel = AccountModel(name, true)
 
