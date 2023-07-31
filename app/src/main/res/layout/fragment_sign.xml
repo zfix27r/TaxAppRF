@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/tablet"
-    tools:context=".ui.login.LoginFragment">
+    tools:context=".ui.sign.SignFragment">
 
     <TextView
         android:id="@+id/textView"

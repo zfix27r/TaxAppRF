@@ -21,25 +21,34 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonRegisterCancel.setOnClickListener { popBackStack() }
-        binding.buttonRegisterCreate.setOnClickListener {
-            val inputEmail = binding.editRegisterEmail.text.toString()
-            val inputName = binding.editRegisterName.text.toString()
-            val inputPhone = binding.editRegisterPhone.text.toString()
-            val inputPassword = binding.editRegisterPassword.text.toString()
-            viewModel.signUp(inputName, inputEmail, inputPassword, inputPhone)
-        }
+        binding.buttonRegisterCreate.setOnClickListener { signUp() }
 
         viewModel.attachToBaseFragment()
-        viewModel.state.observe(viewLifecycleOwner) {
-            if (it is BaseState.Success) {
-                binding.root.showSnackBar(R.string.messageRegistrationSuccess)
-                navToAccountFirst()
+        viewModel.observeState()
+    }
+
+    private fun SignUpViewModel.observeState() =
+        state.observe(viewLifecycleOwner) {
+            when (it) {
+                is BaseState.Success -> {
+                    binding.root.showSnackBar(R.string.messageRegistrationSuccess)
+                    navToAccountFirst()
+                }
+
+                else -> {}
             }
         }
-    }
 
     override fun onLoadingError(stringResId: Int) {
         binding.root.showSnackBar(stringResId)
+    }
+
+    private fun signUp() {
+        val inputEmail = binding.editRegisterEmail.text.toString()
+        val inputName = binding.editRegisterName.text.toString()
+        val inputPhone = binding.editRegisterPhone.text.toString()
+        val inputPassword = binding.editRegisterPassword.text.toString()
+        viewModel.signUp(inputName, inputEmail, inputPassword, inputPhone)
     }
 
     private fun navToAccountFirst() {
