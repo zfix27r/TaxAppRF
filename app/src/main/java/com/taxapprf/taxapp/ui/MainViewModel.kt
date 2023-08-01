@@ -11,5 +11,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     getUserUseCase: GetUserUseCase,
 ) : ViewModel() {
-    val user = getUserUseCase.execute().asLiveData(viewModelScope.coroutineContext)
+    // TODO перенести сюда состояния, для подключения. Нет индикации загрузки при заходе уже авторизованным при медленном инете
+    val user = getUserUseCase.execute()
+        .asLiveData(viewModelScope.coroutineContext)
 }

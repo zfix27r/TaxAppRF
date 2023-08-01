@@ -6,12 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.taxes.GetTaxesUseCase
 import com.taxapprf.domain.taxes.SaveTaxesFromExcel
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
+import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,11 +26,10 @@ class TaxesViewModel @Inject constructor(
     private val saveTransactionUseCase: SaveTransactionUseCase,
     private val saveTaxesFromExcel: SaveTaxesFromExcel
 ) : BaseViewModel() {
-
     val taxes = getYearsUseCase.execute()
         .onStart { loading() }
         .catch { error(it) }
-        .onCompletion { success() }
+        .onEach { if (it.isEmpty()) successWithEmpty() }
         .asLiveData(viewModelScope.coroutineContext)
 
     fun saveTaxesFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {

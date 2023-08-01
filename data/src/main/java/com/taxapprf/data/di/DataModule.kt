@@ -61,6 +61,9 @@ object DataModule {
     @Singleton
     @Provides
     fun provideMainDao(db: AppDatabase) = db.mainDao()
+    @Singleton
+    @Provides
+    fun provideTransactionDao(db: AppDatabase) = db.transactionDao()
 
     @Singleton
     @Provides

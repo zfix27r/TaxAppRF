@@ -15,6 +15,7 @@
     <string name="auth_error_session_expire">Сессия истекла</string>
     <string name="auth_error_undefined">Незивестная ошибка</string>
     <string name="default_account_name">По умолчанию</string>
+    <string name="response_error_data_is_empty"></string>
 
 
     <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->

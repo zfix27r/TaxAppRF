@@ -28,6 +28,11 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
         _state.postValue(BaseState.Error(t))
     }
 
+    fun successWithEmpty() {
+        loaded()
+        _state.postValue(BaseState.Success)
+    }
+
     fun success(baseState: BaseState? = null) {
         loaded()
         _state.postValue(BaseState.Success)

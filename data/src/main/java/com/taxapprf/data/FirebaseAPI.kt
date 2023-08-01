@@ -33,7 +33,7 @@ class FirebaseAPI @Inject constructor(
     private val reference = database.reference
     private var uid = ""
     var accountKey = ""
-    private var year = ""
+    private var year = "2023"
     private val refUsers
         get() = reference.child(PATH_USERS)
     private val refUsersUid
@@ -44,12 +44,10 @@ class FirebaseAPI @Inject constructor(
         get() = refUsersUidAccounts.child(accountKey)
     private val refUsersUidAccountAidYear
         get() = refUsersUidAccountsAid.child(year)
-    private val refUsersUidAccountAidYearYId
-        get() = refUsersUidAccountAidYear.child(PATH_YEAR)
     private val refUsersUidAccountAidYearTransactions
         get() = refUsersUidAccountAidYear.child(PATH_TRANSACTIONS)
     private val refUsersUidAccountAidYearSum
-        get() = refUsersUidAccountAidYear.child(PATH_SUM_TAXES)
+        get() = refUsersUidAccountAidYear.child(KEY_ACCOUNTS_SUM_TAXES)
 
     fun isSignIn() =
         auth.currentUser?.let {
@@ -164,15 +162,21 @@ class FirebaseAPI @Inject constructor(
     }
 
     suspend fun getTaxes() = safeCall {
-        refUsersUidAccounts
+        refUsersUidAccountsAid
             .get()
             .await()
             .children
             .mapNotNull { ds ->
+                println(ds)
+                println("ACCOUNT " + ds.key!!)
+                println("YEAR " + ds.child(KEY_ACCOUNTS_YEAR))
+                println("SUM " + ds.child(KEY_ACCOUNTS_SUM_TAXES))
+                println("TRA " + ds.child(PATH_TRANSACTIONS))
+
                 ds.key?.let {
                     TaxesAdapterModel(
                         year = it,
-                        sum = ds.child(KEY_YEAR_SUM_TAXES).value.toString()
+                        sum = ds.child(KEY_ACCOUNTS_SUM_TAXES).value.toString()
                     )
                 }
             }
@@ -284,11 +288,8 @@ class FirebaseAPI @Inject constructor(
         const val KEY_USER_PHONE = "phone"
 
         const val PATH_ACCOUNTS = "accounts"
-        const val KEY_YEAR_SUM_TAXES = "sumTaxes"
-
-
-        const val PATH_SUM_TAXES = "sumTaxes"
-        const val PATH_YEAR = "year"
+        const val KEY_ACCOUNTS_SUM_TAXES = "sumTaxes"
+        const val KEY_ACCOUNTS_YEAR = "year"
 
         const val PATH_TRANSACTIONS = "transactions"
         const val KEY_TRANSACTION_KEY = "key"

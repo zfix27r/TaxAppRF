@@ -22,21 +22,26 @@ class ActivityRepositoryImpl @Inject constructor(
     private val accountDao: AccountDao
 ) : ActivityRepository {
     override fun getUser() = userDao.getSignIn().map { models ->
-        if (models.isNotEmpty()) {
-            val accounts = models.mapNotNull {
-                it.accountActive?.let { _ ->
-                    if (it.accountActive) firebaseAPI.accountKey = it.accountName!!
-                    it.toAccountModel()
-                }
-            }
 
-            UserModel(
-                name = models.first().name,
-                email = models.first().email,
-                phone = models.first().phone,
-                accounts = accounts
-            )
-        } else null
+
+        //TODO firebaseAPI.isSignIn() - только потому что нет возможности протестировать выход
+        firebaseAPI.isSignIn()?.let {
+            if (models.isNotEmpty()) {
+                val accounts = models.mapNotNull {
+                    it.accountActive?.let { _ ->
+                        if (it.accountActive) firebaseAPI.accountKey = it.accountName!!
+                        it.toAccountModel()
+                    }
+                }
+
+                UserModel(
+                    name = models.first().name,
+                    email = models.first().email,
+                    phone = models.first().phone,
+                    accounts = accounts
+                )
+            } else null
+        }
     }
 
     override fun signIn(signInModel: SignInModel) = flow {
@@ -56,7 +61,11 @@ class ActivityRepositoryImpl @Inject constructor(
     }
 
     override fun signOut() = flow {
-        emit(firebaseAPI.signOut())
+        // TODO нет возможности протестировать, выход через фрагмент
+        firebaseAPI.signOut()
+        val user = userDao.getNameActiveUser()
+        userDao.signOut(user)
+        emit(Unit)
     }
 
     override fun saveAccount(accountModel: AccountModel): Flow<Unit> = flow {

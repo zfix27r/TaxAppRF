@@ -22,9 +22,14 @@ interface UserDao {
 
     @Query("SELECT name FROM user WHERE is_sign_in = 1 LIMIT 1")
     fun getNameActiveUser(): String
+    @Query("SELECT name FROM account WHERE active = 1 LIMIT 1")
+    fun getNameActiveAccount(): String
 
     @Query("UPDATE user SET is_sign_in = 1 WHERE name = :name")
     fun signIn(name: String)
+
+    @Query("UPDATE user SET is_sign_in = 0 WHERE name = :name")
+    fun signOut(name: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(userEntity: UserEntity): Long

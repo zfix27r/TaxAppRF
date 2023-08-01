@@ -3,13 +3,13 @@ package com.taxapprf.taxapp.ui
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.taxapprf.data.error.AuthErrorUndefined
-import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
-import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.InputErrorEmailEmpty
 import com.taxapprf.data.error.InputErrorEmailIncorrect
 import com.taxapprf.data.error.InputErrorNameEmpty
 import com.taxapprf.data.error.InputErrorPasswordLength
 import com.taxapprf.data.error.InputErrorPhoneEmpty
+import com.taxapprf.data.error.SignInErrorWrongPassword
+import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.data.error.UserErrorSessionExpire
 import com.taxapprf.taxapp.R
 
@@ -23,6 +23,7 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
             when (it) {
                 is BaseState.Loading -> onLoading()
                 is BaseState.Error -> prepOnLoadingError(it.t)
+                is BaseState.SuccessWithEmpty -> onLoadingWithEmpty()
                 is BaseState.Success -> onSuccess()
                 else -> {}
             }
@@ -58,6 +59,11 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
 
     protected open fun onSuccess() {
         loading.onLoadingSuccess()
+    }
+
+    protected open fun onLoadingWithEmpty() {
+        loading.onLoadingSuccess()
+        // TODO доделать ракцию на пустой ответ
     }
 
     protected fun popBackStack() {
