@@ -5,101 +5,114 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/tablet"
-    android:elevation="10dp"
-    android:translationZ="4dp"
-    tools:context=".ui.signin.SignInFragment">
+    tools:context=".ui.sign.in.SignInFragment">
 
     <TextView
-        android:id="@+id/textViewSignIn"
+        android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/logo_margin_top"
         android:fontFamily="@font/suez_one"
         android:gravity="center"
         android:text="@string/app_name"
         android:textAlignment="center"
-        android:textSize="45sp"
+        android:textSize="@dimen/logo_size"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editSignInEmail"
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="20dp"
-        android:hint="@string/editSignInEmail"
-        android:inputType="textEmailAddress"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/editSignInPassword"
+        android:layout_marginStart="@dimen/sign_in_margin_side"
+        android:layout_marginEnd="@dimen/sign_in_margin_side"
+        android:layout_marginBottom="@dimen/sing_in_margin_vertical"
+        app:layout_constraintBottom_toTopOf="@+id/text_input_layout_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.41000003"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintVertical_chainStyle="packed">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/editSignInPassword"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_sign_in_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/editSignInEmail"
+            android:inputType="textEmailAddress"
+            android:textSize="@dimen/edit_text_size"
+             />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:focusableInTouchMode="true"
-        android:hint="@string/editSignInPassword"
-        android:inputType="textPassword"
-        android:textSize="20sp"
+        android:layout_marginStart="@dimen/sign_in_margin_side"
+        android:layout_marginEnd="@dimen/sign_in_margin_side"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editSignInEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_sign_in_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
+            android:hint="@string/editSignInPassword"
+            android:inputType="textPassword"
+            android:textSize="@dimen/edit_text_size"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/textUnderBottomSignIn"
+        app:layout_constraintBottom_toTopOf="@+id/text_under_bottom_sign_in"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editSignInPassword"
+        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_password"
         app:layout_constraintVertical_bias="0.0">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/buttonSignInOk"
+            android:id="@+id/button_sign_in_ok"
             style="@style/StyleButtonOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginStart="@dimen/sign_in_margin_side"
+            android:layout_marginTop="@dimen/sing_in_margin_vertical"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginBottom="@dimen/sing_in_margin_vertical"
             android:layout_weight="1"
             android:text="@string/buttonSignInOk" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/buttonSignInCancel"
+            android:id="@+id/button_sign_in_cancel"
             style="@style/StyleButtonCancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="@dimen/sing_in_margin_vertical"
+            android:layout_marginEnd="@dimen/sign_in_margin_side"
+            android:layout_marginBottom="@dimen/sing_in_margin_vertical"
             android:layout_weight="1"
             android:text="@string/buttonSignInCancel" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textUnderBottomSignIn"
+        android:id="@+id/text_under_bottom_sign_in"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sing_in_margin_vertical"
         android:gravity="center"
         android:text="@string/textSignInUnderBottom"
-        android:textSize="16sp"
+        android:textSize="@dimen/sign_in_text_under_bottom_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
