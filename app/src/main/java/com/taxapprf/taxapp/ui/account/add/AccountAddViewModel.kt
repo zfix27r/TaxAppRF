@@ -2,7 +2,7 @@ package com.taxapprf.taxapp.ui.account.add
 
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.error.InputErrorEmailEmpty
-import com.taxapprf.domain.user.AccountModel
+import com.taxapprf.domain.user.SaveAccountModel
 import com.taxapprf.domain.user.SaveAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,10 +17,10 @@ import javax.inject.Inject
 class AccountAddViewModel @Inject constructor(
     private val saveAccountUseCase: SaveAccountUseCase,
 ) : BaseViewModel() {
-    fun saveAccount(accountName: String) {
+    fun saveAccount(userName: String, accountName: String) {
         if (accountName.isErrorInputAccountChecker()) return
 
-        val accountModel = AccountModel(accountName, true)
+        val accountModel = SaveAccountModel(userName, accountName)
 
         viewModelScope.launch(Dispatchers.IO) {
             saveAccountUseCase.execute(accountModel)

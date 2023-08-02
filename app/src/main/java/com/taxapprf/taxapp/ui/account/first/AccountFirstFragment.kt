@@ -37,7 +37,11 @@ class AccountFirstFragment : BaseFragment(R.layout.fragment_account_first) {
 
     private fun accountCreate() {
         val account = binding.editFirstAccountName.text.toString()
-        viewModel.saveAccount(account, getString(R.string.default_account_name))
+        viewModel.saveAccount(
+            activityViewModel.name,
+            account,
+            getString(R.string.default_account_name)
+        )
     }
 
     private fun navToMainActivity() {

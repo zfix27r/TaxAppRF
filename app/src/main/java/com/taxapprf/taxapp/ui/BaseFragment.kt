@@ -1,6 +1,7 @@
 package com.taxapprf.taxapp.ui
 
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.taxapprf.data.error.AuthErrorUndefined
 import com.taxapprf.data.error.InputErrorEmailEmpty
@@ -16,6 +17,7 @@ import com.taxapprf.taxapp.R
 open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
     private val loading by lazy { requireActivity() as Loading }
     private lateinit var baseViewModel: BaseViewModel
+    protected val activityViewModel by activityViewModels<MainViewModel>()
 
     protected fun BaseViewModel.attachToBaseFragment() {
         baseViewModel = this
@@ -24,10 +26,17 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
                 is BaseState.Loading -> onLoading()
                 is BaseState.Error -> prepOnLoadingError(it.t)
                 is BaseState.SuccessWithEmpty -> onLoadingWithEmpty()
+                is BaseState.SuccessEdit -> onSuccess()
+                is BaseState.SuccessDelete -> onSuccess()
                 is BaseState.Success -> onSuccess()
                 else -> {}
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        loading.onLoadingStop()
     }
 
     private fun prepOnLoadingError(t: Throwable) {

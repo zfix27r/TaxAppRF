@@ -34,9 +34,8 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
         binding.recyclerYearStatements.adapter = adapter
 
         viewModel.attachToBaseFragment()
-        viewModel.taxes.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        viewModel.taxes.observe(viewLifecycleOwner) { adapter.submitList(it) }
+        viewModel.getTaxes(activityViewModel.account)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

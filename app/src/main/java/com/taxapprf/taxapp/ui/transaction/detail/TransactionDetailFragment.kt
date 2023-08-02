@@ -42,8 +42,8 @@ class TransactionDetailFragment : BaseFragment(R.layout.fragment_transaction_det
         viewModel.transactionLiveData.observe(viewLifecycleOwner) { updateUI(it) }
         viewModel.state.observe(viewLifecycleOwner) {
             when (it) {
-                is BaseState.Edited -> navToTaxes()
-                is BaseState.Deleted -> {
+                is BaseState.SuccessEdit -> navToTaxes()
+                is BaseState.SuccessDelete -> {
                     binding.root.showSnackBar(R.string.transaction_detail_delete_success)
                     popBackStack()
                 }

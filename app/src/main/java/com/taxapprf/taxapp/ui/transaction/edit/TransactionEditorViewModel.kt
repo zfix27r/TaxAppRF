@@ -11,6 +11,7 @@ import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.year.DeleteYearSumUseCase
 import com.taxapprf.domain.year.GetYearSumUseCase
 import com.taxapprf.domain.year.SaveYearSumUseCase
+import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class TransactionEditorViewModel @Inject constructor(
     private val saveYearSumUseCase: SaveYearSumUseCase,
     private val deleteYearSumUseCase: DeleteYearSumUseCase,
 ) : BaseViewModel() {
+    private val accountKey = savedStateHandle.get<String>(ACCOUNT_KEY)
     private val transactionKey = savedStateHandle.get<String>(TRANSACTION_KEY)
 
     val transaction = transactionKey?.let {
@@ -78,6 +80,7 @@ class TransactionEditorViewModel @Inject constructor(
         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
         transactionDate = dateFormat.format(calendar.time)
+        saveTransaction.year = year.toString()
         return transactionDate
     }
 
@@ -91,14 +94,17 @@ class TransactionEditorViewModel @Inject constructor(
         sumRub = getTransactionModel.sumRub
     }
 
-    fun saveTransaction() = viewModelScope.launch(Dispatchers.IO) {
+    fun saveTransaction(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
+        saveTransaction.accountName = accountName
+
         saveTransactionUseCase.execute(saveTransaction)
             .onStart { loading() }
             .catch { error(it) }
-            .collectLatest { loading() }
+            .collectLatest { success(BaseState.SuccessEdit) }
     }
 
     companion object {
+        const val ACCOUNT_KEY = "account_key"
         const val TRANSACTION_KEY = "transaction_key"
     }
 }

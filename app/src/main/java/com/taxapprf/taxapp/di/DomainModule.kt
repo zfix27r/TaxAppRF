@@ -1,7 +1,8 @@
 package com.taxapprf.taxapp.di
 
+import com.taxapprf.data.AccountRepositoryImpl
 import com.taxapprf.data.ActivityRepositoryImpl
-import com.taxapprf.data.TaxesRepositoryImpl
+import com.taxapprf.data.TaxRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
 import com.taxapprf.domain.taxes.GetTaxesUseCase
@@ -10,6 +11,7 @@ import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.user.GetAccountsUseCase
 import com.taxapprf.domain.user.GetUserUseCase
 import com.taxapprf.domain.user.SaveAccountUseCase
 import com.taxapprf.domain.user.SignInUseCase
@@ -43,11 +45,15 @@ object DomainModule {
         GetUserUseCase(repositoryImpl)
 
     @Provides
-    fun provideSaveAccountUseCase(repositoryImpl: ActivityRepositoryImpl) =
+    fun provideGetAccountsUseCase(repositoryImpl: AccountRepositoryImpl) =
+        GetAccountsUseCase(repositoryImpl)
+
+    @Provides
+    fun provideSaveAccountUseCase(repositoryImpl: AccountRepositoryImpl) =
         SaveAccountUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetRateCentralBankUseCase(repositoryImpl: TaxesRepositoryImpl) =
+    fun provideGetRateCentralBankUseCase(repositoryImpl: TaxRepositoryImpl) =
         GetRateCentralBankUseCase(repositoryImpl)
 
     @Provides
@@ -71,11 +77,11 @@ object DomainModule {
         GetYearSumUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetTaxesUseCase(repositoryImpl: TaxesRepositoryImpl) =
+    fun provideGetTaxesUseCase(repositoryImpl: TaxRepositoryImpl) =
         GetTaxesUseCase(repositoryImpl)
 
     @Provides
-    fun provideSaveTaxesFromExcel(repositoryImpl: TaxesRepositoryImpl) =
+    fun provideSaveTaxesFromExcel(repositoryImpl: TaxRepositoryImpl) =
         SaveTaxesFromExcel(repositoryImpl)
 
     @Provides

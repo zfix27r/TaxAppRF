@@ -35,8 +35,7 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
 
     fun success(baseState: BaseState? = null) {
         loaded()
-        _state.postValue(BaseState.Success)
-        baseState?.let { _state.postValue(baseState!!) }
+        _state.postValue(baseState ?: BaseState.Success)
     }
 
     private fun loaded() {

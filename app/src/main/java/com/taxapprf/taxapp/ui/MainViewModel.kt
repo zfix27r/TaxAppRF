@@ -5,6 +5,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.user.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -12,6 +14,10 @@ class MainViewModel @Inject constructor(
     getUserUseCase: GetUserUseCase,
 ) : ViewModel() {
     // TODO перенести сюда состояния, для подключения. Нет индикации загрузки при заходе уже авторизованным при медленном инете
-    val user = getUserUseCase.execute()
+    val user = getUserUseCase.execute().flowOn(Dispatchers.IO)
         .asLiveData(viewModelScope.coroutineContext)
+    lateinit var name: String
+    lateinit var email: String
+    lateinit var phone: String
+    lateinit var account: String
 }

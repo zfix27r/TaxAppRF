@@ -1,6 +1,6 @@
 package com.taxapprf.domain.taxes
 
-data class TaxesAdapterModel(
+data class TaxAdapterModel(
     val year: String,
     val sum: String,
 )

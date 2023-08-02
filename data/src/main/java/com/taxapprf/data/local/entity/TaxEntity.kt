@@ -5,10 +5,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
-const val TAXES_TABLE = "taxes"
+const val TAX_TABLE = "tax"
 
-@Entity(tableName = TAXES_TABLE)
-data class TaxesEntity(
+@Entity(tableName = TAX_TABLE)
+data class TaxEntity(
     @ColumnInfo(name = ID)
     @PrimaryKey(autoGenerate = true)
     val id: Int,
@@ -19,7 +19,7 @@ data class TaxesEntity(
     @ColumnInfo(name = YEAR)
     val year: String,
     @ColumnInfo(name = SUM_TAXES)
-    val sumTaxes: Long,
+    val sumTaxes: Double,
 ) {
     companion object {
         const val ID = "id"

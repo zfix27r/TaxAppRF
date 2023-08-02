@@ -13,14 +13,10 @@ data class AccountEntity(
     @PrimaryKey
     val name: String,
 
-    @ColumnInfo(name = USER)
-    val user: String,
-
     @ColumnInfo(name = ACTIVE, defaultValue = "0")
     val active: Boolean,
 ) {
     companion object {
-        const val USER = "user"
         const val NAME = "name"
         const val ACTIVE = "active"
     }

@@ -6,8 +6,8 @@ sealed class BaseState {
     object Success : BaseState()
     object SuccessWithEmpty : BaseState()
     object UpdateUI : BaseState()
-    object Deleted : BaseState()
-    object Edited : BaseState()
+    object SuccessDelete : BaseState()
+    object SuccessEdit : BaseState()
     object LogOut : BaseState()
     object AccountSelect : BaseState()
 }

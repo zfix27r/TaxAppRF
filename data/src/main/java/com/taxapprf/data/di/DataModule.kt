@@ -2,9 +2,7 @@ package com.taxapprf.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.taxapprf.data.FirebaseAPI
 import com.taxapprf.data.local.AppDatabase
-import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import dagger.Module
 import dagger.Provides
@@ -56,16 +54,9 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideActivityDao(db: AppDatabase) = db.accountDao()
+    fun provideAccountDao(db: AppDatabase) = db.accountDao()
 
     @Singleton
     @Provides
-    fun provideMainDao(db: AppDatabase) = db.mainDao()
-    @Singleton
-    @Provides
-    fun provideTransactionDao(db: AppDatabase) = db.transactionDao()
-
-    @Singleton
-    @Provides
-    fun provideFirebase(dao: AccountDao) = FirebaseAPI(dao)
+    fun provideTransactionDao(db: AppDatabase) = db.taxDao()
 }

@@ -9,9 +9,18 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AccountDao {
-    @Query("SELECT * FROM account WHERE user = :userName")
-    fun getAccounts(userName: String): Flow<List<AccountEntity>>
+    @Query("SELECT * FROM account")
+    fun getAccounts(): Flow<List<AccountEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(accountEntity: AccountEntity): Long
+    fun saveAccount(accountEntity: AccountEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveAccounts(accountEntities: List<AccountEntity>)
+
+    @Query("UPDATE account SET active = 0")
+    fun resetActiveAccount(): Int
+
+    @Query("DELETE FROM account")
+    fun drop()
 }

@@ -16,6 +16,9 @@ data class TransactionEntity(
     @ColumnInfo(name = ACCOUNT)
     val account: String,
 
+    @ColumnInfo(name = YEAR)
+    val year: String,
+
     @ColumnInfo(name = TYPE)
     val type: String,
     @ColumnInfo(name = ID)
@@ -35,6 +38,7 @@ data class TransactionEntity(
         const val KEY = "key"
 
         const val ACCOUNT = "account"
+        const val YEAR = "year"
 
         const val TYPE = "type"
         const val ID = "id"

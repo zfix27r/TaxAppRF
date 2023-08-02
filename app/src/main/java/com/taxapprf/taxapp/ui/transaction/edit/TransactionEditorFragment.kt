@@ -18,7 +18,6 @@ import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
-
 @AndroidEntryPoint
 class TransactionEditorFragment : BaseFragment(R.layout.fragment_new_transaction) {
     private val binding by viewBinding(FragmentNewTransactionBinding::bind)
@@ -35,7 +34,7 @@ class TransactionEditorFragment : BaseFragment(R.layout.fragment_new_transaction
         prepListeners()
 
         viewModel.attachToBaseFragment()
-        viewModel.transaction?.observe(viewLifecycleOwner) { updateUI(it) }
+        viewModel.transaction?.observe(viewLifecycleOwner) { updateUI(it) } ?: updateUIOnce()
         viewModel.state.observe(viewLifecycleOwner) { it.observeState() }
     }
 
@@ -71,7 +70,7 @@ class TransactionEditorFragment : BaseFragment(R.layout.fragment_new_transaction
         }
 
         binding.buttonNewTransAdd.setOnClickListener {
-            viewModel.saveTransaction()
+            viewModel.saveTransaction(activityViewModel.account)
         }
 
         binding.spinnerNewTransType.onItemSelectedListener = object : OnItemSelectedListener {
@@ -116,7 +115,7 @@ class TransactionEditorFragment : BaseFragment(R.layout.fragment_new_transaction
 
     private fun BaseState.observeState() = when (this) {
 //                is BaseState.Edited -> navToTaxes()
-        is BaseState.Deleted -> {
+        is BaseState.SuccessDelete -> {
             binding.root.showSnackBar(R.string.transaction_detail_delete_success)
             popBackStack()
         }
@@ -130,6 +129,11 @@ class TransactionEditorFragment : BaseFragment(R.layout.fragment_new_transaction
         binding.editNewTransSum.setText(transaction.sum.toString())
         updateCurrencies(transaction.currency)
         updateTypeTransaction(transaction.type)
+    }
+
+    private fun updateUIOnce() {
+        binding.editNewTransDate.setText(viewModel.transactionDate)
+        binding.editNewTransDate.setText(viewModel.transactionDate)
     }
 
     private fun updateCurrencies(currency: String) {
