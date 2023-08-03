@@ -20,10 +20,8 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_sign_to_account_first"
-            app:destination="@id/account_first"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_out" />
+            android:id="@+id/action_sign_to_account_select"
+            app:destination="@id/account_select" />
     </fragment>
 
     <fragment

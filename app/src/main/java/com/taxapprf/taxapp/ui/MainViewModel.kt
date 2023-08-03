@@ -16,8 +16,8 @@ class MainViewModel @Inject constructor(
     // TODO перенести сюда состояния, для подключения. Нет индикации загрузки при заходе уже авторизованным при медленном инете
     val user = getUserUseCase.execute().flowOn(Dispatchers.IO)
         .asLiveData(viewModelScope.coroutineContext)
-    lateinit var name: String
-    lateinit var email: String
-    lateinit var phone: String
-    lateinit var account: String
+    var name: String = ""
+    var email: String = ""
+    var phone: String = ""
+    var account: String = ""
 }

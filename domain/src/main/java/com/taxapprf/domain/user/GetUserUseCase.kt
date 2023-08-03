@@ -1,9 +1,9 @@
 package com.taxapprf.domain.user
 
-import com.taxapprf.domain.ActivityRepository
+import com.taxapprf.domain.SignRepository
 
 class GetUserUseCase(
-    private val repository: ActivityRepository
+    private val repository: SignRepository
 ) {
     fun execute() = repository.getUser()
 }

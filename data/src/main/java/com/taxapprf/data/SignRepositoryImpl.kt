@@ -14,7 +14,7 @@ import com.taxapprf.data.local.entity.TaxEntity
 import com.taxapprf.data.local.entity.TransactionEntity
 import com.taxapprf.data.local.entity.UserEntity
 import com.taxapprf.data.local.model.UserWithAccountModel
-import com.taxapprf.domain.ActivityRepository
+import com.taxapprf.domain.SignRepository
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.UserModel
@@ -22,20 +22,20 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class ActivityRepositoryImpl @Inject constructor(
+class SignRepositoryImpl @Inject constructor(
     private val firebaseAPI: FirebaseAPI,
     private val userDao: UserDao,
     private val accountDao: AccountDao,
     private val taxDao: TaxDao
-) : ActivityRepository {
+) : SignRepository {
     override fun getUser() = userDao.getSignIn().map { userWithAccountNull ->
         userWithAccountNull?.let { userWithAccount ->
             firebaseAPI.isSignIn()?.let { uid ->
                 userWithAccount.accountName?.let { accountName ->
                     firebaseAPI.accountName = accountName
                 }
-            }
-            userWithAccount.toUserModel()
+                userWithAccount.toUserModel()
+            } ?: run { null }
         } ?: run { null }
     }
 
@@ -43,66 +43,55 @@ class ActivityRepositoryImpl @Inject constructor(
         UserModel(name, email, phone, accountName)
 
     private suspend fun restoreFirebaseData() {
-        println("@@@@ start")
-
         accountDao.drop()
         taxDao.dropTaxes()
         taxDao.dropTransactions()
-
-        println("@@@@ start 2")
 
         val accounts = mutableListOf<AccountEntity>()
         val taxes = mutableListOf<TaxEntity>()
         val transactions = mutableListOf<TransactionEntity>()
 
-        println("@@@@ start 3")
-        try {
-            firebaseAPI.getAccounts()
-                .mapNotNull { account ->
-                    println("acc" + account)
-                    account.key?.let { accountKey ->
-                        accounts.add(AccountEntity(accountKey, false))
-                        account.children.mapNotNull { year ->
-                            year.key?.let { yearKey ->
-                                var sumTaxes = 0.0
+        firebaseAPI.getAccounts()
+            .mapNotNull { account ->
+                account.key?.let { accountKey ->
+                    accounts.add(AccountEntity(accountKey, false))
+                    account.children.mapNotNull { year ->
+                        year.key?.let { yearKey ->
+                            var sumTaxes = 0.0
 
-                                year.child(FirebaseAPI.TRANSACTIONS).children.mapNotNull { transaction ->
-                                    transactions.add(transaction.getTransaction(yearKey, accountKey))
-                                    sumTaxes += transactions.last().sumRub
-                                }
-
-                                taxes.add(TaxEntity(0, accountKey, yearKey, sumTaxes))
+                            year.child(FirebaseAPI.TRANSACTIONS).children.mapNotNull { transaction ->
+                                transactions.add(
+                                    transaction.getTransaction(
+                                        yearKey,
+                                        accountKey
+                                    )
+                                )
+                                sumTaxes += transactions.last().sumRub
                             }
+
+                            taxes.add(TaxEntity(0, accountKey, yearKey, sumTaxes))
                         }
                     }
                 }
+            }
 
-        } catch (e: Exception) {
-            println("sssss  " + e.message)
-        }
-
-        println("account " + accounts)
-        println("taxes " + taxes)
-        println("transactions" + transactions)
         if (accounts.isNotEmpty()) accountDao.saveAccounts(accounts)
         if (taxes.isNotEmpty()) taxDao.saveTaxes(taxes)
         if (transactions.isNotEmpty()) taxDao.saveTransactions(transactions)
     }
 
-    override fun signIn(signInModel: SignInModel) = flow<Unit> {
+    override fun signIn(signInModel: SignInModel) = flow {
         with(signInModel) {
             firebaseAPI.signIn(email, password)?.let { firebaseuser ->
                 firebaseAPI.isSignIn()?.let {
                     if (accountDao.countAccount() == 0) {
-                        println("@@@@ " + signInModel)
-                        userDao.save(firebaseuser.toUserEntity())
                         restoreFirebaseData()
+                        userDao.save(firebaseuser.toUserEntity())
                     }
                 }
-                println(" dfdfd" + accountDao.countAccount())
             } ?: run { throw AuthErrorCurrentUserIsEmpty() }
         }
-//        emit(Unit)
+        emit(Unit)
     }
 
     override fun signUp(signUpModel: SignUpModel) = flow {
