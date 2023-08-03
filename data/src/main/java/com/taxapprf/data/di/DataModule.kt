@@ -58,5 +58,9 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideTransactionDao(db: AppDatabase) = db.taxDao()
+    fun provideTaxDao(db: AppDatabase) = db.taxDao()
+
+    @Singleton
+    @Provides
+    fun provideTransactionDao(db: AppDatabase) = db.transactionDao()
 }

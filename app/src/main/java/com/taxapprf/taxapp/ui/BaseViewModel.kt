@@ -14,7 +14,7 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     private val _state = MutableLiveData<BaseState>()
     val state: LiveData<BaseState> = _state
 
-    fun loading() {
+    protected fun loading() {
         isLoadingDelayTimeout = true
 
         viewModelScope.launch {
@@ -23,17 +23,17 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun error(t: Throwable) {
+    protected fun error(t: Throwable) {
         loaded()
         _state.postValue(BaseState.Error(t))
     }
 
-    fun successWithEmpty() {
+    protected fun successWithEmpty() {
         loaded()
         _state.postValue(BaseState.Success)
     }
 
-    fun success(baseState: BaseState? = null) {
+    protected fun success(baseState: BaseState? = null) {
         loaded()
         _state.postValue(baseState ?: BaseState.Success)
     }

@@ -53,6 +53,7 @@ class SignRepositoryImpl @Inject constructor(
 
         firebaseAPI.getAccounts()
             .mapNotNull { account ->
+                println(account)
                 account.key?.let { accountKey ->
                     accounts.add(AccountEntity(accountKey, false))
                     account.children.mapNotNull { year ->

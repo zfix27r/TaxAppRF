@@ -1,15 +1,21 @@
 package com.taxapprf.taxapp.ui.transactions
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
-import com.taxapprf.domain.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -18,14 +24,21 @@ class TransactionsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getTransactionsUseCase: GetTransactionsUseCase,
 ) : BaseViewModel() {
-    private val year = savedStateHandle.get<String>(YEAR) ?: ""
+    val year = savedStateHandle.get<String>(YEAR) ?: throw Exception("bundle is empty")
 
-    val transactions = getTransactionsUseCase.execute("2023")
-        .onStart { loading() }
-        .catch { error(it) }
-        .onCompletion { success() }
-        .asLiveData(viewModelScope.coroutineContext)
-
+    private val _transactions = MutableLiveData<List<TransactionModel>>()
+    val transactions: LiveData<List<TransactionModel>> = _transactions
+    fun loadTransactions(account: String) = viewModelScope.launch(Dispatchers.IO) {
+        // TODO нет обработки пустого результа, показ какого то сообщения
+        getTransactionsUseCase.execute(account, year)
+            .onStart { loading() }
+            .catch { error(it) }
+            .onEach { success() }
+            .collectLatest {
+                success()
+                _transactions.postValue(it)
+            }
+    }
 
     /*        firebaseTransactions = FirebaseTransactions(UserLivaData().getFirebaseUser(), account)
             firebaseTransactions.readTransactions(year, object : DataStatus() {

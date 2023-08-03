@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.dao.TaxDao
+import com.taxapprf.data.local.dao.TransactionDao
 import com.taxapprf.data.local.dao.UserDao
 import com.taxapprf.data.local.entity.AccountEntity
 import com.taxapprf.data.local.entity.TaxEntity
@@ -24,4 +25,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun accountDao(): AccountDao
     abstract fun taxDao(): TaxDao
+    abstract fun transactionDao(): TransactionDao
 }

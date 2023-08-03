@@ -23,6 +23,7 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
         baseViewModel = this
         baseViewModel.state.observe(viewLifecycleOwner) {
             when (it) {
+                is BaseState.Finish -> popBackStack()
                 is BaseState.Loading -> onLoading()
                 is BaseState.Error -> prepOnLoadingError(it.t)
                 is BaseState.SuccessWithEmpty -> onLoadingWithEmpty()

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
     fun getTransactionModel(transactionKey: String): Flow<TransactionModel>
-    fun getTransactionModels(year: String): Flow<List<TransactionModel>>
+    fun getTransactions(account: String, year: String): Flow<List<TransactionModel>>
     fun saveTransactionModel(saveTransactionModel: SaveTransactionModel): Flow<Unit>
     fun deleteTransaction(requestModel: FirebaseRequestModel): Flow<Unit>
 

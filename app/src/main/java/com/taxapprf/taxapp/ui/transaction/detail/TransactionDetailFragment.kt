@@ -183,4 +183,7 @@ class TransactionDetailFragment : BaseFragment(R.layout.fragment_transaction_det
         findNavController().navigate(R.id.action_transactionDetailsFragment_to_taxesFragment)
     }
 
+    companion object {
+        const val TRANSACTION_KEY = "transaction_key"
+    }
 }
