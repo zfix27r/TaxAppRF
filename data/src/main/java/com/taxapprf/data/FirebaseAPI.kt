@@ -14,6 +14,7 @@ import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.data.error.UserErrorSessionExpire
 import com.taxapprf.data.local.entity.UserEntity
 import com.taxapprf.domain.FirebaseRequestModel
+import com.taxapprf.domain.taxes.DeleteTaxModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.user.SignUpModel
@@ -22,6 +23,8 @@ import kotlinx.coroutines.tasks.await
 import java.math.BigDecimal
 import javax.inject.Inject
 
+
+// TODO отделить от репозитория фаербейз интерфейсом
 class FirebaseAPI @Inject constructor() {
     private val auth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
@@ -170,6 +173,20 @@ class FirebaseAPI @Inject constructor() {
             .await()
             .children
     }
+
+    suspend fun deleteTax(deleteTaxModel: DeleteTaxModel) =
+        safeCall {
+            with(deleteTaxModel) {
+                reference
+                    .child(USERS)
+                    .child(uid)
+                    .child(ACCOUNTS)
+                    .child(accountName)
+                    .child(year)
+                    .setValue(null)
+                    .await()
+            }
+        }
 
     suspend fun saveYearSum(saveYearSumModel: SaveYearSumModel) {
         safeCall {

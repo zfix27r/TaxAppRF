@@ -3,10 +3,12 @@ package com.taxapprf.taxapp.ui.transactions
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.taxes.DeleteTaxModel
+import com.taxapprf.domain.taxes.DeleteTaxUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +17,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class TransactionsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getTransactionsUseCase: GetTransactionsUseCase,
+    private val deleteTaxUseCase: DeleteTaxUseCase,
 ) : BaseViewModel() {
     val year = savedStateHandle.get<String>(YEAR) ?: throw Exception("bundle is empty")
 
@@ -60,7 +62,14 @@ class TransactionsViewModel @Inject constructor(
             })*/
 
 
-    fun deleteYear(year: String?) {
+    fun deleteTax(account: String) = viewModelScope.launch(Dispatchers.IO) {
+        val deleteTaxModel = DeleteTaxModel(account, year)
+        deleteTaxUseCase.execute(deleteTaxModel)
+            .onStart { loading() }
+            .catch { error(it) }
+            .collectLatest {
+                success(BaseState.SuccessDelete)
+            }
     }
 
     fun downloadStatement() {}

@@ -8,6 +8,7 @@ import com.taxapprf.data.error.AuthErrorCurrentUserIsEmpty
 import com.taxapprf.data.error.AuthErrorUndefined
 import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.dao.TaxDao
+import com.taxapprf.data.local.dao.TransactionDao
 import com.taxapprf.data.local.dao.UserDao
 import com.taxapprf.data.local.entity.AccountEntity
 import com.taxapprf.data.local.entity.TaxEntity
@@ -26,7 +27,8 @@ class SignRepositoryImpl @Inject constructor(
     private val firebaseAPI: FirebaseAPI,
     private val userDao: UserDao,
     private val accountDao: AccountDao,
-    private val taxDao: TaxDao
+    private val taxDao: TaxDao,
+    private val transactionDao: TransactionDao,
 ) : SignRepository {
     override fun getUser() = userDao.getSignIn().map { userWithAccountNull ->
         userWithAccountNull?.let { userWithAccount ->
@@ -45,7 +47,7 @@ class SignRepositoryImpl @Inject constructor(
     private suspend fun restoreFirebaseData() {
         accountDao.drop()
         taxDao.dropTaxes()
-        taxDao.dropTransactions()
+        transactionDao.dropTransactions()
 
         val accounts = mutableListOf<AccountEntity>()
         val taxes = mutableListOf<TaxEntity>()
@@ -78,7 +80,7 @@ class SignRepositoryImpl @Inject constructor(
 
         if (accounts.isNotEmpty()) accountDao.saveAccounts(accounts)
         if (taxes.isNotEmpty()) taxDao.saveTaxes(taxes)
-        if (transactions.isNotEmpty()) taxDao.saveTransactions(transactions)
+        if (transactions.isNotEmpty()) transactionDao.saveTransactions(transactions)
     }
 
     override fun signIn(signInModel: SignInModel) = flow {

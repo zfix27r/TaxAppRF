@@ -96,6 +96,13 @@
     <string name="buttonTransDelete">Удалить все</string>
     <string name="buttonTransDownload">Скачать отчет</string>
     <string name="buttonTransSendEmail">Отправить на E-mail</string>
+    <string name="transactions_error_send_report">Не удалось отправить отчет.</string>
+
+    <!-- TransactionsDeleteDialogFragment -->
+    <string name="transactions_delete_title">Подтвердить операцию</string>
+    <string name="transactions_delete_message">Вы уверены, что хотите безвозвратно удалить?</string>
+    <string name="transactions_delete_ok">Да</string>
+    <string name="transactions_delete_cancel">Отмена</string>
 
     <!-- transaction_list_item-->
     <string name="textCB">Курс ЦБ: </string>

@@ -66,7 +66,14 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_transactions_to_transactions_delete_dialog"
+            app:destination="@id/transactions_delete_dialog" />
     </fragment>
+
+    <dialog
+        android:id="@+id/transactions_delete_dialog"
+        android:name="com.taxapprf.taxapp.ui.transactions.TransactionsDeleteDialogFragment" />
 
     <fragment
         android:id="@+id/transaction_new"
@@ -84,7 +91,7 @@
 
     <fragment
         android:id="@+id/transaction_detail"
-        android:name="com.taxapprf.taxapp.ui.transactiondetails.TransactionDetailsFragment"
+        android:name="com.taxapprf.taxapp.ui.transaction.detail.TransactionDetailFragment"
         android:label="@string/menuTransactionDetail"
         tools:layout="@layout/fragment_transaction_detail">
         <action
@@ -118,6 +125,5 @@
             android:id="@+id/action_changeAccountFragment_to_taxesFragment"
             app:destination="@id/taxes" />
     </fragment>
-
 
 </navigation>

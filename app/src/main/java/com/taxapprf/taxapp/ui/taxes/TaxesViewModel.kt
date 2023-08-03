@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.taxes.GetTaxesUseCase
-import com.taxapprf.domain.taxes.SaveTaxesFromExcel
+import com.taxapprf.domain.taxes.SaveTaxesFromExcelUseCase
 import com.taxapprf.domain.taxes.TaxAdapterModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TaxesViewModel @Inject constructor(
     private val getTaxesUseCase: GetTaxesUseCase,
-    private val saveTaxesFromExcel: SaveTaxesFromExcel
+    private val saveTaxesFromExcel: SaveTaxesFromExcelUseCase
 ) : BaseViewModel() {
     private val _taxes = MutableLiveData<List<TaxAdapterModel>>()
     val taxes: LiveData<List<TaxAdapterModel>> = _taxes

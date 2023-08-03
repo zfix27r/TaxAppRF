@@ -3,12 +3,16 @@ package com.taxapprf.data
 import com.taxapprf.data.FirebaseAPI.Companion.getAsDouble
 import com.taxapprf.data.FirebaseAPI.Companion.getAsString
 import com.taxapprf.data.local.dao.TaxDao
+import com.taxapprf.data.local.dao.TransactionDao
 import com.taxapprf.data.local.entity.TaxEntity
 import com.taxapprf.data.local.entity.TransactionEntity
 import com.taxapprf.data.local.excel.ExcelParcel
+import com.taxapprf.data.local.model.DeleteTaxDataModel
+import com.taxapprf.data.local.model.DeleteTransactionDataModel
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.domain.TaxRepository
 import com.taxapprf.domain.TransactionType
+import com.taxapprf.domain.taxes.DeleteTaxModel
 import com.taxapprf.domain.taxes.TaxAdapterModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import kotlinx.coroutines.flow.collectLatest
@@ -22,10 +26,11 @@ import kotlin.math.abs
 
 class TaxRepositoryImpl @Inject constructor(
     private val firebaseAPI: FirebaseAPI,
-    private val transactionDao: TaxDao,
+    private val taxDao: TaxDao,
+    private val transactionDao: TransactionDao,
     private val cbrapi: CBRAPI,
 ) : TaxRepository {
-    override fun getTaxes(accountName: String) = transactionDao.getTaxes(accountName)
+    override fun getTaxes(accountName: String) = taxDao.getTaxes(accountName)
         .onEmpty { getAndSaveFirebaseAccountData(accountName) }
         .map { it.toListTaxAdapterModel() }
 
@@ -57,7 +62,7 @@ class TaxRepositoryImpl @Inject constructor(
                     }
                 transactionDao.saveTransactions(transactions)
                 val tax = TaxEntity(0, accountName, year.toString(), sumTaxes)
-                transactionDao.saveTax(tax)
+                taxDao.saveTax(tax)
             }
     }
 
@@ -74,6 +79,14 @@ class TaxRepositoryImpl @Inject constructor(
                 }
             }
     }
+
+    override fun deleteTax(deleteTaxModel: DeleteTaxModel) = flow {
+        firebaseAPI.deleteTax(deleteTaxModel)
+        taxDao.deleteTaxes(deleteTaxModel.toDeleteTaxDataModel())
+        transactionDao.deleteTransactions(deleteTaxModel.toDeleteTransactionDataModel())
+        emit(Unit)
+    }
+
 
     override fun getCBRRate(date: String, currency: String) = flow {
         cbrapi.getCurrency(date).execute().body().let {
@@ -100,4 +113,10 @@ class TaxRepositoryImpl @Inject constructor(
 
     private fun List<TaxEntity>.toListTaxAdapterModel() =
         map { TaxAdapterModel(it.year, it.sumTaxes.toString()) }
+
+    private fun DeleteTaxModel.toDeleteTaxDataModel() =
+        DeleteTaxDataModel(account, year)
+
+    private fun DeleteTaxModel.toDeleteTransactionDataModel() =
+        DeleteTransactionDataModel(account, year)
 }

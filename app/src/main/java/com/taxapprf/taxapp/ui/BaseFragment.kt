@@ -18,6 +18,9 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
     private val loading by lazy { requireActivity() as Loading }
     private lateinit var baseViewModel: BaseViewModel
     protected val activityViewModel by activityViewModels<MainViewModel>()
+    protected val currentStackSavedState by lazy {
+        findNavController().currentBackStackEntry!!.savedStateHandle
+    }
 
     protected fun BaseViewModel.attachToBaseFragment() {
         baseViewModel = this

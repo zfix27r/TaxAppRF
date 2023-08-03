@@ -5,8 +5,9 @@ import com.taxapprf.data.SignRepositoryImpl
 import com.taxapprf.data.TaxRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
+import com.taxapprf.domain.taxes.DeleteTaxUseCase
 import com.taxapprf.domain.taxes.GetTaxesUseCase
-import com.taxapprf.domain.taxes.SaveTaxesFromExcel
+import com.taxapprf.domain.taxes.SaveTaxesFromExcelUseCase
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
@@ -81,8 +82,12 @@ object DomainModule {
         GetTaxesUseCase(repositoryImpl)
 
     @Provides
-    fun provideSaveTaxesFromExcel(repositoryImpl: TaxRepositoryImpl) =
-        SaveTaxesFromExcel(repositoryImpl)
+    fun provideSaveTaxesFromExcelUseCase(repositoryImpl: TaxRepositoryImpl) =
+        SaveTaxesFromExcelUseCase(repositoryImpl)
+
+    @Provides
+    fun provideDeleteTaxUseCase(repositoryImpl: TaxRepositoryImpl) =
+        DeleteTaxUseCase(repositoryImpl)
 
     @Provides
     fun provideSaveYearSumUseCase(repositoryImpl: TransactionRepositoryImpl) =
