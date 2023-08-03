@@ -175,13 +175,13 @@ class FirebaseAPI @Inject constructor() {
     }
 
     suspend fun deleteTax(deleteTaxModel: DeleteTaxModel) =
-        safeCall {
+        safeCall { uid ->
             with(deleteTaxModel) {
                 reference
                     .child(USERS)
                     .child(uid)
                     .child(ACCOUNTS)
-                    .child(accountName)
+                    .child(account)
                     .child(year)
                     .setValue(null)
                     .await()

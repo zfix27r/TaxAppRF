@@ -11,6 +11,7 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.excel.CreateExcelInLocal
 import com.taxapprf.taxapp.ui.BaseFragment
+import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.checkStoragePermission
 import com.taxapprf.taxapp.ui.showSnackBar
 import com.taxapprf.taxapp.ui.transaction.detail.TransactionDetailFragment
@@ -66,8 +67,18 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
         binding.buttonTransDeleteYear.setOnClickListener { navToTransactionDelete() }
 
+        viewModel.attachToBaseFragment()
         currentStackSavedState.observeDelete()
+        viewModel.observeState()
     }
+
+    private fun TransactionsViewModel.observeState() =
+        state.observe(viewLifecycleOwner) {
+            when (it) {
+                is BaseState.SuccessDelete -> popBackStack()
+                else -> {}
+            }
+        }
 
 
     private fun SavedStateHandle.observeDelete() {
