@@ -1,8 +1,10 @@
 package com.taxapprf.data
 
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.taxapprf.data.FirebaseAPI.Companion.getAsDouble
 import com.taxapprf.data.FirebaseAPI.Companion.getAsString
+import com.taxapprf.data.error.AuthErrorCurrentUserIsEmpty
 import com.taxapprf.data.error.AuthErrorUndefined
 import com.taxapprf.data.local.dao.AccountDao
 import com.taxapprf.data.local.dao.TaxDao
@@ -13,7 +15,6 @@ import com.taxapprf.data.local.entity.TransactionEntity
 import com.taxapprf.data.local.entity.UserEntity
 import com.taxapprf.data.local.model.UserWithAccountModel
 import com.taxapprf.domain.ActivityRepository
-import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.UserModel
@@ -27,77 +28,86 @@ class ActivityRepositoryImpl @Inject constructor(
     private val accountDao: AccountDao,
     private val taxDao: TaxDao
 ) : ActivityRepository {
-    override fun getUser() = userDao.getSignIn().map { userWithAccount ->
-        println("@@@@ 1" + userWithAccount)
-        //TODO firebaseAPI.isSignIn() - только потому что нет возможности протестировать выход
-        firebaseAPI.isSignIn()?.let { uid ->
-            println("@@@@ 2")
-            userWithAccount.accountName?.let { accountName ->
-                println("@@@@ 3")
-                firebaseAPI.accountName = accountName
-
-                UserModel(
-                    name = userWithAccount.name,
-                    email = userWithAccount.email,
-                    phone = userWithAccount.phone,
-                    account = accountName
-                )
-            } ?: run {
-                println("@@@@ 4")
-                restoreFirebaseData(userWithAccount.name)
-                null
+    override fun getUser() = userDao.getSignIn().map { userWithAccountNull ->
+        userWithAccountNull?.let { userWithAccount ->
+            firebaseAPI.isSignIn()?.let { uid ->
+                userWithAccount.accountName?.let { accountName ->
+                    firebaseAPI.accountName = accountName
+                }
             }
-        }
+            userWithAccount.toUserModel()
+        } ?: run { null }
     }
 
-    private suspend fun restoreFirebaseData(userName: String) {
-//        accountDao.drop()
-//        taxDao.dropTaxes()
-//        taxDao.dropTransactions()
+    private fun UserWithAccountModel.toUserModel() =
+        UserModel(name, email, phone, accountName)
+
+    private suspend fun restoreFirebaseData() {
+        println("@@@@ start")
+
+        accountDao.drop()
+        taxDao.dropTaxes()
+        taxDao.dropTransactions()
+
+        println("@@@@ start 2")
 
         val accounts = mutableListOf<AccountEntity>()
         val taxes = mutableListOf<TaxEntity>()
         val transactions = mutableListOf<TransactionEntity>()
 
-        firebaseAPI.getAccounts()
-            .mapNotNull { account ->
-                account.key?.let { accountKey ->
-                    accounts.add(AccountEntity(accountKey, false))
-                    account.children.mapNotNull { year ->
-                        year.key?.let { yearKey ->
-                            var sumTaxes = 0.0
+        println("@@@@ start 3")
+        try {
+            firebaseAPI.getAccounts()
+                .mapNotNull { account ->
+                    println("acc" + account)
+                    account.key?.let { accountKey ->
+                        accounts.add(AccountEntity(accountKey, false))
+                        account.children.mapNotNull { year ->
+                            year.key?.let { yearKey ->
+                                var sumTaxes = 0.0
 
-                            year.child(FirebaseAPI.TRANSACTIONS).children.mapNotNull { transaction ->
-                                transactions.add(transaction.getTransaction(yearKey, accountKey))
-                                sumTaxes += transactions.last().sumRub
+                                year.child(FirebaseAPI.TRANSACTIONS).children.mapNotNull { transaction ->
+                                    transactions.add(transaction.getTransaction(yearKey, accountKey))
+                                    sumTaxes += transactions.last().sumRub
+                                }
+
+                                taxes.add(TaxEntity(0, accountKey, yearKey, sumTaxes))
                             }
-
-                            taxes.add(TaxEntity(0, accountKey, yearKey, sumTaxes))
                         }
                     }
                 }
-            }
 
-        println(accounts)
-        println(taxes)
-        println(transactions)
+        } catch (e: Exception) {
+            println("sssss  " + e.message)
+        }
+
+        println("account " + accounts)
+        println("taxes " + taxes)
+        println("transactions" + transactions)
         if (accounts.isNotEmpty()) accountDao.saveAccounts(accounts)
         if (taxes.isNotEmpty()) taxDao.saveTaxes(taxes)
         if (transactions.isNotEmpty()) taxDao.saveTransactions(transactions)
     }
 
-    override fun signIn(signInModel: SignInModel) = flow {
+    override fun signIn(signInModel: SignInModel) = flow<Unit> {
         with(signInModel) {
-            firebaseAPI.signIn(email, password)
-            userDao.save(firebaseAPI.getUserEntity())
-            // TODO как нибудь потом отделить класс фаербейза от приложения
+            firebaseAPI.signIn(email, password)?.let { firebaseuser ->
+                firebaseAPI.isSignIn()?.let {
+                    if (accountDao.countAccount() == 0) {
+                        println("@@@@ " + signInModel)
+                        userDao.save(firebaseuser.toUserEntity())
+                        restoreFirebaseData()
+                    }
+                }
+                println(" dfdfd" + accountDao.countAccount())
+            } ?: run { throw AuthErrorCurrentUserIsEmpty() }
         }
-        emit(Unit)
+//        emit(Unit)
     }
 
     override fun signUp(signUpModel: SignUpModel) = flow {
         if (firebaseAPI.signUp(signUpModel)) {
-            userDao.save(signUpModel.toUserEntity())
+            //userDao.save(signUpModel.toUserEntity())
             emit(Unit)
         } else throw AuthErrorUndefined()
     }
@@ -108,7 +118,15 @@ class ActivityRepositoryImpl @Inject constructor(
         emit(Unit)
     }
 
-    private fun SignUpModel.toUserEntity() = UserEntity(name, true, email, phone)
+    private fun FirebaseUser.toUserEntity() = UserEntity(
+        key = uid,
+        isSignIn = true,
+        name = displayName ?: "",
+        email = email ?: "",
+        phone = phoneNumber ?: ""
+    )
+
+    //private fun SignUpModel.toUserEntity() = UserEntity(name, true, email, phone)
 
     private fun DataSnapshot.getTransaction(year: String, account: String) =
         TransactionEntity(

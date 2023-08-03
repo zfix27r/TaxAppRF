@@ -53,11 +53,10 @@ class FirebaseAPI @Inject constructor() {
 
     suspend fun signIn(email: String, password: String) =
         safeCallWithoutAuth {
-            uid = auth
+            auth
                 .signInWithEmailAndPassword(email, password)
                 .await()
-                .user!!
-                .uid
+                .user
         }
 
     suspend fun signUp(signUpModel: SignUpModel): Boolean = safeCallWithoutAuth {
@@ -80,13 +79,6 @@ class FirebaseAPI @Inject constructor() {
         return
     }
 
-    suspend fun getUserEntity(): UserEntity =
-        safeCall {
-            refUsersUid
-                .get()
-                .await()
-                .getUserEntity()
-        }
 
     suspend fun getAccounts() =
         safeCall {
@@ -264,13 +256,6 @@ class FirebaseAPI @Inject constructor() {
         is FirebaseException -> AuthErrorUndefined()
         else -> this
     }
-
-    private fun DataSnapshot.getUserEntity() = UserEntity(
-        name = getAsString(KEY_USER_NAME),
-        isSignIn = true,
-        email = getAsString(KEY_USER_EMAIL),
-        phone = getAsString(KEY_USER_PHONE),
-    )
 
     private fun DataSnapshot.getTransactionModel() = TransactionModel(
         key = getAsString(KEY_TRANSACTION_KEY),

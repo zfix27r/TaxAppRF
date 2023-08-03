@@ -18,7 +18,7 @@ interface UserDao {
                 "LEFT JOIN account a ON a.active " +
                 "WHERE u.is_sign_in = 1"
     )
-    fun getSignIn(): Flow<UserWithAccountModel>
+    fun getSignIn(): Flow<UserWithAccountModel?>
 
     @Query("UPDATE user SET is_sign_in = 1 WHERE name = :name")
     fun signIn(name: String)

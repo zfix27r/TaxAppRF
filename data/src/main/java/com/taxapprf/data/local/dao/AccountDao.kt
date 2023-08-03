@@ -18,6 +18,9 @@ interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveAccounts(accountEntities: List<AccountEntity>)
 
+    @Query("SELECT COUNT(*) count FROM account")
+    fun countAccount(): Int
+
     @Query("UPDATE account SET active = 0")
     fun resetActiveAccount(): Int
 
