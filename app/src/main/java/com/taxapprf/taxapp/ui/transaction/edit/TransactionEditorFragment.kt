@@ -12,14 +12,14 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentNewTransactionBinding
-import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.BaseState
+import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
 @AndroidEntryPoint
-class TransactionEditorFragment : BaseFragment(R.layout.fragment_new_transaction) {
+class TransactionEditorFragment : BottomSheetBaseFragment(R.layout.fragment_new_transaction) {
     private val binding by viewBinding(FragmentNewTransactionBinding::bind)
     private val viewModel by viewModels<TransactionEditorViewModel>()
 

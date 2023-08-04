@@ -1,8 +1,8 @@
 package com.taxapprf.taxapp.ui
 
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.taxapprf.data.error.AuthError
 import com.taxapprf.data.error.InputErrorEmailEmpty
 import com.taxapprf.data.error.InputErrorEmailIncorrect
@@ -14,13 +14,10 @@ import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.data.error.AuthErrorSessionExpired
 import com.taxapprf.taxapp.R
 
-open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
+open class BottomSheetBaseFragment(layoutId: Int) : BottomSheetDialogFragment(layoutId) {
     private val loading by lazy { requireActivity() as Loading }
     private lateinit var baseViewModel: BaseViewModel
     protected val activityViewModel by activityViewModels<MainViewModel>()
-    protected val currentStackSavedState by lazy {
-        findNavController().currentBackStackEntry!!.savedStateHandle
-    }
 
     protected fun BaseViewModel.attachToBaseFragment() {
         baseViewModel = this

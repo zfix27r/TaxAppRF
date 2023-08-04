@@ -1,10 +1,10 @@
-package com.taxapprf.data.local.dao
+package com.taxapprf.data.local.room.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.taxapprf.data.local.entity.AccountEntity
+import com.taxapprf.data.local.room.entity.AccountEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,9 +17,6 @@ interface AccountDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveAccounts(accountEntities: List<AccountEntity>)
-
-    @Query("SELECT COUNT(*) count FROM account")
-    fun countAccount(): Int
 
     @Query("UPDATE account SET active = 0")
     fun resetActiveAccount(): Int

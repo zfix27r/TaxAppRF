@@ -1,4 +1,4 @@
-package com.taxapprf.data.local.entity
+package com.taxapprf.data.local.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

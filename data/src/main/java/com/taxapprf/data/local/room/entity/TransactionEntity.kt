@@ -1,4 +1,4 @@
-package com.taxapprf.data.local.entity
+package com.taxapprf.data.local.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -44,8 +44,8 @@ data class TransactionEntity(
         const val ID = "id"
         const val DATE = "date"
         const val CURRENCY = "currency"
-        const val RATE_CENTRAL_BANK = "rateCentralBank"
+        const val RATE_CENTRAL_BANK = "rate_central_bank"
         const val SUM = "sum"
-        const val SUM_RUB = "sumRub"
+        const val SUM_RUB = "sum_rub"
     }
 }

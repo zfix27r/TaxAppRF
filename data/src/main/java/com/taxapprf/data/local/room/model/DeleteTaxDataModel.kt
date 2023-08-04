@@ -1,7 +1,7 @@
-package com.taxapprf.data.local.model
+package com.taxapprf.data.local.room.model
 
 import androidx.room.ColumnInfo
-import com.taxapprf.data.local.entity.TaxEntity
+import com.taxapprf.data.local.room.entity.TaxEntity
 
 data class DeleteTaxDataModel(
     @ColumnInfo(name = TaxEntity.ACCOUNT)

@@ -1,4 +1,4 @@
-package com.taxapprf.data.local.entity
+package com.taxapprf.data.local.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -18,8 +18,8 @@ data class TaxEntity(
 
     @ColumnInfo(name = YEAR)
     val year: String,
-    @ColumnInfo(name = SUM_TAXES)
-    val sumTaxes: Double,
+    @ColumnInfo(name = SUM)
+    val sum: Double,
 ) {
     companion object {
         const val ID = "id"
@@ -27,6 +27,6 @@ data class TaxEntity(
         const val ACCOUNT = "account"
 
         const val YEAR = "year"
-        const val SUM_TAXES = "sumTaxes"
+        const val SUM = "sum"
     }
 }

@@ -1,7 +1,7 @@
 package com.taxapprf.taxapp.di
 
 import com.taxapprf.data.AccountRepositoryImpl
-import com.taxapprf.data.SignRepositoryImpl
+import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.data.TaxRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
@@ -30,19 +30,19 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 object DomainModule {
     @Provides
-    fun provideSignInUseCase(repositoryImpl: SignRepositoryImpl) =
+    fun provideSignInUseCase(repositoryImpl: UserRepositoryImpl) =
         SignInUseCase(repositoryImpl)
 
     @Provides
-    fun provideSignUpUseCase(repositoryImpl: SignRepositoryImpl) =
+    fun provideSignUpUseCase(repositoryImpl: UserRepositoryImpl) =
         SignUpUseCase(repositoryImpl)
 
     @Provides
-    fun provideSignOutUseCase(repositoryImpl: SignRepositoryImpl) =
+    fun provideSignOutUseCase(repositoryImpl: UserRepositoryImpl) =
         SignOutUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetUserUseCase(repositoryImpl: SignRepositoryImpl) =
+    fun provideGetUserUseCase(repositoryImpl: UserRepositoryImpl) =
         GetUserUseCase(repositoryImpl)
 
     @Provides

@@ -41,11 +41,10 @@ class TransactionDetailViewModel @Inject constructor(
     private val saveYearSumUseCase: SaveYearSumUseCase,
     private val deleteYearSumUseCase: DeleteYearSumUseCase,
 ) : BaseViewModel() {
-    private val account = savedStateHandle.get<String>(ACCOUNT)!!
     private val year = savedStateHandle.get<String>(YEAR)!!
     private val transactionKey = savedStateHandle.get<String>(TRANSACTION_KEY)!!
 
-    private val saveTransaction = SaveTransactionModel(account, year)
+    private val saveTransaction = SaveTransactionModel(year)
     var transactionType
         get() = saveTransaction.type
         set(value) {
@@ -90,37 +89,38 @@ class TransactionDetailViewModel @Inject constructor(
 
     }
 
-    fun deleteTransaction() =
-        viewModelScope.launch(Dispatchers.IO) {
-            val firebaseRequestModel = FirebaseRequestModel(account, year)
-            getYearSumUseCase.execute(firebaseRequestModel)
-                .onStart { loading() }
-                .catch { error(it) }
-                .collectLatest { oldYearSum ->
-                    success()
-                    val yearSum = oldYearSum.calculateYearSum()
-                    if (yearSum == 0.0) {
-                        deleteYearSumUseCase.execute(firebaseRequestModel)
-                            .onStart { loading() }
-                            .catch { error(it) }
-                            .collectLatest {
-                                success()
-                                deleteTransactionFirebase()
-                            }
-                    } else {
-                        val saveYearSumModel = SaveYearSumModel(account, year, yearSum)
-                        saveYearSumUseCase.execute(saveYearSumModel)
-                            .onStart { loading() }
-                            .catch { error(it) }
-                            .collectLatest {
-                                success()
-                                deleteTransactionFirebase()
-                            }
-                    }
-                }
-        }
+    fun deleteTransaction(account: String) = viewModelScope.launch(Dispatchers.IO) {
+        saveTransaction.account = account
 
-    private suspend fun deleteTransactionFirebase() {
+        val firebaseRequestModel = FirebaseRequestModel(account, year)
+        getYearSumUseCase.execute(firebaseRequestModel)
+            .onStart { loading() }
+            .catch { error(it) }
+            .collectLatest { oldYearSum ->
+                success()
+                val yearSum = oldYearSum.calculateYearSum()
+                if (yearSum == 0.0) {
+                    deleteYearSumUseCase.execute(firebaseRequestModel)
+                        .onStart { loading() }
+                        .catch { error(it) }
+                        .collectLatest {
+                            success()
+                            deleteTransactionFirebase(account)
+                        }
+                } else {
+                    val saveYearSumModel = SaveYearSumModel(account, year, yearSum)
+                    saveYearSumUseCase.execute(saveYearSumModel)
+                        .onStart { loading() }
+                        .catch { error(it) }
+                        .collectLatest {
+                            success()
+                            deleteTransactionFirebase(account)
+                        }
+                }
+            }
+    }
+
+    private suspend fun deleteTransactionFirebase(account: String) {
         val deleteModel = FirebaseRequestModel(account, year, transactionLiveDataVal!!.id)
         deleteTransactionUseCase.execute(deleteModel)
             .onStart { loading() }
@@ -175,7 +175,6 @@ class TransactionDetailViewModel @Inject constructor(
 
     companion object {
         const val YEAR = "year"
-        const val ACCOUNT = "account"
         const val TRANSACTION_KEY = "transaction_key"
     }
 }

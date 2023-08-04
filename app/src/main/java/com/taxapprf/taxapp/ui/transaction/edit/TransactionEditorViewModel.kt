@@ -95,7 +95,7 @@ class TransactionEditorViewModel @Inject constructor(
     }
 
     fun saveTransaction(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
-        saveTransaction.accountName = accountName
+        saveTransaction.account = accountName
 
         saveTransactionUseCase.execute(saveTransaction)
             .onStart { loading() }

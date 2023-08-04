@@ -40,9 +40,14 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         binding.recyclerTransactions.adapter = adapter
 
         viewModel.transactions.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+            adapter.submitList(it.transactions)
 
+            binding.textTransYearSum.text = String.format(
+                getString(R.string.transactions_tax_sum),
+                viewModel.year,
+                it.taxSum
+            )
+        }
 
         binding.buttonTransSendEmail.setOnClickListener {
             if (requireActivity().checkStoragePermission()) {
@@ -94,19 +99,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
             savedInstanceState: Bundle?
         ): View? {
 
-            val recyclerView = binding!!.recyclerTransactions
-            viewModel.getTransactions()
-                .observe(viewLifecycleOwner, object : Observer<List<Transaction?>?> {
-                    override fun onChanged(transactions: List<Transaction?>) {
-                        Collections.sort(transactions)
-                        recyclerViewConfig.setConfig(context, recyclerView, transactions)
-                    }
-                })
             val textYearTax = binding!!.textTransYearSum
             viewModel.getSumTaxes().observe(viewLifecycleOwner, object : Observer<Double?> {
                 override fun onChanged(yearTax: Double) {
-                    val s = String.format("Налог за %s год: %s", year, yearTax.toString())
-                    textYearTax.text = s
                 }
             })
             val buttonAdd: ImageButton = binding!!.buttonTransAdd
@@ -165,7 +160,10 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun navToTransactionDetail(transactionKey: String) {
         val bundle = bundleOf(TransactionDetailFragment.TRANSACTION_KEY to transactionKey)
-        findNavController().navigate(R.id.action_transactionsFragment_to_transactionDetailsFragment)
+        findNavController().navigate(
+            R.id.action_transactionsFragment_to_transactionDetailsFragment,
+            bundle
+        )
     }
 
     companion object {

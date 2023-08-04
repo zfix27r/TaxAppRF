@@ -8,6 +8,7 @@ import com.taxapprf.domain.taxes.DeleteTaxModel
 import com.taxapprf.domain.taxes.DeleteTaxUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.transaction.TransactionsModel
 import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,10 +27,10 @@ class TransactionsViewModel @Inject constructor(
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val deleteTaxUseCase: DeleteTaxUseCase,
 ) : BaseViewModel() {
-    val year = savedStateHandle.get<String>(YEAR) ?: throw Exception("bundle is empty")
+    val year = savedStateHandle.get<String>(YEAR)!!
 
-    private val _transactions = MutableLiveData<List<TransactionModel>>()
-    val transactions: LiveData<List<TransactionModel>> = _transactions
+    private val _transactions = MutableLiveData<TransactionsModel>()
+    val transactions: LiveData<TransactionsModel> = _transactions
     fun loadTransactions(account: String) = viewModelScope.launch(Dispatchers.IO) {
         // TODO нет обработки пустого результа, показ какого то сообщения
         getTransactionsUseCase.execute(account, year)

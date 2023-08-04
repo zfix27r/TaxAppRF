@@ -7,7 +7,7 @@ import java.util.Locale
 
 data class SaveTransactionModel(
     var key: String? = null,
-    var accountName: String = "",
+    var account: String = "",
     var year: String = "",
     var id: String = "",
     var type: String = "",

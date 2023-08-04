@@ -2,7 +2,7 @@ package com.taxapprf.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.taxapprf.data.local.AppDatabase
+import com.taxapprf.data.local.room.AppDatabase
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import dagger.Module
 import dagger.Provides

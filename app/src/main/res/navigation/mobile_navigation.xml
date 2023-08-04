@@ -31,7 +31,7 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_taxesFragment_to_newTransactionFragment"
-            app:destination="@id/transaction_new"
+            app:destination="@id/transaction_editor"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -53,7 +53,7 @@
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_transactionsFragment_to_newTransactionFragment"
-            app:destination="@id/transaction_new"
+            app:destination="@id/transaction_editor"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -75,19 +75,11 @@
         android:id="@+id/transactions_delete_dialog"
         android:name="com.taxapprf.taxapp.ui.transactions.TransactionsDeleteDialogFragment" />
 
-    <fragment
-        android:id="@+id/transaction_new"
+    <dialog
+        android:id="@+id/transaction_editor"
         android:name="com.taxapprf.taxapp.ui.transaction.edit.TransactionEditorFragment"
         android:label="@string/menuNewTransaction"
-        tools:layout="@layout/fragment_new_transaction">
-        <action
-            android:id="@+id/action_newTransactionFragment_to_taxesFragment"
-            app:destination="@id/taxes"
-            app:enterAnim="@anim/slide_in_left"
-            app:exitAnim="@anim/slide_out_right"
-            app:popUpTo="@id/taxes"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_new_transaction" />
 
     <fragment
         android:id="@+id/transaction_detail"

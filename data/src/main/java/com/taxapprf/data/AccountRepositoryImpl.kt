@@ -1,7 +1,7 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.local.dao.AccountDao
-import com.taxapprf.data.local.entity.AccountEntity
+import com.taxapprf.data.local.room.dao.AccountDao
+import com.taxapprf.data.local.room.entity.AccountEntity
 import com.taxapprf.domain.AccountRepository
 import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.SaveAccountModel
@@ -21,7 +21,8 @@ class AccountRepositoryImpl @Inject constructor(
     }
 
     private fun SaveAccountModel.toAccountEntity() =
-        AccountEntity(name = name.trim(), active = active)
+        AccountEntity(name.trim(), active)
 
-    private fun List<AccountEntity>.toAccountModel() = map { AccountModel(it.name, it.active) }
+    private fun List<AccountEntity>.toAccountModel() =
+        map { AccountModel(it.name, it.active) }
 }

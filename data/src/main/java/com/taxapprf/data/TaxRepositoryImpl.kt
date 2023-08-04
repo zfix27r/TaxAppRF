@@ -1,15 +1,16 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.FirebaseAPI.Companion.getAsDouble
-import com.taxapprf.data.FirebaseAPI.Companion.getAsString
-import com.taxapprf.data.local.dao.TaxDao
-import com.taxapprf.data.local.dao.TransactionDao
-import com.taxapprf.data.local.entity.TaxEntity
-import com.taxapprf.data.local.entity.TransactionEntity
+import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.getAsDouble
+import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.getAsString
+import com.taxapprf.data.local.room.dao.TaxDao
+import com.taxapprf.data.local.room.dao.TransactionDao
+import com.taxapprf.data.local.room.entity.TaxEntity
+import com.taxapprf.data.local.room.entity.TransactionEntity
 import com.taxapprf.data.local.excel.ExcelParcel
-import com.taxapprf.data.local.model.DeleteTaxDataModel
-import com.taxapprf.data.local.model.DeleteTransactionDataModel
+import com.taxapprf.data.local.room.model.DeleteTaxDataModel
+import com.taxapprf.data.local.room.model.DeleteTransactionDataModel
 import com.taxapprf.data.remote.cbrapi.CBRAPI
+import com.taxapprf.data.remote.firebase.FirebaseAPI
 import com.taxapprf.domain.TaxRepository
 import com.taxapprf.domain.TransactionType
 import com.taxapprf.domain.taxes.DeleteTaxModel
@@ -112,7 +113,7 @@ class TaxRepositoryImpl @Inject constructor(
     }
 
     private fun List<TaxEntity>.toListTaxAdapterModel() =
-        map { TaxAdapterModel(it.year, it.sumTaxes.toString()) }
+        map { TaxAdapterModel(it.year, it.sum.toString()) }
 
     private fun DeleteTaxModel.toDeleteTaxDataModel() =
         DeleteTaxDataModel(account, year)

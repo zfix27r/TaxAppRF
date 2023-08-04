@@ -1,15 +1,15 @@
-package com.taxapprf.data.local
+package com.taxapprf.data.local.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.taxapprf.data.local.dao.AccountDao
-import com.taxapprf.data.local.dao.TaxDao
-import com.taxapprf.data.local.dao.TransactionDao
-import com.taxapprf.data.local.dao.UserDao
-import com.taxapprf.data.local.entity.AccountEntity
-import com.taxapprf.data.local.entity.TaxEntity
-import com.taxapprf.data.local.entity.TransactionEntity
-import com.taxapprf.data.local.entity.UserEntity
+import com.taxapprf.data.local.room.dao.AccountDao
+import com.taxapprf.data.local.room.dao.TaxDao
+import com.taxapprf.data.local.room.dao.TransactionDao
+import com.taxapprf.data.local.room.dao.UserDao
+import com.taxapprf.data.local.room.entity.AccountEntity
+import com.taxapprf.data.local.room.entity.TaxEntity
+import com.taxapprf.data.local.room.entity.TransactionEntity
+import com.taxapprf.data.local.room.entity.UserEntity
 
 @Database(
     entities = [

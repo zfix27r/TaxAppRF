@@ -1,9 +1,9 @@
-package com.taxapprf.data.local.model
+package com.taxapprf.data.local.room.model
 
 import androidx.room.ColumnInfo
-import com.taxapprf.data.local.entity.UserEntity
+import com.taxapprf.data.local.room.entity.UserEntity
 
-data class UserWithAccountModel(
+data class UserWithAccountDataModel(
     @ColumnInfo(name = UserEntity.IS_SIGN_IN)
     val isSignIn: Boolean,
 
@@ -16,14 +16,14 @@ data class UserWithAccountModel(
     @ColumnInfo(name = UserEntity.PHONE)
     val phone: String,
 
-    @ColumnInfo(name = ACCOUNT_NAME)
-    val accountName: String?,
+    @ColumnInfo(name = ACCOUNT)
+    val account: String?,
 
     @ColumnInfo(name = ACCOUNT_ACTIVE)
     val accountActive: Boolean?,
 ) {
     companion object {
-        const val ACCOUNT_NAME = "account_name"
+        const val ACCOUNT = "account"
         const val ACCOUNT_ACTIVE = "account_active"
     }
 }

@@ -1,19 +1,18 @@
-package com.taxapprf.data.local.dao
+package com.taxapprf.data.local.room.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.taxapprf.data.local.entity.TaxEntity
-import com.taxapprf.data.local.entity.TransactionEntity
-import com.taxapprf.data.local.model.DeleteTaxDataModel
+import com.taxapprf.data.local.room.entity.TaxEntity
+import com.taxapprf.data.local.room.model.DeleteTaxDataModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaxDao {
-    @Query("SELECT * FROM tax WHERE account = :accountName")
-    fun getTaxes(accountName: String): Flow<List<TaxEntity>>
+    @Query("SELECT * FROM tax WHERE account = :account")
+    fun getTaxes(account: String): Flow<List<TaxEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveTax(taxEntity: TaxEntity)

@@ -17,7 +17,6 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.BaseState
-import com.taxapprf.taxapp.ui.transactions.TransactionsDeleteDialogFragment
 import com.taxapprf.taxapp.ui.hideKeyboard
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
