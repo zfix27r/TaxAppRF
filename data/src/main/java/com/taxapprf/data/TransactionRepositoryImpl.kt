@@ -56,11 +56,11 @@ class TransactionRepositoryImpl @Inject constructor(
                 //transaction.updateFirebaseYear()
             }
 
+            transactionDao.saveTransaction(toTransactionEntity())
+
             val sum = transactionDao.getTransactionsTax(account, year)
             val tax = TaxEntity("$account-$year", account, year, sum)
             taxDao.saveTax(tax)
-
-            transactionDao.saveTransaction(toTransactionEntity())
         }
         emit(Unit)
     }

@@ -49,8 +49,10 @@ class UserRepositoryImpl @Inject constructor(
                 ?.let { user ->
                     firebaseAPI.isSignIn()
                         ?.let {
-                            if (userDao.isUserLocalAuth(email) == 0) restoreFirebaseData()
-                            userDao.save(user.toUserEntity())
+                            if (userDao.isUserLocalAuth(email) == 0) {
+                                restoreFirebaseData()
+                                userDao.save(user.toUserEntity())
+                            }
                         } ?: run { throw AuthError() }
                 } ?: run { throw AuthError() }
         }
@@ -89,31 +91,48 @@ class UserRepositoryImpl @Inject constructor(
 
         firebaseAPI.getAccounts()
             .mapNotNull { account ->
+                println("@@ " + account)
                 account.key
                     ?.let { key ->
                         accounts.add(AccountEntity(key, false))
+                        println("@@" + key)
                         account.children
                             .mapNotNull { year ->
+                                println("@@" + year)
                                 year.key
                                     ?.let { yearKey ->
+                                        println("@@" + yearKey)
+
                                         var sumTaxes = 0.0
 
                                         year.child(FirebaseAPI.TRANSACTIONS).children
                                             .mapNotNull { transaction ->
+                                                println("@@" + transaction)
+
                                                 transactions.add(
                                                     transaction.getTransaction(yearKey, key)
                                                 )
                                                 sumTaxes += transactions.last().sumRub
                                             }
-                                        taxes.add(TaxEntity("${account.key}-$yearKey", key, yearKey, sumTaxes))
+                                        taxes.add(
+                                            TaxEntity(
+                                                "${account.key}-$yearKey",
+                                                key,
+                                                yearKey,
+                                                sumTaxes
+                                            )
+                                        )
                                     }
                             }
                     }
             }
 
         if (accounts.isNotEmpty()) accountDao.saveAccounts(accounts)
+        println("@@@ " + accounts)
         if (taxes.isNotEmpty()) taxDao.saveTaxes(taxes)
+        println("@@@ 1" + taxes)
         if (transactions.isNotEmpty()) transactionDao.saveTransactions(transactions)
+        println("@@@ 1" + transactions)
     }
 
     private fun FirebaseUser.toUserEntity() = UserEntity(

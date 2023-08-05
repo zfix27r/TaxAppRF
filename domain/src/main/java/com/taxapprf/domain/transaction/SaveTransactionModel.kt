@@ -48,7 +48,7 @@ data class SaveTransactionModel(
     fun updateFromYear(year: String) {
         calendar[Calendar.YEAR] = year.toInt()
         this.year = year
-        date = dateFormat.format(calendar)
+        date = dateFormat.format(calendar.time)
     }
 
     private fun updateYearFromDate() {
