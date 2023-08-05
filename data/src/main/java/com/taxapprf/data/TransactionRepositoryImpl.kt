@@ -71,7 +71,8 @@ class TransactionRepositoryImpl @Inject constructor(
             ?: throw CBRErrorRateIsEmpty()
 
     override fun deleteTransaction(requestModel: FirebaseRequestModel) = flow {
-        emit(firebase.deleteTransaction(requestModel))
+        // emit(firebase.deleteTransaction(requestModel))
+        emit(Unit)
     }
 
     override fun getYearSum(requestModel: FirebaseRequestModel) = flow {
@@ -87,11 +88,11 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     private fun Double.updateYearSum(): Double {
-        _transaction.value?.let { transaction ->
-            var big = BigDecimal(this - transaction.sumRub)
-            big = big.setScale(2, RoundingMode.HALF_UP)
-            return big.toDouble()
-        }
+        /*        _transaction.value?.let { transaction ->
+                    var big = BigDecimal(this - transaction.sumRub)
+                    big = big.setScale(2, RoundingMode.HALF_UP)
+                    return big.toDouble()
+                }*/
         return 0.0
     }
 
