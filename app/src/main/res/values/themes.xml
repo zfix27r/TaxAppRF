@@ -17,15 +17,9 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="snackbarStyle">@style/Widget.MyApp.SnackbarStyle</item>
-<!--        <item name="cardViewStyle">@style/Widget.MyApp.CardViewStyle</item>-->
-
 
     </style>
 
-<!--    <style name="Widget.MyApp.CardViewStyle" parent="Widget.MaterialComponents.CardView">-->
-<!--        <item name="android:elevation">6dp</item>-->
-<!--        <item name="android:translationZ">4dp</item>-->
-<!--    </style>-->
 
     <style name="Widget.MyApp.SnackbarStyle" parent="Widget.MaterialComponents.Snackbar">
         <item name="backgroundTint">#2B422C</item>
@@ -41,46 +35,49 @@
 
     <style name="Theme.TaxApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="StyleButtonOK" parent="@style/Widget.AppCompat.ActionButton">
-        <item name="android:background">@drawable/button_ok</item>
+    <style name="StyleButtonOK" parent="@style/Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/color_primary_variant</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingBottom">5dp</item>
         <item name="android:paddingStart">15dp</item>
         <item name="android:paddingEnd">15dp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:elevation">6dp</item>
-        <item name="android:translationZ">4dp</item>
-        <item name="android:stateListAnimator">@animator/button_elevation</item>
         <item name="android:textColor">@color/white</item>
 
     </style>
 
-    <style name="StyleButtonCancel" parent="@style/Widget.AppCompat.ActionButton">
-        <item name="android:background">@drawable/button_cancel</item>
+    <style name="StyleButtonCancel" parent="@style/Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/color_button_cancel</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingBottom">5dp</item>
         <item name="android:paddingStart">15dp</item>
         <item name="android:paddingEnd">15dp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:elevation">6dp</item>
-        <item name="android:translationZ">4dp</item>
-        <item name="android:stateListAnimator">@animator/button_elevation</item>
         <item name="android:textColor">@color/white</item>
 
     </style>
 
-    <style name="StyleButtonRegister" parent="@style/Widget.AppCompat.ActionButton">
-        <item name="android:background">@drawable/button_register</item>
+    <style name="StyleButtonRegister" parent="@style/Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/color_button_sign_up</item>
         <item name="android:paddingTop">5dp</item>
         <item name="android:paddingBottom">5dp</item>
         <item name="android:paddingStart">15dp</item>
         <item name="android:paddingEnd">15dp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:elevation">6dp</item>
-        <item name="android:translationZ">4dp</item>
-        <item name="android:stateListAnimator">@animator/button_elevation</item>
         <item name="android:textColor">@color/white</item>
 
+    </style>
+
+    <style name="StyleLogoText" parent="@style/Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/logo_margin_top</item>
+        <item name="android:fontFamily">@font/suez_one</item>
+        <item name="android:gravity">center</item>
+        <item name="android:text">@string/app_name</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">@dimen/logo_size</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

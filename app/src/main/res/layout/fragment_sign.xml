@@ -9,45 +9,33 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:fontFamily="@font/suez_one"
-        android:gravity="center"
-        android:text="@string/app_name"
-        android:textAlignment="center"
-        android:textSize="45sp"
-        android:textStyle="bold"
+        style="@style/StyleLogoText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLoginSignIn"
         style="@style/StyleButtonOK"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center_horizontal"
-        android:layout_marginBottom="40dp"
-        android:stateListAnimator="@animator/button_elevation"
+        android:layout_marginBottom="20dp"
         android:text="@string/buttonLoginSignIn"
-        android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_16sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonLoginRegister"
         app:layout_constraintEnd_toEndOf="@+id/buttonLoginRegister"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/buttonLoginRegister"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLoginRegister"
         style="@style/StyleButtonRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/buttonLoginRegister"
-        android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
