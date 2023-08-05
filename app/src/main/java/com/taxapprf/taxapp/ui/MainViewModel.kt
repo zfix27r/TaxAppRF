@@ -19,5 +19,8 @@ class MainViewModel @Inject constructor(
     var name: String = ""
     var email: String = ""
     var phone: String = ""
+
     var account: String = ""
+    var year: String = ""
+    var transactionKey = ""
 }

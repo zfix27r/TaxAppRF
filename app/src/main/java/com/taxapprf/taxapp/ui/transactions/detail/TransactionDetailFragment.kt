@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.transaction.edit
+package com.taxapprf.taxapp.ui.transactions.detail
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -19,22 +19,23 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
 @AndroidEntryPoint
-class TransactionEditorFragment : BottomSheetBaseFragment(R.layout.fragment_new_transaction) {
+class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_transaction) {
     private val binding by viewBinding(FragmentNewTransactionBinding::bind)
-    private val viewModel by viewModels<TransactionEditorViewModel>()
+    private val viewModel by viewModels<TransactionDetailViewModel>()
 
     private lateinit var currenciesAdapter: ArrayAdapter<String>
     private lateinit var typeTransactionAdapter: ArrayAdapter<String>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        with(activityViewModel) { viewModel.loadTransaction(account, year, transactionKey) }
 
         prepCurrencies()
         prepTypeTransaction()
         prepListeners()
 
         viewModel.attachToBaseFragment()
-        viewModel.transaction?.observe(viewLifecycleOwner) { updateUI(it) } ?: updateUIOnce()
+        viewModel.transaction.observe(viewLifecycleOwner) { updateUI() }
         viewModel.state.observe(viewLifecycleOwner) { it.observeState() }
     }
 
@@ -123,17 +124,12 @@ class TransactionEditorFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         else -> {}
     }
 
-    private fun updateUI(transaction: TransactionModel) {
-        binding.editNewTransId.setText(transaction.id)
-        binding.editNewTransDate.setText(transaction.date)
-        binding.editNewTransSum.setText(transaction.sum.toString())
-        updateCurrencies(transaction.currency)
-        updateTypeTransaction(transaction.type)
-    }
-
-    private fun updateUIOnce() {
+    private fun updateUI() {
+        binding.editNewTransId.setText(viewModel.transactionId)
         binding.editNewTransDate.setText(viewModel.transactionDate)
-        binding.editNewTransDate.setText(viewModel.transactionDate)
+        binding.editNewTransSum.setText(viewModel.transactionSum.toString())
+        updateCurrencies(viewModel.transactionCurrency)
+        updateTypeTransaction(viewModel.transactionType)
     }
 
     private fun updateCurrencies(currency: String) {

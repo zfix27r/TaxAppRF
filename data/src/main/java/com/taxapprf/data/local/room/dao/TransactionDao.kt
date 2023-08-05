@@ -21,6 +21,9 @@ interface TransactionDao {
     )
     fun getTransactions(account: String, year: String): Flow<List<TaxWithTransactionsDataModel>>
 
+    @Query("SELECT * FROM `transaction` WHERE `key` = :transactionKey LIMIT 1")
+    fun getTransaction(transactionKey: String): Flow<TransactionEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveTransaction(transactionEntities: TransactionEntity)
 

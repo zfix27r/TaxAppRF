@@ -96,38 +96,32 @@ class FirebaseAPI @Inject constructor() {
                 .mapNotNull { it.getTransactionModel() }
         }
 
-    suspend fun updateTransaction(
-        request: FirebaseRequestModel,
-        transaction: SaveTransactionModel
-    ): String =
+    suspend fun updateTransaction(transaction: SaveTransactionModel): String =
         safeAuthCall { uid ->
-            transaction.key ?: throw AuthError()
+            val key = transaction.key ?: throw AuthError()
 
             reference
                 .child(USERS)
                 .child(uid)
                 .child(ACCOUNTS)
-                .child(request.account)
-                .child(request.year)
+                .child(transaction.account)
+                .child(transaction.year)
                 .child(TRANSACTIONS)
-                .child(request.transactionKey)
+                .child(key)
                 .setValue(this)
                 .await()
 
-            return request.transactionKey
+            return key
         }
 
-    suspend fun addTransaction(
-        request: FirebaseRequestModel,
-        transaction: SaveTransactionModel
-    ): String =
+    suspend fun addTransaction(transaction: SaveTransactionModel): String =
         safeAuthCall { uid ->
             val transactionReference = reference
                 .child(USERS)
                 .child(uid)
                 .child(ACCOUNTS)
-                .child(request.account)
-                .child(request.year)
+                .child(transaction.account)
+                .child(transaction.year)
                 .child(TRANSACTIONS)
 
             val key = transactionReference.push().key ?: throw AuthError()
@@ -141,16 +135,16 @@ class FirebaseAPI @Inject constructor() {
             return key
         }
 
-    suspend fun deleteTransaction(request: FirebaseRequestModel): Unit =
+    suspend fun deleteTransaction(transaction: SaveTransactionModel): Unit =
         safeAuthCall { uid ->
             reference
                 .child(USERS)
                 .child(uid)
                 .child(ACCOUNTS)
-                .child(request.account)
-                .child(request.year)
+                .child(transaction.account)
+                .child(transaction.year)
                 .child(TRANSACTIONS)
-                .child(request.transactionKey)
+                .child(transaction.key!!)
                 .setValue(null)
                 .await()
         }

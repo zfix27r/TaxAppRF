@@ -1,6 +1,5 @@
+/*
 package com.taxapprf.taxapp.usersdata;
-
-import com.taxapprf.domain.Transaction;
 
 import java.util.HashMap;
 
@@ -11,7 +10,9 @@ public class YearStatement {
 
     public YearStatement() {}
 
-    public YearStatement(String year, Double sumTaxes, HashMap<String, Transaction> transactions) {
+    public YearStatement(String year, Double*/
+/**//*
+ sumTaxes, HashMap<String, Transaction> transactions) {
         this.year = year;
         this.sumTaxes = sumTaxes;
         this.transactions = transactions;
@@ -41,3 +42,4 @@ public class YearStatement {
         this.transactions = transactions;
     }
 }
+*/

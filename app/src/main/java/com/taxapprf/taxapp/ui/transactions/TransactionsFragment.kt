@@ -9,15 +9,12 @@ import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
-import com.taxapprf.taxapp.excel.CreateExcelInLocal
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.checkStoragePermission
 import com.taxapprf.taxapp.ui.showSnackBar
-import com.taxapprf.taxapp.ui.transaction.detail.TransactionDetailFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
-
 
 @AndroidEntryPoint
 class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
@@ -32,21 +29,26 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private var fileName: File? = null
-    private val createExcelInLocal: CreateExcelInLocal? = null
+
+    //private val createExcelInLocal: CreateExcelInLocal? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadTransactions(activityViewModel.account)
+        viewModel.account = activityViewModel.account
+        viewModel.year = activityViewModel.year
+        viewModel.loadTransactions()
 
         binding.recyclerTransactions.adapter = adapter
 
-        viewModel.transactions.observe(viewLifecycleOwner) {
-            adapter.submitList(it.transactions)
+        viewModel.transactions.observe(viewLifecycleOwner) { transaction ->
+            transaction?.let {
+                adapter.submitList(it.transactions)
 
-            binding.textTransYearSum.text = String.format(
-                getString(R.string.transactions_tax_sum),
-                viewModel.year,
-                it.taxSum
-            )
+                binding.textTransYearSum.text = String.format(
+                    getString(R.string.transactions_tax_sum),
+                    viewModel.year,
+                    it.taxSum
+                )
+            }
         }
 
         binding.buttonTransSendEmail.setOnClickListener {
@@ -159,11 +161,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun navToTransactionDetail(transactionKey: String) {
-        val bundle = bundleOf(TransactionDetailFragment.TRANSACTION_KEY to transactionKey)
-        findNavController().navigate(
-            R.id.action_transactionsFragment_to_transactionDetailsFragment,
-            bundle
-        )
+        activityViewModel.transactionKey = transactionKey
+        findNavController().navigate(R.id.action_transactionsFragment_to_newTransactionFragment)
     }
 
     companion object {

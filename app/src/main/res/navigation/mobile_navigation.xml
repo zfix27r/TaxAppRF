@@ -77,7 +77,7 @@
 
     <dialog
         android:id="@+id/transaction_editor"
-        android:name="com.taxapprf.taxapp.ui.transaction.edit.TransactionEditorFragment"
+        android:name="com.taxapprf.taxapp.ui.transactions.detail.TransactionDetailFragment"
         android:label="@string/menuNewTransaction"
         tools:layout="@layout/fragment_new_transaction" />
 

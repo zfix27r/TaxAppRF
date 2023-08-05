@@ -1,6 +1,5 @@
 package com.taxapprf.data.local.excel
 
-import com.taxapprf.domain.Transaction
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell

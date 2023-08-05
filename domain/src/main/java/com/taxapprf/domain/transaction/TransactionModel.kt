@@ -1,8 +1,5 @@
 package com.taxapprf.domain.transaction
 
-import java.text.ParseException
-import java.text.SimpleDateFormat
-
 data class TransactionModel(
     val key: String,
     val type: String,

@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.taxes.GetTaxesUseCase
 import com.taxapprf.domain.taxes.SaveTaxesFromExcelUseCase
 import com.taxapprf.domain.taxes.TaxAdapterModel
@@ -25,14 +26,17 @@ class TaxesViewModel @Inject constructor(
     private val _taxes = MutableLiveData<List<TaxAdapterModel>>()
     val taxes: LiveData<List<TaxAdapterModel>> = _taxes
 
-    fun getTaxes(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
-        getTaxesUseCase.execute(accountName)
+    fun getTaxes(account: String) = viewModelScope.launch(Dispatchers.IO) {
+        val request = FirebaseRequestModel(account)
+
+        getTaxesUseCase.execute(request)
             .onStart { loading() }
             .catch { error(it) }
             .onEach { if (it.isEmpty()) successWithEmpty() }
             .collectLatest {
                 success()
-                _taxes.postValue(it) }
+                _taxes.postValue(it)
+            }
     }
 
     fun saveTaxesFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {

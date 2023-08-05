@@ -7,12 +7,9 @@ import com.taxapprf.domain.year.SaveYearSumModel
 import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
-    fun getTransaction(request: FirebaseRequestModel): Flow<TransactionModel>
-    fun getTransactions(request: FirebaseRequestModel): Flow<TransactionsModel?>
-    fun saveTransactionModel(
-        request: FirebaseRequestModel,
-        saveTransactionModel: SaveTransactionModel
-    ): Flow<Unit>
+    fun getTransaction(key: String): Flow<TransactionModel>
+    fun getTransactions(account: String, year: String): Flow<TransactionsModel?>
+    fun saveTransactionModel(transaction: SaveTransactionModel): Flow<Unit>
 
     fun deleteTransaction(requestModel: FirebaseRequestModel): Flow<Unit>
 

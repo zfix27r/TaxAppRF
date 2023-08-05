@@ -1,22 +1,21 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.getAsDouble
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.getAsString
 import com.taxapprf.data.local.room.dao.TaxDao
 import com.taxapprf.data.local.room.dao.TransactionDao
 import com.taxapprf.data.local.room.entity.TaxEntity
 import com.taxapprf.data.local.room.entity.TransactionEntity
-import com.taxapprf.data.local.excel.ExcelParcel
 import com.taxapprf.data.local.room.model.DeleteTaxDataModel
 import com.taxapprf.data.local.room.model.DeleteTransactionDataModel
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseAPI
+import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.getAsDouble
+import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.getAsString
+import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.TaxRepository
 import com.taxapprf.domain.TransactionType
-import com.taxapprf.domain.taxes.DeleteTaxModel
 import com.taxapprf.domain.taxes.TaxAdapterModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEmpty
@@ -31,13 +30,13 @@ class TaxRepositoryImpl @Inject constructor(
     private val transactionDao: TransactionDao,
     private val cbrapi: CBRAPI,
 ) : TaxRepository {
-    override fun getTaxes(accountName: String) = taxDao.getTaxes(accountName)
-        .onEmpty { getAndSaveFirebaseAccountData(accountName) }
+    override fun getTaxes(request: FirebaseRequestModel) = taxDao.getTaxes(request.account)
+        .onEmpty { getAndSaveFirebaseAccountData(request) }
         .map { it.toListTaxAdapterModel() }
 
-    private suspend fun getAndSaveFirebaseAccountData(accountName: String) {
-        firebaseAPI.getTaxes(accountName)
-            .mapNotNull { year ->
+    private suspend fun getAndSaveFirebaseAccountData(request: FirebaseRequestModel) {
+        firebaseAPI.getTaxes(request)
+            .map { year ->
                 var sumTaxes = 0.0
                 val transactions = year
                     .child(FirebaseAPI.TRANSACTIONS)
@@ -46,7 +45,7 @@ class TaxRepositoryImpl @Inject constructor(
                         year.key?.let {
                             val tr = TransactionEntity(
                                 key = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_KEY),
-                                account = accountName,
+                                account = request.account,
                                 year = it,
                                 type = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_TYPE),
                                 id = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_ID),
@@ -62,13 +61,13 @@ class TaxRepositoryImpl @Inject constructor(
                         }
                     }
                 transactionDao.saveTransactions(transactions)
-                val tax = TaxEntity(0, accountName, year.toString(), sumTaxes)
+                val tax = TaxEntity(0, request.account, year.toString(), sumTaxes)
                 taxDao.saveTax(tax)
             }
     }
 
-    override fun saveTaxesFromExcel(storagePath: String) = flow {
-        ExcelParcel(storagePath)
+    override fun saveTaxesFromExcel(storagePath: String) = flow<Unit> {
+/*        ExcelParcel(storagePath)
             .parse()
             .map { transaction ->
                 getCBRRate(transaction.date, transaction.currency).collectLatest {
@@ -78,13 +77,13 @@ class TaxRepositoryImpl @Inject constructor(
                     firebaseAPI.sumTaxes()
                     emit(Unit)
                 }
-            }
+            }*/
     }
 
-    override fun deleteTax(deleteTaxModel: DeleteTaxModel) = flow {
-        firebaseAPI.deleteTax(deleteTaxModel)
-        taxDao.deleteTaxes(deleteTaxModel.toDeleteTaxDataModel())
-        transactionDao.deleteTransactions(deleteTaxModel.toDeleteTransactionDataModel())
+    override fun deleteTax(request: FirebaseRequestModel): Flow<Unit> = flow {
+        firebaseAPI.deleteTax(request)
+        taxDao.deleteTaxes(request.toDeleteTaxDataModel())
+        transactionDao.deleteTransactions(request.toDeleteTransactionDataModel())
         emit(Unit)
     }
 
@@ -115,9 +114,9 @@ class TaxRepositoryImpl @Inject constructor(
     private fun List<TaxEntity>.toListTaxAdapterModel() =
         map { TaxAdapterModel(it.year, it.sum.toString()) }
 
-    private fun DeleteTaxModel.toDeleteTaxDataModel() =
+    private fun FirebaseRequestModel.toDeleteTaxDataModel() =
         DeleteTaxDataModel(account, year)
 
-    private fun DeleteTaxModel.toDeleteTransactionDataModel() =
+    private fun FirebaseRequestModel.toDeleteTransactionDataModel() =
         DeleteTransactionDataModel(account, year)
 }
