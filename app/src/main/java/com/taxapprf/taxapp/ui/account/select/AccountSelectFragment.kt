@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -14,7 +13,6 @@ import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.LoginActivity
 import com.taxapprf.taxapp.ui.MainActivity
-import com.taxapprf.taxapp.ui.MainViewModel
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
     private val binding by viewBinding(FragmentAccountSelectBinding::bind)
     private val viewModel by viewModels<AccountSelectViewModel>()
-    private val activityViewModel by activityViewModels<MainViewModel>()
     private val adapter by lazy {
         ArrayAdapter<String>(
             requireContext(),
@@ -39,16 +36,17 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
 
         viewModel.attachToBaseFragment()
         viewModel.observeState()
-        activityViewModel.observeAccounts()
+        viewModel.observeAccounts()
     }
 
     private fun FragmentAccountSelectBinding.prepSelectSpinner() {
         buttonSelectOpen.setOnClickListener {
             if (spinnerSelectAccount.selectedItem == null)
                 it.showSnackBar(R.string.account_select_accounts_loading)
-
-            val item = spinnerSelectAccount.selectedItem.toString()
-            viewModel.saveAccount(item)
+            // TODO() без проверки на наличие данных в спинере по нажатии открыть ошибка
+            // TODO проверить смежные фрагменты
+            val accountName = spinnerSelectAccount.selectedItem.toString()
+            viewModel.saveAccount(activityViewModel.name, accountName)
         }
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -64,10 +62,10 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
             }
         }
 
-    private fun MainViewModel.observeAccounts() =
-        accounts.observe(viewLifecycleOwner) { l ->
+    private fun AccountSelectViewModel.observeAccounts() =
+        accounts.observe(viewLifecycleOwner) { accounts ->
             adapter.clear()
-            adapter.addAll(l.map { it.name })
+            adapter.addAll(accounts.map { it.name })
         }
 
     private fun navToLoginActivity() {

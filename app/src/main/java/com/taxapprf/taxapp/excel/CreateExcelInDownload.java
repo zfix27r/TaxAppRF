@@ -3,8 +3,6 @@ package com.taxapprf.taxapp.excel;
 import android.os.Environment;
 import android.util.Log;
 
-import com.taxapprf.domain.Transaction;
-
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -21,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateExcelInDownload {
+/*public class CreateExcelInDownload {
     private final String year;
     private final Double yearTax;
     private final List<Transaction> transactions;
@@ -128,4 +126,4 @@ public class CreateExcelInDownload {
         outFile.close();
         return file;
     }
-}
+}*/

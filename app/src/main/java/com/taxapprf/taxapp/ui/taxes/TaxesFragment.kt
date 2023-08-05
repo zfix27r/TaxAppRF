@@ -34,9 +34,8 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
         binding.recyclerYearStatements.adapter = adapter
 
         viewModel.attachToBaseFragment()
-        viewModel.taxes.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        viewModel.taxes.observe(viewLifecycleOwner) { adapter.submitList(it) }
+        viewModel.getTaxes(activityViewModel.account)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -56,8 +55,8 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
     }
 
     private fun navToTransactions(year: String) {
-        val bundle = bundleOf(TransactionsViewModel.YEAR to year)
-        findNavController().navigate(R.id.action_taxesFragment_to_transactionsFragment, bundle)
+        activityViewModel.year = year
+        findNavController().navigate(R.id.action_taxesFragment_to_transactionsFragment)
     }
 
     private fun navToTransactionNew() {

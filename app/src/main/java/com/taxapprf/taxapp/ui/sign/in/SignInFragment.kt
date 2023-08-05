@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     private val binding by viewBinding(FragmentSignInBinding::bind)
     private val viewModel by viewModels<SignInViewModel>()
-
+    //TODO при первой авторизации когда нет аккаунтов направлять на ферст аккаунт.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

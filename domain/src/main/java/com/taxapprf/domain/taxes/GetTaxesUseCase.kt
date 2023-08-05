@@ -1,10 +1,12 @@
 package com.taxapprf.domain.taxes
 
-import com.taxapprf.domain.TaxesRepository
+import com.taxapprf.domain.FirebaseRequestModel
+import com.taxapprf.domain.TaxRepository
 import javax.inject.Inject
 
 class GetTaxesUseCase @Inject constructor(
-    private val repository: TaxesRepository
+    private val repository: TaxRepository
 ) {
-    fun execute() = repository.getTaxes()
+    fun execute(request: FirebaseRequestModel) =
+        repository.getTaxes(request)
 }

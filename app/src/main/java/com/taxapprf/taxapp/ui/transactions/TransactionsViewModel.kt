@@ -1,31 +1,45 @@
 package com.taxapprf.taxapp.ui.transactions
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.FirebaseRequestModel
+import com.taxapprf.domain.taxes.DeleteTaxUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
-import com.taxapprf.domain.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.transaction.TransactionsModel
+import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
     private val getTransactionsUseCase: GetTransactionsUseCase,
+    private val deleteTaxUseCase: DeleteTaxUseCase,
 ) : BaseViewModel() {
-    private val year = savedStateHandle.get<String>(YEAR) ?: ""
+    lateinit var account: String
+    lateinit var year: String
 
-    val transactions = getTransactionsUseCase.execute("2023")
-        .onStart { loading() }
-        .catch { error(it) }
-        .onCompletion { success() }
-        .asLiveData(viewModelScope.coroutineContext)
+    private val _transactions = MutableLiveData<TransactionsModel>()
+    val transactions: LiveData<TransactionsModel> = _transactions
 
+    fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
+        getTransactionsUseCase.execute(account, year)
+            .onStart { loading() }
+            .catch { error(it) }
+            .collectLatest {
+                _transactions.postValue(it)
+                success()
+            }
+    }
+
+    // TODO нет обработки пустого результа, показ какого то сообщения
 
     /*        firebaseTransactions = FirebaseTransactions(UserLivaData().getFirebaseUser(), account)
             firebaseTransactions.readTransactions(year, object : DataStatus() {
@@ -47,7 +61,14 @@ class TransactionsViewModel @Inject constructor(
             })*/
 
 
-    fun deleteYear(year: String?) {
+    fun deleteTax(account: String) = viewModelScope.launch(Dispatchers.IO) {
+        val request = FirebaseRequestModel(account, year)
+        deleteTaxUseCase.execute(request)
+            .onStart { loading() }
+            .catch { error(it) }
+            .collectLatest {
+                success(BaseState.SuccessDelete)
+            }
     }
 
     fun downloadStatement() {}
@@ -73,9 +94,5 @@ class TransactionsViewModel @Inject constructor(
                     //e.printStackTrace();
                     null
                 }*/
-    }
-
-    companion object {
-        const val YEAR = "year"
     }
 }

@@ -7,5 +7,5 @@ class GetTransactionUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
     fun execute(transactionKey: String) =
-        repository.getTransactionModel(transactionKey)
+        repository.getTransaction(transactionKey)
 }

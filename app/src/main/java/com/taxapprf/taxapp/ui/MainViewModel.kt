@@ -1,33 +1,26 @@
 package com.taxapprf.taxapp.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.GetAccountsUseCase
-import com.taxapprf.domain.user.IsSignInUseCase
+import com.taxapprf.domain.user.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val isSignInUseCase: IsSignInUseCase,
-    getAccountsUseCase: GetAccountsUseCase
+    getUserUseCase: GetUserUseCase,
 ) : ViewModel() {
-    val isSignIn
-        get() = isSignInUseCase.execute()
+    // TODO перенести сюда состояния, для подключения. Нет индикации загрузки при заходе уже авторизованным при медленном инете
+    val user = getUserUseCase.execute().flowOn(Dispatchers.IO)
+        .asLiveData(viewModelScope.coroutineContext)
+    var name: String = ""
+    var email: String = ""
+    var phone: String = ""
 
-    val accounts = getAccountsUseCase.execute().asLiveData(viewModelScope.coroutineContext)
-    val isAccountEmpty
-        get() = accounts.value?.isEmpty() ?: true
-
-    val activeAccount
-        get() = accounts.value?.find { it.active }
-
-    private var _userName = MutableLiveData<String>()
-    val userName: LiveData<String> = _userName
-
-    private var _userEmail = MutableLiveData<String>()
-    val userEmail: LiveData<String> = _userEmail
+    var account: String = ""
+    var year: String = ""
+    var transactionKey = ""
 }

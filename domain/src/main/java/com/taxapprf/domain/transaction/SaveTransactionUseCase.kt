@@ -6,6 +6,6 @@ import javax.inject.Inject
 class SaveTransactionUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
-    fun execute(saveTransactionModel: SaveTransactionModel) =
-        repository.saveTransactionModel(saveTransactionModel)
+    fun execute(transaction: SaveTransactionModel) =
+        repository.saveTransactionModel(transaction)
 }

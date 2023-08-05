@@ -23,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
     private val binding by viewBinding(ActivityMainBinding::bind)
+    private val viewModel by viewModels<MainViewModel>()
     private val drawer by lazy { binding.drawerLayout }
     private val mAppBarConfiguration by lazy {
         AppBarConfiguration(
@@ -39,22 +40,30 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
         findNavController(this, R.id.nav_host_fragment_content_main)
     }
 
-    private val viewModel by viewModels<MainViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setSupportActionBar(binding.appBarMain.toolbar)
-        setupActionBarWithNavController(this, navController, mAppBarConfiguration)
-        setupWithNavController(binding.navView, navController)
-        prepDrawer()
+        viewModel.observeUser()
+    }
 
-        viewModel.userName.observe(this) {
-            drawer.findViewById<TextView>(R.id.textNavHeaderUserName).text = it
-        }
+    private fun MainViewModel.observeUser() {
+        user.observe(this@MainActivity) { user ->
+            user?.let {
+                viewModel.name = it.name
+                viewModel.email = it.email
+                viewModel.phone = it.phone
+                viewModel.account = it.account!!
 
-        viewModel.userEmail.observe(this) {
-            drawer.findViewById<TextView>(R.id.textNavHeaderUserEmail).text = it
+                navController.setGraph(R.navigation.mobile_navigation)
+                setSupportActionBar(binding.appBarMain.toolbar)
+                setupActionBarWithNavController(
+                    this@MainActivity,
+                    navController,
+                    mAppBarConfiguration
+                )
+                setupWithNavController(binding.navView, navController)
+                prepDrawer()
+            }
         }
     }
 

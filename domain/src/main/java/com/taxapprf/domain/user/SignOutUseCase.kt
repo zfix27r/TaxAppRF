@@ -1,10 +1,10 @@
 package com.taxapprf.domain.user
 
-import com.taxapprf.domain.ActivityRepository
+import com.taxapprf.domain.SignRepository
 import javax.inject.Inject
 
 class SignOutUseCase @Inject constructor(
-    private val repository: ActivityRepository
+    private val repository: SignRepository
 ) {
     fun execute() = repository.signOut()
 }
