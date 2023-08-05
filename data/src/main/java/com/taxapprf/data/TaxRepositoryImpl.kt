@@ -30,40 +30,41 @@ class TaxRepositoryImpl @Inject constructor(
     private val transactionDao: TransactionDao,
     private val cbrapi: CBRAPI,
 ) : TaxRepository {
-    override fun getTaxes(request: FirebaseRequestModel) = taxDao.getTaxes(request.account)
-        .onEmpty { getAndSaveFirebaseAccountData(request) }
-        .map { it.toListTaxAdapterModel() }
+    override fun getTaxes(request: FirebaseRequestModel) =
+        taxDao.getTaxes(request.account)
+            .onEmpty { getAndSaveFirebaseAccountData(request) }
+            .map { it.toListTaxAdapterModel() }
 
     private suspend fun getAndSaveFirebaseAccountData(request: FirebaseRequestModel) {
-        firebaseAPI.getTaxes(request)
-            .map { year ->
-                var sumTaxes = 0.0
-                val transactions = year
-                    .child(FirebaseAPI.TRANSACTIONS)
-                    .children
-                    .mapNotNull { transaction ->
-                        year.key?.let {
-                            val tr = TransactionEntity(
-                                key = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_KEY),
-                                account = request.account,
-                                year = it,
-                                type = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_TYPE),
-                                id = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_ID),
-                                date = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_DATE),
-                                currency = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_CURRENCY),
-                                rateCentralBank = transaction.getAsDouble(FirebaseAPI.KEY_TRANSACTION_RATE_CENTRAL_BANK),
-                                sum = transaction.getAsDouble(FirebaseAPI.KEY_TRANSACTION_SUM),
-                                sumRub = transaction.getAsDouble(FirebaseAPI.KEY_TRANSACTION_SUM_RUB),
-                            )
+        /*        firebaseAPI.getTaxes(request)
+                    .map { year ->
+                        var sumTaxes = 0.0
+                        val transactions = year
+                            .child(FirebaseAPI.TRANSACTIONS)
+                            .children
+                            .mapNotNull { transaction ->
+                                year.key?.let {
+                                    val tr = TransactionEntity(
+                                        key = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_KEY),
+                                        account = request.account,
+                                        year = it,
+                                        type = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_TYPE),
+                                        id = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_ID),
+                                        date = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_DATE),
+                                        currency = transaction.getAsString(FirebaseAPI.KEY_TRANSACTION_CURRENCY),
+                                        rateCentralBank = transaction.getAsDouble(FirebaseAPI.KEY_TRANSACTION_RATE_CENTRAL_BANK),
+                                        sum = transaction.getAsDouble(FirebaseAPI.KEY_TRANSACTION_SUM),
+                                        sumRub = transaction.getAsDouble(FirebaseAPI.KEY_TRANSACTION_SUM_RUB),
+                                    )
 
-                            sumTaxes += tr.sumRub
-                            tr
-                        }
-                    }
-                transactionDao.saveTransactions(transactions)
-                val tax = TaxEntity(0, request.account, year.toString(), sumTaxes)
-                taxDao.saveTax(tax)
-            }
+                                    sumTaxes += tr.sumRub
+                                    tr
+                                }
+                            }
+                        transactionDao.saveTransactions(transactions)
+                        val tax = TaxEntity(0, request.account, year.toString(), sumTaxes)
+                        taxDao.saveTax(tax)
+                    }*/
     }
 
     override fun saveTaxesFromExcel(storagePath: String) = flow<Unit> {
@@ -89,11 +90,12 @@ class TaxRepositoryImpl @Inject constructor(
 
 
     override fun getCBRRate(date: String, currency: String) = flow {
-        cbrapi.getCurrency(date).execute().body().let {
+/*        cbrapi.getCurrency(date).execute().body().let {
             it?.let {
                 emit(it.getCurrencyRate(currency)!!)
             }
-        }
+        }*/
+        emit(0.0)
     }
 
     private fun SaveTransactionModel.calculateSumRub() {

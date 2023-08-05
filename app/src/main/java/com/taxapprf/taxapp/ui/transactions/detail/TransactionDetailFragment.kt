@@ -28,7 +28,10 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(activityViewModel) { viewModel.loadTransaction(account, year, transactionKey) }
+        with(activityViewModel) {
+            viewModel.loadTransaction(account, year, transactionKey)
+            transactionKey = null
+        }
 
         prepCurrencies()
         prepTypeTransaction()
@@ -65,7 +68,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         binding.imageNewTransDate.setOnClickListener {
             showDatePicker {
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    binding.editNewTransDate.setText(viewModel.saveDate(year, month, dayOfMonth))
+                    binding.editNewTransDate.setText(viewModel.updateDate(year, month, dayOfMonth))
                 }
             }
         }
@@ -106,7 +109,8 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         }
 
         binding.editNewTransSum.doOnTextChanged { text, _, _, _ ->
-            viewModel.transactionSum = text.toString().toDouble()
+            val sum = text.toString()
+            if (sum != "") viewModel.transactionSum = sum.toDouble()
         }
 
         binding.editNewTransId.doOnTextChanged { text, _, _, _ ->
@@ -127,7 +131,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
     private fun updateUI() {
         binding.editNewTransId.setText(viewModel.transactionId)
         binding.editNewTransDate.setText(viewModel.transactionDate)
-        binding.editNewTransSum.setText(viewModel.transactionSum.toString())
+        binding.editNewTransSum.setText(if (viewModel.transactionSum == 0.0) "" else viewModel.transactionSum.toString())
         updateCurrencies(viewModel.transactionCurrency)
         updateTypeTransaction(viewModel.transactionType)
     }

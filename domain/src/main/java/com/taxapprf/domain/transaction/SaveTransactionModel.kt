@@ -34,11 +34,10 @@ data class SaveTransactionModel(
         updateYearFromDate()
     }
 
-
     init {
-        year = calendar[Calendar.YEAR].toString()
         date = dateFormat.format(calendar.time).toString()
         type = TransactionType.TRADE.name
+        updateYearFromDate()
     }
 
     fun updateYear() {
@@ -46,10 +45,14 @@ data class SaveTransactionModel(
         isYearUpdated = true
     }
 
+    fun updateFromYear(year: String) {
+        calendar[Calendar.YEAR] = year.toInt()
+        this.year = year
+        date = dateFormat.format(calendar)
+    }
+
     private fun updateYearFromDate() {
-        if (date != "") {
-            val dateSplit = date.split("/")
-            year = dateSplit[2]
-        }
+        val dateSplit = date.split("/")
+        year = dateSplit[2]
     }
 }

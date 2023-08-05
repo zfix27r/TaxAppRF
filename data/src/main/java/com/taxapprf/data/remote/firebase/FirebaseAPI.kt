@@ -12,6 +12,7 @@ import com.taxapprf.data.error.AuthErrorSessionExpired
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
 import com.taxapprf.domain.FirebaseRequestModel
+import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.user.SignUpModel
@@ -135,18 +136,20 @@ class FirebaseAPI @Inject constructor() {
             return key
         }
 
-    suspend fun deleteTransaction(transaction: SaveTransactionModel): Unit =
+    suspend fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel): Unit =
         safeAuthCall { uid ->
-            reference
-                .child(USERS)
-                .child(uid)
-                .child(ACCOUNTS)
-                .child(transaction.account)
-                .child(transaction.year)
-                .child(TRANSACTIONS)
-                .child(transaction.key!!)
-                .setValue(null)
-                .await()
+            with(deleteTransactionModel) {
+                reference
+                    .child(USERS)
+                    .child(uid)
+                    .child(ACCOUNTS)
+                    .child(account)
+                    .child(year)
+                    .child(TRANSACTIONS)
+                    .child(transactionKey)
+                    .setValue(null)
+                    .await()
+            }
         }
 
     suspend fun getYearSum(request: FirebaseRequestModel): Double =

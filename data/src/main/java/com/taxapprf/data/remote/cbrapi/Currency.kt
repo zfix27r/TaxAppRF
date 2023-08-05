@@ -1,13 +1,13 @@
+/*
 package com.taxapprf.data.remote.cbrapi
 
-import org.simpleframework.xml.ElementList
-import org.simpleframework.xml.Root
+import com.google.gson.annotations.SerializedName
 
 
-@Root(name = "ValCurs", strict = false)
 data class Currency(
+    @SerializedName("rate")
     val rate: Double? = null,
-    @ElementList(name = "Valute", inline = true)
+    @SerializedName("Valute")
     val currencies: List<CurrencyRate>? = null
 ) {
     fun getCurrencyRate(valutaCode: String): Double? {
@@ -22,4 +22,4 @@ data class Currency(
         }
         return rate
     }
-}
+}*/

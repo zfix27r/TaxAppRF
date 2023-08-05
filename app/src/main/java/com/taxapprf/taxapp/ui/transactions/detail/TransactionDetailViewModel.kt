@@ -59,7 +59,8 @@ class TransactionDetailViewModel @Inject constructor(
     fun loadTransaction(account: String, year: String, transactionKey: String?) =
         viewModelScope.launch(Dispatchers.IO) {
             saveTransaction.account = account
-            saveTransaction.year = year
+
+            if (year != "") saveTransaction.updateFromYear(year)
 
             transactionKey?.let {
                 getTransactionUseCase
@@ -74,14 +75,17 @@ class TransactionDetailViewModel @Inject constructor(
             } ?: run { _transaction.postValue(null) }
         }
 
-    fun saveDate(year: Int, month: Int, dayOfMonth: Int): String {
+    fun updateDate(year: Int, month: Int, dayOfMonth: Int): String {
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.YEAR, year)
         calendar.set(Calendar.MONTH, month)
         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
         transactionDate = dateFormat.format(calendar.time)
+
         saveTransaction.updateYear()
+
         return transactionDate
     }
 

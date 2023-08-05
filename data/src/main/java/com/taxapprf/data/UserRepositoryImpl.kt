@@ -105,7 +105,7 @@ class UserRepositoryImpl @Inject constructor(
                                                 )
                                                 sumTaxes += transactions.last().sumRub
                                             }
-                                        taxes.add(TaxEntity(0, key, yearKey, sumTaxes))
+                                        taxes.add(TaxEntity("${account.key}-$yearKey", key, yearKey, sumTaxes))
                                     }
                             }
                     }

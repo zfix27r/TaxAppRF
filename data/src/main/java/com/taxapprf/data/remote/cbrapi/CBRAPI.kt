@@ -8,5 +8,5 @@ interface CBRAPI {
     @GET("XML_daily.asp")
     fun getCurrency(
         @Query("date_req") date: String
-    ): Call<Currency?>
+    ): Call<Currency>
 }

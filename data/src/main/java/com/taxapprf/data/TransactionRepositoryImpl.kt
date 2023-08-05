@@ -1,14 +1,18 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.error.CBRErrorRateIsEmpty
+import com.taxapprf.data.local.room.dao.TaxDao
 import com.taxapprf.data.local.room.dao.TransactionDao
+import com.taxapprf.data.local.room.entity.TaxEntity
 import com.taxapprf.data.local.room.entity.TransactionEntity
+import com.taxapprf.data.local.room.model.DeleteTransactionDataModel
 import com.taxapprf.data.local.room.model.TaxWithTransactionsDataModel
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseAPI
 import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.TransactionType
+import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.transaction.TransactionsModel
@@ -23,10 +27,11 @@ import kotlin.math.abs
 class TransactionRepositoryImpl @Inject constructor(
     private val firebase: FirebaseAPI,
     private val cbrapi: CBRAPI,
+    private val taxDao: TaxDao,
     private val transactionDao: TransactionDao,
 ) : TransactionRepository {
-    override fun getTransaction(key: String) =
-        transactionDao.getTransaction(key).map { it.toTransactionModel() }
+    override fun getTransaction(transactionKey: String) =
+        transactionDao.getTransaction(transactionKey).map { it.toTransactionModel() }
 
     private fun TransactionEntity.toTransactionModel() =
         TransactionModel(key, type, id, date, currency, rateCentralBank, sum, sumRub)
@@ -35,44 +40,54 @@ class TransactionRepositoryImpl @Inject constructor(
         transactionDao.getTransactions(account, year)
             .map { it.toTransactionsModel() }
 
-    override fun saveTransactionModel(transaction: SaveTransactionModel) =
-        flow {
-/*      getRateCentralBank.execute(saveTransaction.date, saveTransaction.currency)
-            .onStart { loading() }
-            .catch { error(it) }
-            .collectLatest {
-                saveTransaction.rateCentralBank = it
-                saveTransaction.calculateSumRub()
-                saveTransactionUseCase.execute(saveTransaction)
-                    .onStart { loading() }
-                    .catch { error(it) }
-                    .collectLatest { success(BaseState.Edited) }
-            }*/
+    override fun saveTransactionModel(transaction: SaveTransactionModel) = flow {
+        with(transaction) {
+            updateCBRRate()
+            updateSumRub()
 
-            transaction.updateCBRRate()
-            transaction.updateSumRub()
-
-            transaction.key?.let {
-                if (transaction.isYearUpdated) firebase.deleteTransaction(transaction)
+            key?.let {
+                if (isYearUpdated) {
+                    val request = DeleteTransactionModel(account, year, it)
+                    deleteTransaction(request)
+                }
                 firebase.updateTransaction(transaction)
             } ?: run {
-                val key = firebase.addTransaction(transaction)
-                transaction.key = key
+                key = firebase.addTransaction(transaction)
                 //transaction.updateFirebaseYear()
             }
 
-            transactionDao.saveTransaction(transaction.toTransactionEntity())
-            emit(Unit)
+            val sum = transactionDao.getTransactionsTax(account, year)
+            val tax = TaxEntity("$account-$year", account, year, sum)
+            taxDao.saveTax(tax)
+
+            transactionDao.saveTransaction(toTransactionEntity())
         }
-
-    private fun SaveTransactionModel.updateCBRRate() =
-        cbrapi.getCurrency(date).execute()
-            .body()?.getCurrencyRate(currency)
-            ?: throw CBRErrorRateIsEmpty()
-
-    override fun deleteTransaction(requestModel: FirebaseRequestModel) = flow {
-        // emit(firebase.deleteTransaction(requestModel))
         emit(Unit)
+    }
+
+    override fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) = flow {
+        deleteTransactionModel.deleteTransaction()
+        emit(Unit)
+    }
+
+    private suspend fun DeleteTransactionModel.deleteTransaction() {
+        firebase.deleteTransaction(this)
+        transactionDao.deleteTransaction(this.transactionKey)
+    }
+
+    override fun deleteTransactions(deleteTransactionModel: DeleteTransactionModel) = flow {
+        with(deleteTransactionModel) {
+            firebase.deleteTransaction(deleteTransactionModel)
+            val deleteTransaction = DeleteTransactionDataModel(account, year)
+            transactionDao.deleteTransactions(deleteTransaction)
+        }
+        emit(Unit)
+    }
+
+    private fun SaveTransactionModel.updateCBRRate() {
+        rateCentralBank = cbrapi.getCurrency(date).execute().body()
+            ?.getCurrencyRate(currency)
+            ?: throw CBRErrorRateIsEmpty()
     }
 
     override fun getYearSum(requestModel: FirebaseRequestModel) = flow {
@@ -98,12 +113,13 @@ class TransactionRepositoryImpl @Inject constructor(
 
     private fun SaveTransactionModel.updateSumRub() {
         val k = when (TransactionType.valueOf(type)) {
-            TransactionType.TRADE -> 1
             TransactionType.FUNDING_WITHDRAWAL -> 0
             TransactionType.COMMISSION -> {
                 sum = abs(sum)
                 -1
             }
+
+            else -> 1
         }
 
         var sumRubBigDecimal = BigDecimal(sum * rateCentralBank * 0.13 * k)

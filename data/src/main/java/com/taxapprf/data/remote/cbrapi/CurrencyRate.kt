@@ -1,21 +1,19 @@
+/*
 package com.taxapprf.data.remote.cbrapi
 
-import org.simpleframework.xml.Element
-import org.simpleframework.xml.Root
+import com.google.gson.annotations.SerializedName
 
-
-@Root(name = "Valute", strict = false)
 data class CurrencyRate(
-    @Element(name = "CharCode")
+    @SerializedName("CharCode")
     val charCode: String? = null,
-    @Element(name = "Nominal")
+    @SerializedName("Nominal")
     val nominal: Int? = 0,
 
-    @Element(name = "Name")
+    @SerializedName("Name")
     val name: String? = null,
 
-    @Element(name = "Value")
+    @SerializedName("Value")
     val value: String? = null
 ) {
     fun getValue() = value!!.replace(',', '.').toDouble()
-}
+}*/

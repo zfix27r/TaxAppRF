@@ -22,5 +22,5 @@ class MainViewModel @Inject constructor(
 
     var account: String = ""
     var year: String = ""
-    var transactionKey = ""
+    var transactionKey: String? = null
 }
