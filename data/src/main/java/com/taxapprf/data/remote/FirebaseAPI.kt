@@ -11,12 +11,10 @@ import com.taxapprf.data.error.AuthError
 import com.taxapprf.data.error.AuthErrorSessionExpired
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
-import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.user.SignUpModel
-import com.taxapprf.domain.report.SaveYearSumModel
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -189,30 +187,6 @@ class FirebaseAPI @Inject constructor() {
                 .child(request.year)
                 .setValue(null)
                 .await()
-        }
-
-    suspend fun saveYearSum(
-        request: FirebaseRequestModel,
-        saveYearSumModel: SaveYearSumModel
-    ) =
-        safeAuthCall { uid ->
-/*
-            val oldYearSum = getYearSum(firebaseModel)
-            val bigYearSum = BigDecimal(oldYearSum)
-            bigYearSum.add(BigDecimal(yearSum))
-
-            refUsersUidAccountAidYearSum
-                .setValue(bigYearSum.toDouble())
-                .await()
-
-            reference
-                .child(USERS)
-                .child(uid)
-                .child(ACCOUNTS)
-                .child(request.account)
-                .child(request.year)
-                .child(KEY_ACCOUNTS_SUM_TAXES)
-*/
         }
 
     suspend fun deleteYearSum(request: FirebaseRequestModel): Unit =

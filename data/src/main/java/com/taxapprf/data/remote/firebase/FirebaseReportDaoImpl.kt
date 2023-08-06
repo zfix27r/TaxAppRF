@@ -1,25 +1,40 @@
 package com.taxapprf.data.remote.firebase
 
-import com.google.firebase.database.DatabaseReference
 import com.taxapprf.data.remote.firebase.dao.FirebaseReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
+import com.taxapprf.data.safeCall
+import com.taxapprf.domain.report.DeleteReportModel
+import com.taxapprf.domain.report.SaveReportModel
 import kotlinx.coroutines.tasks.await
 
 
 class FirebaseReportDaoImpl(
-    private val reference: DatabaseReference
+    private val fb: FirebaseAPI,
 ) : FirebaseReportDao {
     override suspend fun getReports(accountKey: String): List<FirebaseReportModel> =
-        reference
-            .child(REPORTS)
-            .child(accountKey)
-            .get()
-            .await()
-            .children
-            .mapNotNull { it.getValue(FirebaseReportModel::class.java) }
+        safeCall {
+            fb.getReportsPath(accountKey)
+                .get()
+                .await()
+                .children
+                .mapNotNull { it.getValue(FirebaseReportModel::class.java) }
+        }
 
+    override suspend fun addReport(saveReportModel: SaveReportModel) {
+        TODO("Not yet implemented")
+    }
 
-    companion object {
-        const val REPORTS = "reports"
+    override suspend fun updateReport(saveReportModel: SaveReportModel) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteReport(deleteReportModel: DeleteReportModel) {
+        safeCall {
+            with(deleteReportModel) {
+                fb.getReportPath(accountKey, yearKey)
+                    .setValue(null)
+                    .await()
+            }
+        }
     }
 }

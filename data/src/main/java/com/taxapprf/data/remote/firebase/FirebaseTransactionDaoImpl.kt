@@ -1,87 +1,76 @@
 package com.taxapprf.data.remote.firebase
 
-import com.google.firebase.database.DatabaseReference
-import com.taxapprf.data.error.AuthError
+import com.taxapprf.data.error.DataErrorPassKeyIsEmpty
 import com.taxapprf.data.remote.firebase.dao.FirebaseTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.transaction.DeleteTransactionModel
+import com.taxapprf.domain.transaction.GetTransactionModel
+import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
 class FirebaseTransactionDaoImpl @Inject constructor(
-    private val reference: DatabaseReference
+    private val fb: FirebaseAPI,
 ) : FirebaseTransactionDao {
-    override suspend fun getTransactions(accountKey: String, reportKey: String) =
+    override suspend fun getTransactions(getTransactionsModel: GetTransactionsModel) =
         safeCall {
-            reference
-                .child(TRANSACTIONS)
-                .child(accountKey)
-                .child(reportKey)
+            fb.getTransactionsPath(getTransactionsModel)
                 .get()
                 .await()
                 .children
                 .mapNotNull { it.getValue(FirebaseTransactionModel::class.java) }
         }
 
-    suspend fun getTransaction(accountKey: String, reportKey: String, transactionKey: String) =
+    override suspend fun getTransaction(getTransactionModel: GetTransactionModel) =
         safeCall {
-            reference
-                .child(TRANSACTIONS)
-                .child(accountKey)
-                .child(reportKey)
-                .child(transactionKey)
+            fb.getTransactionPath(getTransactionModel)
                 .get()
                 .await()
                 .getValue(FirebaseTransactionModel::class.java)
         }
 
-    override suspend fun updateTransaction(transaction: SaveTransactionModel) {
+    override suspend fun updateTransaction(saveTransactionModel: SaveTransactionModel) {
         safeCall {
-            reference
-                .child(TRANSACTIONS)
-                .child(transaction.account)
-                .child(transaction.year)
-                .child(transaction.key!!)
-                .setValue(transaction)
-                .await()
+            with(saveTransactionModel) {
+                key?.let {
+                    fb.getTransactionPath(toGetTransactionModel())
+                        .setValue(saveTransactionModel)
+                        .await()
+                } ?: throw DataErrorPassKeyIsEmpty()
+            }
         }
     }
 
-    override suspend fun addTransaction(transaction: SaveTransactionModel) {
+    private fun SaveTransactionModel.toGetTransactionModel() =
+        GetTransactionModel(account, year, key!!)
+
+    override suspend fun addTransaction(saveTransactionModel: SaveTransactionModel) {
         safeCall {
-            val tReference = reference
-                .child(TRANSACTIONS)
-                .child(transaction.account)
-                .child(transaction.year)
+            with(saveTransactionModel) {
+                val key = fb.getTransactionPath(toGetTransactionModel())
+                    .push().key ?: throw DataErrorPassKeyIsEmpty()
 
-            val key = tReference.push().key ?: throw AuthError()
-            transaction.key = key
-
-            tReference
-                .child(key)
-                .setValue(transaction)
-                .await()
+                fb.getTransactionPath(toGetTransactionModel())
+                    .child(key)
+                    .setValue(saveTransactionModel)
+                    .await()
+            }
         }
     }
 
     override suspend fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) {
         safeCall {
             with(deleteTransactionModel) {
-                reference
-                    .child(TRANSACTIONS)
-                    .child(accountKey)
-                    .child(reportKey)
-                    .child(transactionKey)
+                fb.getTransactionPath(toGetTransactionModel())
                     .setValue(null)
                     .await()
             }
         }
     }
 
-    companion object {
-        const val TRANSACTIONS = "transactions"
-    }
+    private fun DeleteTransactionModel.toGetTransactionModel() =
+        GetTransactionModel(accountKey, reportKey, transactionKey)
 }

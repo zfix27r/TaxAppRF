@@ -7,6 +7,8 @@ import com.taxapprf.data.local.room.AppDatabase
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseAPI
 import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
+import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
+import com.taxapprf.data.remote.firebase.FirebaseUserDaoImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -73,5 +75,13 @@ object DataModule {
 
     @Singleton
     @Provides
+    fun provideFirebaseUserDao(firebaseAPI: FirebaseAPI) = FirebaseUserDaoImpl(firebaseAPI)
+
+    @Singleton
+    @Provides
     fun provideFirebaseAccountDao(firebaseAPI: FirebaseAPI) = FirebaseAccountDaoImpl(firebaseAPI)
+
+    @Singleton
+    @Provides
+    fun provideFirebaseReportDao(firebaseAPI: FirebaseAPI) = FirebaseReportDaoImpl(firebaseAPI)
 }

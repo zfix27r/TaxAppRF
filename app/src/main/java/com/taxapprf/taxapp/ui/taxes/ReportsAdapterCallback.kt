@@ -1,5 +1,5 @@
 package com.taxapprf.taxapp.ui.taxes
 
-interface TaxesAdapterCallback {
+interface ReportsAdapterCallback {
     fun onClick(year: String)
 }

@@ -1,22 +1,21 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.error.CBRErrorRateIsEmpty
-import com.taxapprf.data.local.room.dao.TaxDao
-import com.taxapprf.data.local.room.dao.TransactionDao
 import com.taxapprf.data.local.room.entity.TaxEntity
 import com.taxapprf.data.local.room.entity.TransactionEntity
 import com.taxapprf.data.local.room.model.DeleteTransactionDataModel
 import com.taxapprf.data.local.room.model.TaxWithTransactionsDataModel
 import com.taxapprf.data.remote.cbrapi.CBRAPI
-import com.taxapprf.data.remote.FirebaseAPI
-import com.taxapprf.domain.FirebaseRequestModel
+import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
 import com.taxapprf.domain.TransactionRepository
-import com.taxapprf.domain.TransactionType
+import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.domain.transaction.DeleteTransactionModel
+import com.taxapprf.domain.transaction.GetTransactionModel
+import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.transaction.TransactionsModel
-import com.taxapprf.domain.report.SaveYearSumModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.math.BigDecimal
@@ -25,12 +24,11 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 class TransactionRepositoryImpl @Inject constructor(
-    private val firebase: FirebaseAPI,
+    private val firebaseTransactionDao: FirebaseTransactionDaoImpl,
     private val cbrapi: CBRAPI,
-    private val taxDao: TaxDao,
-    private val transactionDao: TransactionDao,
 ) : TransactionRepository {
     override fun getTransaction(transactionKey: String) =
+        firebaseTransactionDao.getTransaction()
         transactionDao.getTransaction(transactionKey).map { it.toTransactionModel() }
 
     private fun TransactionEntity.toTransactionModel() =
@@ -39,6 +37,14 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getTransactions(account: String, year: String) =
         transactionDao.getTransactions(account, year)
             .map { it.toTransactionsModel() }
+
+    override fun getTransaction(getTransactionModel: GetTransactionModel): Flow<TransactionModel> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getTransactions(getTransactionsModel: GetTransactionsModel): Flow<TransactionsModel?> {
+        TODO("Not yet implemented")
+    }
 
     override fun saveTransactionModel(transaction: SaveTransactionModel) = flow {
         with(transaction) {
@@ -92,10 +98,6 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override fun getYearSum(requestModel: FirebaseRequestModel) = flow {
         emit(firebase.getYearSum(requestModel))
-    }
-
-    override fun saveYearSum(saveYearSumModel: SaveYearSumModel) = flow<Unit> {
-//        emit(firebase.saveYearSum(saveYearSumModel))
     }
 
     override fun deleteYearSum(requestModel: FirebaseRequestModel) = flow {

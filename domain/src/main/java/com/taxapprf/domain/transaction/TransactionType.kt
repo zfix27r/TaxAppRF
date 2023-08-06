@@ -1,4 +1,4 @@
-package com.taxapprf.domain
+package com.taxapprf.domain.transaction
 
 enum class TransactionType {
     TRADE,

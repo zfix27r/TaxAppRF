@@ -1,6 +1,5 @@
 package com.taxapprf.domain.transaction
 
-import com.taxapprf.domain.TransactionType
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

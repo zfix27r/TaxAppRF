@@ -3,7 +3,6 @@ package com.taxapprf.taxapp.ui.taxes
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -11,15 +10,14 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTaxesBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
-import com.taxapprf.taxapp.ui.transactions.TransactionsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
     private val binding by viewBinding(FragmentTaxesBinding::bind)
-    private val viewModel by viewModels<TaxesViewModel>()
-    private val adapter = TaxesAdapter {
-        object : TaxesAdapterCallback {
+    private val viewModel by viewModels<ReportsViewModel>()
+    private val adapter = ReportsAdapter {
+        object : ReportsAdapterCallback {
             override fun onClick(year: String) {
                 navToTransactions(year)
             }
@@ -28,7 +26,7 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.getTaxes(activityViewModel.account)
+        viewModel.loadReports(activityViewModel.account)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,13 +37,13 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
         binding.recyclerYearStatements.adapter = adapter
 
         viewModel.attachToBaseFragment()
-        viewModel.taxes.observe(viewLifecycleOwner) { adapter.submitList(it) }
+        viewModel.reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             PICK_FILE_RESULT_CODE -> {
-                viewModel.saveTaxesFromExcel(data)
+                viewModel.saveReportsFromExcel(data)
             }
         }
     }

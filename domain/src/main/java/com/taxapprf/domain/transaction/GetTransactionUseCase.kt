@@ -6,6 +6,6 @@ import javax.inject.Inject
 class GetTransactionUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
-    fun execute(transactionKey: String) =
-        repository.getTransaction(transactionKey)
+    fun execute(getTransactionModel: GetTransactionModel) =
+        repository.getTransaction(getTransactionModel)
 }

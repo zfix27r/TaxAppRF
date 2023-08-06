@@ -4,10 +4,9 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.FirebaseRequestModel
-import com.taxapprf.domain.taxes.GetTaxesUseCase
-import com.taxapprf.domain.taxes.SaveTaxesFromExcelUseCase
-import com.taxapprf.domain.taxes.ReportAdapterModel
+import com.taxapprf.domain.report.GetReportsUseCase
+import com.taxapprf.domain.report.SaveReportsFromExcelUseCase
+import com.taxapprf.domain.report.ReportAdapterModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,28 +18,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TaxesViewModel @Inject constructor(
-    private val getTaxesUseCase: GetTaxesUseCase,
-    private val saveTaxesFromExcel: SaveTaxesFromExcelUseCase
+class ReportsViewModel @Inject constructor(
+    private val getReportsUseCase: GetReportsUseCase,
+    private val saveReportsFromExcel: SaveReportsFromExcelUseCase
 ) : BaseViewModel() {
-    private val _taxes = MutableLiveData<List<ReportAdapterModel>>()
-    val taxes: LiveData<List<ReportAdapterModel>> = _taxes
+    private val _reports = MutableLiveData<List<ReportAdapterModel>>()
+    val reports: LiveData<List<ReportAdapterModel>> = _reports
 
-    fun getTaxes(account: String) = viewModelScope.launch(Dispatchers.IO) {
-        val request = FirebaseRequestModel(account)
-
-        getTaxesUseCase.execute(request)
+    fun loadReports(accountKey: String) = viewModelScope.launch(Dispatchers.IO) {
+        getReportsUseCase.execute(accountKey)
             .onStart { loading() }
             .catch { error(it) }
             .onEach { if (it.isEmpty()) successWithEmpty() }
             .collectLatest {
                 success()
-                _taxes.postValue(it)
+                _reports.postValue(it)
             }
     }
 
-    fun saveTaxesFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {
-        saveTaxesFromExcel.execute(intent!!.data!!.path!!)
+    fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {
+        saveReportsFromExcel.execute(intent!!.data!!.path!!)
             .onStart { loading() }
             .catch { error(it) }
             .collectLatest { success() }

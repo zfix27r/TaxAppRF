@@ -2,12 +2,12 @@ package com.taxapprf.taxapp.di
 
 import com.taxapprf.data.AccountRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
-import com.taxapprf.data.TaxRepositoryImpl
+import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
-import com.taxapprf.domain.taxes.DeleteTaxUseCase
-import com.taxapprf.domain.taxes.GetTaxesUseCase
-import com.taxapprf.domain.taxes.SaveTaxesFromExcelUseCase
+import com.taxapprf.domain.report.DeleteReportUseCase
+import com.taxapprf.domain.report.GetReportsUseCase
+import com.taxapprf.domain.report.SaveReportsFromExcelUseCase
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
@@ -19,9 +19,6 @@ import com.taxapprf.domain.user.SaveAccountUseCase
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SignUpUseCase
-import com.taxapprf.domain.report.DeleteYearSumUseCase
-import com.taxapprf.domain.report.GetYearSumUseCase
-import com.taxapprf.domain.report.SaveYearSumUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,7 +56,7 @@ object DomainModule {
         SaveAccountUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetRateCentralBankUseCase(repositoryImpl: TaxRepositoryImpl) =
+    fun provideGetRateCentralBankUseCase(repositoryImpl: ReportRepositoryImpl) =
         GetRateCentralBankUseCase(repositoryImpl)
 
     @Provides
@@ -79,26 +76,14 @@ object DomainModule {
         DeleteTransactionUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetYearSumUseCase(repositoryImpl: TransactionRepositoryImpl) =
-        GetYearSumUseCase(repositoryImpl)
+    fun provideGetTaxesUseCase(repositoryImpl: ReportRepositoryImpl) =
+        GetReportsUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetTaxesUseCase(repositoryImpl: TaxRepositoryImpl) =
-        GetTaxesUseCase(repositoryImpl)
+    fun provideSaveTaxesFromExcelUseCase(repositoryImpl: ReportRepositoryImpl) =
+        SaveReportsFromExcelUseCase(repositoryImpl)
 
     @Provides
-    fun provideSaveTaxesFromExcelUseCase(repositoryImpl: TaxRepositoryImpl) =
-        SaveTaxesFromExcelUseCase(repositoryImpl)
-
-    @Provides
-    fun provideDeleteTaxUseCase(repositoryImpl: TaxRepositoryImpl) =
-        DeleteTaxUseCase(repositoryImpl)
-
-    @Provides
-    fun provideSaveYearSumUseCase(repositoryImpl: TransactionRepositoryImpl) =
-        SaveYearSumUseCase(repositoryImpl)
-
-    @Provides
-    fun provideDeleteYearSumUseCase(repositoryImpl: TransactionRepositoryImpl) =
-        DeleteYearSumUseCase(repositoryImpl)
+    fun provideDeleteTaxUseCase(repositoryImpl: ReportRepositoryImpl) =
+        DeleteReportUseCase(repositoryImpl)
 }

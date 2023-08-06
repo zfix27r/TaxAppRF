@@ -4,19 +4,19 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.taxapprf.domain.taxes.ReportAdapterModel
+import com.taxapprf.domain.report.ReportAdapterModel
 import com.taxapprf.taxapp.databinding.FragmentTaxesAdapterItemBinding
 
-class TaxesAdapter(
-    private val callback: () -> TaxesAdapterCallback,
-) : ListAdapter<ReportAdapterModel, TaxesAdapterViewHolder>(DiffCallback()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxesAdapterViewHolder {
+class ReportsAdapter(
+    private val callback: () -> ReportsAdapterCallback,
+) : ListAdapter<ReportAdapterModel, ReportsAdapterViewHolder>(DiffCallback()) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportsAdapterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = FragmentTaxesAdapterItemBinding.inflate(inflater, parent, false)
-        return TaxesAdapterViewHolder(binding, callback.invoke())
+        return ReportsAdapterViewHolder(binding, callback.invoke())
     }
 
-    override fun onBindViewHolder(holder: TaxesAdapterViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ReportsAdapterViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
@@ -24,7 +24,7 @@ class TaxesAdapter(
         override fun areItemsTheSame(
             oldItem: ReportAdapterModel,
             newItem: ReportAdapterModel
-        ) = oldItem.year == newItem.year
+        ) = oldItem.name == newItem.name
 
         override fun areContentsTheSame(
             oldItem: ReportAdapterModel,

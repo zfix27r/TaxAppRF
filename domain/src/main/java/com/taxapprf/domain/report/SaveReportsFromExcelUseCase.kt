@@ -1,9 +1,9 @@
-package com.taxapprf.domain.taxes
+package com.taxapprf.domain.report
 
 import com.taxapprf.domain.ReportRepository
 import javax.inject.Inject
 
-class SaveTaxesFromExcelUseCase @Inject constructor(
+class SaveReportsFromExcelUseCase @Inject constructor(
     private val repository: ReportRepository
 ) {
     fun execute(storagePath: String) =

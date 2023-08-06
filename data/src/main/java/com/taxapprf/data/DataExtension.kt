@@ -7,6 +7,11 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.taxapprf.data.error.AuthError
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
+import com.taxapprf.domain.transaction.TransactionType
+import com.taxapprf.domain.transaction.SaveTransactionModel
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.math.abs
 
 inline fun <T> safeCall(call: () -> T): T {
     return try {
@@ -22,4 +27,19 @@ fun Exception.toAppError() = when (this) {
     is FirebaseAuthInvalidUserException -> SignInErrorWrongPassword()
     is FirebaseException -> AuthError()
     else -> this
+}
+
+fun SaveTransactionModel.calculateSumRub() {
+    val k = when (TransactionType.valueOf(type)) {
+        TransactionType.TRADE -> 1
+        TransactionType.FUNDING_WITHDRAWAL -> 0
+        TransactionType.COMMISSION -> {
+            sum = abs(sum)
+            -1
+        }
+    }
+
+    var sumRubBigDecimal = BigDecimal(sum * rateCentralBank * 0.13 * k)
+    sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP)
+    sumRub = sumRubBigDecimal.toDouble()
 }

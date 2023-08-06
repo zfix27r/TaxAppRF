@@ -1,4 +1,4 @@
-package com.taxapprf.domain.taxes
+package com.taxapprf.domain.report
 
 data class ReportAdapterModel(
     val name: String,
