@@ -43,27 +43,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.observeUser()
-    }
+        if (viewModel.isSignIn) {
+            navController.setGraph(R.navigation.mobile_navigation)
+            setSupportActionBar(binding.appBarMain.toolbar)
+            setupActionBarWithNavController(
+                this@MainActivity,
+                navController,
+                mAppBarConfiguration
+            )
+            setupWithNavController(binding.navView, navController)
+            prepDrawer()
 
-    private fun MainViewModel.observeUser() {
-        user.observe(this@MainActivity) { user ->
-            user?.let {
-                viewModel.name = it.name
-                viewModel.email = it.email
-                viewModel.phone = it.phone
-                viewModel.account = it.account!!
-
-                navController.setGraph(R.navigation.mobile_navigation)
-                setSupportActionBar(binding.appBarMain.toolbar)
-                setupActionBarWithNavController(
-                    this@MainActivity,
-                    navController,
-                    mAppBarConfiguration
-                )
-                setupWithNavController(binding.navView, navController)
-                prepDrawer()
-            }
         }
     }
 

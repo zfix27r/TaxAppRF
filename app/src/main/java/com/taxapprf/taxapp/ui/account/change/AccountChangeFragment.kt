@@ -58,13 +58,13 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
 
     private fun accountCreate() {
         val accountName = binding.editChangeAccountName.text.toString()
-        viewModel.saveAccount(activityViewModel.name, accountName)
+        viewModel.saveAccount(accountName)
     }
 
     private fun accountOpen() {
         binding.spinnerChangeAccount.selectedItem?.let {
             val accountName = it as String
-            viewModel.saveAccount(activityViewModel.name, accountName)
+            viewModel.saveAccount(accountName)
         }
     }
 

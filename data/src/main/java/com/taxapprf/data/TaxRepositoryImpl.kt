@@ -3,13 +3,10 @@ package com.taxapprf.data
 import com.taxapprf.data.local.room.dao.TaxDao
 import com.taxapprf.data.local.room.dao.TransactionDao
 import com.taxapprf.data.local.room.entity.TaxEntity
-import com.taxapprf.data.local.room.entity.TransactionEntity
 import com.taxapprf.data.local.room.model.DeleteTaxDataModel
 import com.taxapprf.data.local.room.model.DeleteTransactionDataModel
 import com.taxapprf.data.remote.cbrapi.CBRAPI
-import com.taxapprf.data.remote.firebase.FirebaseAPI
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.getAsDouble
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.getAsString
+import com.taxapprf.data.remote.FirebaseAPI
 import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.TaxRepository
 import com.taxapprf.domain.TransactionType
@@ -17,8 +14,6 @@ import com.taxapprf.domain.taxes.TaxAdapterModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEmpty
 import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
@@ -30,10 +25,21 @@ class TaxRepositoryImpl @Inject constructor(
     private val transactionDao: TransactionDao,
     private val cbrapi: CBRAPI,
 ) : TaxRepository {
-    override fun getTaxes(request: FirebaseRequestModel) =
-        taxDao.getTaxes(request.account)
-            .onEmpty { getAndSaveFirebaseAccountData(request) }
-            .map { it.toListTaxAdapterModel() }
+    override fun getTaxes(request: FirebaseRequestModel) = flow {
+        emit(
+            firebaseAPI.getTaxes(request).mapNotNull { ds ->
+                ds.key?.let {
+                    TaxAdapterModel(
+                        it, ds.child(FirebaseAPI.KEY_ACCOUNTS_SUM_TAXES).value.toString()
+                    )
+                }
+            }
+        )
+    }
+
+    /*        taxDao.getTaxes(request.account)
+                .onEmpty { getAndSaveFirebaseAccountData(request) }
+                .map { it.toListTaxAdapterModel() }*/
 
     private suspend fun getAndSaveFirebaseAccountData(request: FirebaseRequestModel) {
         /*        firebaseAPI.getTaxes(request)

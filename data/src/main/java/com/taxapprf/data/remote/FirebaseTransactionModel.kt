@@ -1,4 +1,4 @@
-package com.taxapprf.data.remote.firebase
+package com.taxapprf.data.remote
 
 class FirebaseTransactionModel {
     var key: String? = null

@@ -8,7 +8,7 @@ import com.taxapprf.data.local.room.entity.TransactionEntity
 import com.taxapprf.data.local.room.model.DeleteTransactionDataModel
 import com.taxapprf.data.local.room.model.TaxWithTransactionsDataModel
 import com.taxapprf.data.remote.cbrapi.CBRAPI
-import com.taxapprf.data.remote.firebase.FirebaseAPI
+import com.taxapprf.data.remote.FirebaseAPI
 import com.taxapprf.domain.FirebaseRequestModel
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.TransactionType
@@ -78,7 +78,7 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun deleteTransactions(deleteTransactionModel: DeleteTransactionModel) = flow {
         with(deleteTransactionModel) {
             firebase.deleteTransaction(deleteTransactionModel)
-            val deleteTransaction = DeleteTransactionDataModel(account, year)
+            val deleteTransaction = DeleteTransactionDataModel(accountKey, reportKey)
             transactionDao.deleteTransactions(deleteTransaction)
         }
         emit(Unit)

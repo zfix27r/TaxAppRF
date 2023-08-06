@@ -33,8 +33,8 @@ class AccountSelectViewModel @Inject constructor(
             .collectLatest { success(BaseState.LogOut) }
     }
 
-    fun saveAccount(userName: String, accountName: String) = viewModelScope.launch(Dispatchers.IO) {
-        val accountModel = SaveAccountModel(userName, accountName)
+    fun saveAccount(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
+        val accountModel = SaveAccountModel(accountName)
         saveAccountUseCase.execute(accountModel)
             .onStart { loading() }
             .catch { error(it) }

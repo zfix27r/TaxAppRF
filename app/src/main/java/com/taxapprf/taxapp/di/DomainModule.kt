@@ -14,6 +14,7 @@ import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.user.GetAccountsUseCase
 import com.taxapprf.domain.user.GetUserUseCase
+import com.taxapprf.domain.user.IsSignInUseCase
 import com.taxapprf.domain.user.SaveAccountUseCase
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
@@ -40,6 +41,10 @@ object DomainModule {
     @Provides
     fun provideSignOutUseCase(repositoryImpl: UserRepositoryImpl) =
         SignOutUseCase(repositoryImpl)
+
+    @Provides
+    fun provideIsSignInUseCase(repositoryImpl: UserRepositoryImpl) =
+        IsSignInUseCase(repositoryImpl)
 
     @Provides
     fun provideGetUserUseCase(repositoryImpl: UserRepositoryImpl) =

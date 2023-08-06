@@ -26,6 +26,11 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.getTaxes(activityViewModel.account)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -35,7 +40,6 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
 
         viewModel.attachToBaseFragment()
         viewModel.taxes.observe(viewLifecycleOwner) { adapter.submitList(it) }
-        viewModel.getTaxes(activityViewModel.account)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

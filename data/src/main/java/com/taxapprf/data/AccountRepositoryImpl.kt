@@ -1,28 +1,38 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.local.room.dao.AccountDao
-import com.taxapprf.data.local.room.entity.AccountEntity
+import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
+import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
 import com.taxapprf.domain.AccountRepository
 import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.SaveAccountModel
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AccountRepositoryImpl @Inject constructor(
-    private val dao: AccountDao
+    private val firebaseAccountDao: FirebaseAccountDaoImpl,
 ) : AccountRepository {
-    override fun getAccounts() = dao.getAccounts().map { it.toAccountModel() }
+    override fun getAccounts() = flow {
+        val accounts = firebaseAccountDao.getAccounts().toListAccountModel()
+        if (accounts.isEmpty()) {
+            firebaseAccountDao.saveDefaultAccount()
+            emit(firebaseAccountDao.getAccounts().toListAccountModel())
+        } else emit(accounts)
+    }
 
     override fun saveAccount(saveAccountModel: SaveAccountModel) = flow {
-        if (saveAccountModel.active) dao.resetActiveAccount()
-        dao.saveAccount(saveAccountModel.toAccountEntity())
+        firebaseAccountDao.saveAccount(saveAccountModel.toFirebaseAccountModel())
         emit(Unit)
     }
 
-    private fun SaveAccountModel.toAccountEntity() =
-        AccountEntity(name.trim(), active)
+    private fun List<FirebaseAccountModel>.toListAccountModel() = mapNotNull {
+        with(it) {
+            AccountModel(
+                name = name ?: "",
+                active = active ?: false
+            )
+        }
+    }
 
-    private fun List<AccountEntity>.toAccountModel() =
-        map { AccountModel(it.name, it.active) }
+    private fun SaveAccountModel.toFirebaseAccountModel() =
+        FirebaseAccountModel(name.trim(), active)
 }
