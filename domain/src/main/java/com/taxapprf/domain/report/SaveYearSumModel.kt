@@ -1,4 +1,4 @@
-package com.taxapprf.domain.year
+package com.taxapprf.domain.report
 
 data class SaveYearSumModel(
     val account: String,

@@ -1,7 +1,6 @@
-package com.taxapprf.domain.year
+package com.taxapprf.domain.report
 
 import com.taxapprf.domain.TransactionRepository
-import com.taxapprf.domain.year.SaveYearSumModel
 import javax.inject.Inject
 
 class SaveYearSumUseCase @Inject constructor(

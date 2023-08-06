@@ -16,7 +16,7 @@ import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.transaction.TransactionsModel
-import com.taxapprf.domain.year.SaveYearSumModel
+import com.taxapprf.domain.report.SaveYearSumModel
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.math.BigDecimal

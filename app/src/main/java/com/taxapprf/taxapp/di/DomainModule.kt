@@ -19,9 +19,9 @@ import com.taxapprf.domain.user.SaveAccountUseCase
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SignUpUseCase
-import com.taxapprf.domain.year.DeleteYearSumUseCase
-import com.taxapprf.domain.year.GetYearSumUseCase
-import com.taxapprf.domain.year.SaveYearSumUseCase
+import com.taxapprf.domain.report.DeleteYearSumUseCase
+import com.taxapprf.domain.report.GetYearSumUseCase
+import com.taxapprf.domain.report.SaveYearSumUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
