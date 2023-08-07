@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.report.GetReportsUseCase
 import com.taxapprf.domain.report.SaveReportsFromExcelUseCase
-import com.taxapprf.domain.report.ReportAdapterModel
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,8 +22,8 @@ class ReportsViewModel @Inject constructor(
     private val getReportsUseCase: GetReportsUseCase,
     private val saveReportsFromExcel: SaveReportsFromExcelUseCase
 ) : BaseViewModel() {
-    private val _reports = MutableLiveData<List<ReportAdapterModel>>()
-    val reports: LiveData<List<ReportAdapterModel>> = _reports
+    private val _reports = MutableLiveData<List<ReportModel>>()
+    val reports: LiveData<List<ReportModel>> = _reports
 
     fun loadReports(accountKey: String) = viewModelScope.launch(Dispatchers.IO) {
         getReportsUseCase.execute(accountKey)

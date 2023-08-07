@@ -3,17 +3,16 @@ package com.taxapprf.data.remote.firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.taxapprf.data.error.AuthError
-import com.taxapprf.domain.transaction.GetTransactionModel
-import com.taxapprf.domain.transaction.GetTransactionsModel
+import com.taxapprf.domain.FirebasePathModel
 import javax.inject.Inject
 
 
 class FirebaseAPI @Inject constructor() {
-    private val database = FirebaseDatabase.getInstance()//.apply { setPersistenceEnabled(true) }
-    private val reference = database.reference
+    private val database = FirebaseDatabase.getInstance().apply { setPersistenceEnabled(true) }
+    val reference = database.reference
 
     val auth = FirebaseAuth.getInstance()
-    private val uid: String
+    val uid: String
         get() = auth.currentUser?.uid ?: throw AuthError()
 
     fun getAccountsPath() = reference
@@ -27,27 +26,19 @@ class FirebaseAPI @Inject constructor() {
         .child(REPORTS)
         .child(accountKey)
 
-    fun getReportPath(accountKey: String, yearKey: String) = reference
+    fun getReportPath(firebasePathModel: FirebasePathModel) = reference
         .child(USERS)
         .child(uid)
         .child(REPORTS)
-        .child(accountKey)
-        .child(yearKey)
+        .child(firebasePathModel.accountName)
+        .child(firebasePathModel.year)
 
-    fun getTransactionsPath(getTransactionsModel: GetTransactionsModel) = reference
+    fun getTransactionsPath(firebasePathModel: FirebasePathModel) = reference
         .child(USERS)
         .child(uid)
         .child(TRANSACTIONS)
-        .child(getTransactionsModel.accountKey)
-        .child(getTransactionsModel.reportKey)
-
-    fun getTransactionPath(getTransactionModel: GetTransactionModel) = reference
-        .child(USERS)
-        .child(uid)
-        .child(TRANSACTIONS)
-        .child(getTransactionModel.accountKey)
-        .child(getTransactionModel.reportKey)
-        .child(getTransactionModel.transactionKey)
+        .child(firebasePathModel.accountName)
+        .child(firebasePathModel.year)
 
     companion object {
         const val USERS = "users"

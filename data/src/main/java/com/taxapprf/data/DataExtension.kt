@@ -29,7 +29,7 @@ fun Exception.toAppError() = when (this) {
     else -> this
 }
 
-fun SaveTransactionModel.calculateSumRub() {
+fun SaveTransactionModel.calculateTax() {
     val k = when (TransactionType.valueOf(type)) {
         TransactionType.TRADE -> 1
         TransactionType.FUNDING_WITHDRAWAL -> 0
@@ -39,7 +39,5 @@ fun SaveTransactionModel.calculateSumRub() {
         }
     }
 
-    var sumRubBigDecimal = BigDecimal(sum * rateCentralBank * 0.13 * k)
-    sumRubBigDecimal = sumRubBigDecimal.setScale(2, RoundingMode.HALF_UP)
-    sumRub = sumRubBigDecimal.toDouble()
+    tax = (sum * rateCBR * 0.13 * k).toLong()
 }

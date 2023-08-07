@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTaxesBinding
 import com.taxapprf.taxapp.ui.BaseFragment
@@ -18,15 +19,15 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
     private val viewModel by viewModels<ReportsViewModel>()
     private val adapter = ReportsAdapter {
         object : ReportsAdapterCallback {
-            override fun onClick(year: String) {
-                navToTransactions(year)
+            override fun onClick(reportModel: ReportModel) {
+                navToTransactions(reportModel)
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.loadReports(activityViewModel.account)
+        viewModel.loadReports(activityViewModel.account.name)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,8 +57,8 @@ class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
         }
     }
 
-    private fun navToTransactions(year: String) {
-        activityViewModel.year = year
+    private fun navToTransactions(reportModel: ReportModel) {
+        activityViewModel.report = reportModel
         findNavController().navigate(R.id.action_taxesFragment_to_transactionsFragment)
     }
 

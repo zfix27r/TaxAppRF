@@ -34,7 +34,7 @@ class AccountSelectViewModel @Inject constructor(
     }
 
     fun saveAccount(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
-        val accountModel = SaveAccountModel(accountName)
+        val accountModel = SaveAccountModel("", accountName)
         saveAccountUseCase.execute(accountModel)
             .onStart { loading() }
             .catch { error(it) }

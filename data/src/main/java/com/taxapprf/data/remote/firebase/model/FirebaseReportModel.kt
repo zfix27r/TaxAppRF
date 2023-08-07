@@ -1,7 +1,9 @@
 package com.taxapprf.data.remote.firebase.model
 
 class FirebaseReportModel {
-    val key: String? = null
-    val name: String? = null
-    val tax: String? = null
+    constructor()
+    constructor(year: String, tax: Long)
+
+    val year: String? = null
+    val tax: Long? = null
 }

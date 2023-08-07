@@ -2,11 +2,11 @@ package com.taxapprf.taxapp.ui.transactions
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseFragment
@@ -22,8 +22,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private val viewModel by viewModels<TransactionsViewModel>()
     private val adapter = TransactionsAdapter {
         object : TransactionsAdapterCallback {
-            override fun onClick(transactionKey: String) {
-                navToTransactionDetail(transactionKey)
+            override fun onClick(transactionModel: TransactionModel) {
+                navToTransactionDetail(transactionModel)
             }
         }
     }
@@ -33,21 +33,21 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     //private val createExcelInLocal: CreateExcelInLocal? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.account = activityViewModel.account
-        viewModel.year = activityViewModel.year
+        viewModel.account = activityViewModel.account.name
+        viewModel.year = activityViewModel.report!!.year
         viewModel.loadTransactions()
 
         binding.recyclerTransactions.adapter = adapter
 
         viewModel.transactions.observe(viewLifecycleOwner) { transaction ->
             transaction?.let {
-                adapter.submitList(it.transactions)
+                adapter.submitList(it)
 
-                binding.textTransYearSum.text = String.format(
-                    getString(R.string.transactions_tax_sum),
-                    viewModel.year,
-                    it.taxSum
-                )
+                /*                binding.textTransYearSum.text = String.format(
+                                    getString(R.string.transactions_tax_sum),
+                                    viewModel.year,
+                                    it.taxSum
+                                )*/
             }
         }
 
@@ -91,7 +91,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private fun SavedStateHandle.observeDelete() {
         getLiveData<Boolean>(TRANSACTIONS_DELETE_DIALOG_RESULT).observe(viewLifecycleOwner) {
             if (it) {
-                viewModel.deleteTax(activityViewModel.account)
+                viewModel.deleteTax(activityViewModel.account.name)
             }
         }
     }
@@ -160,8 +160,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         findNavController().navigate(R.id.action_transactions_to_transactions_delete_dialog)
     }
 
-    private fun navToTransactionDetail(transactionKey: String) {
-        activityViewModel.transactionKey = transactionKey
+    private fun navToTransactionDetail(transactionModel: TransactionModel) {
+        activityViewModel.transaction = transactionModel
         findNavController().navigate(R.id.action_transactionsFragment_to_newTransactionFragment)
     }
 

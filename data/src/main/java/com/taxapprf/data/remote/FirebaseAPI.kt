@@ -1,3 +1,4 @@
+/*
 package com.taxapprf.data.remote
 
 import com.google.firebase.FirebaseException
@@ -191,6 +192,7 @@ class FirebaseAPI @Inject constructor() {
 
     suspend fun deleteYearSum(request: FirebaseRequestModel): Unit =
         safeAuthCall { uid ->
+*/
 /*            reference
                 .child(USERS)
                 .child(uid)
@@ -200,14 +202,17 @@ class FirebaseAPI @Inject constructor() {
                 .child(TRANSACTIONS)
                 .child(request.transactionKey)
                 .setValue(null)
-                .await()*/
+                .await()*//*
+
         }
 
 
     private suspend fun SaveTransactionModel.updateFirebaseYear() {
-        /*        refUsersUidAccountAidYear
+        */
+/*        refUsersUidAccountAidYear
                     .setValue(year)
-                    .await()*/
+                    .await()*//*
+
     }
 
 
@@ -287,4 +292,4 @@ class FirebaseAPI @Inject constructor() {
         fun DataSnapshot.getAsDouble(path: String) =
             child(path).getValue(Double::class.java) ?: throw AuthError()
     }
-}
+}*/

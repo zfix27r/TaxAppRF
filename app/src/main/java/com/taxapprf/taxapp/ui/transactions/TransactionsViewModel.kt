@@ -3,9 +3,10 @@ package com.taxapprf.taxapp.ui.transactions
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.FirebasePathModel
 import com.taxapprf.domain.report.DeleteReportUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
-import com.taxapprf.domain.transaction.TransactionsModel
+import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,11 +25,12 @@ class TransactionsViewModel @Inject constructor(
     lateinit var account: String
     lateinit var year: String
 
-    private val _transactions = MutableLiveData<TransactionsModel>()
-    val transactions: LiveData<TransactionsModel> = _transactions
+    private val _transactions = MutableLiveData<List<TransactionModel>>()
+    val transactions: LiveData<List<TransactionModel>> = _transactions
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
-        getTransactionsUseCase.execute(account, year)
+        val getTransactionsModel = FirebasePathModel(account, year)
+        getTransactionsUseCase.execute(getTransactionsModel)
             .onStart { loading() }
             .catch { error(it) }
             .collectLatest {

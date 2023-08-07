@@ -1,5 +1,7 @@
 package com.taxapprf.taxapp.ui.transactions
 
+import com.taxapprf.domain.transaction.TransactionModel
+
 interface TransactionsAdapterCallback {
-    fun onClick(transactionKey: String)
+    fun onClick(transactionModel: TransactionModel)
 }

@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.taxapprf.domain.report.ReportAdapterModel
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.databinding.FragmentTaxesAdapterItemBinding
 
 class ReportsAdapter(
     private val callback: () -> ReportsAdapterCallback,
-) : ListAdapter<ReportAdapterModel, ReportsAdapterViewHolder>(DiffCallback()) {
+) : ListAdapter<ReportModel, ReportsAdapterViewHolder>(DiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportsAdapterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = FragmentTaxesAdapterItemBinding.inflate(inflater, parent, false)
@@ -20,15 +20,15 @@ class ReportsAdapter(
         holder.bind(getItem(position))
     }
 
-    private class DiffCallback : DiffUtil.ItemCallback<ReportAdapterModel>() {
+    private class DiffCallback : DiffUtil.ItemCallback<ReportModel>() {
         override fun areItemsTheSame(
-            oldItem: ReportAdapterModel,
-            newItem: ReportAdapterModel
-        ) = oldItem.name == newItem.name
+            oldItem: ReportModel,
+            newItem: ReportModel
+        ) = oldItem.year == newItem.year
 
         override fun areContentsTheSame(
-            oldItem: ReportAdapterModel,
-            newItem: ReportAdapterModel
+            oldItem: ReportModel,
+            newItem: ReportModel
         ) = oldItem == newItem
     }
 }

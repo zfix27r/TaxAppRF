@@ -4,54 +4,44 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-data class SaveTransactionModel(
-    var account: String = "",
-    var year: String = "",
-    var isYearUpdated: Boolean = false,
-
-    var key: String? = null,
-    var id: String = "",
-    var type: String = "",
-    var date: String = "",
-    var currency: String = "",
-    var rateCentralBank: Double = 0.0,
-    var sum: Double = 0.0,
-    var sumRub: Double = 0.0,
-) {
+class SaveTransactionModel {
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
 
-    fun updateTransactionModel(getTransactionModel: TransactionModel) {
-        id = getTransactionModel.id
-        key = getTransactionModel.key
-        date = getTransactionModel.date
-        currency = getTransactionModel.currency
-        rateCentralBank = getTransactionModel.rateCentralBank
-        sum = getTransactionModel.sum
-        sumRub = getTransactionModel.sumRub
+    lateinit var accountName: String
+    var transactionKey: String? = null
+    var yearOld: String? = null
+    var year: String = calendar[Calendar.YEAR].toString()
 
-        updateYearFromDate()
+    var name: String = ""
+    var date: String = dateFormat.format(calendar.time)
+    var type: String = TransactionType.TRADE.name
+    // FIXME поправить, сделать подгрузку из стрингов
+    var currency: String = "USD"
+    var rateCBR: Long = 0L
+    var sum: Long = 0L
+    var tax: Long = 0L
+
+    fun from(transactionModel: TransactionModel) {
+        transactionKey = transactionModel.key
+        name = transactionModel.name
+        date = transactionModel.date
+        type = transactionModel.type
+        currency = transactionModel.currency
+        rateCBR = transactionModel.rateCBR
+        sum = transactionModel.sum
+        tax = transactionModel.tax
+
+        year = date.split("/")[2]
+        yearOld = year
     }
 
-    init {
-        date = dateFormat.format(calendar.time).toString()
-        type = TransactionType.TRADE.name
-        updateYearFromDate()
-    }
+    fun updateDate(year: Int, month: Int, dayOfMonth: Int) {
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-    fun updateYear() {
-        updateYearFromDate()
-        isYearUpdated = true
-    }
-
-    fun updateFromYear(year: String) {
-        calendar[Calendar.YEAR] = year.toInt()
-        this.year = year
         date = dateFormat.format(calendar.time)
-    }
-
-    private fun updateYearFromDate() {
-        val dateSplit = date.split("/")
-        year = dateSplit[2]
+        this.year = year.toString()
     }
 }

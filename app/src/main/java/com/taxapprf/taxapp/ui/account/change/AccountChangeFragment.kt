@@ -33,12 +33,21 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
 
         viewModel.attachToBaseFragment()
         viewModel.observeState()
-        viewModel.observeAccounts()
     }
 
     private fun prepSpinner() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerChangeAccount.adapter = adapter
+
+        var activeAccountIndex = 0
+        val accountsName = activityViewModel.accounts.mapIndexed { index, accountModel ->
+            if (accountModel.name == activityViewModel.account.name)
+                activeAccountIndex = index
+            accountModel.name
+        }
+        adapter.clear()
+        adapter.addAll(accountsName)
+        binding.spinnerChangeAccount.setSelection(activeAccountIndex)
     }
 
     private fun AccountChangeViewModel.observeState() =
@@ -47,13 +56,6 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
                 is BaseState.SuccessEdit -> navToMainActivity()
                 else -> {}
             }
-        }
-
-    private fun AccountChangeViewModel.observeAccounts() =
-        accounts.observe(viewLifecycleOwner) { accounts ->
-            adapter.clear()
-            adapter.addAll(accounts)
-            binding.spinnerChangeAccount.setSelection(viewModel.activeAccountPosition)
         }
 
     private fun accountCreate() {

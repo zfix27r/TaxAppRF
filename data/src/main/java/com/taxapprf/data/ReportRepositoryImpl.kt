@@ -1,11 +1,12 @@
 package com.taxapprf.data
 
+import com.taxapprf.data.error.DataErrorResponseEmpty
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
+import com.taxapprf.domain.FirebasePathModel
 import com.taxapprf.domain.ReportRepository
-import com.taxapprf.domain.report.DeleteReportModel
-import com.taxapprf.domain.report.ReportAdapterModel
+import com.taxapprf.domain.report.ReportModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -14,7 +15,7 @@ class ReportRepositoryImpl @Inject constructor(
     private val firebaseReportDao: FirebaseReportDaoImpl,
     private val cbrapi: CBRAPI,
 ) : ReportRepository {
-    override fun getReport(accountKey: String): Flow<List<ReportAdapterModel>> = flow {
+    override fun getReport(accountKey: String): Flow<List<ReportModel>> = flow {
         emit(
             firebaseReportDao.getReports(accountKey)
                 .map { it.toReportAdapterModel() }
@@ -22,9 +23,9 @@ class ReportRepositoryImpl @Inject constructor(
     }
 
     private fun FirebaseReportModel.toReportAdapterModel() =
-        ReportAdapterModel(
-            name = name ?: "",
-            sum = tax ?: ""
+        ReportModel(
+            year = year ?: throw DataErrorResponseEmpty(),
+            tax = tax ?: throw DataErrorResponseEmpty()
         )
 
     override fun saveReportFromExcel(storagePath: String) = flow<Unit> {
@@ -41,7 +42,7 @@ class ReportRepositoryImpl @Inject constructor(
             }*/
     }
 
-    override fun deleteReport(deleteReportModel: DeleteReportModel) = flow {
-        emit(firebaseReportDao.deleteReport(deleteReportModel))
+    override fun deleteReport(firebasePathModel: FirebasePathModel) = flow {
+        emit(firebaseReportDao.deleteReport(firebasePathModel))
     }
 }

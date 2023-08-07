@@ -18,7 +18,7 @@ class AccountFirstViewModel @Inject constructor(
 ) : BaseViewModel() {
     fun saveAccount(accountName: String, defaultAccountName: String) {
         val name = accountName.ifEmpty { defaultAccountName }
-        val accountModel = SaveAccountModel(name)
+        val accountModel = SaveAccountModel("", name)
 
         viewModelScope.launch(Dispatchers.IO) {
             saveAccountUseCase.execute(accountModel)

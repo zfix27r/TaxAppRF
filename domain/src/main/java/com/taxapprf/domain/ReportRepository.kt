@@ -1,11 +1,10 @@
 package com.taxapprf.domain
 
-import com.taxapprf.domain.report.DeleteReportModel
-import com.taxapprf.domain.report.ReportAdapterModel
+import com.taxapprf.domain.report.ReportModel
 import kotlinx.coroutines.flow.Flow
 
 interface ReportRepository {
-    fun getReport(accountKey: String): Flow<List<ReportAdapterModel>>
-    fun deleteReport(deleteReportModel: DeleteReportModel): Flow<Unit>
+    fun getReport(accountKey: String): Flow<List<ReportModel>>
+    fun deleteReport(firebasePathModel: FirebasePathModel): Flow<Unit>
     fun saveReportFromExcel(storagePath: String): Flow<Unit>
 }

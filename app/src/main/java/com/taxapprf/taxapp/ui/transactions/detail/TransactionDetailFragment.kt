@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentNewTransactionBinding
 import com.taxapprf.taxapp.ui.BaseState
@@ -29,13 +28,17 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(activityViewModel) {
-            viewModel.loadTransaction(account, year, transactionKey)
-            transactionKey = null
+            viewModel.saveTransaction.accountName = account.name
+            transaction?.let {
+                viewModel.saveTransaction.from(it)
+                transaction = null
+            }
         }
 
         prepCurrencies()
         prepTypeTransaction()
         prepListeners()
+        updateUI()
 
         viewModel.attachToBaseFragment()
         viewModel.transaction.observe(viewLifecycleOwner) { updateUI() }
@@ -74,7 +77,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         }
 
         binding.buttonNewTransAdd.setOnClickListener {
-            viewModel.saveTransaction(activityViewModel.account)
+            viewModel.saveTransaction()
         }
 
         binding.spinnerNewTransType.onItemSelectedListener = object : OnItemSelectedListener {
@@ -85,7 +88,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
                 id: Long
             ) {
                 typeTransactionAdapter.getItem(position)?.let {
-                    viewModel.transactionType = it
+                    viewModel.saveTransaction.type = it
                 }
             }
 
@@ -101,7 +104,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
                 id: Long
             ) {
                 currenciesAdapter.getItem(position)?.let {
-                    viewModel.transactionCurrency = it
+                    viewModel.saveTransaction.currency = it
                 }
             }
 
@@ -110,11 +113,11 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
 
         binding.editNewTransSum.doOnTextChanged { text, _, _, _ ->
             val sum = text.toString()
-            if (sum != "") viewModel.transactionSum = sum.toDouble()
+            if (sum != "") viewModel.saveTransaction.sum = sum.toLong()
         }
 
         binding.editNewTransId.doOnTextChanged { text, _, _, _ ->
-            viewModel.transactionId = text.toString()
+            viewModel.saveTransaction.name = text.toString()
         }
     }
 
@@ -129,11 +132,13 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
     }
 
     private fun updateUI() {
-        binding.editNewTransId.setText(viewModel.transactionId)
-        binding.editNewTransDate.setText(viewModel.transactionDate)
-        binding.editNewTransSum.setText(if (viewModel.transactionSum == 0.0) "" else viewModel.transactionSum.toString())
-        updateCurrencies(viewModel.transactionCurrency)
-        updateTypeTransaction(viewModel.transactionType)
+        with(viewModel.saveTransaction) {
+            binding.editNewTransId.setText(name)
+            binding.editNewTransDate.setText(date)
+            binding.editNewTransSum.setText(if (sum == 0L) "" else sum.toString())
+            updateCurrencies(currency)
+            updateTypeTransaction(type)
+        }
     }
 
     private fun updateCurrencies(currency: String) {

@@ -1,25 +1,25 @@
 package com.taxapprf.taxapp.ui.taxes
 
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.domain.report.ReportAdapterModel
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.databinding.FragmentTaxesAdapterItemBinding
 
 class ReportsAdapterViewHolder(
     private val binding: FragmentTaxesAdapterItemBinding,
     private val callback: ReportsAdapterCallback,
 ) : RecyclerView.ViewHolder(binding.root) {
-    private lateinit var report: ReportAdapterModel
+    private lateinit var report: ReportModel
 
     init {
         binding.root.setOnClickListener {
-            callback.onClick(report.name)
+            callback.onClick(report)
         }
     }
 
-    fun bind(reportAdapterModel: ReportAdapterModel) {
+    fun bind(reportAdapterModel: ReportModel) {
         report = reportAdapterModel
 
-        binding.textViewYear.text = report.name
-        binding.textViewYearSum.text = report.sum
+        binding.textViewYear.text = report.year
+        binding.textViewYearSum.text = report.tax.toString()
     }
 }

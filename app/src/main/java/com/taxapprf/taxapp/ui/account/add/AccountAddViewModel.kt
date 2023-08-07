@@ -20,7 +20,7 @@ class AccountAddViewModel @Inject constructor(
     fun saveAccount(accountName: String) {
         if (accountName.isErrorInputAccountChecker()) return
 
-        val accountModel = SaveAccountModel(accountName)
+        val accountModel = SaveAccountModel("", accountName)
 
         viewModelScope.launch(Dispatchers.IO) {
             saveAccountUseCase.execute(accountModel)
