@@ -8,7 +8,7 @@ class SaveTransactionModel {
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
 
-    lateinit var accountName: String
+    lateinit var accountKey: String
     var transactionKey: String? = null
     var yearOld: String? = null
     var year: String = calendar[Calendar.YEAR].toString()
@@ -16,11 +16,12 @@ class SaveTransactionModel {
     var name: String = ""
     var date: String = dateFormat.format(calendar.time)
     var type: String = TransactionType.TRADE.name
+
     // FIXME поправить, сделать подгрузку из стрингов
     var currency: String = "USD"
-    var rateCBR: Long = 0L
-    var sum: Long = 0L
-    var tax: Long = 0L
+    var rateCBR: Double = 0.0
+    var sum: Double = 0.0
+    var tax: Double = 0.0
 
     fun from(transactionModel: TransactionModel) {
         transactionKey = transactionModel.key

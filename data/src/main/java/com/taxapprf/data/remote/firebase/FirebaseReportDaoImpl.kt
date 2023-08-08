@@ -6,7 +6,6 @@ import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.report.SaveReportModel
 import kotlinx.coroutines.tasks.await
-import java.lang.Exception
 
 
 class FirebaseReportDaoImpl(
@@ -47,37 +46,8 @@ class FirebaseReportDaoImpl(
         firebasePathModel: FirebasePathModel,
         firebaseReportModel: FirebaseReportModel
     ) {
-        val dd = fb.reference
-            .child(FirebaseAPI.USERS)
-            .child(fb.uid)
-            .child(FirebaseAPI.TRANSACTIONS)
-            .child(firebasePathModel.accountName)
-            .child(firebasePathModel.year)
-
-        println(dd)
-
-
-
-        val key = fb.reference
-            .child(FirebaseAPI.USERS)
-            .child(fb.uid)
-            .child(FirebaseAPI.TRANSACTIONS)
-            .push().key ?: throw Exception()
-
-        fb.reference
-            .child(FirebaseAPI.USERS)
-            .child(fb.uid)
-            .child(FirebaseAPI.TRANSACTIONS)
-            .child(firebasePathModel.accountName)
-            .push().key ?: throw Exception()
-
-
         fb.getReportPath(firebasePathModel)
-            .child(key)
             .setValue(firebaseReportModel)
             .await()
-
-        fb.reference.child("reports").get().await().children.mapNotNull { println(it) }
-        fb.reference.child("transactions").get().await().children.mapNotNull { println(it) }
     }
 }

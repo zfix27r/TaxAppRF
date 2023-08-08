@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.taxes
+package com.taxapprf.taxapp.ui.reports
 
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.report.ReportModel

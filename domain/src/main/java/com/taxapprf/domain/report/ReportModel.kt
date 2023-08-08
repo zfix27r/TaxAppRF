@@ -2,5 +2,5 @@ package com.taxapprf.domain.report
 
 data class ReportModel(
     val year: String,
-    val tax: Long,
+    val tax: Double,
 )

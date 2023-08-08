@@ -1,27 +1,26 @@
 package com.taxapprf.data.remote.firebase.model
 
-import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.data.error.DataErrorResponseEmpty
+import com.taxapprf.domain.transaction.TransactionModel
 
-class FirebaseTransactionModel {
-    var key: String? = null
-    var name: String? = null
-    var date: String? = null
-    var type: String? = null
-    var currency: String? = null
-    var rateCBR: Long? = null
-    var sum: Long? = null
-    var tax: Long? = null
-
-    fun from(saveTransactionModel: SaveTransactionModel): FirebaseTransactionModel {
-        key = saveTransactionModel.transactionKey
-        name = saveTransactionModel.name
-        date = saveTransactionModel.date
-        type = saveTransactionModel.type
-        currency = saveTransactionModel.currency
-        rateCBR = saveTransactionModel.rateCBR
-        sum = saveTransactionModel.sum
-        tax = saveTransactionModel.tax
-
-        return this
-    }
+data class FirebaseTransactionModel(
+    val name: String? = null,
+    val date: String? = null,
+    val type: String? = null,
+    val currency: String? = null,
+    val rateCBR: Double? = null,
+    val sum: Double? = null,
+    val tax: Double? = null,
+) {
+    fun toTransactionModel(key: String?) =
+        TransactionModel(
+            key = key ?: throw DataErrorResponseEmpty(),
+            name = name ?: "",
+            date = date ?: throw DataErrorResponseEmpty(),
+            type = type ?: throw DataErrorResponseEmpty(),
+            currency = currency ?: throw DataErrorResponseEmpty(),
+            rateCBR = rateCBR ?: throw DataErrorResponseEmpty(),
+            sum = sum ?: throw DataErrorResponseEmpty(),
+            tax = tax ?: throw DataErrorResponseEmpty()
+        )
 }

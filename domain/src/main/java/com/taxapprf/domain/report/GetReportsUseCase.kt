@@ -7,5 +7,5 @@ class GetReportsUseCase @Inject constructor(
     private val repository: ReportRepository
 ) {
     fun execute(accountKey: String) =
-        repository.getReport(accountKey)
+        repository.getReports(accountKey)
 }

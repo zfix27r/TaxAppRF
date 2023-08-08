@@ -13,6 +13,9 @@ class FirebaseAccountDaoImpl @Inject constructor(
 ) : FirebaseAccountDao {
     override suspend fun getAccounts(): List<FirebaseAccountModel> =
         safeCall {
+            println("!!!!!!!")
+            println(fb.getAccountsPath())
+            println("!!!!!!!")
             fb.getAccountsPath()
                 .get()
                 .await()
@@ -23,12 +26,17 @@ class FirebaseAccountDaoImpl @Inject constructor(
 
     override suspend fun saveAccount(firebaseAccountModel: FirebaseAccountModel) {
         safeCall {
-            val key = fb.getAccountsPath().push().key ?: throw AuthError()
-
-            fb.getAccountsPath()
-                .child(key)
-                .setValue(firebaseAccountModel)
-                .await()
+            try {
+                println("@@ " + firebaseAccountModel)
+                val r = fb.getAccountsPath()
+                    .push()
+                    .setValue(firebaseAccountModel)
+                    .await()
+                println("@@ " + r)
+            } catch (e: Exception) {
+                println(e.message)
+                println(e)
+            }
         }
     }
 

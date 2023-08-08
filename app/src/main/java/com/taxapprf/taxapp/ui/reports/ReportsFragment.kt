@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.taxes
+package com.taxapprf.taxapp.ui.reports
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,7 @@ import com.taxapprf.taxapp.ui.checkStoragePermission
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TaxesFragment : BaseFragment(R.layout.fragment_taxes) {
+class ReportsFragment : BaseFragment(R.layout.fragment_taxes) {
     private val binding by viewBinding(FragmentTaxesBinding::bind)
     private val viewModel by viewModels<ReportsViewModel>()
     private val adapter = ReportsAdapter {

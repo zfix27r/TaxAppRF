@@ -6,7 +6,7 @@ data class TransactionModel(
     val date: String,
     val type: String,
     val currency: String,
-    val rateCBR: Long,
-    val sum: Long,
-    val tax: Long
+    val rateCBR: Double,
+    val sum: Double,
+    val tax: Double,
 )

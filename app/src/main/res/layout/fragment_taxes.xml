@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
-    tools:context=".ui.taxes.TaxesFragment">
+    tools:context=".ui.reports.ReportsFragment">
 
     <TextView
         android:id="@+id/textTaxesYearSum"

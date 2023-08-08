@@ -8,40 +8,37 @@ import javax.inject.Inject
 
 
 class FirebaseAPI @Inject constructor() {
-    private val database = FirebaseDatabase.getInstance().apply { setPersistenceEnabled(true) }
-    val reference = database.reference
+    private val database =
+        FirebaseDatabase.getInstance()
+            .apply { setPersistenceEnabled(true) }
+    private val reference = database.reference
 
     val auth = FirebaseAuth.getInstance()
-    val uid: String
+    private val uid: String
         get() = auth.currentUser?.uid ?: throw AuthError()
 
     fun getAccountsPath() = reference
-        .child(USERS)
-        .child(uid)
         .child(ACCOUNTS)
+        .child(uid)
 
     fun getReportsPath(accountKey: String) = reference
-        .child(USERS)
-        .child(uid)
         .child(REPORTS)
+        .child(uid)
         .child(accountKey)
 
     fun getReportPath(firebasePathModel: FirebasePathModel) = reference
-        .child(USERS)
-        .child(uid)
         .child(REPORTS)
+        .child(uid)
         .child(firebasePathModel.accountName)
         .child(firebasePathModel.year)
 
     fun getTransactionsPath(firebasePathModel: FirebasePathModel) = reference
-        .child(USERS)
-        .child(uid)
         .child(TRANSACTIONS)
+        .child(uid)
         .child(firebasePathModel.accountName)
         .child(firebasePathModel.year)
 
     companion object {
-        const val USERS = "users"
         const val ACCOUNTS = "accounts"
         const val REPORTS = "reports"
         const val TRANSACTIONS = "transactions"

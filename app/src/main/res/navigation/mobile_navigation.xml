@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/taxes"
-        android:name="com.taxapprf.taxapp.ui.taxes.TaxesFragment"
+        android:name="com.taxapprf.taxapp.ui.reports.ReportsFragment"
         android:label="@string/menuTaxes"
         tools:layout="@layout/fragment_taxes">
         <action

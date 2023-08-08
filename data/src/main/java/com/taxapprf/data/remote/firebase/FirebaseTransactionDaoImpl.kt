@@ -18,17 +18,22 @@ class FirebaseTransactionDaoImpl @Inject constructor(
                 .get()
                 .await()
                 .children
-                .mapNotNull { it.getValue(FirebaseTransactionModel::class.java) }
+                .mapNotNull {
+                    it.getValue(FirebaseTransactionModel::class.java)?.toTransactionModel(it.key)
+                }
         }
 
-    override suspend fun getTransaction(firebasePathModel: FirebasePathModel): FirebaseTransactionModel? =
-        safeCall {
-            fb.getTransactionsPath(firebasePathModel)
-                .child(firebasePathModel.transactionKey!!)
-                .get()
-                .await()
-                .getValue(FirebaseTransactionModel::class.java)
-        }
+    /*    override suspend fun getTransaction(firebasePathModel: FirebasePathModel): FirebaseTransactionModel? =
+            safeCall {
+                val dataSnapshot = fb.getTransactionsPath(firebasePathModel)
+                    .child(firebasePathModel.transactionKey!!)
+                    .get()
+                    .await()
+
+                val firebaseTransactionModel =
+                    dataSnapshot.getValue(FirebaseTransactionModel::class.java)
+                firebaseTransactionModel.toTransactionModel(firebaseTransactionModel.k)
+            }*/
 
     override suspend fun saveTransaction(
         firebasePathModel: FirebasePathModel,

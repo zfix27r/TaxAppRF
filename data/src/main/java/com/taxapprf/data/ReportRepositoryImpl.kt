@@ -7,7 +7,6 @@ import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 import com.taxapprf.domain.FirebasePathModel
 import com.taxapprf.domain.ReportRepository
 import com.taxapprf.domain.report.ReportModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -15,14 +14,14 @@ class ReportRepositoryImpl @Inject constructor(
     private val firebaseReportDao: FirebaseReportDaoImpl,
     private val cbrapi: CBRAPI,
 ) : ReportRepository {
-    override fun getReport(accountKey: String): Flow<List<ReportModel>> = flow {
+    override fun getReports(accountKey: String) = flow {
         emit(
             firebaseReportDao.getReports(accountKey)
-                .map { it.toReportAdapterModel() }
+                .map { it.toReportModel() }
         )
     }
 
-    private fun FirebaseReportModel.toReportAdapterModel() =
+    private fun FirebaseReportModel.toReportModel() =
         ReportModel(
             year = year ?: throw DataErrorResponseEmpty(),
             tax = tax ?: throw DataErrorResponseEmpty()

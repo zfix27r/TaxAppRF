@@ -25,10 +25,11 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
     private lateinit var currenciesAdapter: ArrayAdapter<String>
     private lateinit var typeTransactionAdapter: ArrayAdapter<String>
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(activityViewModel) {
-            viewModel.saveTransaction.accountName = account.name
+            viewModel.saveTransaction.accountKey = account.name
             transaction?.let {
                 viewModel.saveTransaction.from(it)
                 transaction = null
@@ -112,8 +113,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         }
 
         binding.editNewTransSum.doOnTextChanged { text, _, _, _ ->
-            val sum = text.toString()
-            if (sum != "") viewModel.saveTransaction.sum = sum.toLong()
+            viewModel.saveTransaction.sum = text.toString().toDouble()
         }
 
         binding.editNewTransId.doOnTextChanged { text, _, _, _ ->
@@ -135,7 +135,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         with(viewModel.saveTransaction) {
             binding.editNewTransId.setText(name)
             binding.editNewTransDate.setText(date)
-            binding.editNewTransSum.setText(if (sum == 0L) "" else sum.toString())
+            binding.editNewTransSum.setText(if (sum == 0.0) "" else sum.toString())
             updateCurrencies(currency)
             updateTypeTransaction(type)
         }
