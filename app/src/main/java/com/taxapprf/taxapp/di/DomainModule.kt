@@ -4,6 +4,7 @@ import com.taxapprf.data.AccountRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
+import com.taxapprf.domain.account.ChangeAccountUseCase
 import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
 import com.taxapprf.domain.report.DeleteReportUseCase
 import com.taxapprf.domain.report.GetReportsUseCase
@@ -11,10 +12,10 @@ import com.taxapprf.domain.report.SaveReportsFromExcelUseCase
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
-import com.taxapprf.domain.user.GetAccountsUseCase
+import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.user.GetUserUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
-import com.taxapprf.domain.user.SaveAccountUseCase
+import com.taxapprf.domain.account.SaveAccountUseCase
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SignUpUseCase
@@ -53,6 +54,10 @@ object DomainModule {
     @Provides
     fun provideSaveAccountUseCase(repositoryImpl: AccountRepositoryImpl) =
         SaveAccountUseCase(repositoryImpl)
+
+    @Provides
+    fun provideChangeAccountUseCase(repositoryImpl: AccountRepositoryImpl) =
+        ChangeAccountUseCase(repositoryImpl)
 
     @Provides
     fun provideGetRateCentralBankUseCase(repositoryImpl: ReportRepositoryImpl) =

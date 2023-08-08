@@ -1,4 +1,4 @@
-package com.taxapprf.domain.user
+package com.taxapprf.domain.account
 
 import com.taxapprf.domain.AccountRepository
 import javax.inject.Inject

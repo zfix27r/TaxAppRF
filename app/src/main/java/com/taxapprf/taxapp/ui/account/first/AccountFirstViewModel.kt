@@ -1,8 +1,8 @@
 package com.taxapprf.taxapp.ui.account.first
 
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.user.SaveAccountModel
-import com.taxapprf.domain.user.SaveAccountUseCase
+import com.taxapprf.domain.account.SaveAccountModel
+import com.taxapprf.domain.account.SaveAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ class AccountFirstViewModel @Inject constructor(
     private val saveAccountUseCase: SaveAccountUseCase,
 ) : BaseViewModel() {
     fun saveAccount(accountName: String, defaultAccountName: String) {
-        val name = accountName.ifEmpty { defaultAccountName }
+/*        val name = accountName.ifEmpty { defaultAccountName }
         val accountModel = SaveAccountModel("", name)
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -25,6 +25,6 @@ class AccountFirstViewModel @Inject constructor(
                 .onStart { loading() }
                 .catch { error(it) }
                 .collectLatest { success() }
-        }
+        }*/
     }
 }

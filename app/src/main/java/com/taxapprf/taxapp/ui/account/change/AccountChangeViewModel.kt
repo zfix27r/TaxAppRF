@@ -2,9 +2,8 @@ package com.taxapprf.taxapp.ui.account.change
 
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.error.InputErrorEmailEmpty
-import com.taxapprf.domain.user.SaveAccountModel
-import com.taxapprf.domain.user.SaveAccountUseCase
-import com.taxapprf.taxapp.ui.BaseState
+import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.account.ChangeAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,19 +15,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountChangeViewModel @Inject constructor(
-    private val saveAccountUseCase: SaveAccountUseCase,
+    private val changeAccountUseCase: ChangeAccountUseCase,
 ) : BaseViewModel() {
-    fun saveAccount(accountName: String) {
-        if (accountName.isErrorInputAccountChecker()) return
-
-        val accountModel = SaveAccountModel("", accountName)
-
+    fun changeAccount(oldAccountModel: AccountModel, newAccountModel: AccountModel) =
         viewModelScope.launch(Dispatchers.IO) {
-            saveAccountUseCase.execute(accountModel)
+            changeAccountUseCase.execute(oldAccountModel, newAccountModel)
                 .onStart { loading() }
                 .catch { error(it) }
-                .collectLatest { success(BaseState.SuccessEdit) }
+                .collectLatest {
+                    success()
+                }
         }
+
+    fun changeAccount(oldAccountModel: AccountModel, newAccountName: String) {
+        if (newAccountName.isErrorInputAccountChecker()) return
+        val newAccountModel = AccountModel(newAccountName, true)
+        changeAccount(oldAccountModel, newAccountModel)
     }
 
     private fun String.isErrorInputAccountChecker(): Boolean {

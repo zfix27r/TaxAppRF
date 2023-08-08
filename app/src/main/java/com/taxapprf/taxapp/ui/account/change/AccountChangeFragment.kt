@@ -45,6 +45,7 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
                 activeAccountIndex = index
             accountModel.name
         }
+
         adapter.clear()
         adapter.addAll(accountsName)
         binding.spinnerChangeAccount.setSelection(activeAccountIndex)
@@ -60,13 +61,21 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
 
     private fun accountCreate() {
         val accountName = binding.editChangeAccountName.text.toString()
-        viewModel.saveAccount(accountName)
+        viewModel.changeAccount(activityViewModel.account, accountName)
     }
 
     private fun accountOpen() {
         binding.spinnerChangeAccount.selectedItem?.let {
-            val accountName = it as String
-            viewModel.saveAccount(accountName)
+            if (activityViewModel.accounts.size > 1) {
+                val accountName = it as String
+
+                activityViewModel.accounts.find { it.name == accountName }?.let { newAccountModel ->
+                    viewModel.changeAccount(
+                        activityViewModel.account,
+                        newAccountModel
+                    )
+                }
+            }
         }
     }
 
