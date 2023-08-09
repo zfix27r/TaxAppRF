@@ -17,20 +17,34 @@ import javax.inject.Inject
 class AccountChangeViewModel @Inject constructor(
     private val changeAccountUseCase: ChangeAccountUseCase,
 ) : BaseViewModel() {
-    fun changeAccount(oldAccountModel: AccountModel, newAccountModel: AccountModel) =
-        viewModelScope.launch(Dispatchers.IO) {
-            changeAccountUseCase.execute(oldAccountModel, newAccountModel)
-                .onStart { loading() }
-                .catch { error(it) }
-                .collectLatest {
-                    success()
-                }
+
+    lateinit var accounts: List<AccountModel>
+
+    fun changeAccount(newAccountName: String) {
+        if (newAccountName.isErrorInputAccountChecker()) return
+
+        var oldAccountModel: AccountModel? = null
+        var newAccountModel: AccountModel? = null
+
+        if (accounts.size > 1) {
+            accounts.map { account ->
+                if (account.active)
+                    oldAccountModel = account
+                else if (account.name == newAccountName)
+                    newAccountModel = account
+            }
         }
 
-    fun changeAccount(oldAccountModel: AccountModel, newAccountName: String) {
-        if (newAccountName.isErrorInputAccountChecker()) return
-        val newAccountModel = AccountModel(newAccountName, true)
-        changeAccount(oldAccountModel, newAccountModel)
+        if (oldAccountModel != null && newAccountModel != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                changeAccountUseCase.execute(oldAccountModel!!, newAccountModel!!)
+                    .onStart { loading() }
+                    .catch { error(it) }
+                    .collectLatest {
+                        success()
+                    }
+            }
+        }
     }
 
     private fun String.isErrorInputAccountChecker(): Boolean {

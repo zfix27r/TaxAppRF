@@ -43,21 +43,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.loadAccounts()
-        viewModel.state.observe(this@MainActivity) {
-            when (it) {
-                is ActivityBaseState.Loading -> loading()
-                is ActivityBaseState.Error -> {}
-                is ActivityBaseState.Success -> viewUI()
-                is ActivityBaseState.AccountEmpty -> {}
-            }
-        }
-    }
-
-    private fun loading() {
-    }
-
-    private fun viewUI() {
         navController.setGraph(R.navigation.mobile_navigation)
         setSupportActionBar(binding.appBarMain.toolbar)
         setupActionBarWithNavController(
@@ -67,6 +52,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
         )
         setupWithNavController(binding.navView, navController)
         prepDrawer()
+
+        viewModel.state.observe(this@MainActivity) {
+            when (it) {
+                is ActivityBaseState.Loading -> loading()
+                is ActivityBaseState.Error -> {}
+                is ActivityBaseState.Success -> {}
+                is ActivityBaseState.AccountEmpty -> {}
+            }
+        }
+    }
+
+    private fun loading() {
     }
 
     private fun prepDrawer() {

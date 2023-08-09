@@ -33,7 +33,10 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     //private val createExcelInLocal: CreateExcelInLocal? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.account = activityViewModel.account.name
+        activityViewModel.account.observe(viewLifecycleOwner) { account ->
+            viewModel.account = account
+        }
+
         viewModel.year = activityViewModel.report!!.year
         viewModel.loadTransactions()
 
@@ -91,7 +94,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private fun SavedStateHandle.observeDelete() {
         getLiveData<Boolean>(TRANSACTIONS_DELETE_DIALOG_RESULT).observe(viewLifecycleOwner) {
             if (it) {
-                viewModel.deleteTax(activityViewModel.account.name)
+                viewModel.deleteTax()
             }
         }
     }

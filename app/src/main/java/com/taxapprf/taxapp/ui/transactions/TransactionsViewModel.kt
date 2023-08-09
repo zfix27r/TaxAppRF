@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.FirebasePathModel
+import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.report.DeleteReportUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
@@ -22,14 +23,15 @@ class TransactionsViewModel @Inject constructor(
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val deleteTaxUseCase: DeleteReportUseCase,
 ) : BaseViewModel() {
-    lateinit var account: String
+    lateinit var account: AccountModel
+
     lateinit var year: String
 
     private val _transactions = MutableLiveData<List<TransactionModel>>()
     val transactions: LiveData<List<TransactionModel>> = _transactions
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
-        val getTransactionsModel = FirebasePathModel(account, year)
+        val getTransactionsModel = FirebasePathModel(account.name, year)
         getTransactionsUseCase.execute(getTransactionsModel)
             .onStart { loading() }
             .catch { error(it) }
@@ -61,7 +63,7 @@ class TransactionsViewModel @Inject constructor(
             })*/
 
 
-    fun deleteTax(account: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun deleteTax() = viewModelScope.launch(Dispatchers.IO) {
 /*        val request = FirebaseRequestModel(account, year)
         deleteTaxUseCase.execute(request)
             .onStart { loading() }

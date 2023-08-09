@@ -15,7 +15,6 @@ import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.user.GetUserUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
-import com.taxapprf.domain.account.SaveAccountUseCase
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SignUpUseCase
@@ -50,10 +49,6 @@ object DomainModule {
     @Provides
     fun provideGetAccountsUseCase(repositoryImpl: AccountRepositoryImpl) =
         GetAccountsUseCase(repositoryImpl)
-
-    @Provides
-    fun provideSaveAccountUseCase(repositoryImpl: AccountRepositoryImpl) =
-        SaveAccountUseCase(repositoryImpl)
 
     @Provides
     fun provideChangeAccountUseCase(repositoryImpl: AccountRepositoryImpl) =

@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentAccountChangeBinding
 import com.taxapprf.taxapp.ui.BaseFragment
@@ -27,22 +28,25 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        prepSpinner()
         binding.buttonChangeAccountCreate.setOnClickListener { accountCreate() }
         binding.buttonChangeAccountOpen.setOnClickListener { accountOpen() }
 
         viewModel.attachToBaseFragment()
         viewModel.observeState()
+
+        activityViewModel.accounts.observe(viewLifecycleOwner) {
+            viewModel.accounts = it
+            prepSpinner(it)
+        }
     }
 
-    private fun prepSpinner() {
+    private fun prepSpinner(accounts: List<AccountModel>) {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerChangeAccount.adapter = adapter
 
         var activeAccountIndex = 0
-        val accountsName = activityViewModel.accounts.mapIndexed { index, accountModel ->
-            if (accountModel.name == activityViewModel.account.name)
-                activeAccountIndex = index
+        val accountsName = accounts.mapIndexed { index, accountModel ->
+            if (accountModel.active) activeAccountIndex = index
             accountModel.name
         }
 
@@ -61,21 +65,13 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
 
     private fun accountCreate() {
         val accountName = binding.editChangeAccountName.text.toString()
-        viewModel.changeAccount(activityViewModel.account, accountName)
+        viewModel.changeAccount(accountName)
     }
 
     private fun accountOpen() {
         binding.spinnerChangeAccount.selectedItem?.let {
-            if (activityViewModel.accounts.size > 1) {
-                val accountName = it as String
-
-                activityViewModel.accounts.find { it.name == accountName }?.let { newAccountModel ->
-                    viewModel.changeAccount(
-                        activityViewModel.account,
-                        newAccountModel
-                    )
-                }
-            }
+            val accountName = it as String
+            viewModel.changeAccount(accountName)
         }
     }
 

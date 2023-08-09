@@ -3,6 +3,7 @@ package com.taxapprf.taxapp.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
@@ -15,6 +16,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,11 +35,16 @@ class MainViewModel @Inject constructor(
     val isSignIn
         get() = isSignInUseCase.execute()
 
-    private var _accounts = listOf<AccountModel>()
-    val accounts
-        get() = _accounts
-    val account
-        get() = _accounts.find { it.active }!!
+    val accounts = getAccountsUseCase.execute()
+        .flowOn(Dispatchers.IO)
+        .onEach { accounts ->
+            println(accounts)
+            accounts.find { it.active }?.let { _account.postValue(it) }
+        }
+        .asLiveData(viewModelScope.coroutineContext)
+
+    private val _account = MutableLiveData<AccountModel>()
+    val account: LiveData<AccountModel> = _account
 
     var user: UserModel? = null
     var report: ReportModel? = null
@@ -54,10 +62,9 @@ class MainViewModel @Inject constructor(
             .onStart {
                 _state.postValue(ActivityBaseState.Loading)
             }
-            .catch {  }
+            .catch { }
             .collectLatest {
                 if (it.isNotEmpty()) {
-                    _accounts = it
                     _state.postValue(ActivityBaseState.Success)
                 }
             }

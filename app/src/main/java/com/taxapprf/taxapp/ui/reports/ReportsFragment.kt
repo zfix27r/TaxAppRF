@@ -25,11 +25,6 @@ class ReportsFragment : BaseFragment(R.layout.fragment_taxes) {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.loadReports(activityViewModel.account.name)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -39,6 +34,9 @@ class ReportsFragment : BaseFragment(R.layout.fragment_taxes) {
 
         viewModel.attachToBaseFragment()
         viewModel.reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
+        activityViewModel.account.observe(viewLifecycleOwner) { account ->
+            viewModel.loadReports(account.name)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

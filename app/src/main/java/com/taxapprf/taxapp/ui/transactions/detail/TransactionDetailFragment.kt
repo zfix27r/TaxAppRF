@@ -28,11 +28,11 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(activityViewModel) {
+        activityViewModel.account.observe(viewLifecycleOwner) { account ->
             viewModel.saveTransaction.accountKey = account.name
-            transaction?.let {
+            activityViewModel.transaction?.let {
                 viewModel.saveTransaction.from(it)
-                transaction = null
+                activityViewModel.transaction = null
             }
         }
 
