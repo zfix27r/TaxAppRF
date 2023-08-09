@@ -13,6 +13,7 @@ import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.account.GetAccountsUseCase
+import com.taxapprf.domain.excel.SendExcelReportUseCase
 import com.taxapprf.domain.user.GetUserUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
 import com.taxapprf.domain.user.SignInUseCase
@@ -81,4 +82,9 @@ object DomainModule {
     @Provides
     fun provideDeleteTaxUseCase(repositoryImpl: ReportRepositoryImpl) =
         DeleteReportUseCase(repositoryImpl)
+
+    @Provides
+    fun provide(reportRepositoryImpl: ReportRepositoryImpl) =
+        SendExcelReportUseCase(reportRepositoryImpl)
+
 }
