@@ -26,65 +26,10 @@ class TransactionDetailViewModel @Inject constructor(
 
     val saveTransaction = SaveTransactionModel()
 
-    fun updateDate(year: Int, month: Int, dayOfMonth: Int): String {
-        saveTransaction.updateDate(year, month, dayOfMonth)
-        return saveTransaction.date
-    }
-
     fun saveTransaction() = viewModelScope.launch(Dispatchers.IO) {
         saveTransactionUseCase.execute(saveTransaction)
             .onStart { loading() }
             .catch { error(it) }
             .collectLatest { success(BaseState.SuccessEdit) }
     }
-
-    /*    fun deleteTransaction(account: String) = viewModelScope.launch(Dispatchers.IO) {
-            saveTransaction.account = account
-
-            val firebaseRequestModel = FirebaseRequestModel(account, saveTransaction.year)
-            getYearSumUseCase.execute(firebaseRequestModel)
-                .onStart { loading() }
-                .catch { error(it) }
-                .collectLatest { oldYearSum ->
-                    success()
-                    val yearSum = oldYearSum.calculateYearSum()
-                    if (yearSum == 0.0) {
-                        deleteYearSumUseCase.execute(firebaseRequestModel)
-                            .onStart { loading() }
-                            .catch { error(it) }
-                            .collectLatest {
-                                success()
-                                deleteTransactionFirebase(account)
-                            }
-                    } else {
-                        val saveYearSumModel = SaveYearSumModel(account, saveTransaction.year, yearSum)
-                        saveYearSumUseCase.execute(saveYearSumModel)
-                            .onStart { loading() }
-                            .catch { error(it) }
-                            .collectLatest {
-                                success()
-                                deleteTransactionFirebase(account)
-                            }
-                    }
-                }
-        }
-
-        private suspend fun deleteTransactionFirebase(account: String) {
-            _transaction.value?.let { transaction ->
-                val deleteModel = FirebaseRequestModel(account, saveTransaction.year, transaction.key)
-                deleteTransactionUseCase.execute(deleteModel)
-                    .onStart { loading() }
-                    .catch { error(it) }
-                    .collectLatest { success() }
-            }
-        }
-
-            private fun String.isErrorInputPasswordChecker(): Boolean {
-        if (length < 8) error(InputErrorPasswordLength())
-        else return false
-
-        return true
-    }
-
-        */
 }

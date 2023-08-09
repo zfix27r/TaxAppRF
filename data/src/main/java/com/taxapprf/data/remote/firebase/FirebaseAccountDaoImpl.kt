@@ -30,13 +30,16 @@ class FirebaseAccountDaoImpl @Inject constructor(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
                 }
             }
 
             fb.getAccountsPath().addValueEventListener(callback)
 
-            awaitClose { fb.getAccountsPath().removeEventListener(callback) }
+            awaitClose {
+                fb.auth.currentUser?.uid?.let {
+                    fb.getAccountsPath().removeEventListener(callback)
+                }
+            }
         }
     }
 

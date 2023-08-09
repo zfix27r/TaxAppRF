@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
         AppBarConfiguration(
             setOf(
                 R.id.rates_today,
-                R.id.taxes,
+                R.id.reports,
                 R.id.account_change,
                 R.id.currency_converter,
             ),
@@ -59,7 +59,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
                 is ActivityBaseState.Error -> {}
                 is ActivityBaseState.Success -> {}
                 is ActivityBaseState.AccountEmpty -> {}
+                else -> {}
             }
+        }
+
+        viewModel.accounts.observe(this@MainActivity) {
+
         }
     }
 

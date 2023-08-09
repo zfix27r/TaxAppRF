@@ -24,7 +24,6 @@ class ReportsViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val _reports = MutableLiveData<List<ReportModel>>()
     val reports: LiveData<List<ReportModel>> = _reports
-
     fun loadReports(accountKey: String) = viewModelScope.launch(Dispatchers.IO) {
         getReportsUseCase.execute(accountKey)
             .onStart { loading() }

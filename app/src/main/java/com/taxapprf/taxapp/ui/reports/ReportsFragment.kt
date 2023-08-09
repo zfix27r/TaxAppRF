@@ -28,7 +28,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_taxes) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonTaxesAddTrans.setOnClickListener { navToTransactionNew() }
+        binding.buttonTaxesAddTrans.setOnClickListener { navToTransactionDetail() }
         binding.buttonTaxesLoading.setOnClickListener { navToSystemStorage() }
         binding.recyclerYearStatements.adapter = adapter
 
@@ -57,11 +57,11 @@ class ReportsFragment : BaseFragment(R.layout.fragment_taxes) {
 
     private fun navToTransactions(reportModel: ReportModel) {
         activityViewModel.report = reportModel
-        findNavController().navigate(R.id.action_taxesFragment_to_transactionsFragment)
+        findNavController().navigate(R.id.action_reports_to_transactions)
     }
 
-    private fun navToTransactionNew() {
-        findNavController().navigate(R.id.action_taxesFragment_to_newTransactionFragment)
+    private fun navToTransactionDetail() {
+        findNavController().navigate(R.id.action_reports_to_transaction_detail)
     }
 
     companion object {

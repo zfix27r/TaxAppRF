@@ -12,8 +12,10 @@ import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlin.math.floor
 
 class TransactionRepositoryImpl @Inject constructor(
     private val firebaseTransactionDao: FirebaseTransactionDaoImpl,
@@ -27,9 +29,8 @@ class TransactionRepositoryImpl @Inject constructor(
             )
         }*/
 
-    override fun getTransactions(firebasePathModel: FirebasePathModel) = flow {
-        emit(firebaseTransactionDao.getTransactions(firebasePathModel))
-    }
+    override fun getTransactions(firebasePathModel: FirebasePathModel) =
+        firebaseTransactionDao.getTransactions(firebasePathModel)
 
     override fun saveTransactionModel(saveTransactionModel: SaveTransactionModel) = flow {
         with(saveTransactionModel) {
@@ -44,7 +45,8 @@ class TransactionRepositoryImpl @Inject constructor(
             updateTax()
 
             val oldTax = firebaseReportDao.getReportTax(firebasePathModel)?.tax ?: 0.0
-            val firebaseReportModel = FirebaseReportModel(year, oldTax + tax)
+            val newTax = (oldTax + tax).roundUpToTwo()
+            val firebaseReportModel = FirebaseReportModel(year, newTax)
             firebaseReportDao.saveReportTax(firebasePathModel, firebaseReportModel)
 
             firebaseTransactionDao.saveTransaction(
@@ -72,7 +74,7 @@ class TransactionRepositoryImpl @Inject constructor(
         val rate = cbrapi.getCurrency(date).execute().body()
             ?.getCurrencyRate(currency)
             ?: throw CBRErrorRateIsEmpty()
-        rateCBR = rate
+        rateCBR = rate.roundUpToTwo()
     }
 
     private fun SaveTransactionModel.updateTax() {
@@ -86,6 +88,7 @@ class TransactionRepositoryImpl @Inject constructor(
             else -> 1
         }
 
-        tax = sum * rateCBR * 100 / 13 * k
+        val taxBig = sum * rateCBR * 0.13 * k
+        tax = taxBig.roundUpToTwo()
     }
 }

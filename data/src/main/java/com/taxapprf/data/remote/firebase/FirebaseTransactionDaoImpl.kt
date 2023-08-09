@@ -1,10 +1,16 @@
 package com.taxapprf.data.remote.firebase
 
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.taxapprf.data.error.DataErrorPassKeyIsEmpty
 import com.taxapprf.data.remote.firebase.dao.FirebaseTransactionDao
-import com.taxapprf.domain.FirebasePathModel
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.data.safeCall
+import com.taxapprf.domain.FirebasePathModel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -12,15 +18,29 @@ import javax.inject.Inject
 class FirebaseTransactionDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
 ) : FirebaseTransactionDao {
-    override suspend fun getTransactions(firebasePathModel: FirebasePathModel) =
-        safeCall {
-            fb.getTransactionsPath(firebasePathModel)
-                .get()
-                .await()
-                .children
-                .mapNotNull {
-                    it.getValue(FirebaseTransactionModel::class.java)?.toTransactionModel(it.key)
+    override fun getTransactions(firebasePathModel: FirebasePathModel) =
+        callbackFlow {
+            safeCall {
+                val reference = fb.getTransactionsPath(firebasePathModel)
+
+                val callback = object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val reports = snapshot.children.mapNotNull {
+                            it.getValue(FirebaseTransactionModel::class.java)
+                                ?.toTransactionModel(it.key)
+                        }
+
+                        trySendBlocking(reports)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
                 }
+
+                reference.addValueEventListener(callback)
+
+                awaitClose { reference.removeEventListener(callback) }
+            }
         }
 
     /*    override suspend fun getTransaction(firebasePathModel: FirebasePathModel): FirebaseTransactionModel? =
@@ -56,7 +76,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override suspend fun deleteTransaction(firebasePathModel: FirebasePathModel) {
         safeCall {
             fb.getTransactionsPath(firebasePathModel)
-                .child(firebasePathModel.transactionKey!!)
+                .child(firebasePathModel.transactionKey ?: throw DataErrorPassKeyIsEmpty())
                 .setValue(null)
                 .await()
         }

@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.FirebasePathModel
 import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.report.DeleteReportUseCase
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,14 +26,13 @@ class TransactionsViewModel @Inject constructor(
     private val deleteTaxUseCase: DeleteReportUseCase,
 ) : BaseViewModel() {
     lateinit var account: AccountModel
-
-    lateinit var year: String
+    lateinit var report: ReportModel
 
     private val _transactions = MutableLiveData<List<TransactionModel>>()
     val transactions: LiveData<List<TransactionModel>> = _transactions
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
-        val getTransactionsModel = FirebasePathModel(account.name, year)
+        val getTransactionsModel = FirebasePathModel(account.name, report.year)
         getTransactionsUseCase.execute(getTransactionsModel)
             .onStart { loading() }
             .catch { error(it) }
@@ -64,13 +65,13 @@ class TransactionsViewModel @Inject constructor(
 
 
     fun deleteTax() = viewModelScope.launch(Dispatchers.IO) {
-/*        val request = FirebaseRequestModel(account, year)
+        val request = FirebasePathModel(account.name, report.year)
         deleteTaxUseCase.execute(request)
             .onStart { loading() }
             .catch { error(it) }
             .collectLatest {
                 success(BaseState.SuccessDelete)
-            }*/
+            }
     }
 
     fun downloadStatement() {}

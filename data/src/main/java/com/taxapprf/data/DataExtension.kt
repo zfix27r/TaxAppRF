@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.taxapprf.data.error.AuthError
 import com.taxapprf.data.error.SignInErrorWrongPassword
 import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
+import kotlin.math.floor
 
 inline fun <T> safeCall(call: () -> T): T {
     return try {
@@ -23,3 +24,5 @@ fun Exception.toAppError() = when (this) {
     is FirebaseException -> AuthError()
     else -> this
 }
+
+fun Double.roundUpToTwo() = floor(this * 100.0) / 100.0

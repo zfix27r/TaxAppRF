@@ -25,24 +25,27 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
     private lateinit var currenciesAdapter: ArrayAdapter<String>
     private lateinit var typeTransactionAdapter: ArrayAdapter<String>
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         activityViewModel.account.observe(viewLifecycleOwner) { account ->
             viewModel.saveTransaction.accountKey = account.name
+            activityViewModel.report?.let {
+                viewModel.saveTransaction.from(it)
+                activityViewModel.report = null
+            }
             activityViewModel.transaction?.let {
                 viewModel.saveTransaction.from(it)
                 activityViewModel.transaction = null
             }
+            updateUI()
         }
 
         prepCurrencies()
         prepTypeTransaction()
         prepListeners()
-        updateUI()
 
         viewModel.attachToBaseFragment()
-        viewModel.transaction.observe(viewLifecycleOwner) { updateUI() }
         viewModel.state.observe(viewLifecycleOwner) { it.observeState() }
     }
 
@@ -72,7 +75,8 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         binding.imageNewTransDate.setOnClickListener {
             showDatePicker {
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    binding.editNewTransDate.setText(viewModel.updateDate(year, month, dayOfMonth))
+                    viewModel.saveTransaction.updateDate(year, month, dayOfMonth)
+                    binding.editNewTransDate.setText(viewModel.saveTransaction.date)
                 }
             }
         }
@@ -113,16 +117,21 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         }
 
         binding.editNewTransSum.doOnTextChanged { text, _, _, _ ->
-            viewModel.saveTransaction.sum = text.toString().toDouble()
+            val sum = text?.toString()?.toDouble() ?: run { 0.0 }
+            viewModel.saveTransaction.sum = sum
         }
 
         binding.editNewTransId.doOnTextChanged { text, _, _, _ ->
             viewModel.saveTransaction.name = text.toString()
         }
+
+        binding.editNewTransDate.doOnTextChanged { text, _, _, _ ->
+            println(text)
+            viewModel.saveTransaction.date = text.toString()
+        }
     }
 
     private fun BaseState.observeState() = when (this) {
-//                is BaseState.Edited -> navToTaxes()
         is BaseState.SuccessDelete -> {
             binding.root.showSnackBar(R.string.transaction_detail_delete_success)
             popBackStack()
@@ -135,7 +144,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_new_
         with(viewModel.saveTransaction) {
             binding.editNewTransId.setText(name)
             binding.editNewTransDate.setText(date)
-            binding.editNewTransSum.setText(if (sum == 0.0) "" else sum.toString())
+            if (sum > 0) binding.editNewTransSum.setText(sum.toString())
             updateCurrencies(currency)
             updateTypeTransaction(type)
         }

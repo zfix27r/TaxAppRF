@@ -1,5 +1,6 @@
 package com.taxapprf.domain.transaction
 
+import com.taxapprf.domain.report.ReportModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -15,6 +16,10 @@ class SaveTransactionModel {
 
     var name: String = ""
     var date: String = dateFormat.format(calendar.time)
+        set(value) {
+            field = value
+            year = value.split("/")[2]
+        }
     var type: String = TransactionType.TRADE.name
 
     // FIXME поправить, сделать подгрузку из стрингов
@@ -33,8 +38,12 @@ class SaveTransactionModel {
         sum = transactionModel.sum
         tax = transactionModel.tax
 
-        year = date.split("/")[2]
         yearOld = year
+    }
+
+    fun from(reportModel: ReportModel) {
+        calendar[Calendar.YEAR] = reportModel.year.toInt()
+        date = dateFormat.format(calendar.time)
     }
 
     fun updateDate(year: Int, month: Int, dayOfMonth: Int) {

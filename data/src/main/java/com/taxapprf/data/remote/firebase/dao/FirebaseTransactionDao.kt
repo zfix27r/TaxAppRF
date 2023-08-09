@@ -3,10 +3,11 @@ package com.taxapprf.data.remote.firebase.dao
 import com.taxapprf.domain.FirebasePathModel
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
+import kotlinx.coroutines.flow.Flow
 
 
 interface FirebaseTransactionDao {
-    suspend fun getTransactions(firebasePathModel: FirebasePathModel): List<TransactionModel>
+    fun getTransactions(firebasePathModel: FirebasePathModel): Flow<List<TransactionModel>>
     suspend fun saveTransaction(
         firebasePathModel: FirebasePathModel,
         firebaseTransactionModel: FirebaseTransactionModel
