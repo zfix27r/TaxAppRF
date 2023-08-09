@@ -1,56 +1,49 @@
 package com.taxapprf.taxapp.ui.account.change
 
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.error.InputErrorEmailEmpty
-import com.taxapprf.domain.user.GetAccountsUseCase
-import com.taxapprf.domain.user.SaveAccountModel
-import com.taxapprf.domain.user.SaveAccountUseCase
-import com.taxapprf.taxapp.ui.BaseState
+import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.account.ChangeAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountChangeViewModel @Inject constructor(
-    getAccountsUseCase: GetAccountsUseCase,
-    private val saveAccountUseCase: SaveAccountUseCase,
+    private val changeAccountUseCase: ChangeAccountUseCase,
 ) : BaseViewModel() {
-    val accounts = getAccountsUseCase.execute()
-        .onStart { loading() }
-        .catch { error(it) }
-        .onEach { success() }
-        .flowOn(Dispatchers.IO)
-        .mapNotNull { accounts ->
-            println(accounts)
-            accounts.mapIndexed { index, accountModel ->
-                if (accountModel.active) _activeAccountPosition = index
-                accountModel.name
+
+    lateinit var accounts: List<AccountModel>
+
+    fun changeAccount(newAccountName: String) {
+        if (newAccountName.isErrorInputAccountChecker()) return
+
+        var oldAccountModel: AccountModel? = null
+        var newAccountModel: AccountModel? = null
+
+        if (accounts.size > 1) {
+            accounts.map { account ->
+                if (account.active)
+                    oldAccountModel = account
+                else if (account.name == newAccountName)
+                    newAccountModel = account
             }
         }
-        .asLiveData(viewModelScope.coroutineContext)
-    private var _activeAccountPosition = 0
-    val activeAccountPosition
-        get() = _activeAccountPosition
 
-    fun saveAccount(userName: String, accountName: String) {
-        if (accountName.isErrorInputAccountChecker()) return
-
-        val accountModel = SaveAccountModel(userName, accountName)
-
-        viewModelScope.launch(Dispatchers.IO) {
-            saveAccountUseCase.execute(accountModel)
-                .onStart { loading() }
-                .catch { error(it) }
-                .collectLatest { success(BaseState.SuccessEdit) }
+        if (oldAccountModel != null && newAccountModel != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                changeAccountUseCase.execute(oldAccountModel!!, newAccountModel!!)
+                    .onStart { loading() }
+                    .catch { error(it) }
+                    .collectLatest {
+                        success()
+                    }
+            }
         }
     }
 

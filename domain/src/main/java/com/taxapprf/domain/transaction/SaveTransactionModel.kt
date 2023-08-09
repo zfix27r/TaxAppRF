@@ -1,55 +1,57 @@
 package com.taxapprf.domain.transaction
 
-import com.taxapprf.domain.TransactionType
+import com.taxapprf.domain.report.ReportModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-data class SaveTransactionModel(
-    var account: String = "",
-    var year: String = "",
-    var isYearUpdated: Boolean = false,
-
-    var key: String? = null,
-    var id: String = "",
-    var type: String = "",
-    var date: String = "",
-    var currency: String = "",
-    var rateCentralBank: Double = 0.0,
-    var sum: Double = 0.0,
-    var sumRub: Double = 0.0,
-) {
+class SaveTransactionModel {
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
 
-    fun updateTransactionModel(getTransactionModel: TransactionModel) {
-        id = getTransactionModel.id
-        key = getTransactionModel.key
-        date = getTransactionModel.date
-        currency = getTransactionModel.currency
-        rateCentralBank = getTransactionModel.rateCentralBank
-        sum = getTransactionModel.sum
-        sumRub = getTransactionModel.sumRub
+    lateinit var accountKey: String
+    var transactionKey: String? = null
+    var yearOld: String? = null
+    var year: String = calendar[Calendar.YEAR].toString()
 
-        updateYearFromDate()
-    }
-
-
-    init {
-        year = calendar[Calendar.YEAR].toString()
-        date = dateFormat.format(calendar.time).toString()
-        type = TransactionType.TRADE.name
-    }
-
-    fun updateYear() {
-        updateYearFromDate()
-        isYearUpdated = true
-    }
-
-    private fun updateYearFromDate() {
-        if (date != "") {
-            val dateSplit = date.split("/")
-            year = dateSplit[2]
+    var name: String = ""
+    var date: String = dateFormat.format(calendar.time)
+        set(value) {
+            field = value
+            year = value.split("/")[2]
         }
+    var type: String = TransactionType.TRADE.name
+
+    // FIXME поправить, сделать подгрузку из стрингов
+    var currency: String = "USD"
+    var rateCBR: Double = 0.0
+    var sum: Double = 0.0
+    var tax: Double = 0.0
+
+    fun from(transactionModel: TransactionModel) {
+        transactionKey = transactionModel.key
+        name = transactionModel.name
+        date = transactionModel.date
+        type = transactionModel.type
+        currency = transactionModel.currency
+        rateCBR = transactionModel.rateCBR
+        sum = transactionModel.sum
+        tax = transactionModel.tax
+
+        yearOld = year
+    }
+
+    fun from(reportModel: ReportModel) {
+        calendar[Calendar.YEAR] = reportModel.year.toInt()
+        date = dateFormat.format(calendar.time)
+    }
+
+    fun updateDate(year: Int, month: Int, dayOfMonth: Int) {
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+        date = dateFormat.format(calendar.time)
+        this.year = year.toString()
     }
 }

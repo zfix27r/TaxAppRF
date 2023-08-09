@@ -24,15 +24,23 @@ interface TransactionDao {
     @Query("SELECT * FROM `transaction` WHERE `key` = :transactionKey LIMIT 1")
     fun getTransaction(transactionKey: String): Flow<TransactionEntity>
 
+    @Query("SELECT SUM(sum_rub) sum FROM `transaction` WHERE account = :account AND year = :year")
+    fun getTransactionsTax(account: String, year: String): Double
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveTransaction(transactionEntities: TransactionEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveTransactions(transactionEntities: List<TransactionEntity>)
 
+    @Query("DELETE FROM `transaction` WHERE `key` = :transactionKey")
+    fun deleteTransaction(transactionKey: String)
+
     @Delete(entity = TransactionEntity::class)
     fun deleteTransactions(deleteTransactionDataModel: DeleteTransactionDataModel)
 
     @Query("DELETE FROM `transaction`")
     fun dropTransactions()
+
+
 }

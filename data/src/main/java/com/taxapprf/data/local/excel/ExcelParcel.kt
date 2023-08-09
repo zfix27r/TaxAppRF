@@ -30,7 +30,7 @@ class ExcelParcel(private val filePath: String) {
         while (rowIterator.hasNext()) {
             val row = rowIterator.next()
             val cells: Iterator<Cell> = row.iterator()
-            val transaction = SaveTransactionModel()
+/*            val transaction = SaveTransactionModel()
 
             try {
                 for (i in 0..4) {
@@ -46,7 +46,7 @@ class ExcelParcel(private val filePath: String) {
                 transactions.add(transaction)
             } catch (e: Exception) {
                 // TODO() недописана обработка ошибок
-            }
+            }*/
         }
         return transactions
     }

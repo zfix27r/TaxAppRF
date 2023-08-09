@@ -1,10 +1,10 @@
 package com.taxapprf.domain.user
 
-import com.taxapprf.domain.SignRepository
+import com.taxapprf.domain.UserRepository
 import javax.inject.Inject
 
 class SignUpUseCase @Inject constructor(
-    private val repository: SignRepository
+    private val repository: UserRepository
 ) {
     fun execute(userSignUpModel: SignUpModel) =
         repository.signUp(userSignUpModel)

@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentAccountChangeBinding
 import com.taxapprf.taxapp.ui.BaseFragment
@@ -27,18 +28,31 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        prepSpinner()
         binding.buttonChangeAccountCreate.setOnClickListener { accountCreate() }
         binding.buttonChangeAccountOpen.setOnClickListener { accountOpen() }
 
         viewModel.attachToBaseFragment()
         viewModel.observeState()
-        viewModel.observeAccounts()
+
+        activityViewModel.accounts.observe(viewLifecycleOwner) {
+            viewModel.accounts = it
+            prepSpinner(it)
+        }
     }
 
-    private fun prepSpinner() {
+    private fun prepSpinner(accounts: List<AccountModel>) {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerChangeAccount.adapter = adapter
+
+        var activeAccountIndex = 0
+        val accountsName = accounts.mapIndexed { index, accountModel ->
+            if (accountModel.active) activeAccountIndex = index
+            accountModel.name
+        }
+
+        adapter.clear()
+        adapter.addAll(accountsName)
+        binding.spinnerChangeAccount.setSelection(activeAccountIndex)
     }
 
     private fun AccountChangeViewModel.observeState() =
@@ -49,22 +63,15 @@ class AccountChangeFragment : BaseFragment(R.layout.fragment_account_change) {
             }
         }
 
-    private fun AccountChangeViewModel.observeAccounts() =
-        accounts.observe(viewLifecycleOwner) { accounts ->
-            adapter.clear()
-            adapter.addAll(accounts)
-            binding.spinnerChangeAccount.setSelection(viewModel.activeAccountPosition)
-        }
-
     private fun accountCreate() {
         val accountName = binding.editChangeAccountName.text.toString()
-        viewModel.saveAccount(activityViewModel.name, accountName)
+        viewModel.changeAccount(accountName)
     }
 
     private fun accountOpen() {
         binding.spinnerChangeAccount.selectedItem?.let {
             val accountName = it as String
-            viewModel.saveAccount(activityViewModel.name, accountName)
+            viewModel.changeAccount(accountName)
         }
     }
 

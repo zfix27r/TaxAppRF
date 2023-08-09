@@ -46,7 +46,7 @@ class AccountSelectFragment : BaseFragment(R.layout.fragment_account_select) {
             // TODO() без проверки на наличие данных в спинере по нажатии открыть ошибка
             // TODO проверить смежные фрагменты
             val accountName = spinnerSelectAccount.selectedItem.toString()
-            viewModel.saveAccount(activityViewModel.name, accountName)
+            viewModel.saveAccount(accountName)
         }
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

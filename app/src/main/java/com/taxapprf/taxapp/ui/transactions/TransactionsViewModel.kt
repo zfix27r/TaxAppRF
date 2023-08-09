@@ -1,12 +1,16 @@
 package com.taxapprf.taxapp.ui.transactions
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.FirebaseRequestModel
-import com.taxapprf.domain.taxes.DeleteTaxUseCase
+import com.taxapprf.domain.FirebasePathModel
+import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.excel.SendExcelReportUseCase
+import com.taxapprf.domain.report.DeleteReportUseCase
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
-import com.taxapprf.domain.transaction.TransactionsModel
+import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,16 +25,20 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
     private val getTransactionsUseCase: GetTransactionsUseCase,
-    private val deleteTaxUseCase: DeleteTaxUseCase,
+    private val deleteTaxUseCase: DeleteReportUseCase,
+    private val sendExcelReportUseCase: SendExcelReportUseCase,
 ) : BaseViewModel() {
-    lateinit var account: String
-    lateinit var year: String
+    lateinit var account: AccountModel
+    lateinit var report: ReportModel
 
-    private val _transactions = MutableLiveData<TransactionsModel>()
-    val transactions: LiveData<TransactionsModel> = _transactions
+    private val _transactions = MutableLiveData<List<TransactionModel>>()
+    val transactions: LiveData<List<TransactionModel>> = _transactions
+
+    var emailUri: Uri? = null
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
-        getTransactionsUseCase.execute(account, year)
+        val getTransactionsModel = FirebasePathModel(account.name, report.year)
+        getTransactionsUseCase.execute(getTransactionsModel)
             .onStart { loading() }
             .catch { error(it) }
             .collectLatest {
@@ -39,30 +47,8 @@ class TransactionsViewModel @Inject constructor(
             }
     }
 
-    // TODO нет обработки пустого результа, показ какого то сообщения
-
-    /*        firebaseTransactions = FirebaseTransactions(UserLivaData().getFirebaseUser(), account)
-            firebaseTransactions.readTransactions(year, object : DataStatus() {
-                fun DataIsLoaded(transactionsDB: List<Transaction>) {
-                    transactions.setValue(transactionsDB)
-                    mtransactions = transactionsDB
-                }
-
-                fun DataIsInserted() {}
-                fun DataIsUpdated() {}
-                fun DataIsDeleted() {}
-            })
-            firebaseYearSum = FirebaseYearSum(UserLivaData().getFirebaseUser(), account)
-            firebaseYearSum.readYearSum(year, object : DataStatus() {
-                fun DataIsLoaded(sumTaxesDB: Double) {
-                    sumTaxes.setValue(sumTaxesDB)
-                    msumTaxes = sumTaxesDB
-                }
-            })*/
-
-
-    fun deleteTax(account: String) = viewModelScope.launch(Dispatchers.IO) {
-        val request = FirebaseRequestModel(account, year)
+    fun deleteTax() = viewModelScope.launch(Dispatchers.IO) {
+        val request = FirebasePathModel(account.name, report.year)
         deleteTaxUseCase.execute(request)
             .onStart { loading() }
             .catch { error(it) }
@@ -71,28 +57,15 @@ class TransactionsViewModel @Inject constructor(
             }
     }
 
-    fun downloadStatement() {}
-    /*        year = settings.getString(Settings.YEAR.name, "")
-            return try {
-                val excelStatement =
-                    CreateExcelInDownload(year, msumTaxes, mtransactions)
-                excelStatement.create()
-            } catch (e: IOException) {
-                //e.printStackTrace(); //...
-                null
-            }*/
-
-
-    fun createLocalStatement() {
-        /*        return try {
-                    val excelStatement =
-                        CreateExcelInLocal(getApplication(), year, msumTaxes, mtransactions)
-                    var file: File? = null
-                    file = excelStatement.create()
-                    file
-                } catch (e: IOException) {
-                    //e.printStackTrace();
-                    null
-                }*/
+    fun sendExcelReport() = viewModelScope.launch(Dispatchers.IO) {
+        transactions.value?.let { transactions ->
+            sendExcelReportUseCase.execute(report, transactions)
+                .onStart { loading() }
+                .catch { error(it) }
+                .collectLatest {
+                    emailUri = it
+                    success(BaseState.SuccessSendEmail)
+                }
+        }
     }
 }

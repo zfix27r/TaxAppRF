@@ -9,6 +9,7 @@ sealed class BaseState {
     object SuccessEdit : BaseState()
     object LogOut : BaseState()
     object Finish : BaseState()
+    object SuccessSendEmail : BaseState()
     object UpdateUI : BaseState()
     object AccountSelect : BaseState()
 }

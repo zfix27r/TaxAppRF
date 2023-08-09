@@ -25,26 +25,21 @@ class LoginActivity : AppCompatActivity(R.layout.activity_login), Loading {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.observeUser()
-    }
+        if (viewModel.isSignIn)
+            navToMainActivity()
+        else
+            setNavGraph()
 
-    private fun MainViewModel.observeUser() {
-        user.observe(this@LoginActivity) { _user ->
-            _user?.let { user ->
-                user.updateUserInfo()
-                user.account.updateAccountAndNavigate()
+/*        viewModel.user.observe(this@LoginActivity) {
+            it?.let { user ->
+                //user.account.updateAccountAndNavigate()
             } ?: run {
                 //TODO временное решение, необходимо доработать, сплэш экран, либо отображение ожидания иначе
                 setNavGraph()
             }
         }
-    }
 
-    private fun UserModel.updateUserInfo() {
-        viewModel.name = name
-        viewModel.email = email
-        viewModel.phone = phone
-
+        viewModel.user*/
     }
 
     private fun String?.updateAccountAndNavigate() {

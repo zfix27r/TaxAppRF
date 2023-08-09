@@ -2,9 +2,7 @@ package com.taxapprf.taxapp.ui.account.select
 
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.user.GetAccountsUseCase
-import com.taxapprf.domain.user.SaveAccountModel
-import com.taxapprf.domain.user.SaveAccountUseCase
+import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
@@ -20,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountSelectViewModel @Inject constructor(
     getAccountsUseCase: GetAccountsUseCase,
-    private val saveAccountUseCase: SaveAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
 ) : BaseViewModel() {
     val accounts = getAccountsUseCase.execute().flowOn(Dispatchers.IO)
@@ -33,11 +30,11 @@ class AccountSelectViewModel @Inject constructor(
             .collectLatest { success(BaseState.LogOut) }
     }
 
-    fun saveAccount(userName: String, accountName: String) = viewModelScope.launch(Dispatchers.IO) {
-        val accountModel = SaveAccountModel(userName, accountName)
+    fun saveAccount(accountName: String) = viewModelScope.launch(Dispatchers.IO) {
+/*        val accountModel = SaveAccountModel("", accountName)
         saveAccountUseCase.execute(accountModel)
             .onStart { loading() }
             .catch { error(it) }
-            .collectLatest { success(BaseState.AccountSelect) }
+            .collectLatest { success(BaseState.AccountSelect) }*/
     }
 }

@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
         AppBarConfiguration(
             setOf(
                 R.id.rates_today,
-                R.id.taxes,
+                R.id.reports,
                 R.id.account_change,
                 R.id.currency_converter,
             ),
@@ -43,28 +43,32 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.observeUser()
-    }
+        navController.setGraph(R.navigation.mobile_navigation)
+        setSupportActionBar(binding.appBarMain.toolbar)
+        setupActionBarWithNavController(
+            this@MainActivity,
+            navController,
+            mAppBarConfiguration
+        )
+        setupWithNavController(binding.navView, navController)
+        prepDrawer()
 
-    private fun MainViewModel.observeUser() {
-        user.observe(this@MainActivity) { user ->
-            user?.let {
-                viewModel.name = it.name
-                viewModel.email = it.email
-                viewModel.phone = it.phone
-                viewModel.account = it.account!!
-
-                navController.setGraph(R.navigation.mobile_navigation)
-                setSupportActionBar(binding.appBarMain.toolbar)
-                setupActionBarWithNavController(
-                    this@MainActivity,
-                    navController,
-                    mAppBarConfiguration
-                )
-                setupWithNavController(binding.navView, navController)
-                prepDrawer()
+        viewModel.state.observe(this@MainActivity) {
+            when (it) {
+                is ActivityBaseState.Loading -> loading()
+                is ActivityBaseState.Error -> {}
+                is ActivityBaseState.Success -> {}
+                is ActivityBaseState.AccountEmpty -> {}
+                else -> {}
             }
         }
+
+        viewModel.accounts.observe(this@MainActivity) {
+
+        }
+    }
+
+    private fun loading() {
     }
 
     private fun prepDrawer() {
