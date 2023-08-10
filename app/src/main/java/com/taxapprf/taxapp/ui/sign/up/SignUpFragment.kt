@@ -20,8 +20,8 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonRegisterCancel.setOnClickListener { popBackStack() }
-        binding.buttonRegisterCreate.setOnClickListener { signUp() }
+        binding.buttonSignUpCancel.setOnClickListener { popBackStack() }
+        binding.buttonSignUpCreate.setOnClickListener { signUp() }
 
         viewModel.attachToBaseFragment()
         viewModel.observeState()
@@ -31,7 +31,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
         state.observe(viewLifecycleOwner) {
             when (it) {
                 is BaseState.Success -> {
-                    binding.root.showSnackBar(R.string.messageRegistrationSuccess)
+                    binding.root.showSnackBar(R.string.message__sign_up_success)
                     navToAccountFirst()
                 }
 
@@ -44,10 +44,10 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     }
 
     private fun signUp() {
-        val inputEmail = binding.editRegisterEmail.text.toString()
-        val inputName = binding.editRegisterName.text.toString()
-        val inputPhone = binding.editRegisterPhone.text.toString()
-        val inputPassword = binding.editRegisterPassword.text.toString()
+        val inputEmail = binding.editSignUpEmail.text.toString()
+        val inputName = binding.editSignUpName.text.toString()
+        val inputPhone = binding.editSignUpPhone.text.toString()
+        val inputPassword = binding.editSignUpPassword.text.toString()
         viewModel.signUp(inputName, inputEmail, inputPassword, inputPhone)
     }
 
