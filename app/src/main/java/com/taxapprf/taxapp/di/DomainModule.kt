@@ -1,11 +1,12 @@
 package com.taxapprf.taxapp.di
 
 import com.taxapprf.data.AccountRepositoryImpl
+import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.account.ChangeAccountUseCase
-import com.taxapprf.domain.cbr.GetRateCentralBankUseCase
+import com.taxapprf.domain.currency.GetCurrencyRateTodayFromCBRUseCase
 import com.taxapprf.domain.report.DeleteReportUseCase
 import com.taxapprf.domain.report.GetReportsUseCase
 import com.taxapprf.domain.report.SaveReportsFromExcelUseCase
@@ -56,8 +57,8 @@ object DomainModule {
         ChangeAccountUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetRateCentralBankUseCase(repositoryImpl: ReportRepositoryImpl) =
-        GetRateCentralBankUseCase(repositoryImpl)
+    fun provideGetTodayCBRRateUseCase(repositoryImpl: CurrencyRepositoryImpl) =
+        GetCurrencyRateTodayFromCBRUseCase(repositoryImpl)
 
     @Provides
     fun provideGetTransactionsUseCase(repositoryImpl: TransactionRepositoryImpl) =

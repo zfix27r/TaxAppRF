@@ -6,8 +6,8 @@
     app:startDestination="@+id/reports">
 
     <fragment
-        android:id="@+id/rates_today"
-        android:name="com.taxapprf.taxapp.ui.rates.today.RatesTodayFragment"
+        android:id="@+id/currency_rates_today"
+        android:name="com.taxapprf.taxapp.ui.currency.today.CurrencyRatesTodayFragment"
         android:label="@string/menuRatesToday"
         tools:layout="@layout/fragment_rates_today" />
 
@@ -65,7 +65,7 @@
 
     <fragment
         android:id="@+id/currency_converter"
-        android:name="com.taxapprf.taxapp.ui.converter.CurrencyConverterFragment"
+        android:name="com.taxapprf.taxapp.ui.currency.converter.CurrencyConverterFragment"
         android:label="@string/menuConverter"
         tools:layout="@layout/fragment_currency_converter" />
 

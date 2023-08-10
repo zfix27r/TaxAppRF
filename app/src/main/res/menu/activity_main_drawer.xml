@@ -10,7 +10,7 @@
             android:title="@string/menuTaxes" />
 
         <item
-            android:id="@+id/rates_today"
+            android:id="@+id/currency_rates_today"
             android:icon="@drawable/ic_baseline_timeline_24"
             android:title="@string/menuRatesToday" />
 
@@ -28,9 +28,6 @@
             android:id="@+id/exit"
             android:icon="@drawable/ic_baseline_exit_to_app_24"
             android:title="@string/menuExit" />
-
-
-
 
     </group>
 </menu>

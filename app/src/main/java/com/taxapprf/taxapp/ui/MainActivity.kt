@@ -17,7 +17,6 @@ import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
-import com.taxapprf.taxapp.usersdata.Settings
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,7 +27,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
     private val mAppBarConfiguration by lazy {
         AppBarConfiguration(
             setOf(
-                R.id.rates_today,
+                R.id.currency_rates_today,
                 R.id.reports,
                 R.id.account_change,
                 R.id.currency_converter,
@@ -78,10 +77,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), Loading {
             binding.navView.visibility = View.GONE
         }
 
-        val userAccount = header.findViewById<TextView>(R.id.textNavHeaderUserAccount)
+/*        val userAccount = header.findViewById<TextView>(R.id.textNavHeaderUserAccount)
         val settings: SharedPreferences =
             this.getSharedPreferences(Settings.SETTINGSFILE.name, Context.MODE_PRIVATE)
-        userAccount.text = settings.getString(Settings.ACCOUNT.name, "")
+        userAccount.text = settings.getString(Settings.ACCOUNT.name, "")*/
     }
 
 

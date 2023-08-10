@@ -9,7 +9,12 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.regex.Pattern
+import kotlin.math.floor
 
 fun View.showSnackBar(msg: Int) =
     Snackbar.make(this, msg, Snackbar.LENGTH_SHORT).show()
@@ -34,3 +39,10 @@ fun Activity.checkStoragePermission(): Boolean {
         false
     }
 }
+
+fun Date.format(): String {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return dateFormat.format(this)
+}
+
+fun Double.format() = floor(this * 100.0) / 100.0
