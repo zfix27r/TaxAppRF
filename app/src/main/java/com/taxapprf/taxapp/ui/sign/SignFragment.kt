@@ -16,8 +16,8 @@ class SignFragment : Fragment(R.layout.fragment_sign) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonLoginSignIn.setOnClickListener { navToSignIn() }
-        binding.buttonLoginRegister.setOnClickListener { navToSignUp() }
+        binding.buttonSignIn.setOnClickListener { navToSignIn() }
+        binding.buttonSignUp.setOnClickListener { navToSignUp() }
     }
 
     private fun navToSignIn() {

@@ -7,13 +7,16 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <!-- SignIn, SignUp-->
-    <dimen name="sign_in_margin_side">50dp</dimen>
+    <dimen name="sign_in_button_margin_side">50dp</dimen>
     <dimen name="logo_margin_top">30dp</dimen>
     <dimen name="logo_size">45sp</dimen>
-    <dimen name="sing_in_margin_vertical">20dp</dimen>
+    <dimen name="sign_margin_vertical">20dp</dimen>
     <dimen name="sign_in_text_under_bottom_size">16sp</dimen>
 
     <dimen name="text_size_16sp">16sp</dimen>
-    <dimen name="sign_in_margin_between">10dp</dimen>
+    <dimen name="sign_button_margin_between">10dp</dimen>
+    <dimen name="sign_margin_side">60dp</dimen>
+    <dimen name="sign_up_margin_bottom">80dp</dimen>
+    <dimen name="sign_up_edit_margin_bottom">15dp</dimen>
 
 </resources>

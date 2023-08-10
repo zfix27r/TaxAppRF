@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,69 +9,83 @@
     tools:context=".ui.sign.up.SignUpFragment">
 
     <TextView
-        android:id="@+id/textViewSignIn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:fontFamily="@font/suez_one"
-        android:gravity="center"
-        android:text="@string/app_name"
-        android:textAlignment="center"
-        android:textSize="45sp"
-        android:textStyle="bold"
+        android:id="@+id/logo"
+        style="@style/StyleLogoText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginEnd="60dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginStart="@dimen/sign_margin_side"
+        android:layout_marginEnd="@dimen/sign_margin_side"
+        android:layout_marginBottom="@dimen/sign_up_margin_bottom"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="20dp">
+        app:layout_constraintTop_toTopOf="parent">
 
 
-        <EditText
-            android:id="@+id/editRegisterName"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:hint="@string/editRegisterName"
-            android:inputType="textPersonName"
-            android:textSize="20sp" />
+            android:layout_marginBottom="@dimen/sign_up_edit_margin_bottom"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_sign_up_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_sign_up_name"
+                android:inputType="textPersonName"
+                android:textSize="@dimen/text_size_16sp"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/editRegisterPhone"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:hint="@string/editRegisterTel"
-            android:inputType="phone"
-            android:textSize="20sp" />
+            android:layout_marginBottom="@dimen/sign_up_edit_margin_bottom"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_sign_up_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_sign_up_tel"
+                android:inputType="phone"
+                android:textSize="@dimen/text_size_16sp"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/editRegisterEmail"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:hint="@string/editRegisterEmail"
-            android:inputType="textEmailAddress"
-            android:textSize="20sp" />
+            android:layout_marginBottom="@dimen/sign_up_edit_margin_bottom"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_sign_up_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_sign_up_email"
+                android:inputType="textEmailAddress"
+                android:textSize="@dimen/text_size_16sp"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/editRegisterPassword"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusableInTouchMode="true"
-            android:hint="@string/editRegisterPassword"
-            android:inputType="textPassword"
-            android:textSize="20sp" />
-
+            android:layout_marginBottom="@dimen/sign_up_edit_margin_bottom"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_sign_up_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/edit_sign_up_password"
+                android:inputType="textPassword"
+                android:textSize="@dimen/text_size_16sp"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
 
@@ -80,43 +95,42 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/buttonRegisterCreate"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_sign_up_create"
             style="@style/StyleButtonOK"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginStart="@dimen/sign_margin_side"
+            android:layout_marginTop="@dimen/sign_margin_vertical"
+            android:layout_marginEnd="@dimen/sign_button_margin_between"
+            android:layout_marginBottom="@dimen/sign_margin_vertical"
             android:layout_weight="0.8"
-            android:text="@string/buttonRegisterOk"
-            android:textSize="14sp" />
+            android:text="@string/button_sign_up_ok"
+            />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/buttonRegisterCancel"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_sign_up_cancel"
             style="@style/StyleButtonCancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="60dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="@dimen/sign_margin_vertical"
+            android:layout_marginEnd="@dimen/sign_margin_side"
+            android:layout_marginBottom="@dimen/sign_margin_vertical"
             android:layout_weight="1"
-            android:text="@string/buttonRegisterCancel" />
+            android:text="@string/button_sign_up_cancel" />
 
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textRegisterUnderBottom"
+        android:id="@+id/text_sign_up_under_bottom"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
-        android:layout_margin="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sign_margin_vertical"
         android:gravity="center"
-        android:text="@string/textRegisterUnderButton"
-        android:textSize="16sp"
+        android:text="@string/text_sign_up_under_button"
+        android:textSize="@dimen/text_size_16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
