@@ -25,10 +25,8 @@ public class Currency {
     public Double getCurrencyRate(String valutaCode) {
         for (CurrencyRate currency : currencyList) {
             if (Objects.equals(currency.getCharCode(), valutaCode)) {
-                System.out.println(" @@@@@" + currency);
-/*                if (currency.getValue() != null)
-
-                    this.rate = currency.getValue() / currency.getNominal();*/
+                if (currency.getValue() != null)
+                    this.rate = currency.getValue() / currency.getNominal();
             }
         }
         return rate;

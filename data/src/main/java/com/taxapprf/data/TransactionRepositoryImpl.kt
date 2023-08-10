@@ -71,6 +71,7 @@ class TransactionRepositoryImpl @Inject constructor(
         }
 
     private fun SaveTransactionModel.updateCBRRate() {
+        println("@@@@ " + date)
         val rate = cbrapi.getCurrency(date).execute().body()
             ?.getCurrencyRate(currency)
             ?: throw CBRErrorRateIsEmpty()
