@@ -4,6 +4,7 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Root(name = "ValCurs", strict = false)
@@ -23,8 +24,11 @@ public class Currency {
 
     public Double getCurrencyRate(String valutaCode) {
         for (CurrencyRate currency : currencyList) {
-            if (currency.getCharCode().equals(valutaCode)) {
-                this.rate = currency.getValue() / currency.getNominal();
+            if (Objects.equals(currency.getCharCode(), valutaCode)) {
+                System.out.println(" @@@@@" + currency);
+/*                if (currency.getValue() != null)
+
+                    this.rate = currency.getValue() / currency.getNominal();*/
             }
         }
         return rate;
