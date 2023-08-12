@@ -9,6 +9,7 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentSignInBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.BaseState
+import com.taxapprf.taxapp.ui.getErrorDescription
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     private val binding by viewBinding(FragmentSignInBinding::bind)
     private val viewModel by viewModels<SignInViewModel>()
-    //TODO при первой авторизации когда нет аккаунтов направлять на ферст аккаунт.
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -30,13 +30,13 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     private fun SignInViewModel.observeState() =
         state.observe(viewLifecycleOwner) {
             when (it) {
-                is BaseState.Success -> navToAccountSelect()
+                is BaseState.Success -> navToReports()
                 else -> {}
             }
         }
 
-    override fun onLoadingError(stringResId: Int) {
-        binding.root.showSnackBar(stringResId)
+    override fun onLoadingError(t: Throwable) {
+        binding.root.showSnackBar(t.getErrorDescription())
     }
 
     private fun signIn() {
@@ -45,7 +45,7 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
         viewModel.signIn(inputEmail, inputPassword)
     }
 
-    private fun navToAccountSelect() {
-        findNavController().navigate(R.id.action_sign_in_to_select_account)
+    private fun navToReports() {
+        findNavController().navigate(R.id.action_global_reports)
     }
 }

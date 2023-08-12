@@ -19,15 +19,5 @@
             android:icon="@drawable/ic_baseline_currency_exchange_24"
             android:title="@string/menuConverter" />
 
-        <item
-            android:id="@+id/account_change"
-            android:icon="@drawable/ic_baseline_wifi_protected_setup_24"
-            android:title="@string/menuChangeAccount" />
-
-        <item
-            android:id="@+id/exit"
-            android:icon="@drawable/ic_baseline_exit_to_app_24"
-            android:title="@string/menuExit" />
-
     </group>
 </menu>

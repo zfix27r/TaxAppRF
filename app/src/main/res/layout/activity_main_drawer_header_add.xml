@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_header_add"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingVertical="@dimen/offset_16"
+    android:paddingHorizontal="@dimen/drawer_header_add_horizontal_offset">
+
+    <ImageView
+        android:id="@+id/drawer_header_item_icon"
+        android:layout_width="@dimen/drawer_header_add_icon_size"
+        android:layout_height="@dimen/drawer_header_add_icon_size"
+        android:layout_marginStart="@dimen/offset_8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_add_circle_24" />
+
+    <TextView
+        android:id="@+id/drawer_header_item_title"
+        android:layout_width="@dimen/zero"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="@dimen/drawer_header_add_title_horizontal_offset"
+        android:text="@string/drawer_header_add_name"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        app:layout_constraintBottom_toBottomOf="@+id/drawer_header_item_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/drawer_header_item_icon"
+        app:layout_constraintTop_toTopOf="@+id/drawer_header_item_icon" />
+</androidx.constraintlayout.widget.ConstraintLayout>
