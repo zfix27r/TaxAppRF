@@ -41,22 +41,6 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/buttonTransAdd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="15dp"
-            android:layout_weight="1"
-            android:elevation="6dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/ic_baseline_add_circle_24"
-            android:stateListAnimator="@animator/button_elevation"
-            android:translationZ="4dp" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/buttonTransDeleteYear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -104,60 +88,5 @@
             android:stateListAnimator="@animator/button_elevation"
             android:translationZ="4dp" />
     </LinearLayout>
-
-    <!--
-    <Button
-        android:id="@+id/buttonTransAdd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/button_ok"
-        android:text="@string/buttonTransAdd"
-        app:layout_constraintBottom_toTopOf="@+id/buttonTransDeleteYear"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/buttonTransDeleteYear"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/button_ok"
-        android:text="@string/buttonTransDelete"
-        app:layout_constraintBottom_toTopOf="@+id/buttonTransDownload"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/buttonTransDownload"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/button_ok"
-        android:text="@string/buttonTransDownload"
-        app:layout_constraintBottom_toTopOf="@+id/buttonTransSendEmail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/buttonTransSendEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/button_ok"
-        android:text="@string/buttonTransSendEmail"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-        -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
