@@ -11,69 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/linearTrans"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
     </androidx.recyclerview.widget.RecyclerView>
-
-    <LinearLayout
-        android:id="@+id/linearTrans"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/buttonTransDeleteYear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="15dp"
-            android:layout_weight="1"
-            android:elevation="6dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/ic_baseline_delete_24"
-            android:stateListAnimator="@animator/button_elevation"
-            android:translationZ="4dp" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/buttonTransDownload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="15dp"
-            android:layout_weight="1"
-            android:elevation="6dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/ic_baseline_download_24"
-            android:stateListAnimator="@animator/button_elevation"
-            android:translationZ="4dp" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/buttonTransSendEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="25dp"
-            android:layout_marginBottom="15dp"
-            android:layout_weight="1"
-            android:elevation="6dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:src="@drawable/ic_baseline_email_24"
-            android:stateListAnimator="@animator/button_elevation"
-            android:translationZ="4dp" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
