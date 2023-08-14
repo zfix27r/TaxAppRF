@@ -4,17 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.currency.today.CurrencyRatesTodayFragment">
+    android:layout_gravity="center_horizontal"
+    tools:context=".ui.reports.ReportsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerviewCurrencies"
+        android:id="@+id/recyclerYearStatements"
         android:layout_width="match_parent"
         android:layout_height="@dimen/zero"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/fragment_rates_today_adapter_item"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/fragment_reports_adapter_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

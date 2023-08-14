@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.activity
+package com.taxapprf.taxapp.ui
 
 import android.widget.ImageView
 import android.widget.TextView
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.taxapprf.taxapp.R
 
-class MainActivityDrawer(
+class MainDrawer(
     private val navView: NavigationView,
 ) {
     val header
@@ -41,6 +41,18 @@ class MainActivityDrawer(
             isAccountsExpand = !isAccountsExpand
         }
 
+    }
+
+    fun showAuth() {
+        navView.menu.clear()
+        navView.inflateMenu(R.menu.auth_drawer)
+        accounts.isVisible = true
+    }
+
+    fun hideAuth() {
+        navView.menu.clear()
+        navView.inflateMenu(R.menu.not_auth_drawer)
+        accounts.isVisible = false
     }
 
     companion object {

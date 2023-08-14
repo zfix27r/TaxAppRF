@@ -5,6 +5,7 @@ import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.coroutineScope
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.navigateUp
@@ -12,26 +13,30 @@ import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.data.error.DataErrorAuth
-import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
+import com.taxapprf.taxapp.ui.MainDrawer
+import com.taxapprf.taxapp.ui.MainToolbar
 import com.taxapprf.taxapp.ui.getErrorDescription
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
-    private val binding by viewBinding(ActivityMainBinding::bind)
+    val binding by viewBinding(ActivityMainBinding::bind)
     private val viewModel by viewModels<MainViewModel>()
 
     private val mAppBarConfiguration by lazy {
-        AppBarConfiguration(topLevelDestination, binding.drawerLayout)
+        AppBarConfiguration(topLevelDestinations, binding.drawerLayout)
     }
 
     val navController by lazy {
         findNavController(this, R.id.nav_host_fragment_content_main)
     }
 
-    private val drawer by lazy { MainActivityDrawer(binding.navView) }
+    val drawer by lazy { MainDrawer(binding.navView) }
+    val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
 
     private val accountsAdapter = MainAccountsAdapter {
         object : MainAccountsAdapterCallback {
@@ -52,8 +57,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        navIsUserNotSignIn()
-
         navController.setGraph(R.navigation.mobile_navigation)
 
         setSupportActionBar(binding.appBarMain.toolbar)
@@ -72,7 +75,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
+        //menuInflater.inflate(R.menu.reports_toolbar, menu)
         return true
     }
 
@@ -104,11 +107,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         onLoadingStop()
     }
 
-    private val topLevelDestination = setOf(
+    private val topLevelDestinations = setOf(
         R.id.sign,
         R.id.currency_rates_today,
         R.id.reports,
         R.id.currency_converter,
+    )
+
+    private val fabVisibleDestinations = setOf(
+        R.id.reports,
+        R.id.transactions,
+    )
+
+    private val notAuthDestinations = setOf(
+        R.id.sign,
+        R.id.sign_in,
+        R.id.sign_up
     )
 
     private fun MainViewModel.observeState() {
@@ -129,17 +143,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private fun MainViewModel.observeAccounts() {
         accounts.observe(this@MainActivity) { accounts ->
-            if (accounts.isNotEmpty()) accountsAdapter.submitList(accounts.filter { !it.active })
-            else onLoadingError(DataErrorAuth())
+            if (accounts.isNotEmpty()) {
+                accountsAdapter.submitList(accounts.filter { !it.active })
+                fabVisibilityManager()
+            } else {
+                onLoadingError(DataErrorAuth())
+            }
         }
     }
 
-    private fun navIsUserNotSignIn() {
-        if (!viewModel.isSignIn) navToSign()
-    }
-
-    private fun navToSign() {
-        navController.navigate(R.id.action_global_sign)
+    private fun fabVisibilityManager() {
+        lifecycle.coroutineScope.launch {
+            navController.currentBackStack.collectLatest { navBackStackEntries ->
+                viewModel.account.value?.let {
+                    if (fabVisibleDestinations.contains(navBackStackEntries.last().destination.id))
+                        binding.appBarMain.fab.show()
+                    else
+                        binding.appBarMain.fab.hide()
+                }
+            }
+        }
     }
 
     private fun navToAccountAdd() {
