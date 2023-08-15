@@ -5,6 +5,8 @@ import com.taxapprf.data.remote.firebase.FirebaseUserDaoImpl
 import com.taxapprf.domain.UserRepository
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
+import com.taxapprf.domain.user.UserModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -14,6 +16,10 @@ class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
     override fun getUser() = flow {
         emit(firebaseUserDao.getProfile())
+    }
+
+    override fun saveUser(userModel: UserModel): Flow<Unit> = flow {
+        emit(firebaseUserDao.saveProfile(userModel))
     }
 
     override fun signIn(signInModel: SignInModel) = flow {

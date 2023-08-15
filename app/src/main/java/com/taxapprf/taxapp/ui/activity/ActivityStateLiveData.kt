@@ -1,10 +1,6 @@
 package com.taxapprf.taxapp.ui.activity
 
 import androidx.lifecycle.MutableLiveData
-import com.taxapprf.taxapp.ui.activity.ActivityBaseState
-import com.taxapprf.taxapp.ui.activity.Error
-import com.taxapprf.taxapp.ui.activity.Loading
-import com.taxapprf.taxapp.ui.activity.Success
 
 class ActivityStateLiveData : MutableLiveData<ActivityBaseState>() {
     fun loading() {
@@ -17,5 +13,9 @@ class ActivityStateLiveData : MutableLiveData<ActivityBaseState>() {
 
     fun success() {
         postValue(Success)
+    }
+
+    fun signOut() {
+        postValue(SignOut)
     }
 }

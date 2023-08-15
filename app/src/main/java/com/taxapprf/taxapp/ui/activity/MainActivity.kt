@@ -36,7 +36,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         findNavController(this, R.id.nav_host_fragment_content_main)
     }
 
-    val drawer by lazy { MainDrawer(binding.navView) }
+    val drawer by lazy {
+        MainDrawer(binding.navView) {
+            viewModel.signOut()
+        }
+    }
     val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
 
     private val accountsAdapter = MainAccountsAdapter {
@@ -71,6 +75,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         binding.appBarMain.content.loadingRetry.setOnClickListener { viewModel.loading() }
 
         viewModel.observeState()
+        viewModel.observeUser()
         viewModel.observeAccounts()
         viewModel.observeAccount()
         navController.observeCurrentBackStack()
@@ -110,6 +115,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         onLoadingStop()
     }
 
+    private fun onSignOut() {
+        drawer.hideAuth()
+        navToSign()
+    }
+
     private val topLevelDestinations = setOf(
         R.id.sign,
         R.id.currency_rates_today,
@@ -122,18 +132,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         R.id.transactions,
     )
 
-    private val notAuthDestinations = setOf(
-        R.id.sign,
-        R.id.sign_in,
-        R.id.sign_up
-    )
-
     private fun MainViewModel.observeState() {
         state.observe(this@MainActivity) {
             when (it) {
                 is Loading -> onLoadingStart()
                 is Error -> onLoadingError(it.t)
                 is Success -> onLoadingSuccess()
+                is SignOut -> onSignOut()
             }
         }
     }
@@ -156,6 +161,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
+    private fun MainViewModel.observeUser() {
+        user.observe(this@MainActivity) { user ->
+            drawer.updateUserProfile(user)
+        }
+    }
+
     private fun NavController.observeCurrentBackStack() {
         lifecycle.coroutineScope.launch {
             currentBackStack.collectLatest {
@@ -172,5 +183,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private fun navToAccountAdd() {
         navController.navigate(R.id.action_global_account_add)
+    }
+
+    private fun navToSign() {
+        navController.navigate(R.id.action_global_sign)
     }
 }
