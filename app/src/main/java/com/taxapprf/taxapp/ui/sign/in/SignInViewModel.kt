@@ -28,7 +28,7 @@ class SignInViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             singInUseCase.execute(signInModel)
-                .onStart { loading() }
+                .onStart { start() }
                 .catch { error(it) }
                 .collectLatest { success() }
         }

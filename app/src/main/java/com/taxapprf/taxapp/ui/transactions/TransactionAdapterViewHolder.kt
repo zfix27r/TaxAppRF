@@ -14,6 +14,10 @@ class TransactionAdapterViewHolder(
         binding.root.setOnClickListener {
             callback.onClick(transaction)
         }
+
+        binding.buttonTransactionsAdapterItemMore.setOnClickListener {
+            callback.onClickMore(transaction)
+        }
     }
 
     fun bind(transactionModel: TransactionModel) {

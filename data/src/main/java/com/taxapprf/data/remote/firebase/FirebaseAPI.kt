@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.taxapprf.data.error.DataErrorAuth
 import com.taxapprf.domain.FirebasePathModel
+import com.taxapprf.domain.transaction.DeleteTransactionModel
+import com.taxapprf.domain.transaction.GetTransactionsModel
 import javax.inject.Inject
 
 
@@ -30,17 +32,17 @@ class FirebaseAPI @Inject constructor() {
         .child(uid)
         .child(accountKey)
 
-    fun getReportPath(firebasePathModel: FirebasePathModel) = reference
+    fun getReportPath(accountKey: String, year: String) = reference
         .child(REPORTS)
         .child(uid)
-        .child(firebasePathModel.accountName)
-        .child(firebasePathModel.year)
+        .child(accountKey)
+        .child(year)
 
-    fun getTransactionsPath(firebasePathModel: FirebasePathModel) = reference
+    fun getTransactionsPath(accountKey: String, year: String) = reference
         .child(TRANSACTIONS)
         .child(uid)
-        .child(firebasePathModel.accountName)
-        .child(firebasePathModel.year)
+        .child(accountKey)
+        .child(year)
 
     companion object {
         const val ACCOUNTS = "accounts"

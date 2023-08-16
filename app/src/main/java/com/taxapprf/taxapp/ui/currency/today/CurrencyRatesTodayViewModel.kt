@@ -20,7 +20,7 @@ class CurrencyRatesTodayViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val date = Calendar.getInstance().time
     val currencies = getTodayCBRRateUseCase.execute(date.format())
-        .onStart { loading() }
+        .onStart { start() }
         .catch { error(it) }
         .onEach { success() }
         .flowOn(Dispatchers.IO)

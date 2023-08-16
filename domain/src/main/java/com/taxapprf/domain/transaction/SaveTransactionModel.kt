@@ -9,26 +9,30 @@ class SaveTransactionModel {
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
 
-    lateinit var accountKey: String
+
+    var accountKey: String? = null
+    var yearKey: String? = null
     var transactionKey: String? = null
-    var yearOld: String? = null
-    var year: String = calendar[Calendar.YEAR].toString()
 
-    var name: String = ""
+    var reportTax: Double? = null
+
     var date: String = dateFormat.format(calendar.time)
-        set(value) {
-            field = value
-            year = value.split("/")[2]
-        }
-    var type: String = TransactionType.TRADE.name
-
-    // FIXME поправить, сделать подгрузку из стрингов
-    var currency: String = "USD"
-    var rateCBR: Double = 0.0
+    var name: String = ""
+    var currency: String = ""
+    var rateCBR: Double? = null
+    var type: Int = 1
     var sum: Double = 0.0
     var tax: Double = 0.0
 
-    fun from(transactionModel: TransactionModel) {
+    fun update(year: Int, month: Int, dayOfMonth: Int) {
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.MONTH, month)
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+        date = dateFormat.format(calendar.time)
+    }
+
+    fun update(transactionModel: TransactionModel) {
         transactionKey = transactionModel.key
         name = transactionModel.name
         date = transactionModel.date
@@ -37,21 +41,12 @@ class SaveTransactionModel {
         rateCBR = transactionModel.rateCBR
         sum = transactionModel.sum
         tax = transactionModel.tax
-
-        yearOld = year
     }
 
-    fun from(reportModel: ReportModel) {
+    fun update(reportModel: ReportModel) {
+        yearKey = reportModel.year
         calendar[Calendar.YEAR] = reportModel.year.toInt()
         date = dateFormat.format(calendar.time)
-    }
-
-    fun updateDate(year: Int, month: Int, dayOfMonth: Int) {
-        calendar.set(Calendar.YEAR, year)
-        calendar.set(Calendar.MONTH, month)
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-        date = dateFormat.format(calendar.time)
-        this.year = year.toString()
+        reportTax = reportModel.tax
     }
 }

@@ -150,5 +150,6 @@
     <string name="import_excel_name">Импорт</string>
     <string name="export_excel_name">Экспорт</string>
     <string name="save_name">Сохранить</string>
+    <string name="delete_name">Удалить</string>
 
 </resources>

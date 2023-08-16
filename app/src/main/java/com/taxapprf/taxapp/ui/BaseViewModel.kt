@@ -10,11 +10,17 @@ import javax.inject.Inject
 
 open class BaseViewModel @Inject constructor() : ViewModel() {
     private var isLoadingDelayTimeout = false
+    var isLock = false
 
     private val _state = MutableLiveData<BaseState>()
     val state: LiveData<BaseState> = _state
 
-    protected fun loading() {
+    protected fun startWithLock() {
+        isLock = true
+        start()
+    }
+
+    protected fun start() {
         isLoadingDelayTimeout = true
 
         viewModelScope.launch {
@@ -39,6 +45,7 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loaded() {
+        isLock = false
         if (isLoadingDelayTimeout) isLoadingDelayTimeout = false
     }
 

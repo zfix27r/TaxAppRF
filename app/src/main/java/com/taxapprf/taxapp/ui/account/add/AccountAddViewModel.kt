@@ -27,7 +27,7 @@ class AccountAddViewModel @Inject constructor(
 
             viewModelScope.launch(Dispatchers.IO) {
                 switchAccountUseCase.execute(switchAccountModel)
-                    .onStart { loading() }
+                    .onStart { start() }
                     .catch { error(it) }
                     .collectLatest { success() }
             }

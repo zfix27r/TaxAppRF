@@ -10,6 +10,7 @@ import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseFragment
+import com.taxapprf.taxapp.ui.activity.MainViewModel
 import com.taxapprf.taxapp.ui.checkStoragePermission
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,6 +29,36 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activityViewModel.observerAccount()
+
+        prepToolbar()
+
+        fab.setOnClickListener { navToTransactionDetail() }
+        binding.recyclerYearStatements.adapter = adapter
+
+        viewModel.attachToBaseFragment()
+        viewModel.observerReports()
+    }
+
+    private fun MainViewModel.observerAccount() {
+        account.observe(viewLifecycleOwner) { account ->
+            viewModel.loadReports(account.name)
+        }
+    }
+
+    private fun ReportsViewModel.observerReports() {
+        reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            PICK_FILE_RESULT_CODE -> {
+                viewModel.saveReportsFromExcel(data)
+            }
+        }
+    }
+
+    private fun prepToolbar() {
         toolbar.updateToolbar(getString(R.string.taxes_name))
         toolbar.updateMenu(R.menu.reports_toolbar) {
             when (it.itemId) {
@@ -37,23 +68,6 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                 }
 
                 else -> false
-            }
-        }
-
-        fab.setOnClickListener { navToTransactionDetail() }
-        binding.recyclerYearStatements.adapter = adapter
-
-        viewModel.attachToBaseFragment()
-        viewModel.reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
-        activityViewModel.account.observe(viewLifecycleOwner) { account ->
-            viewModel.loadReports(account.name)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            PICK_FILE_RESULT_CODE -> {
-                viewModel.saveReportsFromExcel(data)
             }
         }
     }

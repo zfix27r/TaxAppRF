@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     val drawer by lazy {
         MainDrawer(binding.navView) {
+            binding.drawerLayout.close()
             viewModel.signOut()
         }
     }

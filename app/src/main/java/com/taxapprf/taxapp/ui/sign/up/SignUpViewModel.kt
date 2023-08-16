@@ -32,7 +32,7 @@ class SignUpViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             signUpUseCase.execute(signUpModel)
-                .onStart { loading() }
+                .onStart { start() }
                 .catch { error(it) }
                 .collectLatest { success() }
         }

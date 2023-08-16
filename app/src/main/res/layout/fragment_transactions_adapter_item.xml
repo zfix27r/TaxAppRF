@@ -2,9 +2,9 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/transactions_adapter_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/transactions_adapter_item"
     android:layout_marginHorizontal="@dimen/offset_8"
     android:layout_marginTop="@dimen/offset_8">
 
@@ -26,52 +26,53 @@
             android:id="@+id/text_view_transactions_adapter_item_name"
             android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/offset_16"
+            android:layout_marginEnd="@dimen/offset_16"
             android:ellipsize="end"
-            android:gravity="end"
             android:lines="1"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_date"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/button_transactions_adapter_item_more"
+            app:layout_constraintEnd_toStartOf="@+id/button_transactions_adapter_item_more"
+            app:layout_constraintStart_toStartOf="parent"
             tools:text="name" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/offset_16"
             android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-            app:layout_constraintStart_toStartOf="@+id/text_view_transactions_adapter_item_date"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_date"
+            app:layout_constraintEnd_toStartOf="@+id/button_transactions_adapter_item_more"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="type" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_sum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/offset_8"
+            android:layout_marginStart="@dimen/offset_16"
+            android:layout_marginTop="@dimen/offset_8"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintEnd_toStartOf="@+id/text_view_transactions_adapter_item_currency"
-            app:layout_constraintTop_toTopOf="@+id/text_view_transactions_adapter_item_currency"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_name"
             tools:text="sum.00" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_currency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/offset_8"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintEnd_toEndOf="@+id/text_view_transactions_adapter_item_name"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_type"
+            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_sum"
+            app:layout_constraintTop_toTopOf="@+id/text_view_transactions_adapter_item_sum"
             tools:text="CUR" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_rate_cbr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/offset_8"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_cbr_title"
-            app:layout_constraintTop_toTopOf="@+id/text_view_transactions_adapter_item_cbr_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="cb.00" />
 
         <TextView
@@ -88,19 +89,28 @@
             android:id="@+id/text_view_transactions_adapter_item_cbr_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/offset_8"
             android:text="@string/textCB"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/text_view_transactions_adapter_item_rate_cbr" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_tax_symbol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/offset_8"
             android:text="@string/symbol_rub"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_tax" />
+            app:layout_constraintStart_toStartOf="@+id/text_view_transactions_adapter_item_currency" />
+
+        <Button
+            android:id="@+id/button_transactions_adapter_item_more"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/baseline_more_horiz_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

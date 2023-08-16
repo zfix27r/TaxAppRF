@@ -1,5 +1,6 @@
 package com.taxapprf.taxapp.ui
 
+import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -16,6 +17,8 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
     protected val fab by lazy { mainActivity.binding.appBarMain.fab }
     protected val toolbar by lazy { mainActivity.toolbar }
     protected val drawer by lazy { mainActivity.drawer }
+    protected var actionMode: ActionMode? = null
+
     protected fun BaseViewModel.attachToBaseFragment() {
         baseViewModel = this
         baseViewModel.state.observe(viewLifecycleOwner) {
@@ -61,5 +64,9 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId) {
 
     protected fun popBackStack() {
         findNavController().popBackStack()
+    }
+
+    protected fun viewActionMode(callback: () -> BaseActionModeCallback) {
+        actionMode = mainActivity.startSupportActionMode(callback.invoke())
     }
 }

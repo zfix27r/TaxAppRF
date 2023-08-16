@@ -5,8 +5,10 @@ import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.domain.FirebasePathModel
 import com.taxapprf.domain.ReportRepository
+import com.taxapprf.domain.report.DeleteReportModel
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -15,7 +17,7 @@ class ReportRepositoryImpl @Inject constructor(
     private val excelDao: ExcelDaoImpl,
     private val cbrapi: CBRAPI,
 ) : ReportRepository {
-    override fun getReports(accountName: String) = firebaseReportDao.getReports(accountName)
+    override fun getReports(accountKey: String) = firebaseReportDao.getReports(accountKey)
 
     override fun saveReportFromExcel(storagePath: String) = flow<Unit> {
 /*        ExcelParcel(storagePath)
@@ -36,8 +38,7 @@ class ReportRepositoryImpl @Inject constructor(
         transactions: List<TransactionModel>
     ) = excelDao.sendReport(report, transactions)
 
-    override fun deleteReport(firebasePathModel: FirebasePathModel) = flow {
-
-        emit(firebaseReportDao.deleteReport(firebasePathModel))
+    override fun deleteReport(deleteReportModel: DeleteReportModel) = flow {
+        emit(firebaseReportDao.deleteReport(deleteReportModel))
     }
 }

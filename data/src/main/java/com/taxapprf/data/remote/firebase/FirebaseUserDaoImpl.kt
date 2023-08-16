@@ -53,7 +53,7 @@ class FirebaseUserDaoImpl @Inject constructor(
                     email = it.email,
                     phone = it.phoneNumber,
                 )
-            } ?: throw DataErrorAuth()
+            }
         }
 
     override suspend fun saveProfile(userModel: UserModel) {

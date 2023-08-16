@@ -94,7 +94,7 @@
 
     <dialog
         android:id="@+id/transactions_delete_dialog"
-        android:name="com.taxapprf.taxapp.ui.transactions.TransactionsDeleteDialogFragment" />
+        android:name="com.taxapprf.taxapp.ui.transactions.delete.TransactionsDeleteDialogFragment" />
 
     <dialog
         android:id="@+id/transaction_detail"

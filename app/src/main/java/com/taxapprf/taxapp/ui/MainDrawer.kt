@@ -51,7 +51,9 @@ class MainDrawer(
             isAccountsExpand = !isAccountsExpand
         }
 
-        logOut.setOnClickListener { logOutCallback() }
+        logOut.setOnClickListener {
+            logOutCallback()
+        }
     }
 
     fun updateUserProfile(userModel: UserModel) {

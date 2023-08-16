@@ -1,7 +1,7 @@
 package com.taxapprf.domain.transaction
 
-enum class TransactionType {
-    TRADE,
-    FUNDING_WITHDRAWAL,
-    COMMISSION
+enum class TransactionType(k: Int) {
+    TRADE(1),
+    FUNDING_WITHDRAWAL(0),
+    COMMISSION(-1)
 }
