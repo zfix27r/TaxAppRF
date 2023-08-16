@@ -1,6 +1,6 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.error.cbr.DataErrorCBRRateEmpty
+import com.taxapprf.data.error.DataErrorCBR
 import com.taxapprf.data.error.internal.DataErrorInternalTransactionKeyEmpty
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
@@ -12,7 +12,6 @@ import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionType
-import com.taxapprf.taxapp.R
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import kotlin.math.abs
@@ -72,7 +71,7 @@ class TransactionRepositoryImpl @Inject constructor(
     private fun SaveTransactionModel.updateCBRRate() {
         val rate = cbrapi.getCurrency(date).execute().body()
             ?.getCurrencyRate(currency)
-            ?: throw DataErrorCBRRateEmpty()
+            ?: throw DataErrorCBR()
         rateCBR = rate.roundUpToTwo()
     }
 

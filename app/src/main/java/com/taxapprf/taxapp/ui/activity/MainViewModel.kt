@@ -86,13 +86,17 @@ class MainViewModel @Inject constructor(
             ?.let { _state.error(it) }
             ?: run {
                 getOrNull()?.let { accounts ->
-                    accounts.find { it.active }?.let {
-                        _accounts.postValue(accounts)
-                        _account.postValue(it)
-                    } ?: run {
-                        val accountsWithActiveAccount = accounts.setActiveAccount()
-                        _accounts.postValue(accountsWithActiveAccount)
-                        _account.postValue(accountsWithActiveAccount.first())
+                    if (accounts.isNotEmpty()) {
+                        accounts.find { it.active }?.let {
+                            _accounts.postValue(accounts)
+                            _account.postValue(it)
+                        } ?: run {
+                            val accountsWithActiveAccount = accounts.setActiveAccount()
+                            _accounts.postValue(accountsWithActiveAccount)
+                            _account.postValue(accountsWithActiveAccount.first())
+                        }
+                    } else {
+                        listOf<List<AccountModel>>()
                     }
                 } ?: run { listOf<List<AccountModel>>() }
             }

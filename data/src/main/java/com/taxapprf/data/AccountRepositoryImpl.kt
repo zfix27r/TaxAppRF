@@ -12,7 +12,6 @@ class AccountRepositoryImpl @Inject constructor(
     private val firebaseAccountDao: FirebaseAccountDaoImpl,
 ) : AccountRepository {
     override fun getAccounts() = firebaseAccountDao.getAccounts()
-
     override fun switchAccount(switchAccountModel: SwitchAccountModel): Flow<Unit> =
         flow {
             with(switchAccountModel) {
