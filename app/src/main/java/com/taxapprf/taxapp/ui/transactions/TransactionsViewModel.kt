@@ -35,7 +35,7 @@ class TransactionsViewModel @Inject constructor(
     private val _transactions = MutableLiveData<List<TransactionModel>>()
     val transactions: LiveData<List<TransactionModel>> = _transactions
 
-    var deleteTransactionKey: String? = null
+    var deleteTransaction: TransactionModel? = null
     var emailUri: Uri? = null
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
@@ -50,21 +50,22 @@ class TransactionsViewModel @Inject constructor(
     }
 
     fun deleteTransaction() = viewModelScope.launch(Dispatchers.IO) {
-        deleteTransactionKey?.let { key ->
-            transactions.value?.size?.let { size ->
-                val deleteTransactionModel =
-                    DeleteTransactionModel(
-                        accountKey = account.name,
-                        yearKey = report.year,
-                        transactionKey = key,
-                        isLastTransaction = size == 1
-                    )
-                deleteTransactionKey = null
-                deleteTransactionUseCase.execute(deleteTransactionModel)
-                    .onStart { start() }
-                    .catch { error(it) }
-                    .collectLatest { success() }
-            }
+        deleteTransaction?.let { transaction ->
+            val deleteTransactionModel =
+                DeleteTransactionModel(
+                    accountKey = account.name,
+                    yearKey = report.year,
+                    transactionKey = transaction.key,
+                    reportTax = report.tax,
+                    transactionTax = transaction.tax
+                )
+
+            deleteTransaction = null
+
+            deleteTransactionUseCase.execute(deleteTransactionModel)
+                .onStart { start() }
+                .catch { error(it) }
+                .collectLatest { success() }
         }
     }
 

@@ -9,11 +9,13 @@ import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
 import com.taxapprf.taxapp.ui.activity.MainViewModel
+import com.taxapprf.taxapp.ui.getTransactionType
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
@@ -42,14 +44,14 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
         account.observe(viewLifecycleOwner) { account ->
             viewModel.saveTransaction.accountKey = account.name
 
-            report?.let {
-                viewModel.saveTransaction.from(it)
-                report = null
-            }
+            with(activityViewModel) {
+                if (report != null && transaction != null) {
+                    viewModel.saveTransaction.update(report!!)
+                    viewModel.saveTransaction.update(transaction!!)
 
-            transaction?.let {
-                viewModel.saveTransaction.from(it)
-                transaction = null
+                    report = null
+                    transaction = null
+                }
             }
 
             updateUI()
@@ -65,6 +67,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
         binding.spinnerTransactionDetailCurrencies.setSelection(
             currencies.indexOf(resources.getString(R.string.transaction_currency_usd))
         )
+        viewModel.saveTransaction.currency = resources.getString(R.string.transaction_currency_usd)
     }
 
     private fun prepTypes() {
@@ -81,7 +84,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
         binding.buttonTransactionDetailDatePicker.setOnClickListener {
             showDatePicker {
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    viewModel.saveTransaction.updateDate(year, month, dayOfMonth)
+                    viewModel.saveTransaction.update(year, month, dayOfMonth)
                     binding.editTextTransactionDetailDate.setText(viewModel.saveTransaction.date)
                 }
             }
@@ -101,7 +104,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
                     id: Long
                 ) {
                     typeAdapter.getItem(position)?.let {
-                        viewModel.saveTransaction.type = it
+                        viewModel.saveTransaction.type = requireActivity().getTransactionType(it)
                     }
                 }
 
@@ -126,16 +129,23 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
             }
 
         binding.editTextTransactionDetailSum.doOnTextChanged { text, _, _, _ ->
-            val sum = text?.toString()?.toDouble() ?: run { 0.0 }
+            var sum = 0.0
+
+            text?.let {
+                if (it.isNotEmpty()) {
+                    sum = it.toString().toDouble()
+                }
+            }
+
             viewModel.saveTransaction.sum = sum
         }
 
         binding.editTextTransactionDetailName.doOnTextChanged { text, _, _, _ ->
-            viewModel.saveTransaction.name = text.toString()
+            text?.let { viewModel.saveTransaction.name = it.toString() }
         }
 
         binding.editTextTransactionDetailDate.doOnTextChanged { text, _, _, _ ->
-            viewModel.saveTransaction.date = text.toString()
+            text?.let { viewModel.saveTransaction.date = it.toString() }
         }
     }
 

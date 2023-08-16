@@ -1,11 +1,11 @@
 package com.taxapprf.taxapp.ui.account.add
 
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.data.error.InputErrorEmailEmpty
 import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.account.SwitchAccountModel
 import com.taxapprf.domain.account.SwitchAccountUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
+import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -35,7 +35,7 @@ class AccountAddViewModel @Inject constructor(
     }
 
     private fun String.isErrorInputAccountChecker(): Boolean {
-        if (isEmpty()) error(InputErrorEmailEmpty())
+        if (isEmpty()) error(UIErrorEmailEmpty())
         else return false
 
         return true

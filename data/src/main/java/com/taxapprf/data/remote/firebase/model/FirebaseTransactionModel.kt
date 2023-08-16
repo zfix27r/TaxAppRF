@@ -1,6 +1,6 @@
 package com.taxapprf.data.remote.firebase.model
 
-import com.taxapprf.data.error.DataErrorResponseEmpty
+import com.taxapprf.data.error.external.DataErrorExternalEmpty
 import com.taxapprf.domain.transaction.TransactionModel
 
 data class FirebaseTransactionModel(
@@ -14,13 +14,13 @@ data class FirebaseTransactionModel(
 ) {
     fun toTransactionModel(key: String?) =
         TransactionModel(
-            key = key ?: throw DataErrorResponseEmpty(),
+            key = key ?: throw DataErrorExternalEmpty(),
             name = name ?: "",
-            date = date ?: throw DataErrorResponseEmpty(),
-            type = type ?: throw DataErrorResponseEmpty(),
-            currency = currency ?: throw DataErrorResponseEmpty(),
-            rateCBR = rateCBR ?: throw DataErrorResponseEmpty(),
-            sum = sum ?: throw DataErrorResponseEmpty(),
-            tax = tax ?: throw DataErrorResponseEmpty()
+            date = date ?: throw DataErrorExternalEmpty(),
+            type = type ?: throw DataErrorExternalEmpty(),
+            currency = currency ?: throw DataErrorExternalEmpty(),
+            rateCBR = rateCBR ?: throw DataErrorExternalEmpty(),
+            sum = sum ?: throw DataErrorExternalEmpty(),
+            tax = tax ?: throw DataErrorExternalEmpty()
         )
 }

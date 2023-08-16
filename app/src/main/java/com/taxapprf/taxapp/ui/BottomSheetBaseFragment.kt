@@ -3,16 +3,6 @@ package com.taxapprf.taxapp.ui
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.taxapprf.data.error.DataErrorAuth
-import com.taxapprf.data.error.InputErrorEmailEmpty
-import com.taxapprf.data.error.InputErrorEmailIncorrect
-import com.taxapprf.data.error.InputErrorNameEmpty
-import com.taxapprf.data.error.InputErrorPasswordLength
-import com.taxapprf.data.error.InputErrorPhoneEmpty
-import com.taxapprf.data.error.SignInErrorWrongPassword
-import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
-import com.taxapprf.data.error.AuthErrorSessionExpired
-import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
 

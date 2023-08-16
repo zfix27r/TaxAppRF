@@ -81,7 +81,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         getLiveData<Boolean>(DELETE_ACCEPTED).observe(viewLifecycleOwner) {
             if (it) {
                 viewModel.deleteTransaction()
-            } else viewModel.deleteTransactionKey = null
+            } else viewModel.deleteTransaction = null
         }
     }
 
@@ -99,9 +99,10 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private fun TransactionsViewModel.observeTransactions() =
         transactions.observe(viewLifecycleOwner) { transaction ->
             transaction?.let {
+                if (it.isEmpty()) popBackStack()
                 adapter.submitList(it)
                 updateUI()
-            }
+            } ?: run { popBackStack() }
         }
 
     private fun TransactionsViewModel.observeState() =
@@ -169,7 +170,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                         item: MenuItem
                     ) = when (item.itemId) {
                         R.id.action_menu_delete -> {
-                            viewModel.deleteTransactionKey = transactionModel.key
+                            viewModel.deleteTransaction = transactionModel
                             navToTransactionDelete()
                             actionMode?.finish()
                             true

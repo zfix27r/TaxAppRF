@@ -1,3 +1,3 @@
 package com.taxapprf.data.error
 
-class DataErrorAuth : Throwable()
+class DataErrorUser : Throwable()

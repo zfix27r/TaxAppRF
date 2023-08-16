@@ -49,7 +49,7 @@
             android:id="@+id/text_view_transactions_adapter_item_sum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/offset_16"
+            android:layout_marginStart="@dimen/offset_24"
             android:layout_marginTop="@dimen/offset_8"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             app:layout_constraintStart_toStartOf="parent"

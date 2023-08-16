@@ -13,12 +13,16 @@ import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.data.error.DataErrorAuth
+import com.taxapprf.data.error.DataErrorExcel
+import com.taxapprf.data.error.DataErrorExternal
+import com.taxapprf.data.error.DataErrorInternal
+import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.ui.MainDrawer
 import com.taxapprf.taxapp.ui.MainToolbar
 import com.taxapprf.taxapp.ui.getErrorDescription
+import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -107,8 +111,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     fun onLoadingError(t: Throwable) {
         onLoadingStop()
         with(binding.appBarMain.content) {
-            loadingErrorGroup.isVisible = true
-            loadingErrorMessage.setText(t.getErrorDescription())
+            //loadingErrorGroup.isVisible = true
+            println(t)
+            binding.root.showSnackBar(t.getErrorDescription())
+            //loadingErrorMessage.setText(t.getErrorDescription())
         }
     }
 
@@ -157,7 +163,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 accountsAdapter.submitList(accounts.filter { !it.active })
                 fabVisibilityManager()
             } else {
-                onLoadingError(DataErrorAuth())
+                onLoadingError(DataErrorUser())
             }
         }
     }

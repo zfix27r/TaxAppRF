@@ -14,13 +14,13 @@ class SaveTransactionModel {
     var yearKey: String? = null
     var transactionKey: String? = null
 
-    var reportTax: Double? = null
+    var reportTax: Double = 0.0
 
     var date: String = dateFormat.format(calendar.time)
     var name: String = ""
     var currency: String = ""
     var rateCBR: Double? = null
-    var type: Int = 1
+    var type: String = TransactionType.TRADE.name
     var sum: Double = 0.0
     var tax: Double = 0.0
 

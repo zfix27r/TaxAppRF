@@ -3,6 +3,7 @@ package com.taxapprf.taxapp.ui.transactions
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
+import com.taxapprf.taxapp.ui.getTransactionName
 
 class TransactionAdapterViewHolder(
     private val binding: FragmentTransactionsAdapterItemBinding,
@@ -24,7 +25,7 @@ class TransactionAdapterViewHolder(
         transaction = transactionModel
 
         binding.textViewTransactionsAdapterItemName.text = transaction.name
-        binding.textViewTransactionsAdapterItemType.text = transaction.type
+        binding.textViewTransactionsAdapterItemType.setText(transaction.type.getTransactionName())
         binding.textViewTransactionsAdapterItemDate.text = transaction.date
         binding.textViewTransactionsAdapterItemSum.text = transaction.sum.toString()
         binding.textViewTransactionsAdapterItemCurrency.text = transaction.currency

@@ -1,7 +1,7 @@
 package com.taxapprf.data.remote.firebase
 
 import com.google.firebase.auth.ktx.userProfileChangeRequest
-import com.taxapprf.data.error.DataErrorAuth
+import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.remote.firebase.dao.FirebaseUserDao
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.user.SignInModel
@@ -62,7 +62,7 @@ class FirebaseUserDaoImpl @Inject constructor(
                 displayName = userModel.name
             }
 
-            fb.auth.currentUser?.updateProfile(profile) ?: throw DataErrorAuth()
+            fb.auth.currentUser?.updateProfile(profile) ?: throw DataErrorUser()
         }
     }
 }
