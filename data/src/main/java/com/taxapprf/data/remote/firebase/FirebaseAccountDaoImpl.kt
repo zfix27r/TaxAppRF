@@ -7,9 +7,12 @@ import com.taxapprf.data.remote.firebase.dao.FirebaseAccountDao
 import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.account.AccountModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -26,6 +29,10 @@ class FirebaseAccountDaoImpl @Inject constructor(
                             it.getValue(FirebaseAccountModel::class.java)
                                 ?.toAccountModel(it.key)
                         }
+
+                    if (accounts.isEmpty()) {
+                        launch(Dispatchers.IO) { saveDefaultAccount() }
+                    }
 
                     trySendBlocking(Result.success(accounts))
                 }

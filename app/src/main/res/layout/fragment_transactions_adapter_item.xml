@@ -14,6 +14,25 @@
         android:padding="@dimen/offset_8">
 
         <TextView
+            android:id="@+id/text_view_transactions_adapter_item_tax_symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/offset_16"
+            android:text="@string/symbol_rub"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:layout_constraintBottom_toBottomOf="@+id/text_view_transactions_adapter_item_rate_cbr"
+            app:layout_constraintEnd_toStartOf="@+id/button_transactions_adapter_item_more" />
+
+        <TextView
+            android:id="@+id/text_view_transactions_adapter_item_tax_symbol2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/symbol_rub"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            app:layout_constraintBottom_toBottomOf="@+id/text_view_transactions_adapter_item_tax"
+            app:layout_constraintStart_toStartOf="@+id/text_view_transactions_adapter_item_currency" />
+
+        <TextView
             android:id="@+id/text_view_transactions_adapter_item_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,43 +45,41 @@
             android:id="@+id/text_view_transactions_adapter_item_name"
             android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/offset_16"
             android:ellipsize="end"
             android:lines="1"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintBottom_toBottomOf="@+id/button_transactions_adapter_item_more"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             app:layout_constraintEnd_toStartOf="@+id/button_transactions_adapter_item_more"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/text_view_transactions_adapter_item_date"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_type"
             tools:text="name" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/offset_16"
-            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-            app:layout_constraintEnd_toStartOf="@+id/button_transactions_adapter_item_more"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_date"
             tools:text="type" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_sum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/offset_24"
             android:layout_marginTop="@dimen/offset_8"
+            android:layout_marginEnd="@dimen/offset_4"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/text_view_transactions_adapter_item_currency"
             app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_name"
-            tools:text="sum.00" />
+            tools:text="1000" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_currency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/offset_8"
+            android:layout_marginEnd="@dimen/offset_8"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_sum"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/text_view_transactions_adapter_item_sum"
             tools:text="CUR" />
 
@@ -70,17 +87,17 @@
             android:id="@+id/text_view_transactions_adapter_item_rate_cbr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/offset_4"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="cb.00" />
+            app:layout_constraintEnd_toStartOf="@+id/text_view_transactions_adapter_item_tax_symbol"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="95.44" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_tax"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/offset_8"
-            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             app:layout_constraintEnd_toEndOf="@+id/text_view_transactions_adapter_item_sum"
             app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_sum"
             tools:text="1000.34" />
@@ -89,19 +106,11 @@
             android:id="@+id/text_view_transactions_adapter_item_cbr_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/offset_8"
+            android:layout_marginEnd="@dimen/offset_4"
             android:text="@string/textCB"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/text_view_transactions_adapter_item_rate_cbr"
             app:layout_constraintEnd_toStartOf="@+id/text_view_transactions_adapter_item_rate_cbr" />
-
-        <TextView
-            android:id="@+id/text_view_transactions_adapter_item_tax_symbol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/symbol_rub"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/text_view_transactions_adapter_item_currency" />
 
         <Button
             android:id="@+id/button_transactions_adapter_item_more"

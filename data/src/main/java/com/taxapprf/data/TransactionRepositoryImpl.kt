@@ -46,7 +46,7 @@ class TransactionRepositoryImpl @Inject constructor(
             updateTax()
 
             val newTax = (reportTax + tax).roundUpToTwo()
-            val firebaseReportModel = FirebaseReportModel(year, newTax)
+            val firebaseReportModel = FirebaseReportModel(year, newTax, ++reportSize)
             firebaseReportDao.saveReportTax(accountKey, year, firebaseReportModel)
 
             firebaseTransactionDao.saveTransaction(saveTransactionModel)

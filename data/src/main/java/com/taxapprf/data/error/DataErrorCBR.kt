@@ -1,3 +1,5 @@
 package com.taxapprf.data.error
 
-open class DataErrorCBR : Throwable()
+import java.lang.Exception
+
+open class DataErrorCBR : Exception()

@@ -7,7 +7,7 @@ import com.taxapprf.domain.transaction.TransactionModel
 import kotlinx.coroutines.flow.Flow
 
 interface ReportRepository {
-    fun getReports(accountKey: String): Flow<List<ReportModel>>
+    fun getReports(accountKey: String): Flow<Result<List<ReportModel>>>
     fun deleteReport(deleteReportModel: DeleteReportModel): Flow<Unit>
     fun saveReportFromExcel(storagePath: String): Flow<Unit>
     fun getExcelReport(report: ReportModel, transactions: List<TransactionModel>): Flow<Uri>

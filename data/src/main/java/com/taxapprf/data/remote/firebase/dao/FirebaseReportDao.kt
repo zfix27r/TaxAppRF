@@ -7,7 +7,7 @@ import com.taxapprf.domain.report.SaveReportModel
 import kotlinx.coroutines.flow.Flow
 
 interface FirebaseReportDao {
-    fun getReports(accountKey: String): Flow<List<ReportModel>>
+    fun getReports(accountKey: String): Flow<Result<List<ReportModel>>>
     suspend fun addReport(saveReportModel: SaveReportModel)
     suspend fun updateReport(saveReportModel: SaveReportModel)
     suspend fun deleteReport(deleteReportModel: DeleteReportModel)

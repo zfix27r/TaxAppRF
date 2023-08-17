@@ -15,6 +15,7 @@ class SaveTransactionModel {
     var transactionKey: String? = null
 
     var reportTax: Double = 0.0
+    var reportSize: Int = 0
 
     var date: String = dateFormat.format(calendar.time)
     var name: String = ""
@@ -48,5 +49,6 @@ class SaveTransactionModel {
         calendar[Calendar.YEAR] = reportModel.year.toInt()
         date = dateFormat.format(calendar.time)
         reportTax = reportModel.tax
+        reportSize = reportModel.size
     }
 }

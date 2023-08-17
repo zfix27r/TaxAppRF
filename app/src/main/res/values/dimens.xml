@@ -31,5 +31,6 @@
     <dimen name="drawer_header_add_title_horizontal_offset">10dp</dimen>
     <dimen name="drawer_header_add_horizontal_offset">20dp</dimen>
     <dimen name="min_view_size">48dp</dimen>
+    <dimen name="offset_4">4dp</dimen>
 
 </resources>

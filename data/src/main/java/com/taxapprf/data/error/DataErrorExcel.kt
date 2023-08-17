@@ -1,3 +1,5 @@
 package com.taxapprf.data.error
 
-class DataErrorExcel : Throwable()
+import java.lang.Exception
+
+class DataErrorExcel : Exception()

@@ -7,6 +7,7 @@ import com.taxapprf.data.remote.firebase.dao.FirebaseReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.report.DeleteReportModel
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.report.SaveReportModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -18,7 +19,7 @@ class FirebaseReportDaoImpl(
     private val fb: FirebaseAPI,
 ) : FirebaseReportDao {
     override fun getReports(accountKey: String) =
-        callbackFlow {
+        callbackFlow<Result<List<ReportModel>>> {
             safeCall {
                 val reference = fb.getReportsPath(accountKey)
 
@@ -27,11 +28,11 @@ class FirebaseReportDaoImpl(
                         val reports = snapshot.children.mapNotNull {
                             it.getValue(FirebaseReportModel::class.java)?.toReportModel()
                         }
-
-                        trySendBlocking(reports)
+                        trySendBlocking(Result.success(reports))
                     }
 
                     override fun onCancelled(error: DatabaseError) {
+                        trySendBlocking(Result.failure(error.toException()))
                     }
                 }
 

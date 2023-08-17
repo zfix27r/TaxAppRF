@@ -1,3 +1,5 @@
 package com.taxapprf.data.error
 
-open class DataErrorInternal : Throwable()
+import java.lang.Exception
+
+open class DataErrorInternal : Exception()
