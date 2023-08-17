@@ -1,5 +1,6 @@
 package com.taxapprf.taxapp.ui.transactions
 
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
@@ -24,7 +25,13 @@ class TransactionAdapterViewHolder(
     fun bind(transactionModel: TransactionModel) {
         transaction = transactionModel
 
-        binding.textViewTransactionsAdapterItemName.text = transaction.name
+        with(binding.textViewTransactionsAdapterItemName) {
+            if (transaction.name.isEmpty()) isVisible = false
+            else {
+                text = transaction.name
+                isVisible = true
+            }
+        }
         binding.textViewTransactionsAdapterItemType.setText(transaction.type.getTransactionName())
         binding.textViewTransactionsAdapterItemDate.text = transaction.date
         binding.textViewTransactionsAdapterItemSum.text = transaction.sum.toString()
