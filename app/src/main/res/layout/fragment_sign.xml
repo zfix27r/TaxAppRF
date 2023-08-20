@@ -8,52 +8,45 @@
     tools:context=".ui.sign.SignFragment">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/text_sign_logo"
         style="@style/StyleLogoText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_sign_in"
-        style="@style/StyleButtonOK"
-        android:layout_width="0dp"
+        android:id="@+id/button_sign_sign_in"
+        android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center_horizontal"
-        android:layout_marginBottom="@dimen/sign_margin_vertical"
+        android:layout_marginBottom="@dimen/offset_24"
         android:text="@string/button_sign_in"
-        android:textSize="@dimen/text_size_16sp"
-        app:layout_constraintBottom_toTopOf="@+id/button_sign_up"
-        app:layout_constraintEnd_toEndOf="@+id/button_sign_up"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/button_sign_up"
+        app:layout_constraintBottom_toTopOf="@+id/button_sign_sing_up"
+        app:layout_constraintEnd_toEndOf="@+id/button_sign_sing_up"
+        app:layout_constraintStart_toStartOf="@+id/button_sign_sing_up"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_sign_up"
-        style="@style/StyleButtonRegister"
+        android:id="@+id/button_sign_sing_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_sign_up"
-        android:textSize="@dimen/text_size_16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_sign_in"
-        tools:ignore="TextContrastCheck" />
+        app:layout_constraintTop_toBottomOf="@+id/button_sign_sign_in" />
 
     <TextView
-        android:id="@+id/text_under_bottom"
+        android:id="@+id/text_sign_in_under_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sign_margin_vertical"
+        android:layout_marginBottom="@dimen/offset_24"
         android:gravity="center"
         android:text="@string/text_sign_under_bottom"
-        android:textSize="@dimen/sign_in_text_under_bottom_size"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

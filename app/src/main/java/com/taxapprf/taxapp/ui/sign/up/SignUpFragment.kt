@@ -20,12 +20,10 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSignUpCancel.setOnClickListener { findNavController().popBackStack() }
         binding.buttonSignUpCreate.setOnClickListener { signUp() }
 
         viewModel.attach()
     }
-
 
     override fun onSuccess() {
         super.onSuccess()

@@ -24,8 +24,8 @@ class SignFragment : BaseFragment(R.layout.fragment_sign) {
             navToReports()
         }
 
-        binding.buttonSignIn.setOnClickListener { navToSignIn() }
-        binding.buttonSignUp.setOnClickListener { navToSignUp() }
+        binding.buttonSignSignIn.setOnClickListener { navToSignIn() }
+        binding.buttonSignSingUp.setOnClickListener { navToSignUp() }
     }
 
     private fun navToReports() {
