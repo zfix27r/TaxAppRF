@@ -14,6 +14,7 @@ import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
+import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
 import com.taxapprf.taxapp.ui.share
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,12 +28,13 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.attachWithAccount()
+        currentStackSavedState.observeDelete()
+
         prepToolbar()
         prepView()
         prepListeners()
 
-        viewModel.attachWithAccount()
-        currentStackSavedState.observeDelete()
         viewModel.observeTransactions()
     }
 
@@ -73,10 +75,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun SavedStateHandle.observeDelete() {
-        getLiveData<Boolean>(DELETE_ACCEPTED).observe(viewLifecycleOwner) {
-            if (it) {
-                viewModel.deleteTransaction()
-            } else viewModel.deleteTransaction = null
+        getLiveData<Boolean>(DeleteDialogFragment.DELETE_ACCEPTED).observe(viewLifecycleOwner) {
+            if (it) viewModel.deleteTransaction()
+            else viewModel.deleteTransaction = null
         }
     }
 
@@ -184,16 +185,12 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun navToTransactionDelete() {
-        findNavController().navigate(R.id.action_transactions_to_transactions_delete_dialog)
+        findNavController().navigate(R.id.action_transactions_to_delete_dialog)
     }
 
     private fun navToTransactionDetail(transactionModel: TransactionModel) {
         mainViewModel.report = viewModel.report
         mainViewModel.transaction = transactionModel
         findNavController().navigate(R.id.action_transactions_to_transaction_detail)
-    }
-
-    companion object {
-        const val DELETE_ACCEPTED = "delete_accepted"
     }
 }

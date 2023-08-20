@@ -5,10 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.excel.SaveReportsFromExcelUseCase
+import com.taxapprf.domain.report.DeleteReportModel
+import com.taxapprf.domain.report.DeleteReportUseCase
+import com.taxapprf.domain.report.GetReportsModel
 import com.taxapprf.domain.report.GetReportsUseCase
 import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.excel.SaveReportsFromExcelUseCase
-import com.taxapprf.domain.report.GetReportsModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,9 +24,13 @@ import javax.inject.Inject
 class ReportsViewModel @Inject constructor(
     private val getReportsUseCase: GetReportsUseCase,
     private val saveReportsFromExcel: SaveReportsFromExcelUseCase,
+    private val deleteReportUseCase: DeleteReportUseCase,
 ) : BaseViewModel() {
     private val _reports = MutableLiveData<List<ReportModel>>()
     val reports: LiveData<List<ReportModel>> = _reports
+
+    var deleteReport: ReportModel? = null
+
     fun loadReports() = viewModelScope.launch(Dispatchers.IO) {
         val getReportsModel = GetReportsModel(account.name)
         getReportsUseCase.execute(getReportsModel)
@@ -42,6 +48,23 @@ class ReportsViewModel @Inject constructor(
 
                 success()
             }
+    }
+
+    fun deleteReport() = viewModelScope.launch(Dispatchers.IO) {
+        deleteReport?.let { report ->
+            val deleteReportModel =
+                DeleteReportModel(
+                    accountKey = account.name,
+                    yearKey = report.year,
+                )
+
+            deleteReport = null
+
+            deleteReportUseCase.execute(deleteReportModel)
+                .onStart { start() }
+                .catch { error(it) }
+                .collectLatest { success() }
+        }
     }
 
     fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {

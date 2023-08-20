@@ -107,10 +107,10 @@
     <string name="transactions_subtitle">налог %s ₽</string>
 
     <!-- TransactionsDeleteDialogFragment -->
-    <string name="transactions_delete_title">Подтвердить операцию</string>
-    <string name="transactions_delete_message">Вы уверены, что хотите безвозвратно удалить?</string>
-    <string name="transactions_delete_ok">Да</string>
-    <string name="transactions_delete_cancel">Отмена</string>
+    <string name="delete_dialog_title">Подтвердить операцию</string>
+    <string name="delete_dialog_message">Вы уверены, что хотите безвозвратно удалить?</string>
+    <string name="delete_dialog_ok">Да</string>
+    <string name="delete_dialog_cancel">Отмена</string>
 
     <!-- transaction_list_item-->
     <string name="textCB">Курс ЦБ: </string>

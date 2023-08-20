@@ -14,12 +14,16 @@ class ReportsAdapterViewHolder(
         binding.root.setOnClickListener {
             callback.onClick(report)
         }
+
+        binding.buttonReportsAdapterItemMore.setOnClickListener {
+            callback.onClickMore(report)
+        }
     }
 
     fun bind(reportAdapterModel: ReportModel) {
         report = reportAdapterModel
 
-        binding.textViewYear.text = report.year
-        binding.textViewYearSum.text = report.tax.toString()
+        binding.textReportsAdapterItemYear.text = report.year
+        binding.textReportsAdapterItemTax.text = report.tax.toString()
     }
 }
