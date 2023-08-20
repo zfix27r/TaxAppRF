@@ -13,8 +13,6 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
-import com.taxapprf.taxapp.ui.BaseState
-import com.taxapprf.taxapp.ui.activity.MainViewModel
 import com.taxapprf.taxapp.ui.checkStoragePermission
 import com.taxapprf.taxapp.ui.share
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,16 +27,13 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activityViewModel.observeAccount()
-
         prepToolbar()
         prepView()
         prepListeners()
 
-        viewModel.attachToBaseFragment()
+        viewModel.attachWithAccount()
         currentStackSavedState.observeDelete()
         viewModel.observeTransactions()
-        viewModel.observeState()
     }
 
     private fun prepToolbar() {
@@ -72,7 +67,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun prepListeners() {
         fab.setOnClickListener {
-            activityViewModel.report = viewModel.report
+            mainViewModel.report = viewModel.report
             findNavController().navigate(R.id.action_transactions_to_transaction_detail)
         }
     }
@@ -85,34 +80,35 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         }
     }
 
-    private fun MainViewModel.observeAccount() =
-        account.observe(viewLifecycleOwner) { account ->
-            viewModel.account = account
-            activityViewModel.report?.let {
-                viewModel.report = it
-                activityViewModel.report = null
-                viewModel.loadTransactions()
-                updateUI()
-            }
-        }
+    override fun onAuthReady() {
+        super.onAuthReady()
+
+        mainViewModel.report?.let {
+            viewModel.report = it
+            mainViewModel.report = null
+            viewModel.loadTransactions()
+            updateUI()
+        } ?: findNavController().popBackStack()
+    }
 
     private fun TransactionsViewModel.observeTransactions() =
         transactions.observe(viewLifecycleOwner) { transaction ->
             transaction?.let {
-                if (it.isEmpty()) popBackStack()
+                if (it.isEmpty()) findNavController().popBackStack()
                 adapter.submitList(it)
                 updateUI()
-            } ?: run { popBackStack() }
+            } ?: findNavController().popBackStack()
         }
 
-    private fun TransactionsViewModel.observeState() =
-        state.observe(viewLifecycleOwner) {
-            when (it) {
-                is BaseState.SuccessSendEmail -> startIntentSendEmail()
-                is BaseState.SuccessDelete -> popBackStack()
-                else -> {}
-            }
-        }
+    override fun onSuccessShare() {
+        super.onSuccessShare()
+        startIntentSendEmail()
+    }
+
+    override fun onSuccessDelete() {
+        super.onSuccessDelete()
+        findNavController().popBackStack()
+    }
 
     private fun updateUI() {
         val title = String.format(getString(R.string.transactions_title), viewModel.report.year)
@@ -160,7 +156,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         }
 
         override fun onClickMore(transactionModel: TransactionModel) {
-            viewActionMode {
+            showActionMode {
                 object : BaseActionModeCallback {
                     override var menuInflater = requireActivity().menuInflater
                     override var menuId = R.menu.transaction_action_menu
@@ -171,8 +167,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                     ) = when (item.itemId) {
                         R.id.action_menu_delete -> {
                             viewModel.deleteTransaction = transactionModel
-                            navToTransactionDelete()
                             actionMode?.finish()
+                            navToTransactionDelete()
                             true
                         }
 
@@ -192,7 +188,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun navToTransactionDetail(transactionModel: TransactionModel) {
-        activityViewModel.transaction = transactionModel
+        mainViewModel.report = viewModel.report
+        mainViewModel.transaction = transactionModel
         findNavController().navigate(R.id.action_transactions_to_transaction_detail)
     }
 

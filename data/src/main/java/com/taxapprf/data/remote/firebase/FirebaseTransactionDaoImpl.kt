@@ -4,8 +4,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.taxapprf.data.error.external.DataErrorExternalEmpty
-import com.taxapprf.data.error.internal.DataErrorInternalAccountKeyEmpty
-import com.taxapprf.data.error.internal.DataErrorInternalYearKeyEmpty
 import com.taxapprf.data.remote.firebase.dao.FirebaseTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.data.safeCall
@@ -52,9 +50,6 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override suspend fun saveTransaction(saveTransactionModel: SaveTransactionModel) {
         safeCall {
             with(saveTransactionModel) {
-                val accountKey = accountKey ?: throw DataErrorInternalAccountKeyEmpty()
-                val yearKey = yearKey ?: throw DataErrorInternalYearKeyEmpty()
-
                 val key = transactionKey
                     ?: fb.getTransactionsPath(accountKey, yearKey).push().key
                     ?: throw DataErrorExternalEmpty()

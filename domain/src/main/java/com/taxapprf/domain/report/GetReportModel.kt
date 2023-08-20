@@ -1,8 +1,6 @@
 package com.taxapprf.domain.report
 
-data class SaveReportModel(
+data class GetReportModel(
     val accountKey: String,
     val yearKey: String,
-    val tax: Double,
-    val size: Int,
 )

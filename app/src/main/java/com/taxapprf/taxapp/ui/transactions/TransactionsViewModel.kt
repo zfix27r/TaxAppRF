@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.excel.SendExcelReportUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
@@ -12,7 +11,6 @@ import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +27,6 @@ class TransactionsViewModel @Inject constructor(
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val sendExcelReportUseCase: SendExcelReportUseCase,
 ) : BaseViewModel() {
-    lateinit var account: AccountModel
     lateinit var report: ReportModel
 
     private val _transactions = MutableLiveData<List<TransactionModel>>()
@@ -56,8 +53,9 @@ class TransactionsViewModel @Inject constructor(
                     accountKey = account.name,
                     yearKey = report.year,
                     transactionKey = transaction.key,
+                    transactionTax = transaction.tax,
                     reportTax = report.tax,
-                    transactionTax = transaction.tax
+                    reportSize = report.size,
                 )
 
             deleteTransaction = null
@@ -76,7 +74,7 @@ class TransactionsViewModel @Inject constructor(
                 .catch { error(it) }
                 .collectLatest {
                     emailUri = it
-                    success(BaseState.SuccessSendEmail)
+                    successShare()
                 }
         }
     }

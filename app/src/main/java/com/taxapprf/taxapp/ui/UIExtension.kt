@@ -62,20 +62,26 @@ fun Date.format(): String {
 
 fun Double.format() = floor(this * 100.0) / 100.0
 
-fun Throwable.getErrorDescription() = when (this) {
-    is SocketTimeoutException -> R.string.data_error_socket_timeout
-    is DataErrorUser -> R.string.auth_error
-    is DataErrorInternal -> R.string.data_error_internal
-    is DataErrorExternal -> R.string.data_external_error
-    is DataErrorExcel -> R.string.data_error_excel
-    is UIErrorNameEmpty -> R.string.error_name_empty
-    is UIErrorPhoneEmpty -> R.string.error_phone_empty
-    is UIErrorEmailEmpty -> R.string.error_email_empty
-    is UIErrorEmailIncorrect -> R.string.error_email_incorrect
-    is UIErrorPasswordLength -> R.string.error_password_length
-    is DataErrorUserWrongPassword -> R.string.error_sign_in
-    is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use
-    else -> throw this
+fun Throwable.getErrorDescription(): Int {
+    // TODO дебаг, удалить вывод ниже
+    println(this.message)
+    println(this)
+
+    return when (this) {
+        is SocketTimeoutException -> R.string.data_error_socket_timeout
+        is DataErrorUser -> R.string.auth_error
+        is DataErrorInternal -> R.string.data_error_internal
+        is DataErrorExternal -> R.string.data_external_error
+        is DataErrorExcel -> R.string.data_error_excel
+        is UIErrorNameEmpty -> R.string.error_name_empty
+        is UIErrorPhoneEmpty -> R.string.error_phone_empty
+        is UIErrorEmailEmpty -> R.string.error_email_empty
+        is UIErrorEmailIncorrect -> R.string.error_email_incorrect
+        is UIErrorPasswordLength -> R.string.error_password_length
+        is DataErrorUserWrongPassword -> R.string.error_sign_in
+        is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use
+        else -> throw this
+    }
 }
 
 fun Activity.share(uri: Uri) {

@@ -21,10 +21,9 @@ class CurrencyRatesTodayFragment : BaseFragment(R.layout.fragment_rates_today) {
 
         binding.recyclerviewCurrencies.adapter = adapter
 
-        viewModel.attachToBaseFragment()
+        viewModel.attach()
         viewModel.currencies.observe(viewLifecycleOwner) {
             adapter.submitList(it)
-            println(it)
         }
     }
 }

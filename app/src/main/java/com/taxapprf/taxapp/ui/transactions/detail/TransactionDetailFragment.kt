@@ -8,13 +8,11 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
-import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
-import com.taxapprf.taxapp.ui.activity.MainViewModel
 import com.taxapprf.taxapp.ui.getTransactionType
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
@@ -30,32 +28,24 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activityViewModel.observeAccount()
+        viewModel.attachWithAccount()
 
         prepCurrencies()
         prepTypes()
         prepListeners()
-
-        viewModel.attachToBaseFragment()
-        viewModel.observeState()
     }
 
-    private fun MainViewModel.observeAccount() {
-        account.observe(viewLifecycleOwner) { account ->
-            viewModel.saveTransaction.accountKey = account.name
+    override fun onAuthReady() {
+        super.onAuthReady()
 
-            with(activityViewModel) {
-                if (report != null && transaction != null) {
-                    viewModel.saveTransaction.update(report!!)
-                    viewModel.saveTransaction.update(transaction!!)
+        viewModel.report = mainViewModel.report
+        viewModel.transaction = mainViewModel.transaction
+        viewModel.currency = resources.getString(R.string.transaction_currency_usd)
 
-                    report = null
-                    transaction = null
-                }
-            }
+        mainViewModel.report = null
+        mainViewModel.transaction = null
 
-            updateUI()
-        }
+        updateUI()
     }
 
     private fun prepCurrencies() {
@@ -67,7 +57,6 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
         binding.spinnerTransactionDetailCurrencies.setSelection(
             currencies.indexOf(resources.getString(R.string.transaction_currency_usd))
         )
-        viewModel.saveTransaction.currency = resources.getString(R.string.transaction_currency_usd)
     }
 
     private fun prepTypes() {
@@ -84,15 +73,16 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
         binding.buttonTransactionDetailDatePicker.setOnClickListener {
             showDatePicker {
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    viewModel.saveTransaction.update(year, month, dayOfMonth)
-                    binding.editTextTransactionDetailDate.setText(viewModel.saveTransaction.date)
+                    viewModel.update(year, month, dayOfMonth)
+                    binding.editTextTransactionDetailDate.setText(viewModel.date)
                 }
             }
         }
 
         binding.buttonTransactionDetailSave.setOnClickListener {
-            activityViewModel.saveTransaction(viewModel.saveTransaction)
-            popBackStack()
+            // TODO переместить во вьюмодел фрагмента? Привязка к жизненному циклу. Запускать глобал флоу?
+            mainViewModel.saveTransaction(viewModel.toSaveTransactionModel())
+            findNavController().popBackStack()
         }
 
         binding.spinnerTransactionDetailType.onItemSelectedListener =
@@ -104,7 +94,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
                     id: Long
                 ) {
                     typeAdapter.getItem(position)?.let {
-                        viewModel.saveTransaction.type = requireActivity().getTransactionType(it)
+                        viewModel.type = requireActivity().getTransactionType(it)
                     }
                 }
 
@@ -121,7 +111,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
                     id: Long
                 ) {
                     currenciesAdapter.getItem(position)?.let {
-                        viewModel.saveTransaction.currency = it
+                        viewModel.currency = it
                     }
                 }
 
@@ -137,32 +127,25 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
                 }
             }
 
-            viewModel.saveTransaction.sum = sum
+            viewModel.sum = sum
         }
 
         binding.editTextTransactionDetailName.doOnTextChanged { text, _, _, _ ->
-            text?.let { viewModel.saveTransaction.name = it.toString() }
+            text?.let { viewModel.name = it.toString() }
         }
 
         binding.editTextTransactionDetailDate.doOnTextChanged { text, _, _, _ ->
-            text?.let { viewModel.saveTransaction.date = it.toString() }
+            text?.let { viewModel.date = it.toString() }
         }
     }
 
-    private fun TransactionDetailViewModel.observeState() {
-        state.observe(viewLifecycleOwner) {
-            when (it) {
-                is BaseState.Success -> {
-                    popBackStack()
-                }
-
-                else -> {}
-            }
-        }
+    override fun onSuccess() {
+        super.onSuccess()
+        findNavController().popBackStack()
     }
 
     private fun updateUI() {
-        with(viewModel.saveTransaction) {
+        with(viewModel) {
             binding.editTextTransactionDetailName.setText(name)
             binding.editTextTransactionDetailDate.setText(date)
             if (sum > 0) binding.editTextTransactionDetailSum.setText(sum.toString())

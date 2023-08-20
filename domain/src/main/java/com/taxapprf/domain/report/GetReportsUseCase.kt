@@ -6,6 +6,6 @@ import javax.inject.Inject
 class GetReportsUseCase @Inject constructor(
     private val repository: ReportRepository
 ) {
-    fun execute(accountKey: String) =
-        repository.getReports(accountKey)
+    fun execute(getReportsModel: GetReportsModel) =
+        repository.getReports(getReportsModel)
 }

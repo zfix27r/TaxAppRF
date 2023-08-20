@@ -16,6 +16,7 @@ import com.taxapprf.domain.user.GetUserUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.UserModel
+import com.taxapprf.taxapp.ui.BaseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -30,11 +31,11 @@ class MainViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val getAccountsUseCase: GetAccountsUseCase,
     private val switchAccountUseCase: SwitchAccountUseCase,
-    val signOutUseCase: SignOutUseCase,
+    private val signOutUseCase: SignOutUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
 ) : ViewModel() {
     private val _state = ActivityStateLiveData()
-    val state: LiveData<ActivityBaseState> = _state
+    val state: LiveData<BaseState> = _state
 
     val isSignIn
         get() = isSignInUseCase.execute()
@@ -45,8 +46,8 @@ class MainViewModel @Inject constructor(
     private val _accounts = MutableLiveData<List<AccountModel>>()
     val accounts: LiveData<List<AccountModel>> = _accounts
 
-    private val _account = MutableLiveData<AccountModel>()
-    val account: LiveData<AccountModel> = _account
+    private val _account = MutableLiveData<AccountModel?>()
+    val account: LiveData<AccountModel?> = _account
 
     var report: ReportModel? = null
     var transaction: TransactionModel? = null

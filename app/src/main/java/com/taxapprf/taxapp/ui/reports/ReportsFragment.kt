@@ -10,7 +10,6 @@ import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseFragment
-import com.taxapprf.taxapp.ui.activity.MainViewModel
 import com.taxapprf.taxapp.ui.checkStoragePermission
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,25 +28,23 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activityViewModel.observerAccount()
+        viewModel.attachWithAccount()
 
         prepToolbar()
 
         fab.setOnClickListener { navToTransactionDetail() }
         binding.recyclerYearStatements.adapter = adapter
 
-        viewModel.attachToBaseFragment()
         viewModel.observerReports()
-    }
-
-    private fun MainViewModel.observerAccount() {
-        account.observe(viewLifecycleOwner) { account ->
-            viewModel.loadReports(account.name)
-        }
     }
 
     private fun ReportsViewModel.observerReports() {
         reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
+    }
+
+    override fun onAuthReady() {
+        super.onAuthReady()
+        viewModel.loadReports()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -81,7 +78,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun navToTransactions(reportModel: ReportModel) {
-        activityViewModel.report = reportModel
+        mainViewModel.report = reportModel
         findNavController().navigate(R.id.action_reports_to_transactions)
     }
 

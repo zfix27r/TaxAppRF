@@ -13,14 +13,15 @@ import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.data.error.DataErrorExcel
-import com.taxapprf.data.error.DataErrorExternal
-import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
+import com.taxapprf.taxapp.ui.Loading
+import com.taxapprf.taxapp.ui.Error
 import com.taxapprf.taxapp.ui.MainDrawer
 import com.taxapprf.taxapp.ui.MainToolbar
+import com.taxapprf.taxapp.ui.SignOut
+import com.taxapprf.taxapp.ui.Success
 import com.taxapprf.taxapp.ui.getErrorDescription
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -111,8 +112,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     fun onLoadingError(t: Throwable) {
         onLoadingStop()
         with(binding.appBarMain.content) {
+            // TODO() доработать реакцию на ошибки
             //loadingErrorGroup.isVisible = true
-            println(t)
             binding.root.showSnackBar(t.getErrorDescription())
             //loadingErrorMessage.setText(t.getErrorDescription())
         }
@@ -146,14 +147,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 is Error -> onLoadingError(it.t)
                 is Success -> onLoadingSuccess()
                 is SignOut -> onSignOut()
+                else -> {}
             }
         }
     }
 
     private fun MainViewModel.observeAccount() {
-        account.observe(this@MainActivity) {
-            drawer.account.text = it.name
-            fabVisibilityManager()
+        account.observe(this@MainActivity) { _account ->
+            _account?.let {
+                drawer.account.text = it.name
+                fabVisibilityManager()
+            }
         }
     }
 

@@ -1,13 +1,13 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.error.DataErrorCBR
-import com.taxapprf.data.error.internal.DataErrorInternalTransactionKeyEmpty
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
-import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.report.DeleteReportModel
+import com.taxapprf.domain.report.GetReportModel
+import com.taxapprf.domain.report.SaveReportModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
@@ -26,46 +26,56 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override fun saveTransactionModel(saveTransactionModel: SaveTransactionModel) = flow {
         with(saveTransactionModel) {
-            val accountKey = accountKey ?: throw DataErrorInternalTransactionKeyEmpty()
-
             updateCBRRate()
-
-            val year = date.getYearFromDate()
-
-            transactionKey?.let { transactionKey ->
-                yearKey?.let { yearKey ->
-                    if (year != yearKey) {
-                        val deleteTransactionModel =
-                            DeleteTransactionModel(accountKey, year, transactionKey, 0.0, 0.0)
-                        firebaseTransactionDao.deleteTransaction(deleteTransactionModel)
-                    }
-                }
-            }
-
-            yearKey = year
             updateTax()
 
-            val newTax = (reportTax + tax).roundUpToTwo()
-            val firebaseReportModel = FirebaseReportModel(year, newTax, ++reportSize)
-            firebaseReportDao.saveReportTax(accountKey, year, firebaseReportModel)
+            updatePathTransaction()
 
             firebaseTransactionDao.saveTransaction(saveTransactionModel)
+            emit(Unit)
+        }
+    }
+
+    private suspend fun SaveTransactionModel.updatePathTransaction() {
+        toDeleteTransactionModel()?.let {
+            if (isReportYearChanged())
+                firebaseTransactionDao.deleteTransaction(it)
+        }
+
+        incrementAndSave(accountKey, yearKey)
+    }
+
+    override fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) = flow {
+        with(deleteTransactionModel) {
+            val newSize = reportSize - 1
+
+            if (newSize == 0) {
+                val deleteReportModel = DeleteReportModel(accountKey, yearKey)
+                firebaseReportDao.deleteReport(deleteReportModel)
+            } else {
+                val newTax = (reportTax - transactionTax).roundUpToTwo()
+
+                val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
+                firebaseReportDao.saveReport(saveReportModel)
+                firebaseTransactionDao.deleteTransaction(deleteTransactionModel)
+            }
 
             emit(Unit)
         }
     }
 
-    private fun String.getYearFromDate() = split("/")[2]
+    private suspend fun SaveTransactionModel.incrementAndSave(
+        accountKey: String,
+        yearKey: String
+    ) {
+        val getReportModel = GetReportModel(accountKey, yearKey)
 
-    override fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) = flow {
-        with(deleteTransactionModel) {
-            if (reportTax - transactionTax == 0.0) {
-                val deleteReportModel = DeleteReportModel(accountKey, yearKey)
-                firebaseReportDao.deleteReport(deleteReportModel)
-            }
+        firebaseReportDao.getReport(getReportModel).let {
+            val newTax = (it.tax + tax).roundUpToTwo()
+            val newSize = it.size + 1
+            val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
+            firebaseReportDao.saveReport(saveReportModel)
         }
-
-        emit(firebaseTransactionDao.deleteTransaction(deleteTransactionModel))
     }
 
     private fun SaveTransactionModel.updateCBRRate() {
@@ -76,19 +86,18 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     private fun SaveTransactionModel.updateTax() {
+        var newSum = sum
         val k = when (type) {
             TransactionType.COMMISSION.name -> 0.0
             TransactionType.FUNDING_WITHDRAWAL.name -> {
-                sum = abs(sum)
+                newSum = abs(sum)
                 -1.0
             }
 
             else -> 1.0
         }
 
-        rateCBR?.let { rate ->
-            val calculateTax = sum * rate * 0.13 * k
-            tax = calculateTax.roundUpToTwo()
-        }
+        val newTax = newSum * rateCBR * 0.13 * k
+        tax = newTax.roundUpToTwo()
     }
 }

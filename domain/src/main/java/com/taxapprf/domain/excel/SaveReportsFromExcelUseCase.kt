@@ -1,4 +1,4 @@
-package com.taxapprf.domain.report
+package com.taxapprf.domain.excel
 
 import com.taxapprf.domain.ReportRepository
 import javax.inject.Inject
