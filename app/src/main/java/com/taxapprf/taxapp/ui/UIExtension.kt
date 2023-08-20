@@ -11,16 +11,20 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
-import com.taxapprf.data.error.AuthErrorSessionExpired
-import com.taxapprf.data.error.DataErrorAuth
-import com.taxapprf.data.error.InputErrorEmailEmpty
-import com.taxapprf.data.error.InputErrorEmailIncorrect
-import com.taxapprf.data.error.InputErrorNameEmpty
-import com.taxapprf.data.error.InputErrorPasswordLength
-import com.taxapprf.data.error.InputErrorPhoneEmpty
-import com.taxapprf.data.error.SignInErrorWrongPassword
-import com.taxapprf.data.error.SignUpErrorEmailAlreadyUse
+import com.taxapprf.data.error.DataErrorExcel
+import com.taxapprf.data.error.DataErrorExternal
+import com.taxapprf.data.error.DataErrorInternal
+import com.taxapprf.data.error.DataErrorUser
+import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
+import com.taxapprf.data.error.DataErrorUserWrongPassword
+import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
+import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
+import com.taxapprf.taxapp.ui.error.UIErrorEmailIncorrect
+import com.taxapprf.taxapp.ui.error.UIErrorNameEmpty
+import com.taxapprf.taxapp.ui.error.UIErrorPasswordLength
+import com.taxapprf.taxapp.ui.error.UIErrorPhoneEmpty
+import java.net.SocketTimeoutException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -58,17 +62,26 @@ fun Date.format(): String {
 
 fun Double.format() = floor(this * 100.0) / 100.0
 
-fun Throwable.getErrorDescription() = when (this) {
-    is DataErrorAuth -> R.string.auth_error
-    is AuthErrorSessionExpired -> R.string.auth_error_session_expire
-    is InputErrorNameEmpty -> R.string.error_name_empty
-    is InputErrorPhoneEmpty -> R.string.error_phone_empty
-    is InputErrorEmailEmpty -> R.string.error_email_empty
-    is InputErrorEmailIncorrect -> R.string.error_email_incorrect
-    is InputErrorPasswordLength -> R.string.error_password_length
-    is SignInErrorWrongPassword -> R.string.error_sign_in
-    is SignUpErrorEmailAlreadyUse -> R.string.sign_up_error_email_already_use
-    else -> throw this
+fun Throwable.getErrorDescription(): Int {
+    // TODO дебаг, удалить вывод ниже
+    println(this.message)
+    println(this)
+
+    return when (this) {
+        is SocketTimeoutException -> R.string.data_error_socket_timeout
+        is DataErrorUser -> R.string.auth_error
+        is DataErrorInternal -> R.string.data_error_internal
+        is DataErrorExternal -> R.string.data_external_error
+        is DataErrorExcel -> R.string.data_error_excel
+        is UIErrorNameEmpty -> R.string.error_name_empty
+        is UIErrorPhoneEmpty -> R.string.error_phone_empty
+        is UIErrorEmailEmpty -> R.string.error_email_empty
+        is UIErrorEmailIncorrect -> R.string.error_email_incorrect
+        is UIErrorPasswordLength -> R.string.error_password_length
+        is DataErrorUserWrongPassword -> R.string.error_sign_in
+        is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use
+        else -> throw this
+    }
 }
 
 fun Activity.share(uri: Uri) {
@@ -77,4 +90,16 @@ fun Activity.share(uri: Uri) {
     emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
     emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Расчёт налога от TaxApp")
     startActivity(Intent.createChooser(emailIntent, "Send email..."))
+}
+
+fun String.getTransactionName() = when (this) {
+    TransactionType.COMMISSION.name -> R.string.transaction_type_commission
+    TransactionType.FUNDING_WITHDRAWAL.name -> R.string.transaction_type_funding_withdrawal
+    else -> R.string.transaction_type_trade
+}
+
+fun Activity.getTransactionType(typeName: String) = when (typeName) {
+    getString(R.string.transaction_type_commission) -> TransactionType.COMMISSION.name
+    getString(R.string.transaction_type_funding_withdrawal) -> TransactionType.FUNDING_WITHDRAWAL.name
+    else -> TransactionType.TRADE.name
 }

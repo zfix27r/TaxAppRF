@@ -4,11 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.SignUpUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.data.error.InputErrorEmailEmpty
-import com.taxapprf.data.error.InputErrorEmailIncorrect
-import com.taxapprf.data.error.InputErrorNameEmpty
-import com.taxapprf.data.error.InputErrorPasswordLength
-import com.taxapprf.data.error.InputErrorPhoneEmpty
+import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
+import com.taxapprf.taxapp.ui.error.UIErrorEmailIncorrect
+import com.taxapprf.taxapp.ui.error.UIErrorNameEmpty
+import com.taxapprf.taxapp.ui.error.UIErrorPasswordLength
+import com.taxapprf.taxapp.ui.error.UIErrorPhoneEmpty
 import com.taxapprf.taxapp.ui.isEmailPattern
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,36 +32,36 @@ class SignUpViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             signUpUseCase.execute(signUpModel)
-                .onStart { loading() }
+                .onStart { start() }
                 .catch { error(it) }
                 .collectLatest { success() }
         }
     }
 
     private fun String.isErrorInputNameChecker(): Boolean {
-        if (isEmpty()) error(InputErrorNameEmpty())
+        if (isEmpty()) error(UIErrorNameEmpty())
         else return false
 
         return true
     }
 
     private fun String.isErrorInputEmailChecker(): Boolean {
-        if (isEmpty()) error(InputErrorEmailEmpty())
-        else if (!isEmailPattern()) error(InputErrorEmailIncorrect())
+        if (isEmpty()) error(UIErrorEmailEmpty())
+        else if (!isEmailPattern()) error(UIErrorEmailIncorrect())
         else return false
 
         return true
     }
 
     private fun String.isErrorInputPasswordChecker(): Boolean {
-        if (length < 8) error(InputErrorPasswordLength())
+        if (length < 8) error(UIErrorPasswordLength())
         else return false
 
         return true
     }
 
     private fun String.isErrorInputPhoneChecker(): Boolean {
-        if (isEmpty()) error(InputErrorPhoneEmpty())
+        if (isEmpty()) error(UIErrorPhoneEmpty())
         else return false
 
         return true

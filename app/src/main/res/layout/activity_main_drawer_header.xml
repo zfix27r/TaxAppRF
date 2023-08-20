@@ -21,9 +21,11 @@
             android:layout_marginTop="@dimen/offset_16"
             android:contentDescription="@string/nav_header_desc"
             android:padding="@dimen/offset_8"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_payment_tax_invoice_document_calculator_icon_188684" />
+            app:srcCompat="@drawable/ic_payment_tax_invoice_document_calculator_icon_188684"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/textNavHeaderUserName"
@@ -31,22 +33,37 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/offset_8"
             android:layout_marginEnd="@dimen/offset_8"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/textNavHeaderUserEmail"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageNavHeaderUserLogOut"
             app:layout_constraintStart_toEndOf="@+id/imageNavHeaderUserAvatar"
             app:layout_constraintTop_toTopOf="@+id/imageNavHeaderUserAvatar"
-            tools:text="Name" />
+            tools:text="Name"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/textNavHeaderUserEmail"
             android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/textNavHeaderUserName"
             app:layout_constraintStart_toStartOf="@+id/textNavHeaderUserName"
             app:layout_constraintTop_toBottomOf="@+id/textNavHeaderUserName"
-            tools:text="email" />
+            tools:text="email"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/imageNavHeaderUserLogOut"
+            android:layout_width="@dimen/image_size"
+            android:layout_height="@dimen/image_size"
+            android:padding="@dimen/offset_8"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imageNavHeaderUserAvatar"
+            app:srcCompat="@drawable/ic_baseline_logout_24"
+            tools:visibility="visible" />
 
         <androidx.constraintlayout.helper.widget.Layer
             android:id="@+id/layerNavHeaderAccounts"
@@ -77,6 +94,7 @@
             android:id="@+id/imageNavHeaderUserAccountExpand"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
+            android:layout_marginTop="24dp"
             android:padding="@dimen/offset_8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

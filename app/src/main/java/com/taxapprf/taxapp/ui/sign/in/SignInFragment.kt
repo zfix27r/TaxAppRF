@@ -8,7 +8,6 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentSignInBinding
 import com.taxapprf.taxapp.ui.BaseFragment
-import com.taxapprf.taxapp.ui.BaseState
 import com.taxapprf.taxapp.ui.getErrorDescription
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,27 +19,22 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSignInCancel.setOnClickListener { popBackStack() }
+        binding.buttonSignInCancel.setOnClickListener { findNavController().popBackStack() }
         binding.buttonSignInOk.setOnClickListener { signIn() }
 
-        viewModel.attachToBaseFragment()
-        viewModel.observeState()
+        viewModel.attach()
     }
 
-    private fun SignInViewModel.observeState() =
-        state.observe(viewLifecycleOwner) {
-            when (it) {
-                is BaseState.Success -> {
-                    activityViewModel.loading()
-                    drawer.showAuth()
-                    navToReports()
-                }
+    override fun onSuccess() {
+        super.onSuccess()
 
-                else -> {}
-            }
-        }
+        mainViewModel.loading()
+        drawer.showAuth()
+        navToReports()
+    }
 
-    override fun onLoadingError(t: Throwable) {
+    override fun onError(t: Throwable) {
+        super.onError(t)
         binding.root.showSnackBar(t.getErrorDescription())
     }
 

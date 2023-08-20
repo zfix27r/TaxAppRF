@@ -1,6 +1,6 @@
 package com.taxapprf.data.remote.firebase.model
 
-import com.taxapprf.data.error.DataErrorResponseEmpty
+import com.taxapprf.data.error.external.DataErrorExternalEmpty
 import com.taxapprf.domain.account.AccountModel
 
 data class FirebaseAccountModel(
@@ -8,7 +8,7 @@ data class FirebaseAccountModel(
     val active: Boolean? = null
 ) {
     fun toAccountModel(key: String?) = AccountModel(
-        name = key ?: throw DataErrorResponseEmpty(),
-        active = active ?: throw DataErrorResponseEmpty()
+        name = key ?: throw DataErrorExternalEmpty(),
+        active = active ?: throw DataErrorExternalEmpty()
     )
 }

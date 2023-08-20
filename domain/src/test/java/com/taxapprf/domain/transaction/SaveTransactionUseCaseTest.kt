@@ -1,7 +1,6 @@
 package com.taxapprf.domain.transaction
 
 import com.taxapprf.domain.TransactionRepository
-import com.taxapprf.domain.TransactionType
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -38,7 +37,7 @@ class SaveTransactionUseCaseTest {
 
     @Test
     fun `execute should call saveTransactionModel on repository and complete successfully`() = runBlocking {
-        val saveTransactionModel = SaveTransactionModel(
+        val saveTransactionModel = com.taxapprf.taxapp.ui.transactions.detail.SaveTransactionModel(
             id = "101",
             type = TransactionType.TRADE.toString(),
             date = "2023-07-31",
@@ -55,7 +54,7 @@ class SaveTransactionUseCaseTest {
 
     @Test
     fun `execute should handle error when saveTransaction fails because of no date`() = runBlocking {
-        val saveTransactionModel = SaveTransactionModel(
+        val saveTransactionModel = com.taxapprf.taxapp.ui.transactions.detail.SaveTransactionModel(
             id = "202",
             type = TransactionType.COMMISSION.toString(),
             date = "",

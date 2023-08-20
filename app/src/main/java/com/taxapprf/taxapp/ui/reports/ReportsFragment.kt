@@ -28,6 +28,34 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.attachWithAccount()
+
+        prepToolbar()
+
+        fab.setOnClickListener { navToTransactionDetail() }
+        binding.recyclerYearStatements.adapter = adapter
+
+        viewModel.observerReports()
+    }
+
+    private fun ReportsViewModel.observerReports() {
+        reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
+    }
+
+    override fun onAuthReady() {
+        super.onAuthReady()
+        viewModel.loadReports()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            PICK_FILE_RESULT_CODE -> {
+                viewModel.saveReportsFromExcel(data)
+            }
+        }
+    }
+
+    private fun prepToolbar() {
         toolbar.updateToolbar(getString(R.string.taxes_name))
         toolbar.updateMenu(R.menu.reports_toolbar) {
             when (it.itemId) {
@@ -37,23 +65,6 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                 }
 
                 else -> false
-            }
-        }
-
-        fab.setOnClickListener { navToTransactionDetail() }
-        binding.recyclerYearStatements.adapter = adapter
-
-        viewModel.attachToBaseFragment()
-        viewModel.reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
-        activityViewModel.account.observe(viewLifecycleOwner) { account ->
-            viewModel.loadReports(account.name)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            PICK_FILE_RESULT_CODE -> {
-                viewModel.saveReportsFromExcel(data)
             }
         }
     }
@@ -67,7 +78,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun navToTransactions(reportModel: ReportModel) {
-        activityViewModel.report = reportModel
+        mainViewModel.report = reportModel
         findNavController().navigate(R.id.action_reports_to_transactions)
     }
 

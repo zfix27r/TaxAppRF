@@ -1,10 +1,11 @@
-package com.taxapprf.taxapp.ui.transactions
+package com.taxapprf.taxapp.ui.transactions.delete
 
 import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.taxapprf.taxapp.R
+import com.taxapprf.taxapp.ui.transactions.TransactionsFragment
 
 class TransactionsDeleteDialogFragment : DialogFragment() {
     private val prevStackSavedState by lazy {
@@ -24,7 +25,7 @@ class TransactionsDeleteDialogFragment : DialogFragment() {
             .create()
 
     private fun popBackStackWithBundle(state: Boolean) {
-        prevStackSavedState[TransactionsFragment.TRANSACTIONS_DELETE_DIALOG_RESULT] = state
+        prevStackSavedState[TransactionsFragment.DELETE_ACCEPTED] = state
         findNavController().popBackStack()
     }
 }

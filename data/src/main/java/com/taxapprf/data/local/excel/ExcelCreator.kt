@@ -77,7 +77,7 @@ class ExcelCreator (
             cell = row.createCell(0, CellType.STRING)
             cell.setCellValue(transaction.name)
             cell = row.createCell(1, CellType.STRING)
-            cell.setCellValue(transaction.type)
+            cell.setCellValue(transaction.type.toString())
             cell = row.createCell(2, CellType.STRING)
             cell.setCellValue(transaction.date)
             cell = row.createCell(3, CellType.NUMERIC)

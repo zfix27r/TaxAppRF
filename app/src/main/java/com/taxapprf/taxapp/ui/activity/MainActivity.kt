@@ -13,12 +13,17 @@ import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.data.error.DataErrorAuth
+import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
+import com.taxapprf.taxapp.ui.Loading
+import com.taxapprf.taxapp.ui.Error
 import com.taxapprf.taxapp.ui.MainDrawer
 import com.taxapprf.taxapp.ui.MainToolbar
+import com.taxapprf.taxapp.ui.SignOut
+import com.taxapprf.taxapp.ui.Success
 import com.taxapprf.taxapp.ui.getErrorDescription
+import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -36,7 +41,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         findNavController(this, R.id.nav_host_fragment_content_main)
     }
 
-    val drawer by lazy { MainDrawer(binding.navView) }
+    val drawer by lazy {
+        MainDrawer(binding.navView) {
+            binding.drawerLayout.close()
+            viewModel.signOut()
+        }
+    }
     val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
 
     private val accountsAdapter = MainAccountsAdapter {
@@ -71,6 +81,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         binding.appBarMain.content.loadingRetry.setOnClickListener { viewModel.loading() }
 
         viewModel.observeState()
+        viewModel.observeUser()
         viewModel.observeAccounts()
         viewModel.observeAccount()
         navController.observeCurrentBackStack()
@@ -101,13 +112,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     fun onLoadingError(t: Throwable) {
         onLoadingStop()
         with(binding.appBarMain.content) {
-            loadingErrorGroup.isVisible = true
-            loadingErrorMessage.setText(t.getErrorDescription())
+            // TODO() доработать реакцию на ошибки
+            //loadingErrorGroup.isVisible = true
+            binding.root.showSnackBar(t.getErrorDescription())
+            //loadingErrorMessage.setText(t.getErrorDescription())
         }
     }
 
     fun onLoadingSuccess() {
         onLoadingStop()
+    }
+
+    private fun onSignOut() {
+        drawer.hideAuth()
+        navToSign()
     }
 
     private val topLevelDestinations = setOf(
@@ -122,26 +140,24 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         R.id.transactions,
     )
 
-    private val notAuthDestinations = setOf(
-        R.id.sign,
-        R.id.sign_in,
-        R.id.sign_up
-    )
-
     private fun MainViewModel.observeState() {
         state.observe(this@MainActivity) {
             when (it) {
                 is Loading -> onLoadingStart()
                 is Error -> onLoadingError(it.t)
                 is Success -> onLoadingSuccess()
+                is SignOut -> onSignOut()
+                else -> {}
             }
         }
     }
 
     private fun MainViewModel.observeAccount() {
-        account.observe(this@MainActivity) {
-            drawer.account.text = it.name
-            fabVisibilityManager()
+        account.observe(this@MainActivity) { _account ->
+            _account?.let {
+                drawer.account.text = it.name
+                fabVisibilityManager()
+            }
         }
     }
 
@@ -151,8 +167,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 accountsAdapter.submitList(accounts.filter { !it.active })
                 fabVisibilityManager()
             } else {
-                onLoadingError(DataErrorAuth())
+                onLoadingError(DataErrorUser())
             }
+        }
+    }
+
+    private fun MainViewModel.observeUser() {
+        user.observe(this@MainActivity) { user ->
+            drawer.updateUserProfile(user)
         }
     }
 
@@ -172,5 +194,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private fun navToAccountAdd() {
         navController.navigate(R.id.action_global_account_add)
+    }
+
+    private fun navToSign() {
+        navController.navigate(R.id.action_global_sign)
     }
 }

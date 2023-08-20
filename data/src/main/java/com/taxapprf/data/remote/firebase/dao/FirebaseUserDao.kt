@@ -16,7 +16,7 @@ interface FirebaseUserDao {
 
     fun isSignIn(): Boolean
 
-    suspend fun getProfile(): UserModel
+    suspend fun getProfile(): UserModel?
 
     suspend fun saveProfile(userModel: UserModel)
 }

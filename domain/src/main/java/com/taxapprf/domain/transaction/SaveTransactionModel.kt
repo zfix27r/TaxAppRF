@@ -1,57 +1,35 @@
 package com.taxapprf.domain.transaction
 
-import com.taxapprf.domain.report.ReportModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import kotlin.properties.Delegates
 
-class SaveTransactionModel {
-    private val calendar = Calendar.getInstance()
-    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
+data class SaveTransactionModel(
+    val accountKey: String,
+    val yearKey: String,
+    val transactionKey: String? = null,
 
-    lateinit var accountKey: String
-    var transactionKey: String? = null
-    var yearOld: String? = null
-    var year: String = calendar[Calendar.YEAR].toString()
+    val date: String,
+    val name: String,
+    val currency: String,
+    val type: String,
+    val sum: Double,
+) {
+    lateinit var reportYear: String
+    var reportTax by Delegates.notNull<Double>()
+    var reportSize by Delegates.notNull<Int>()
 
-    var name: String = ""
-    var date: String = dateFormat.format(calendar.time)
-        set(value) {
-            field = value
-            year = value.split("/")[2]
+    var rateCBR by Delegates.notNull<Double>()
+    var tax by Delegates.notNull<Double>()
+
+    fun isReportYearChanged() = reportYear != yearKey
+    fun toDeleteTransactionModel() =
+        transactionKey?.let {
+            DeleteTransactionModel(
+                accountKey,
+                reportYear,
+                transactionKey,
+                tax,
+                reportTax,
+                reportSize
+            )
         }
-    var type: String = TransactionType.TRADE.name
-
-    // FIXME поправить, сделать подгрузку из стрингов
-    var currency: String = "USD"
-    var rateCBR: Double = 0.0
-    var sum: Double = 0.0
-    var tax: Double = 0.0
-
-    fun from(transactionModel: TransactionModel) {
-        transactionKey = transactionModel.key
-        name = transactionModel.name
-        date = transactionModel.date
-        type = transactionModel.type
-        currency = transactionModel.currency
-        rateCBR = transactionModel.rateCBR
-        sum = transactionModel.sum
-        tax = transactionModel.tax
-
-        yearOld = year
-    }
-
-    fun from(reportModel: ReportModel) {
-        calendar[Calendar.YEAR] = reportModel.year.toInt()
-        date = dateFormat.format(calendar.time)
-    }
-
-    fun updateDate(year: Int, month: Int, dayOfMonth: Int) {
-        calendar.set(Calendar.YEAR, year)
-        calendar.set(Calendar.MONTH, month)
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-        date = dateFormat.format(calendar.time)
-        this.year = year.toString()
-    }
 }

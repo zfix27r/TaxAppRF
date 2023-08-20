@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TaxApp" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.TaxApp" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
@@ -18,7 +18,7 @@
         <!-- Customize your theme here. -->
         <item name="snackbarStyle">@style/Widget.MyApp.SnackbarStyle</item>
 
-
+        <item name="windowActionModeOverlay">true</item>
     </style>
 
 
@@ -27,14 +27,6 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="Theme.TaxApp.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.TaxApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.TaxApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="StyleButtonTaxApp" parent="@style/Widget.MaterialComponents.Button">
         <item name="android:paddingTop">5dp</item>

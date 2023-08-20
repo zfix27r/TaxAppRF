@@ -11,4 +11,5 @@ interface UserRepository {
     fun signOut(): Flow<Unit>
     fun isSignIn(): Boolean
     fun getUser(): Flow<UserModel?>
+    fun saveUser(userModel: UserModel): Flow<Unit>
 }

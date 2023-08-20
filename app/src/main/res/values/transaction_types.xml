@@ -2,8 +2,10 @@
 <resources>
     <string-array name="transaction_types">
         <item>@string/transaction_type_trade</item>
-        <item>COMMISSION</item>
-        <item>FUNDING/WITHDRAWAL</item>
+        <item>@string/transaction_type_commission</item>
+        <item>@string/transaction_type_funding_withdrawal</item>
     </string-array>
-    <string name="transaction_type_trade">TRADE</string>
+    <string name="transaction_type_trade">сделка</string>
+    <string name="transaction_type_commission">поручение</string>
+    <string name="transaction_type_funding_withdrawal">фонд/вывод</string>
 </resources>
