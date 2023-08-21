@@ -33,32 +33,32 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
 
     private fun CurrencyConverterViewModel.observeConverter() {
         sum.observe(viewLifecycleOwner) {
-            binding.editConverterUp.setText(it.toString())
+            binding.editCurrencyConverterSum.setText(it.toString())
         }
 
         sumRub.observe(viewLifecycleOwner) {
-            binding.editConverterDown.setText(it.toString())
+            binding.editCurrencyConverterSumRub.setText(it.toString())
         }
     }
 
     private fun setListeners() {
-        binding.editConverterUp.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
+        binding.editCurrencyConverterSum.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 binding.root.hideKeyboard()
-                val newSum = binding.editConverterUp.text.toString()
+                val newSum = binding.editCurrencyConverterSum.text.toString()
                 if (newSum != "") viewModel.setSum(newSum.toDouble())
             }
         }
 
-        binding.editConverterDown.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
+        binding.editCurrencyConverterSumRub.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
                 binding.root.hideKeyboard()
-                val newSum = binding.editConverterDown.text.toString()
+                val newSum = binding.editCurrencyConverterSumRub.text.toString()
                 if (newSum != "") viewModel.setSumRub(newSum.toDouble())
             }
         }
 
-        binding.spinnerConverter.onItemSelectedListener = object :
+        binding.spinnerCurrencyConverterSum.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -80,8 +80,8 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
         currenciesAdapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencies)
         currenciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerConverter.adapter = currenciesAdapter
-        binding.spinnerConverter.setSelection(
+        binding.spinnerCurrencyConverterSum.adapter = currenciesAdapter
+        binding.spinnerCurrencyConverterSum.setSelection(
             currencies.indexOf(resources.getString(R.string.transaction_currency_usd))
         )
     }

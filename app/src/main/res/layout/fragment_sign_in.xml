@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,25 +8,22 @@
     tools:context=".ui.sign.in.SignInFragment">
 
     <TextView
-        android:id="@+id/logo"
+        android:id="@+id/text_sign_in_logo"
         style="@style/StyleLogoText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_email"
+        android:id="@+id/text_layout_sign_in_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/sign_margin_side"
-        android:layout_marginEnd="@dimen/sign_margin_side"
-        android:layout_marginBottom="@dimen/sign_margin_vertical"
-        app:layout_constraintBottom_toTopOf="@+id/text_input_layout_password"
+        android:layout_marginStart="@dimen/sign_field_horizontal_offset"
+        android:layout_marginEnd="@dimen/sign_field_horizontal_offset"
+        app:layout_constraintBottom_toTopOf="@+id/text_layout_sign_in_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4"
         app:layout_constraintVertical_chainStyle="packed">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -35,77 +31,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/edit_sign_in_email"
-            android:inputType="textEmailAddress"
-            android:textSize="@dimen/text_size_16sp"
-             />
+            android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_password"
-        android:layout_width="match_parent"
+        android:id="@+id/text_layout_sign_in_password"
+        android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/sign_margin_side"
-        android:layout_marginEnd="@dimen/sign_margin_side"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_email">
+        app:layout_constraintBottom_toTopOf="@+id/button_sign_in_create"
+        app:layout_constraintEnd_toEndOf="@+id/text_layout_sign_in_email"
+        app:layout_constraintStart_toStartOf="@+id/text_layout_sign_in_email"
+        app:layout_constraintTop_toBottomOf="@+id/text_layout_sign_in_email">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_sign_in_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusableInTouchMode="true"
             android:hint="@string/edit_sign_in_password"
-            android:inputType="textPassword"
-            android:textSize="@dimen/text_size_16sp"
-            />
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_sign_in_create"
+        android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/text_under_bottom_sign_in"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_password"
-        app:layout_constraintVertical_bias="0.0">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_sign_in_ok"
-            style="@style/StyleButtonOK"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/sign_margin_side"
-            android:layout_marginTop="@dimen/sign_margin_vertical"
-            android:layout_marginEnd="@dimen/sign_button_margin_between"
-            android:layout_marginBottom="@dimen/sign_margin_vertical"
-            android:layout_weight="1"
-            android:text="@string/button_sign_in_ok" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_sign_in_cancel"
-            style="@style/StyleButtonCancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/sign_button_margin_between"
-            android:layout_marginTop="@dimen/sign_margin_vertical"
-            android:layout_marginEnd="@dimen/sign_margin_side"
-            android:layout_marginBottom="@dimen/sign_margin_vertical"
-            android:layout_weight="1"
-            android:text="@string/button_sign_in_cancel" />
-    </LinearLayout>
+        android:layout_marginTop="@dimen/offset_24"
+        android:text="@string/button_sign_up_ok"
+        app:layout_constraintBottom_toTopOf="@+id/text_sign_in_under_bottom"
+        app:layout_constraintEnd_toEndOf="@+id/text_layout_sign_in_email"
+        app:layout_constraintStart_toStartOf="@+id/text_layout_sign_in_email"
+        app:layout_constraintTop_toBottomOf="@+id/text_layout_sign_in_password" />
 
     <TextView
-        android:id="@+id/text_under_bottom_sign_in"
+        android:id="@+id/text_sign_in_under_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/sign_margin_vertical"
+        android:layout_marginBottom="@dimen/offset_24"
         android:gravity="center"
         android:text="@string/text_sign_in_under_bottom"
-        android:textSize="@dimen/sign_in_text_under_bottom_size"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -19,8 +19,7 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSignInCancel.setOnClickListener { findNavController().popBackStack() }
-        binding.buttonSignInOk.setOnClickListener { signIn() }
+        binding.buttonSignInCreate.setOnClickListener { signIn() }
 
         viewModel.attach()
     }

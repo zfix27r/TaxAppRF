@@ -106,7 +106,6 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_transaction_detail_save"
-        style="@style/StyleButtonOK"
         android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_vertical_20dp"

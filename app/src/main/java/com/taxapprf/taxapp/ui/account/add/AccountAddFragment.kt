@@ -17,8 +17,7 @@ class AccountAddFragment : BaseFragment(R.layout.fragment_account_add) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonNewAccountCreate.setOnClickListener { accountCreate() }
-        binding.buttonNewAccountCancel.setOnClickListener { findNavController().popBackStack() }
+        binding.buttonAccountAddCreate.setOnClickListener { accountCreate() }
 
         viewModel.attachWithAccount()
     }
@@ -29,7 +28,7 @@ class AccountAddFragment : BaseFragment(R.layout.fragment_account_add) {
     }
 
     private fun accountCreate() {
-        val accountName = binding.editNewAccountName.text.toString()
+        val accountName = binding.editAddAccountName.text.toString()
         viewModel.saveAccount(accountName)
     }
 }
