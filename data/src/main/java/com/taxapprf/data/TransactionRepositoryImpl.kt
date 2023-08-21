@@ -1,6 +1,7 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.error.DataErrorCBR
+import com.taxapprf.data.local.excel.ExcelDaoImpl
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
@@ -9,6 +10,8 @@ import com.taxapprf.domain.report.DeleteReportModel
 import com.taxapprf.domain.report.GetReportModel
 import com.taxapprf.domain.report.SaveReportModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
+import com.taxapprf.domain.transaction.GetExcelToShareModel
+import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionType
@@ -20,6 +23,7 @@ class TransactionRepositoryImpl @Inject constructor(
     private val firebaseTransactionDao: FirebaseTransactionDaoImpl,
     private val firebaseReportDao: FirebaseReportDaoImpl,
     private val cbrapi: CBRAPI,
+    private val excelDao: ExcelDaoImpl,
 ) : TransactionRepository {
     override fun getTransactions(getTransactionModel: GetTransactionsModel) =
         firebaseTransactionDao.getTransactions(getTransactionModel)
@@ -62,6 +66,14 @@ class TransactionRepositoryImpl @Inject constructor(
 
             emit(Unit)
         }
+    }
+
+    override fun getExcelToShare(getExcelToShareModel: GetExcelToShareModel) = flow {
+        emit(excelDao.getExcelToShare(getExcelToShareModel))
+    }
+
+    override fun getExcelToStorage(getExcelToStorageModel: GetExcelToStorageModel) = flow {
+        emit(excelDao.getExcelToStorage(getExcelToStorageModel))
     }
 
     private suspend fun SaveTransactionModel.incrementAndSave(

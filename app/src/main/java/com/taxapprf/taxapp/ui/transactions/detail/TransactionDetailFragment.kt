@@ -14,6 +14,7 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
 import com.taxapprf.taxapp.ui.getTransactionType
+import com.taxapprf.taxapp.ui.transactions.TransactionDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 

@@ -8,8 +8,11 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.data.error.DataErrorExcel
 import com.taxapprf.data.error.DataErrorExternal
@@ -63,10 +66,6 @@ fun Date.format(): String {
 fun Double.format() = floor(this * 100.0) / 100.0
 
 fun Throwable.getErrorDescription(): Int {
-    // TODO дебаг, удалить вывод ниже
-    println(this.message)
-    println(this)
-
     return when (this) {
         is SocketTimeoutException -> R.string.data_error_socket_timeout
         is DataErrorUser -> R.string.auth_error

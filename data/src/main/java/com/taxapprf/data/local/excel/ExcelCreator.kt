@@ -1,6 +1,9 @@
 package com.taxapprf.data.local.excel
 
 import android.content.Context
+import android.net.Uri
+import android.os.Environment
+import androidx.core.content.FileProvider
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -9,19 +12,63 @@ import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.util.CellRangeAddress
 import java.io.File
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.io.FileOutputStream
 
-class ExcelCreator (
+
+class ExcelCreator(
     private val context: Context,
-    private val report: ReportModel,
-    private val transactions: List<TransactionModel>
 ) {
+    private val workbook = HSSFWorkbook()
 
-    fun create(): File {
-        val workbook = HSSFWorkbook()
+    fun getExcelToStorage(
+        report: ReportModel,
+        transactions: List<TransactionModel>,
+        fileName: String,
+    ): Uri {
+        createWorkbook(report, transactions)
+
+        val downloadFilePath = Environment
+            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            .path + "/" + fileName
+
+        val file = File(downloadFilePath)
+        val outFile = FileOutputStream(file)
+
+        workbook.write(outFile)
+        outFile.close()
+
+        return FileProvider.getUriForFile(
+            context,
+            context.applicationContext.packageName + ".provider",
+            file
+        )
+    }
+
+    fun getExcelToShare(
+        report: ReportModel,
+        transactions: List<TransactionModel>,
+        fileName: String,
+    ): Uri {
+        createWorkbook(report, transactions)
+
+        val filePath = context.filesDir.toString() + "/" + fileName
+
+        val outFile = context.openFileOutput(fileName, Context.MODE_PRIVATE)
+
+        workbook.write(outFile)
+        outFile.close()
+
+        return FileProvider.getUriForFile(
+            context,
+            context.applicationContext.packageName + ".provider",
+            File(filePath)
+        )
+    }
+
+    private fun createWorkbook(
+        report: ReportModel,
+        transactions: List<TransactionModel>,
+    ) {
         val sheet = workbook.createSheet(report.year)
         var rownum = 0
         var cell: Cell
@@ -77,7 +124,7 @@ class ExcelCreator (
             cell = row.createCell(0, CellType.STRING)
             cell.setCellValue(transaction.name)
             cell = row.createCell(1, CellType.STRING)
-            cell.setCellValue(transaction.type.toString())
+            cell.setCellValue(transaction.type)
             cell = row.createCell(2, CellType.STRING)
             cell.setCellValue(transaction.date)
             cell = row.createCell(3, CellType.NUMERIC)
@@ -89,16 +136,5 @@ class ExcelCreator (
             cell = row.createCell(6, CellType.NUMERIC)
             cell.setCellValue(transaction.tax)
         }
-        val currentDate = Date()
-        val dateFormat: DateFormat =
-            SimpleDateFormat("yyyy-MM-dd_HH-mm", Locale.getDefault())
-        val dateText = dateFormat.format(currentDate)
-        val statementName = "Statement-$dateText.xls"
-        val filePath = context.filesDir.toString() + "/" + statementName
-        val outFile =
-            context.openFileOutput(statementName, Context.MODE_PRIVATE)
-        workbook.write(outFile)
-        outFile.close()
-        return File(filePath)
     }
 }

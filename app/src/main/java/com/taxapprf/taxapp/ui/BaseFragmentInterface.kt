@@ -43,6 +43,7 @@ interface BaseFragmentInterface {
                 is Success -> onSuccess()
                 is SignOut -> mainViewModel.signOut()
                 is SuccessShare -> onSuccessShare()
+                is SuccessImport -> onSuccessImport()
                 is SuccessDelete -> onSuccessDelete()
             }
         }
@@ -65,6 +66,10 @@ interface BaseFragmentInterface {
     }
 
     fun onSuccessShare() {
+        mainActivity.onLoadingSuccess()
+    }
+
+    fun onSuccessImport() {
         mainActivity.onLoadingSuccess()
     }
 

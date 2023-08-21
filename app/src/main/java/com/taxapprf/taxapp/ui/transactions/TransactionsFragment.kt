@@ -1,8 +1,11 @@
 package com.taxapprf.taxapp.ui.transactions
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
@@ -39,22 +42,26 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun prepToolbar() {
-        toolbar.updateMenu(R.menu.transactions_toolbar) {
-            when (it.itemId) {
+        toolbar.updateMenu(R.menu.transactions_toolbar) { menuItem ->
+            when (menuItem.itemId) {
                 R.id.toolbar_share_excel -> {
                     if (requireActivity().checkStoragePermission()) {
-                        viewModel.getExcelReportUri()
+                        viewModel.getExcelToShare()
                     }
 
                     true
                 }
 
                 R.id.toolbar_export_excel -> {
+                    if (requireActivity().checkStoragePermission()) {
+                        viewModel.getExcelToStorage()
+                    }
 
                     true
                 }
 
                 R.id.toolbar_import_excel -> {
+                    launchImportExcelFromStorageIntent()
                     true
                 }
 
@@ -106,6 +113,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         startIntentSendEmail()
     }
 
+    override fun onSuccessImport() {
+        super.onSuccessImport()
+        launchSaveExcelToStorageIntent(viewModel.excelUri)
+    }
+
     override fun onSuccessDelete() {
         super.onSuccessDelete()
         findNavController().popBackStack()
@@ -117,39 +129,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
             String.format(getString(R.string.transactions_subtitle), viewModel.report.tax)
         toolbar.updateToolbar(title, subtitle)
     }
-
-    /*    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View? {
-
-            val textYearTax = binding!!.textTransYearSum
-            viewModel.getSumTaxes().observe(viewLifecycleOwner, object : Observer<Double?> {
-                override fun onChanged(yearTax: Double) {
-                }
-            })
-            val buttonDownload: ImageButton = binding!!.buttonTransDownload
-            buttonDownload.setOnClickListener(object : View.OnClickListener {
-                override fun onClick(v: View) {
-                    if (isStoragePermissionGranted) {
-                        fileName = viewModel.downloadStatement()
-                        if (fileName!!.exists()) {
-                            Snackbar.make(v, "Отчет скачан.", Snackbar.LENGTH_SHORT).show()
-                            val uri = FileProvider.getUriForFile(
-                                context!!, context!!.applicationContext.packageName + ".provider",
-                                fileName!!
-                            )
-                            Log.d("OLGA", "onClick download uri: " + uri.path)
-                            val intent = Intent(Intent.ACTION_VIEW, uri)
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            startActivity(intent)
-                        } else {
-                            Snackbar.make(v, "Не удалось скачать отчет.", Snackbar.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            })
-*/
 
     private val transactionAdapterCallback = object : TransactionsAdapterCallback {
         override fun onClick(transactionModel: TransactionModel) {
@@ -181,7 +160,37 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun startIntentSendEmail() {
-        viewModel.emailUri?.let { requireActivity().share(it) }
+        requireActivity().share(viewModel.excelUri)
+    }
+
+    private val getExcelFromStorageIntent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            viewModel.saveReportsFromExcel(it?.data?.data?.path)
+        }
+
+    private val importExcelToStorageIntent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+        }
+
+    private fun launchImportExcelFromStorageIntent() {
+        with(requireActivity()) {
+            if (checkStoragePermission()) {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "application/vnd.ms-excel"
+                getExcelFromStorageIntent.launch(intent)
+            }
+        }
+    }
+
+    private fun launchSaveExcelToStorageIntent(uri: Uri) {
+        with(requireActivity()) {
+            if (checkStoragePermission()) {
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                importExcelToStorageIntent.launch(intent)
+            }
+        }
     }
 
     private fun navToTransactionDelete() {

@@ -1,9 +1,11 @@
 package com.taxapprf.taxapp.ui.reports
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
@@ -114,7 +116,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         if (requireActivity().checkStoragePermission()) {
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "application/vnd.ms-excel"
-            startActivityForResult(intent, PICK_FILE_RESULT_CODE)
+            //resultLaunch.launch(intent)
         }
     }
 

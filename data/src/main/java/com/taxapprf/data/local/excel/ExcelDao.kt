@@ -1,10 +1,10 @@
 package com.taxapprf.data.local.excel
 
 import android.net.Uri
-import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.transaction.TransactionModel
-import kotlinx.coroutines.flow.Flow
+import com.taxapprf.domain.transaction.GetExcelToShareModel
+import com.taxapprf.domain.transaction.GetExcelToStorageModel
 
 interface ExcelDao {
-    fun sendReport(report: ReportModel, transactions: List<TransactionModel>): Flow<Uri>
+    suspend fun getExcelToShare(getExcelToShareModel: GetExcelToShareModel): Uri
+    suspend fun getExcelToStorage(getExcelToStorageModel: GetExcelToStorageModel): Uri
 }
