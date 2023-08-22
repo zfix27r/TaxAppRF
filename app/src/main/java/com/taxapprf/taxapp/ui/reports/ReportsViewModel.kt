@@ -5,13 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.account.AccountModel
-import com.taxapprf.domain.report.SaveReportsFromUriUseCase
+import com.taxapprf.domain.report.SaveExcelToFirebaseUseCase
 import com.taxapprf.domain.report.DeleteReportModel
 import com.taxapprf.domain.report.DeleteReportUseCase
 import com.taxapprf.domain.report.GetReportsModel
 import com.taxapprf.domain.report.GetReportsUseCase
 import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.report.SaveReportsFromUriModel
+import com.taxapprf.domain.report.SaveExcelToFirebaseModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReportsViewModel @Inject constructor(
     private val getReportsUseCase: GetReportsUseCase,
-    private val saveReportsFromUriUseCase: SaveReportsFromUriUseCase,
+    private val saveReportsFromUriUseCase: SaveExcelToFirebaseUseCase,
     private val deleteReportUseCase: DeleteReportUseCase,
 ) : BaseViewModel() {
     private val _reports = MutableLiveData<List<ReportModel>>()
@@ -70,7 +70,7 @@ class ReportsViewModel @Inject constructor(
 
     fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {
         intent?.data?.path?.let { uri ->
-            val saveReportsFromUriModel = SaveReportsFromUriModel(uri)
+            val saveReportsFromUriModel = SaveExcelToFirebaseModel(uri)
             saveReportsFromUriUseCase.execute(saveReportsFromUriModel)
                 .onStart { start() }
                 .catch { error(it) }

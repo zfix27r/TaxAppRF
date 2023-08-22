@@ -1,5 +1,5 @@
 package com.taxapprf.domain.report
 
-data class SaveReportsFromUriModel(
+data class SaveExcelToFirebaseModel(
     val filePath: String,
 )

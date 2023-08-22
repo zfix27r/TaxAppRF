@@ -112,6 +112,7 @@
     <string name="delete_dialog_ok">Да</string>
     <string name="delete_dialog_cancel">Отмена</string>
 
+
     <!-- transaction_list_item-->
     <string name="textCB">Курс ЦБ: </string>
     <string name="textSumRub">Налог, руб.: </string>
@@ -132,6 +133,11 @@
     <string name="transaction_detail_save_success">Сделка обновлена</string>
     <string name="transaction_detail_add_error_load_rate">Не удалось загрузить курс валюты. Сделка не добавлена!</string>
     <string name="transaction_detail_save_fail">Не удалось обновить сделку</string>
+    <string name="transaction_detail_error_name_too_long">Название слишком большое</string>
+    <string name="transaction_detail_error_sum_empty">Укажите сумму</string>
+    <string name="transaction_detail_error_sum_too_long">Сумма слишком большая</string>
+    <string name="transaction_detail_error_date_format">Введите дату в формате ДД/ММ/ГГГГ</string>
+    <string name="transaction_detail_error_date_range">Допустимы диапазон от 1992 года до сегодня</string>
 
 
     <!--ChangeAccountFragment-->

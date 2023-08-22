@@ -1,21 +1,18 @@
-package com.taxapprf.taxapp.ui.transactions
+package com.taxapprf.taxapp.ui.transactions.detail
 
+import android.text.Editable
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.transaction.TransactionType
+import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorEmailIncorrect
-import com.taxapprf.taxapp.ui.error.UIErrorNameEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorNameTooLong
-import com.taxapprf.taxapp.ui.error.UIErrorSumEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorSumTooLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.Year
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,38 +31,53 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
             field = value
         }
 
-    var transactionKey: String? = null
+    private var transactionKey: String? = null
     var date: String = getCurrentDate()
-        set(value) {
-            if (value.isEmpty()) error(UIErrorEmailEmpty())
-            if (value.isDateCorrect()) field = value
-            else error(UIErrorEmailIncorrect())
-        }
+
     var name: String = NAME_DEFAULT
-        set(value) {
-            if (value.isEmpty()) error(UIErrorNameEmpty())
-            else if (value.length > NAME_MAX_LENGTH) error(UIErrorNameTooLong())
-            else field = value
-        }
+
     var currency: String = CURRENCY_DEFAULT
     var type: String = TransactionType.TRADE.name
     var sum: Double = SUM_DEFAULT
-        set(value) {
-            if (value == 0.0) error(UIErrorSumEmpty())
-            else if (value > SUM_MAX_LENGTH) error(UIErrorSumTooLong())
-            else field = value
-        }
-    val year
-        get() = date.split("/")[2].toInt()
 
-    fun update(year: Int, month: Int, dayOfMonth: Int) {
-        date = "$dayOfMonth/$month/$year"
+    var hasError = false
+
+    fun checkName(cName: Editable?): Int? {
+        hasError = true
+        return if (cName != null && cName.length > NAME_MAX_LENGTH)
+            R.string.transaction_detail_error_name_too_long
+        else {
+            hasError = false
+            name = cName.toString()
+            null
+        }
     }
 
-    fun toSaveTransactionModel(): SaveTransactionModel {
+    fun checkDate(cDate: Editable?) = cDate.toString().saveDateOrGetStringMessage()
+    fun checkDate(year: Int, month: Int, dayOfMonth: Int) =
+        "$dayOfMonth/$month/$year".saveDateOrGetStringMessage()
+
+    fun checkSum(cSum: Editable?): Int? {
+        hasError = true
+        var checkedSum = 0.0
+
+        cSum?.let {
+            if (it.isNotEmpty()) checkedSum = it.toString().toDouble()
+        }
+
+        return if (checkedSum == 0.0) R.string.transaction_detail_error_sum_empty
+        else if (checkedSum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
+        else {
+            hasError = false
+            sum = checkedSum
+            null
+        }
+    }
+
+    fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
             accountKey = account.name,
-            yearKey = year.toString(),
+            yearKey = date.getYear().toString(),
             transactionKey = transaction?.key,
             date = date,
             name = name,
@@ -81,24 +93,40 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         }
     }
 
+    private fun String.getYear() = split("/")[2].toInt()
+
+    private fun String.saveDateOrGetStringMessage(): Int? {
+        hasError = true
+        return if (isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
+        else if (isDateFormatIncorrect()) R.string.transaction_detail_error_date_format
+        else {
+            hasError = false
+            date = this
+            null
+        }
+    }
 
     private fun getCurrentDate() = dateFormat.format(LocalDate.now())
 
-    private fun String.isDateCorrect(): Boolean {
+    private fun String.isDateFormatIncorrect(): Boolean {
+        var hasError = false
         try {
             LocalDate.parse(
                 this,
                 DateTimeFormatter
                     .ofPattern(DATE_PATTERN)
+                    .withLocale(Locale.ROOT)
                     .withResolverStyle(ResolverStyle.STRICT)
             )
         } catch (e: Exception) {
-            return false
+            hasError = true
         }
+        return hasError
+    }
 
-        if (year < DATE_YEAR_MIN && year > Year.now().value) return false
-
-        return true
+    private fun String.isDateRangeIncorrect(): Boolean {
+        val checkYear = getYear()
+        return checkYear < DATE_YEAR_MIN || checkYear > Year.now().value
     }
 
     companion object {
@@ -107,7 +135,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         const val SUM_DEFAULT = 0.0
 
         const val DATE_YEAR_MIN = 1992
-        const val DATE_PATTERN = "dd/MM/yyyy"
+        const val DATE_PATTERN = "dd/MM/uuuu"
 
         const val NAME_MAX_LENGTH = 16
         const val SUM_MAX_LENGTH = 99999999999

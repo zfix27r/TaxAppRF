@@ -1,6 +1,8 @@
 package com.taxapprf.data.local.excel
 
 import android.content.Context
+import android.net.Uri
+import com.taxapprf.domain.report.SaveExcelToFirebaseModel
 import com.taxapprf.domain.transaction.GetExcelToShareModel
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -29,4 +31,8 @@ class ExcelDaoImpl @Inject constructor(
         with(getExcelToStorageModel) {
             ExcelCreator(context).getExcelToStorage(report, transactions, getExcelFileName())
         }
+
+    override suspend fun saveExcel(saveExcelToFirebaseModel: SaveExcelToFirebaseModel): Uri {
+        TODO("Not yet implemented")
+    }
 }

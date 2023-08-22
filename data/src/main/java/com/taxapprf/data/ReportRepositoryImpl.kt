@@ -1,13 +1,12 @@
 package com.taxapprf.data
 
-import android.net.Uri
 import com.taxapprf.data.local.excel.ExcelDaoImpl
+import com.taxapprf.data.local.excel.ExcelParcel
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.domain.ReportRepository
 import com.taxapprf.domain.report.DeleteReportModel
 import com.taxapprf.domain.report.GetReportsModel
-import com.taxapprf.domain.report.GetReportsUriModel
-import com.taxapprf.domain.report.SaveReportsFromUriModel
+import com.taxapprf.domain.report.SaveExcelToFirebaseModel
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -22,25 +21,19 @@ class ReportRepositoryImpl @Inject constructor(
         emit(firebaseReportDao.deleteReport(deleteReportModel))
     }
 
-    override fun saveReportsFromUri(saveReportsFromUriModel: SaveReportsFromUriModel) = flow {
-        /*        ExcelParcel(storagePath)
-                    .parse()
-                    .map { transaction ->
-                        getCBRRate(transaction.date, transaction.currency).collectLatest {
-                            transaction.rateCentralBank = it
-                            transaction.calculateSumRub()
-                            firebaseAPI.saveTransaction(transaction)
-                            firebaseAPI.sumTaxes()
-                            emit(Unit)
-                        }
-                    }*/
+    override fun saveReportsFromExcel(saveReportsFromExcelModel: SaveExcelToFirebaseModel) = flow {
+        ExcelParcel(saveReportsFromExcelModel.filePath)
+            .parse()
+/*            .map { transaction ->
+                getCBRRate(transaction.date, transaction.currency).collectLatest {
+                    transaction.rateCentralBank = it
+                    transaction.calculateSumRub()
+                    firebaseAPI.saveTransaction(transaction)
+                    firebaseAPI.sumTaxes()
+                    emit(Unit)
+                }
+            }*/
 
         emit(Unit)
-    }
-
-    override fun getReportsUri(getReportsUriModel: GetReportsUriModel) = flow<Uri> {
-        with(getReportsUriModel) {
-//            excelDao.sendReport(report, transactions)
-        }
     }
 }

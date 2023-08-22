@@ -6,15 +6,14 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.textfield.TextInputEditText
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
 import com.taxapprf.taxapp.ui.getTransactionType
-import com.taxapprf.taxapp.ui.transactions.TransactionDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
@@ -74,16 +73,30 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
         binding.buttonTransactionDetailDatePicker.setOnClickListener {
             showDatePicker {
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    viewModel.update(year, month, dayOfMonth)
-                    binding.editTextTransactionDetailDate.setText(viewModel.date)
+                    viewModel.checkDate(year, month, dayOfMonth)
+                    updateDateText()
                 }
             }
         }
 
         binding.buttonTransactionDetailSave.setOnClickListener {
-            // TODO переместить во вьюмодел фрагмента? Привязка к жизненному циклу. Запускать глобал флоу?
-            mainViewModel.saveTransaction(viewModel.toSaveTransactionModel())
-            findNavController().popBackStack()
+            with(binding) {
+                viewModel
+                    .checkName(editTextTransactionDetailName.text)
+                    .updateEditError(editTextTransactionDetailName)
+                viewModel
+                    .checkDate(editTextTransactionDetailDate.text)
+                    .updateEditError(editTextTransactionDetailDate)
+                viewModel
+                    .checkSum(editTextTransactionDetailSum.text)
+                    .updateEditError(editTextTransactionDetailSum)
+            }
+
+            if (!viewModel.hasError) {
+                // TODO переместить во вьюмодел фрагмента? Привязка к жизненному циклу. Запускать глобал флоу?
+                mainViewModel.saveTransaction(viewModel.getSaveTransactionModel())
+                findNavController().popBackStack()
+            }
         }
 
         binding.spinnerTransactionDetailType.onItemSelectedListener =
@@ -118,26 +131,6 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-
-        binding.editTextTransactionDetailSum.doOnTextChanged { text, _, _, _ ->
-            var sum = 0.0
-
-            text?.let {
-                if (it.isNotEmpty()) {
-                    sum = it.toString().toDouble()
-                }
-            }
-
-            viewModel.sum = sum
-        }
-
-        binding.editTextTransactionDetailName.doOnTextChanged { text, _, _, _ ->
-            text?.let { viewModel.name = it.toString() }
-        }
-
-        binding.editTextTransactionDetailDate.doOnTextChanged { text, _, _, _ ->
-            text?.let { viewModel.date = it.toString() }
-        }
     }
 
     override fun onSuccess() {
@@ -148,10 +141,28 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
     private fun updateUI() {
         with(viewModel) {
             binding.editTextTransactionDetailName.setText(name)
-            binding.editTextTransactionDetailDate.setText(date)
-            if (sum > 0) binding.editTextTransactionDetailSum.setText(sum.toString())
+            updateDateText()
+            updateSumText()
             updateCurrency(currency)
             updateType(type)
+        }
+    }
+
+    private fun updateDateText() {
+        binding.editTextTransactionDetailDate.setText(viewModel.date)
+    }
+
+    private fun updateSumText() {
+        if (viewModel.sum > 0)
+            binding.editTextTransactionDetailSum.setText(viewModel.sum.toString())
+    }
+
+    private fun Int?.updateEditError(edit: TextInputEditText) {
+        println("2222222222  " + this)
+        this?.let {
+            edit.error = getString(it)
+        } ?: run {
+            edit.error = null
         }
     }
 
