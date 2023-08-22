@@ -8,7 +8,9 @@ import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.format
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -23,15 +25,16 @@ class CurrencyConverterViewModel @Inject constructor(
     val sum = MutableLiveData<Double>()
     val sumRub = MutableLiveData<Double>()
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            getTodayCBRRateUseCase.execute((Calendar.getInstance().time).format())
-                .collectLatest {
-                    converter.currencies = it
-                    updateRate()
-                    setSum(converter.sum)
-                }
-        }
+    fun loading() = viewModelScope.launch(Dispatchers.IO) {
+        getTodayCBRRateUseCase.execute((Calendar.getInstance().time).format())
+            .onStart { start() }
+            .catch { error(it) }
+            .collectLatest {
+                converter.currencies = it
+                updateRate()
+                setSum(converter.sum)
+                success()
+            }
     }
 
     fun setSum(newSum: Double) {

@@ -156,6 +156,7 @@
     <string name="delete_name">Удалить</string>
     <string name="data_error_internal">Внутренняя ошибка</string>
     <string name="data_external_error">внешняя ошибка</string>
+    <string name="data_error">Ошибка</string>
     <string name="data_error_excel">ошибка экселя</string>
     <string name="data_error_socket_timeout">Превышено время ожидания. Повторите попытку.</string>
     <string name="currency_converter_sum_rub">RUB</string>

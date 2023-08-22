@@ -8,8 +8,6 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentSignUpBinding
 import com.taxapprf.taxapp.ui.BaseFragment
-import com.taxapprf.taxapp.ui.getErrorDescription
-import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,11 +29,6 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
         mainViewModel.loading()
         drawer.showAuth()
         navToReports()
-    }
-
-    override fun onError(t: Throwable) {
-        super.onError(t)
-        binding.root.showSnackBar(t.getErrorDescription())
     }
 
     private fun signUp() {

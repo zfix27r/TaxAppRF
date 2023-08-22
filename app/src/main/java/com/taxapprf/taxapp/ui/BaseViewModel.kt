@@ -52,11 +52,6 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
         _state.postValue(SuccessImport)
     }
 
-    protected fun successDelete() {
-        loaded()
-        _state.postValue(SuccessDelete)
-    }
-
     private fun loaded() {
         isLock = false
         if (isLoadingDelayTimeout) isLoadingDelayTimeout = false

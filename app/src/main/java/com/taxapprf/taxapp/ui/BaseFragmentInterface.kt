@@ -17,12 +17,11 @@ interface BaseFragmentInterface {
     fun BaseViewModel.attach() {
         baseViewModel = this
         baseViewModel.observeState()
+        mainActivity.binding.appBarMain.content.loadingRetry.setOnClickListener { onLoadingRetry() }
     }
 
     fun BaseViewModel.attachWithAccount() {
-        baseViewModel = this
-        baseViewModel.observeState()
-
+        attach()
         mainViewModel.observeAccount()
     }
 
@@ -55,6 +54,10 @@ interface BaseFragmentInterface {
 
     fun onLoading() {
         mainActivity.onLoadingStart()
+    }
+
+    fun onLoadingRetry() {
+
     }
 
     fun onError(t: Throwable) {
