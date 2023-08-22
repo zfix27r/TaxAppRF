@@ -1,6 +1,6 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.error.cbr.DataErrorCBRBodyEmpty
+import com.taxapprf.data.error.cbr.DataErrorCBREmpty
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.domain.CurrencyRepository
 import com.taxapprf.domain.currency.CurrencyModel
@@ -22,6 +22,6 @@ class CurrencyRepositoryImpl @Inject constructor(
                     )
                 } ?: listOf<CurrencyModel>()
             )
-        } ?: throw DataErrorCBRBodyEmpty()
+        } ?: throw DataErrorCBREmpty()
     }
 }

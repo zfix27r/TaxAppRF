@@ -4,14 +4,13 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.AccountModel
-import com.taxapprf.domain.report.SaveExcelToFirebaseUseCase
 import com.taxapprf.domain.report.DeleteReportModel
 import com.taxapprf.domain.report.DeleteReportUseCase
 import com.taxapprf.domain.report.GetReportsModel
 import com.taxapprf.domain.report.GetReportsUseCase
 import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.report.SaveExcelToFirebaseModel
+import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
+import com.taxapprf.domain.transaction.SaveTransactionsFromExcelUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReportsViewModel @Inject constructor(
     private val getReportsUseCase: GetReportsUseCase,
-    private val saveReportsFromUriUseCase: SaveExcelToFirebaseUseCase,
+    private val saveReportsFromUriUseCase: SaveTransactionsFromExcelUseCase,
     private val deleteReportUseCase: DeleteReportUseCase,
 ) : BaseViewModel() {
     private val _reports = MutableLiveData<List<ReportModel>>()
@@ -42,9 +41,8 @@ class ReportsViewModel @Inject constructor(
                     ?.let { error(it) }
                     ?: run {
                         result.getOrNull()?.let { results ->
-                            if (results.isNotEmpty()) _reports.postValue(results)
-                            else listOf<List<AccountModel>>()
-                        } ?: run { listOf<List<AccountModel>>() }
+                            _reports.postValue(results)
+                        }
                     }
 
                 success()
@@ -70,7 +68,7 @@ class ReportsViewModel @Inject constructor(
 
     fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {
         intent?.data?.path?.let { uri ->
-            val saveReportsFromUriModel = SaveExcelToFirebaseModel(uri)
+            val saveReportsFromUriModel = SaveTransactionsFromExcelModel(account.name, uri)
             saveReportsFromUriUseCase.execute(saveReportsFromUriModel)
                 .onStart { start() }
                 .catch { error(it) }

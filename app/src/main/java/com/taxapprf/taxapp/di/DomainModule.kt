@@ -9,7 +9,7 @@ import com.taxapprf.domain.account.SwitchAccountUseCase
 import com.taxapprf.domain.currency.GetCurrencyRateTodayFromCBRUseCase
 import com.taxapprf.domain.report.DeleteReportUseCase
 import com.taxapprf.domain.report.GetReportsUseCase
-import com.taxapprf.domain.report.SaveExcelToFirebaseUseCase
+import com.taxapprf.domain.transaction.SaveTransactionsFromExcelUseCase
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
@@ -78,8 +78,8 @@ object DomainModule {
         GetReportsUseCase(repositoryImpl)
 
     @Provides
-    fun provideSaveReportsFromUriUseCase(repositoryImpl: ReportRepositoryImpl) =
-        SaveExcelToFirebaseUseCase(repositoryImpl)
+    fun provideSaveTransactionsFromExcelUseCase(repositoryImpl: TransactionRepositoryImpl) =
+        SaveTransactionsFromExcelUseCase(repositoryImpl)
 
     @Provides
     fun provideDeleteReportUseCase(repositoryImpl: ReportRepositoryImpl) =

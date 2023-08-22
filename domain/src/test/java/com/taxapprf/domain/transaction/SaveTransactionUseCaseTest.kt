@@ -46,7 +46,7 @@ class SaveTransactionUseCaseTest {
             sum = 100.0,
             sumRub = 7500.0
         )
-        Mockito.`when`(mockRepository.saveTransactionModel(saveTransactionModel)).thenReturn(flowOf(Unit))
+        Mockito.`when`(mockRepository.saveTransaction(saveTransactionModel)).thenReturn(flowOf(Unit))
         val result = saveTransactionUseCase.execute(saveTransactionModel).toList()
         Assertions.assertEquals(1, result.size)
         Assertions.assertEquals(Unit, result.first())
@@ -64,7 +64,7 @@ class SaveTransactionUseCaseTest {
             sumRub = 15000.0
         )
         val expectedError = Exception("Failed to save transaction")
-        Mockito.`when`(mockRepository.saveTransactionModel(saveTransactionModel)).thenThrow(expectedError)
+        Mockito.`when`(mockRepository.saveTransaction(saveTransactionModel)).thenThrow(expectedError)
         var error: Throwable? = null
         try {
             saveTransactionUseCase.execute(saveTransactionModel).toList()

@@ -9,15 +9,14 @@ import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.report.DeleteReportModel
 import com.taxapprf.domain.report.GetReportModel
 import com.taxapprf.domain.report.SaveReportModel
+import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetExcelToShareModel
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
-import com.taxapprf.domain.transaction.TransactionType
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-import kotlin.math.abs
 
 class TransactionRepositoryImpl @Inject constructor(
     private val firebaseTransactionDao: FirebaseTransactionDaoImpl,
@@ -28,16 +27,18 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getTransactions(getTransactionModel: GetTransactionsModel) =
         firebaseTransactionDao.getTransactions(getTransactionModel)
 
-    override fun saveTransactionModel(saveTransactionModel: SaveTransactionModel) = flow {
-        with(saveTransactionModel) {
-            updateCBRRate()
-            updateTax()
+    override fun saveTransaction(saveTransactionModel: SaveTransactionModel) = flow {
+        saveTransactionModel.saveAndUpdatePath()
+        emit(Unit)
+    }
 
-            updatePathTransaction()
+    private suspend fun SaveTransactionModel.saveAndUpdatePath() {
+        updateCBRRate()
+        tax = updateTax(sum, type, rateCBR)
 
-            firebaseTransactionDao.saveTransaction(saveTransactionModel)
-            emit(Unit)
-        }
+        updatePathTransaction()
+
+        firebaseTransactionDao.saveTransaction(this)
     }
 
     private suspend fun SaveTransactionModel.updatePathTransaction() {
@@ -76,6 +77,14 @@ class TransactionRepositoryImpl @Inject constructor(
         emit(excelDao.getExcelToStorage(getExcelToStorageModel))
     }
 
+    override fun saveTransactionsFromExcel(saveTransactionsFromExcelModel: SaveTransactionsFromExcelModel) =
+        flow {
+            excelDao.saveExcel(saveTransactionsFromExcelModel)
+                .map { it.saveAndUpdatePath() }
+
+            emit(Unit)
+        }
+
     private suspend fun SaveTransactionModel.incrementAndSave(
         accountKey: String,
         yearKey: String
@@ -95,21 +104,5 @@ class TransactionRepositoryImpl @Inject constructor(
             ?.getCurrencyRate(currency)
             ?: throw DataErrorCBR()
         rateCBR = rate.roundUpToTwo()
-    }
-
-    private fun SaveTransactionModel.updateTax() {
-        var newSum = sum
-        val k = when (type) {
-            TransactionType.COMMISSION.name -> 0.0
-            TransactionType.FUNDING_WITHDRAWAL.name -> {
-                newSum = abs(sum)
-                -1.0
-            }
-
-            else -> 1.0
-        }
-
-        val newTax = newSum * rateCBR * 0.13 * k
-        tax = newTax.roundUpToTwo()
     }
 }

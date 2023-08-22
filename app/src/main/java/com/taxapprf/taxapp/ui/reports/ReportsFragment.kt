@@ -1,6 +1,5 @@
 package com.taxapprf.taxapp.ui.reports
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -49,20 +48,12 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         viewModel.loadReports()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            PICK_FILE_RESULT_CODE -> {
-                viewModel.saveReportsFromExcel(data)
-            }
-        }
-    }
-
     private fun prepToolbar() {
         toolbar.updateToolbar(getString(R.string.taxes_name))
         toolbar.updateMenu(R.menu.reports_toolbar) {
             when (it.itemId) {
                 R.id.toolbar_import_excel -> {
-                    navToSystemStorage()
+                    launchExportExcelToFirebaseIntent()
                     true
                 }
 
@@ -112,11 +103,18 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         findNavController().navigate(R.id.action_reports_to_delete_dialog)
     }
 
-    private fun navToSystemStorage() {
-        if (requireActivity().checkStoragePermission()) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "application/vnd.ms-excel"
-            //resultLaunch.launch(intent)
+    private val exportExcelToFirebaseIntent =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            viewModel.saveReportsFromExcel(it.data)
+        }
+
+    private fun launchExportExcelToFirebaseIntent() {
+        with(requireActivity()) {
+            if (checkStoragePermission()) {
+                val intent = Intent(Intent.ACTION_GET_CONTENT)
+                intent.type = "application/vnd.ms-excel"
+                exportExcelToFirebaseIntent.launch(intent)
+            }
         }
     }
 
@@ -127,9 +125,5 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
     private fun navToTransactionDetail() {
         findNavController().navigate(R.id.action_reports_to_transaction_detail)
-    }
-
-    companion object {
-        private const val PICK_FILE_RESULT_CODE = 1001
     }
 }
