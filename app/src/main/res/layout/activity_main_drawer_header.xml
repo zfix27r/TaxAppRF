@@ -21,7 +21,6 @@
             android:layout_marginTop="@dimen/offset_16"
             android:contentDescription="@string/nav_header_desc"
             android:padding="@dimen/offset_8"
-            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_payment_tax_invoice_document_calculator_icon_188684"
@@ -109,5 +108,6 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/activity_main_drawer_header_item" />
+        tools:listitem="@layout/activity_main_drawer_header_item"
+        tools:visibility="visible" />
 </LinearLayout>

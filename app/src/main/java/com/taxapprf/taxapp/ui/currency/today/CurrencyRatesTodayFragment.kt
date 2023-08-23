@@ -16,14 +16,18 @@ class CurrencyRatesTodayFragment : BaseFragment(R.layout.fragment_rates_today) {
     private val adapter = CurrencyRatesTodayAdapter()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.loading()
 
         toolbar.updateMenu()
 
         binding.recyclerviewCurrencies.adapter = adapter
 
         viewModel.attach()
-        viewModel.currencies.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        viewModel.currencies.observe(viewLifecycleOwner) { adapter.submitList(it) }
+    }
+
+    override fun onLoadingRetry() {
+        super.onLoadingRetry()
+        viewModel.loading()
     }
 }

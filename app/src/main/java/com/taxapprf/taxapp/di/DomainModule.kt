@@ -9,12 +9,13 @@ import com.taxapprf.domain.account.SwitchAccountUseCase
 import com.taxapprf.domain.currency.GetCurrencyRateTodayFromCBRUseCase
 import com.taxapprf.domain.report.DeleteReportUseCase
 import com.taxapprf.domain.report.GetReportsUseCase
-import com.taxapprf.domain.excel.SaveReportsFromExcelUseCase
+import com.taxapprf.domain.transaction.SaveTransactionsFromExcelUseCase
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.account.GetAccountsUseCase
-import com.taxapprf.domain.excel.SendExcelReportUseCase
+import com.taxapprf.domain.transaction.GetExcelToShareUseCase
+import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
 import com.taxapprf.domain.user.GetUserUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
 import com.taxapprf.domain.user.SignInUseCase
@@ -53,11 +54,11 @@ object DomainModule {
         GetAccountsUseCase(repositoryImpl)
 
     @Provides
-    fun provideChangeAccountUseCase(repositoryImpl: AccountRepositoryImpl) =
+    fun provideSwitchAccountUseCase(repositoryImpl: AccountRepositoryImpl) =
         SwitchAccountUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetTodayCBRRateUseCase(repositoryImpl: CurrencyRepositoryImpl) =
+    fun provideGetCurrencyRateTodayFromCBRUseCase(repositoryImpl: CurrencyRepositoryImpl) =
         GetCurrencyRateTodayFromCBRUseCase(repositoryImpl)
 
     @Provides
@@ -73,19 +74,22 @@ object DomainModule {
         DeleteTransactionUseCase(repositoryImpl)
 
     @Provides
-    fun provideGetTaxesUseCase(repositoryImpl: ReportRepositoryImpl) =
+    fun provideGetReportsUseCase(repositoryImpl: ReportRepositoryImpl) =
         GetReportsUseCase(repositoryImpl)
 
     @Provides
-    fun provideSaveTaxesFromExcelUseCase(repositoryImpl: ReportRepositoryImpl) =
-        SaveReportsFromExcelUseCase(repositoryImpl)
+    fun provideSaveTransactionsFromExcelUseCase(repositoryImpl: TransactionRepositoryImpl) =
+        SaveTransactionsFromExcelUseCase(repositoryImpl)
 
     @Provides
-    fun provideDeleteTaxUseCase(repositoryImpl: ReportRepositoryImpl) =
+    fun provideDeleteReportUseCase(repositoryImpl: ReportRepositoryImpl) =
         DeleteReportUseCase(repositoryImpl)
 
     @Provides
-    fun provide(reportRepositoryImpl: ReportRepositoryImpl) =
-        SendExcelReportUseCase(reportRepositoryImpl)
+    fun provideGetExcelToStorageUseCase(transactionRepositoryImpl: TransactionRepositoryImpl) =
+        GetExcelToStorageUseCase(transactionRepositoryImpl)
 
+    @Provides
+    fun provideGetExcelToShareUseCase(transactionRepositoryImpl: TransactionRepositoryImpl) =
+        GetExcelToShareUseCase(transactionRepositoryImpl)
 }

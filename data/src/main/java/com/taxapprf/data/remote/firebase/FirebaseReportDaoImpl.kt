@@ -35,7 +35,6 @@ class FirebaseReportDaoImpl(
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        println(error)
                         trySendBlocking(Result.failure(DataErrorExternalGetReport(error.message)))
                     }
                 }
@@ -61,11 +60,11 @@ class FirebaseReportDaoImpl(
     override suspend fun deleteReport(deleteReportModel: DeleteReportModel) {
         safeCall {
             with(deleteReportModel) {
-                fb.getReportPath(accountKey, year)
+                fb.getReportPath(accountKey, yearKey)
                     .setValue(null)
                     .await()
 
-                fb.getTransactionsPath(accountKey, year)
+                fb.getTransactionsPath(accountKey, yearKey)
                     .setValue(null)
                     .await()
             }

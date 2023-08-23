@@ -13,20 +13,30 @@ import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.data.error.DataErrorExcel
+import com.taxapprf.data.error.DataErrorExternal
+import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.error.DataErrorUser
+import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
+import com.taxapprf.data.error.DataErrorUserWrongPassword
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
-import com.taxapprf.taxapp.ui.Loading
 import com.taxapprf.taxapp.ui.Error
+import com.taxapprf.taxapp.ui.Loading
 import com.taxapprf.taxapp.ui.MainDrawer
 import com.taxapprf.taxapp.ui.MainToolbar
 import com.taxapprf.taxapp.ui.SignOut
 import com.taxapprf.taxapp.ui.Success
-import com.taxapprf.taxapp.ui.getErrorDescription
+import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
+import com.taxapprf.taxapp.ui.error.UIErrorEmailIncorrect
+import com.taxapprf.taxapp.ui.error.UIErrorNameEmpty
+import com.taxapprf.taxapp.ui.error.UIErrorPasswordLength
+import com.taxapprf.taxapp.ui.error.UIErrorPhoneEmpty
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -78,8 +88,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         drawer.recycler.adapter = accountsAdapter
 
-        binding.appBarMain.content.loadingRetry.setOnClickListener { viewModel.loading() }
-
         viewModel.observeState()
         viewModel.observeUser()
         viewModel.observeAccounts()
@@ -105,18 +113,36 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    fun onLoadingStop() {
+    private fun onLoadingStop() {
         binding.appBarMain.content.loading.isVisible = false
     }
 
     fun onLoadingError(t: Throwable) {
         onLoadingStop()
-        with(binding.appBarMain.content) {
-            // TODO() доработать реакцию на ошибки
-            //loadingErrorGroup.isVisible = true
-            binding.root.showSnackBar(t.getErrorDescription())
-            //loadingErrorMessage.setText(t.getErrorDescription())
+        when (t) {
+            is SocketTimeoutException -> R.string.data_error_socket_timeout.showErrorInShackBar()
+            is DataErrorUser -> R.string.auth_error.showErrorInShackBar()
+            is DataErrorInternal -> R.string.data_error_internal.showErrorInShackBar()
+            is DataErrorExternal -> R.string.data_external_error.showErrorInShackBar()
+            is DataErrorExcel -> R.string.data_error_excel.showErrorInShackBar()
+            is UIErrorNameEmpty -> R.string.error_name_empty.showErrorInShackBar()
+            is UIErrorPhoneEmpty -> R.string.error_phone_empty.showErrorInShackBar()
+            is UIErrorEmailEmpty -> R.string.error_email_empty.showErrorInShackBar()
+            is UIErrorEmailIncorrect -> R.string.error_email_incorrect.showErrorInShackBar()
+            is UIErrorPasswordLength -> R.string.error_password_length.showErrorInShackBar()
+            is DataErrorUserWrongPassword -> R.string.error_sign_in.showErrorInShackBar()
+            is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use.showErrorInShackBar()
+            else -> R.string.data_error.showErrorWithRepeat()
         }
+    }
+
+    private fun Int.showErrorWithRepeat() {
+        binding.appBarMain.content.loadingErrorGroup.isVisible = true
+        binding.appBarMain.content.loadingErrorMessage.text = getString(this)
+    }
+
+    private fun Int.showErrorInShackBar() {
+        binding.root.showSnackBar(this)
     }
 
     fun onLoadingSuccess() {

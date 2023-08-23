@@ -17,12 +17,11 @@ interface BaseFragmentInterface {
     fun BaseViewModel.attach() {
         baseViewModel = this
         baseViewModel.observeState()
+        mainActivity.binding.appBarMain.content.loadingRetry.setOnClickListener { onLoadingRetry() }
     }
 
     fun BaseViewModel.attachWithAccount() {
-        baseViewModel = this
-        baseViewModel.observeState()
-
+        attach()
         mainViewModel.observeAccount()
     }
 
@@ -43,6 +42,7 @@ interface BaseFragmentInterface {
                 is Success -> onSuccess()
                 is SignOut -> mainViewModel.signOut()
                 is SuccessShare -> onSuccessShare()
+                is SuccessImport -> onSuccessImport()
                 is SuccessDelete -> onSuccessDelete()
             }
         }
@@ -56,6 +56,10 @@ interface BaseFragmentInterface {
         mainActivity.onLoadingStart()
     }
 
+    fun onLoadingRetry() {
+
+    }
+
     fun onError(t: Throwable) {
         mainActivity.onLoadingError(t)
     }
@@ -65,6 +69,10 @@ interface BaseFragmentInterface {
     }
 
     fun onSuccessShare() {
+        mainActivity.onLoadingSuccess()
+    }
+
+    fun onSuccessImport() {
         mainActivity.onLoadingSuccess()
     }
 

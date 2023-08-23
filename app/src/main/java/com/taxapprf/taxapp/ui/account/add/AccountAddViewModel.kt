@@ -18,7 +18,7 @@ import javax.inject.Inject
 class AccountAddViewModel @Inject constructor(
     private val switchAccountUseCase: SwitchAccountUseCase
 ) : BaseViewModel() {
-    var oldAccountModel: AccountModel? = null
+    private var oldAccountModel: AccountModel? = null
     fun saveAccount(accountName: String) {
         oldAccountModel?.let { oldAccountModel ->
             if (accountName.isErrorInputAccountChecker()) return

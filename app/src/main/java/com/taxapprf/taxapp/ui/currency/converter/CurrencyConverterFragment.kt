@@ -22,6 +22,7 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.loading()
 
         toolbar.updateMenu()
 
@@ -42,21 +43,23 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
     }
 
     private fun setListeners() {
-        binding.editCurrencyConverterSum.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                binding.root.hideKeyboard()
-                val newSum = binding.editCurrencyConverterSum.text.toString()
-                if (newSum != "") viewModel.setSum(newSum.toDouble())
+        binding.editCurrencyConverterSum.onFocusChangeListener =
+            OnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    binding.root.hideKeyboard()
+                    val newSum = binding.editCurrencyConverterSum.text.toString()
+                    if (newSum != "") viewModel.setSum(newSum.toDouble())
+                }
             }
-        }
 
-        binding.editCurrencyConverterSumRub.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                binding.root.hideKeyboard()
-                val newSum = binding.editCurrencyConverterSumRub.text.toString()
-                if (newSum != "") viewModel.setSumRub(newSum.toDouble())
+        binding.editCurrencyConverterSumRub.onFocusChangeListener =
+            OnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    binding.root.hideKeyboard()
+                    val newSum = binding.editCurrencyConverterSumRub.text.toString()
+                    if (newSum != "") viewModel.setSumRub(newSum.toDouble())
+                }
             }
-        }
 
         binding.spinnerCurrencyConverterSum.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
@@ -84,5 +87,10 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
         binding.spinnerCurrencyConverterSum.setSelection(
             currencies.indexOf(resources.getString(R.string.transaction_currency_usd))
         )
+    }
+
+    override fun onLoadingRetry() {
+        super.onLoadingRetry()
+        viewModel.loading()
     }
 }

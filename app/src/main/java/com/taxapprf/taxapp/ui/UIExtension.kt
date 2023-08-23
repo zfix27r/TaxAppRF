@@ -11,20 +11,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
-import com.taxapprf.data.error.DataErrorExcel
-import com.taxapprf.data.error.DataErrorExternal
-import com.taxapprf.data.error.DataErrorInternal
-import com.taxapprf.data.error.DataErrorUser
-import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
-import com.taxapprf.data.error.DataErrorUserWrongPassword
 import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorEmailIncorrect
-import com.taxapprf.taxapp.ui.error.UIErrorNameEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorPasswordLength
-import com.taxapprf.taxapp.ui.error.UIErrorPhoneEmpty
-import java.net.SocketTimeoutException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -61,28 +49,6 @@ fun Date.format(): String {
 }
 
 fun Double.format() = floor(this * 100.0) / 100.0
-
-fun Throwable.getErrorDescription(): Int {
-    // TODO дебаг, удалить вывод ниже
-    println(this.message)
-    println(this)
-
-    return when (this) {
-        is SocketTimeoutException -> R.string.data_error_socket_timeout
-        is DataErrorUser -> R.string.auth_error
-        is DataErrorInternal -> R.string.data_error_internal
-        is DataErrorExternal -> R.string.data_external_error
-        is DataErrorExcel -> R.string.data_error_excel
-        is UIErrorNameEmpty -> R.string.error_name_empty
-        is UIErrorPhoneEmpty -> R.string.error_phone_empty
-        is UIErrorEmailEmpty -> R.string.error_email_empty
-        is UIErrorEmailIncorrect -> R.string.error_email_incorrect
-        is UIErrorPasswordLength -> R.string.error_password_length
-        is DataErrorUserWrongPassword -> R.string.error_sign_in
-        is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use
-        else -> throw this
-    }
-}
 
 fun Activity.share(uri: Uri) {
     val emailIntent = Intent(Intent.ACTION_SEND)

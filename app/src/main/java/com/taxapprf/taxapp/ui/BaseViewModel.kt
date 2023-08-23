@@ -47,9 +47,9 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
         _state.postValue(SuccessShare)
     }
 
-    protected fun successDelete() {
+    protected fun successExport() {
         loaded()
-        _state.postValue(SuccessDelete)
+        _state.postValue(SuccessImport)
     }
 
     private fun loaded() {

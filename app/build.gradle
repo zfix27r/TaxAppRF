@@ -57,13 +57,6 @@ dependencies {
 
     implementation "androidx.legacy:legacy-support-v4:$androidxLegacyVersion"
 
-    implementation "com.google.firebase:firebase-bom:$firebaseBomVersion"
-    implementation "com.google.firebase:firebase-database-ktx:$firebaseDatabaseVersrion"
-    implementation "com.google.firebase:firebase-auth-ktx:$firebaseAuthVersrion"
-
-    implementation "com.squareup.retrofit2:retrofit:$retrofit2Version"
-    implementation "com.squareup.retrofit2:converter-simplexml:$retrofit2Version"
-
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
 

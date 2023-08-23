@@ -4,10 +4,13 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.excel.SendExcelReportUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
+import com.taxapprf.domain.transaction.GetExcelToShareModel
+import com.taxapprf.domain.transaction.GetExcelToShareUseCase
+import com.taxapprf.domain.transaction.GetExcelToStorageModel
+import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
 import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.GetTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
@@ -25,7 +28,8 @@ import javax.inject.Inject
 class TransactionsViewModel @Inject constructor(
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
-    private val sendExcelReportUseCase: SendExcelReportUseCase,
+    private val getExcelToShareUseCase: GetExcelToShareUseCase,
+    private val getExcelToStorageUseCase: GetExcelToStorageUseCase,
 ) : BaseViewModel() {
     lateinit var report: ReportModel
 
@@ -33,7 +37,7 @@ class TransactionsViewModel @Inject constructor(
     val transactions: LiveData<List<TransactionModel>> = _transactions
 
     var deleteTransaction: TransactionModel? = null
-    var emailUri: Uri? = null
+    lateinit var excelUri: Uri
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
         val getTransactionsModel = GetTransactionsModel(account.name, report.year)
@@ -67,13 +71,29 @@ class TransactionsViewModel @Inject constructor(
         }
     }
 
-    fun getExcelReportUri() = viewModelScope.launch(Dispatchers.IO) {
+    fun getExcelToStorage() = viewModelScope.launch(Dispatchers.IO) {
         transactions.value?.let { transactions ->
-            sendExcelReportUseCase.execute(report, transactions)
+            val getExcelToStorageModel = GetExcelToStorageModel(report, transactions)
+
+            getExcelToStorageUseCase.execute(getExcelToStorageModel)
                 .onStart { start() }
                 .catch { error(it) }
                 .collectLatest {
-                    emailUri = it
+                    excelUri = it
+                    successExport()
+                }
+        }
+    }
+
+    fun getExcelToShare() = viewModelScope.launch(Dispatchers.IO) {
+        transactions.value?.let { transactions ->
+            val getExcelToShareModel = GetExcelToShareModel(report, transactions)
+
+            getExcelToShareUseCase.execute(getExcelToShareModel)
+                .onStart { start() }
+                .catch { error(it) }
+                .collectLatest {
+                    excelUri = it
                     successShare()
                 }
         }

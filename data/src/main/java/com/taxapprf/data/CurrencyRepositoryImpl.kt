@@ -1,6 +1,6 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.error.cbr.DataErrorCBRBodyEmpty
+import com.taxapprf.data.error.cbr.DataErrorCBREmpty
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.domain.CurrencyRepository
 import com.taxapprf.domain.currency.CurrencyModel
@@ -11,7 +11,7 @@ import javax.inject.Inject
 class CurrencyRepositoryImpl @Inject constructor(
     private val cbrapi: CBRAPI,
 ) : CurrencyRepository {
-    override fun getTodayCurrency(date: String) = flow {
+    override fun getTodayCurrency(date: String) = flow<List<CurrencyModel>> {
         cbrapi.getCurrency(date).execute().body()?.let { body ->
             emit(
                 body.currencyList?.mapNotNull {
@@ -20,8 +20,8 @@ class CurrencyRepositoryImpl @Inject constructor(
                         code = it.charCode,
                         rate = it.value
                     )
-                } ?: listOf<CurrencyModel>()
+                } ?: throw DataErrorCBREmpty()
             )
-        } ?: throw DataErrorCBRBodyEmpty()
+        } ?: throw DataErrorCBREmpty()
     }
 }
