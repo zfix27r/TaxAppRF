@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    fun onLoadingStop() {
+    private fun onLoadingStop() {
         binding.appBarMain.content.loading.isVisible = false
     }
 

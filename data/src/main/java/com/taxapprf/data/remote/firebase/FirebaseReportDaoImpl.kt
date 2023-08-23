@@ -35,7 +35,6 @@ class FirebaseReportDaoImpl(
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        println(error)
                         trySendBlocking(Result.failure(DataErrorExternalGetReport(error.message)))
                     }
                 }

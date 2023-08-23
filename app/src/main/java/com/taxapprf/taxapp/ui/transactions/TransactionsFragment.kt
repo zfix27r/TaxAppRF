@@ -60,11 +60,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                     true
                 }
 
-                R.id.toolbar_import_excel -> {
-                    launchImportExcelFromStorageIntent()
-                    true
-                }
-
                 else -> false
             }
         }
@@ -163,25 +158,10 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         requireActivity().share(viewModel.excelUri)
     }
 
-    private val getExcelFromStorageIntent =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            viewModel.saveReportsFromExcel(it?.data?.data?.path)
-        }
-
     private val importExcelToStorageIntent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
 
         }
-
-    private fun launchImportExcelFromStorageIntent() {
-        with(requireActivity()) {
-            if (checkStoragePermission()) {
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "application/vnd.ms-excel"
-                getExcelFromStorageIntent.launch(intent)
-            }
-        }
-    }
 
     private fun launchSaveExcelToStorageIntent(uri: Uri) {
         with(requireActivity()) {

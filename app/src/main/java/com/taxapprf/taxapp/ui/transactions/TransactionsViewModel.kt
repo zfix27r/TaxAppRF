@@ -71,16 +71,6 @@ class TransactionsViewModel @Inject constructor(
         }
     }
 
-    fun saveReportsFromExcel(filePath: String?) = viewModelScope.launch(Dispatchers.IO) {
-        filePath?.let { uri ->
-/*            val saveReportsFromUriModel = SaveReportsFromUriModel(uri)
-            saveReportsFromUriUseCase.execute(saveReportsFromUriModel)
-                .onStart { start() }
-                .catch { error(it) }
-                .collectLatest { success() }*/
-        }
-    }
-
     fun getExcelToStorage() = viewModelScope.launch(Dispatchers.IO) {
         transactions.value?.let { transactions ->
             val getExcelToStorageModel = GetExcelToStorageModel(report, transactions)

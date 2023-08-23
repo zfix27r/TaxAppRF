@@ -11,7 +11,7 @@ import javax.inject.Inject
 class CurrencyRepositoryImpl @Inject constructor(
     private val cbrapi: CBRAPI,
 ) : CurrencyRepository {
-    override fun getTodayCurrency(date: String) = flow {
+    override fun getTodayCurrency(date: String) = flow<List<CurrencyModel>> {
         cbrapi.getCurrency(date).execute().body()?.let { body ->
             emit(
                 body.currencyList?.mapNotNull {
@@ -20,7 +20,7 @@ class CurrencyRepositoryImpl @Inject constructor(
                         code = it.charCode,
                         rate = it.value
                     )
-                } ?: listOf<CurrencyModel>()
+                } ?: throw DataErrorCBREmpty()
             )
         } ?: throw DataErrorCBREmpty()
     }

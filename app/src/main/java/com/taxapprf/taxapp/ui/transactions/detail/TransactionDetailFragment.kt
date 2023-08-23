@@ -158,7 +158,6 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
     }
 
     private fun Int?.updateEditError(edit: TextInputEditText) {
-        println("2222222222  " + this)
         this?.let {
             edit.error = getString(it)
         } ?: run {

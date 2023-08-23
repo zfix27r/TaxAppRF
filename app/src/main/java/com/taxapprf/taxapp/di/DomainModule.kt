@@ -92,5 +92,4 @@ object DomainModule {
     @Provides
     fun provideGetExcelToShareUseCase(transactionRepositoryImpl: TransactionRepositoryImpl) =
         GetExcelToShareUseCase(transactionRepositoryImpl)
-
 }

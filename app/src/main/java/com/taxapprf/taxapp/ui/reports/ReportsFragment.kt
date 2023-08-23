@@ -48,6 +48,11 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         viewModel.loadReports()
     }
 
+    override fun onLoadingRetry() {
+        super.onLoadingRetry()
+        viewModel.loadReports()
+    }
+
     private fun prepToolbar() {
         toolbar.updateToolbar(getString(R.string.taxes_name))
         toolbar.updateMenu(R.menu.reports_toolbar) {

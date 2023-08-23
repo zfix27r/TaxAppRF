@@ -23,12 +23,12 @@ class MainDrawer(
         get() = header.findViewById<TextView>(R.id.textNavHeaderUserEmail)
     private val expand
         get() = navView.findViewById<ImageView>(R.id.imageNavHeaderUserAccountExpand)
-    val recycler
-        get() = header.findViewById<RecyclerView>(R.id.recyclerNavHeaderAccounts)
+    val recycler: RecyclerView
+        get() = header.findViewById(R.id.recyclerNavHeaderAccounts)
     private val accounts
         get() = header.findViewById<Layer>(R.id.layerNavHeaderAccounts)
-    val account
-        get() = header.findViewById<TextView>(R.id.textNavHeaderUserAccount)
+    val account: TextView
+        get() = header.findViewById(R.id.textNavHeaderUserAccount)
     private val logOut
         get() = header.findViewById<ImageView>(R.id.imageNavHeaderUserLogOut)
 
@@ -65,25 +65,25 @@ class MainDrawer(
     }
 
     fun showAuth() {
-        userAvatar.isVisible = true
         userName.isVisible = true
         userEmail.isVisible = true
         logOut.isVisible = true
+        accounts.isVisible = true
+        recycler.isVisible = true
 
         navView.menu.clear()
         navView.inflateMenu(R.menu.auth_drawer)
-        accounts.isVisible = true
     }
 
     fun hideAuth() {
-        userAvatar.isVisible = false
         userName.isVisible = false
         userEmail.isVisible = false
         logOut.isVisible = false
+        accounts.isVisible = false
+        recycler.isVisible = false
 
         navView.menu.clear()
         navView.inflateMenu(R.menu.not_auth_drawer)
-        accounts.isVisible = false
     }
 
     companion object {
