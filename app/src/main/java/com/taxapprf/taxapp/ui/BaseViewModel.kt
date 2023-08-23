@@ -1,11 +1,9 @@
 package com.taxapprf.taxapp.ui
 
-import android.text.Editable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.data.toAppError
 import com.taxapprf.domain.account.AccountModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -61,11 +59,8 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
 
     fun check(function: () -> Int?): Int? {
         isLock = true
-        println("saasd1 " + isLock)
         return function().apply {
-                println("saasd2 " + this)
             if (this == null) isLock = false
-            println("saasd3 " + isLock)
         }
     }
 

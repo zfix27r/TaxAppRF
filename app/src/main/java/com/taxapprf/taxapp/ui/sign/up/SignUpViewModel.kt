@@ -63,5 +63,5 @@ class SignUpViewModel @Inject constructor(
         else null
     }
 
-    private fun String.isErrorNameRange() = isEmpty() || length > 16
+    private fun String.isErrorNameRange() = length < 3 || length > 16
 }
