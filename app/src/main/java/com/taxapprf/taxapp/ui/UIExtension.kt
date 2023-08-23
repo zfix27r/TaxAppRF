@@ -22,10 +22,12 @@ import kotlin.math.floor
 fun View.showSnackBar(msg: Int) =
     Snackbar.make(this, msg, Snackbar.LENGTH_SHORT).show()
 
-fun String.isEmailPattern(): Boolean {
+fun String.isEmailIncorrect(): Boolean {
     val p = Pattern.compile("\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*\\.\\w{2,4}")
-    return p.matcher(this).matches()
+    return !p.matcher(this).matches()
 }
+
+fun String.isErrorPasswordRange() = length < 8 || length > 16
 
 fun View.hideKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

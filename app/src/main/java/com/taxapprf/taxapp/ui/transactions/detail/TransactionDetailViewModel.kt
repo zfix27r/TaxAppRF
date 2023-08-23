@@ -138,6 +138,6 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         const val DATE_PATTERN = "dd/MM/uuuu"
 
         const val NAME_MAX_LENGTH = 16
-        const val SUM_MAX_LENGTH = 99999999999
+        const val SUM_MAX_LENGTH = 999999999999
     }
 }

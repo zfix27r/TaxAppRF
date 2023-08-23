@@ -3,6 +3,7 @@ package com.taxapprf.taxapp.ui
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.textfield.TextInputEditText
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
 
@@ -82,5 +83,13 @@ interface BaseFragmentInterface {
 
     fun showActionMode(callback: () -> BaseActionModeCallback) {
         actionMode = mainActivity.startSupportActionMode(callback.invoke())
+    }
+
+    fun Int?.updateEditError(edit: TextInputEditText) {
+        this?.let {
+            edit.error = fragment.getString(it)
+        } ?: run {
+            edit.error = null
+        }
     }
 }

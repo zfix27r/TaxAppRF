@@ -16,10 +16,12 @@ class AccountAddFragment : BaseFragment(R.layout.fragment_account_add) {
     private val viewModel by viewModels<AccountAddViewModel>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.buttonAccountAddCreate.setOnClickListener { accountCreate() }
-
         viewModel.attachWithAccount()
+    }
+
+    override fun onAuthReady() {
+        super.onAuthReady()
+        binding.buttonAccountAddCreate.setOnClickListener { accountCreate() }
     }
 
     override fun onSuccess() {
@@ -28,7 +30,9 @@ class AccountAddFragment : BaseFragment(R.layout.fragment_account_add) {
     }
 
     private fun accountCreate() {
-        val accountName = binding.editAddAccountName.text.toString()
-        viewModel.saveAccount(accountName)
+        viewModel
+            .checkName(binding.editAddAccountName.text)
+            .updateEditError(binding.editAddAccountName)
+        viewModel.saveAccount()
     }
 }

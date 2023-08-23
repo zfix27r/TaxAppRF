@@ -14,12 +14,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     private val binding by viewBinding(FragmentSignUpBinding::bind)
     private val viewModel by viewModels<SignUpViewModel>()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSignUpCreate.setOnClickListener { signUp() }
-
+        binding.buttonSignUpCreate.setOnClickListener { checkSignUp() }
         viewModel.attach()
     }
 
@@ -31,12 +29,21 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
         navToReports()
     }
 
-    private fun signUp() {
-        val inputEmail = binding.editSignUpEmail.text.toString()
-        val inputName = binding.editSignUpName.text.toString()
-        val inputPhone = binding.editSignUpPhone.text.toString()
-        val inputPassword = binding.editSignUpPassword.text.toString()
-        viewModel.signUp(inputName, inputEmail, inputPassword, inputPhone)
+    private fun checkSignUp() {
+        viewModel
+            .checkEmail(binding.editSignUpEmail.text)
+            .updateEditError(binding.editSignUpEmail)
+        viewModel
+            .checkName(binding.editSignUpName.text)
+            .updateEditError(binding.editSignUpName)
+        viewModel
+            .checkPhone(binding.editSignUpPhone.text)
+            .updateEditError(binding.editSignUpPhone)
+        viewModel
+            .checkPassword(binding.editSignUpPassword.text)
+            .updateEditError(binding.editSignUpPassword)
+
+        viewModel.signUp()
     }
 
     private fun navToReports() {

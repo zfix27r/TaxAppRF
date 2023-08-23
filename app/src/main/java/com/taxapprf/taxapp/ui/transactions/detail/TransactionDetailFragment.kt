@@ -157,14 +157,6 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
             binding.editTextTransactionDetailSum.setText(viewModel.sum.toString())
     }
 
-    private fun Int?.updateEditError(edit: TextInputEditText) {
-        this?.let {
-            edit.error = getString(it)
-        } ?: run {
-            edit.error = null
-        }
-    }
-
     private fun updateCurrency(currency: String) {
         binding.spinnerTransactionDetailCurrencies.setSelection(
             currenciesAdapter.getPosition(currency)

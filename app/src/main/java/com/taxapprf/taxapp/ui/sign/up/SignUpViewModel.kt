@@ -1,15 +1,13 @@
 package com.taxapprf.taxapp.ui.sign.up
 
+import android.text.Editable
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.SignUpUseCase
+import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorEmailIncorrect
-import com.taxapprf.taxapp.ui.error.UIErrorNameEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorPasswordLength
-import com.taxapprf.taxapp.ui.error.UIErrorPhoneEmpty
-import com.taxapprf.taxapp.ui.isEmailPattern
+import com.taxapprf.taxapp.ui.isEmailIncorrect
+import com.taxapprf.taxapp.ui.isErrorPasswordRange
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -22,48 +20,48 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
 ) : BaseViewModel() {
-    fun signUp(name: String, email: String, password: String, phone: String) {
-        if (name.isErrorInputNameChecker()) return
-        if (phone.isErrorInputPhoneChecker()) return
-        if (email.isErrorInputEmailChecker()) return
-        if (password.isErrorInputPasswordChecker()) return
+    private var email = ""
+    private var name = ""
+    private var phone = ""
+    private var password = ""
 
-        val signUpModel = SignUpModel(name, email, password, phone)
+    fun signUp() {
+        if (!isLock) {
+            val signUpModel = SignUpModel(name, email, password, phone)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            signUpUseCase.execute(signUpModel)
-                .onStart { start() }
-                .catch { error(it) }
-                .collectLatest { success() }
+            viewModelScope.launch(Dispatchers.IO) {
+                signUpUseCase.execute(signUpModel)
+                    .onStart { start() }
+                    .catch { error(it) }
+                    .collectLatest { success() }
+            }
         }
     }
 
-    private fun String.isErrorInputNameChecker(): Boolean {
-        if (isEmpty()) error(UIErrorNameEmpty())
-        else return false
-
-        return true
+    fun checkEmail(cEmail: Editable?) = check {
+        email = cEmail.toString()
+        if (email.isEmpty()) R.string.error_email_empty
+        else if (email.isEmailIncorrect()) R.string.error_email_incorrect
+        else null
     }
 
-    private fun String.isErrorInputEmailChecker(): Boolean {
-        if (isEmpty()) error(UIErrorEmailEmpty())
-        else if (!isEmailPattern()) error(UIErrorEmailIncorrect())
-        else return false
-
-        return true
+    fun checkName(cName: Editable?) = check {
+        name = cName.toString()
+        if (name.isErrorNameRange()) R.string.error_name_range
+        else null
     }
 
-    private fun String.isErrorInputPasswordChecker(): Boolean {
-        if (length < 8) error(UIErrorPasswordLength())
-        else return false
-
-        return true
+    fun checkPhone(cPhone: Editable?) = check {
+        phone = cPhone.toString()
+        if (phone.isEmpty()) R.string.error_phone_empty
+        else null
     }
 
-    private fun String.isErrorInputPhoneChecker(): Boolean {
-        if (isEmpty()) error(UIErrorPhoneEmpty())
-        else return false
-
-        return true
+    fun checkPassword(cPassword: Editable?) = check {
+        password = cPassword.toString()
+        if (password.isErrorPasswordRange()) R.string.error_password_length
+        else null
     }
+
+    private fun String.isErrorNameRange() = isEmpty() || length > 16
 }
