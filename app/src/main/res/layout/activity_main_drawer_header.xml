@@ -37,7 +37,6 @@
             app:layout_constraintBottom_toTopOf="@+id/textNavHeaderUserEmail"
             app:layout_constraintEnd_toStartOf="@+id/imageNavHeaderUserLogOut"
             app:layout_constraintStart_toEndOf="@+id/imageNavHeaderUserAvatar"
-            app:layout_constraintTop_toTopOf="@+id/imageNavHeaderUserAvatar"
             tools:text="Name"
             tools:visibility="visible" />
 
@@ -45,11 +44,12 @@
             android:id="@+id/textNavHeaderUserEmail"
             android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/offset_4"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/textNavHeaderUserName"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textNavHeaderUserName"
-            app:layout_constraintTop_toBottomOf="@+id/textNavHeaderUserName"
+            app:layout_constraintTop_toBottomOf="@+id/imageNavHeaderUserLogOut"
             tools:text="email"
             tools:visibility="visible" />
 
@@ -93,7 +93,7 @@
             android:id="@+id/imageNavHeaderUserAccountExpand"
             android:layout_width="@dimen/image_size"
             android:layout_height="@dimen/image_size"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/offset_24"
             android:padding="@dimen/offset_8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -13,6 +13,8 @@ import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.data.error.DataErrorCBR
+import com.taxapprf.data.error.DataErrorConnection
 import com.taxapprf.data.error.DataErrorExcel
 import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.error.DataErrorInternal
@@ -27,11 +29,6 @@ import com.taxapprf.taxapp.ui.MainDrawer
 import com.taxapprf.taxapp.ui.MainToolbar
 import com.taxapprf.taxapp.ui.SignOut
 import com.taxapprf.taxapp.ui.Success
-import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorEmailIncorrect
-import com.taxapprf.taxapp.ui.error.UIErrorNameEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorPasswordLength
-import com.taxapprf.taxapp.ui.error.UIErrorPhoneEmpty
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -125,24 +122,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             is DataErrorInternal -> R.string.data_error_internal.showErrorInShackBar()
             is DataErrorExternal -> R.string.data_external_error.showErrorInShackBar()
             is DataErrorExcel -> R.string.data_error_excel.showErrorInShackBar()
-            is UIErrorNameEmpty -> R.string.error_name_empty.showErrorInShackBar()
-            is UIErrorPhoneEmpty -> R.string.error_phone_empty.showErrorInShackBar()
-            is UIErrorEmailEmpty -> R.string.error_email_empty.showErrorInShackBar()
-            is UIErrorEmailIncorrect -> R.string.error_email_incorrect.showErrorInShackBar()
-            is UIErrorPasswordLength -> R.string.error_password_length.showErrorInShackBar()
+            is DataErrorCBR -> R.string.data_error_cbr.showErrorInShackBar()
+            is DataErrorConnection -> R.string.data_error_connection.showErrorInShackBar()
             is DataErrorUserWrongPassword -> R.string.error_sign_in.showErrorInShackBar()
             is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use.showErrorInShackBar()
-            else -> R.string.data_error.showErrorWithRepeat()
+            else -> R.string.data_error.showErrorInShackBar()
         }
     }
 
-    private fun Int.showErrorWithRepeat() {
+    private fun Int.showError() {
         binding.appBarMain.content.loadingErrorGroup.isVisible = true
         binding.appBarMain.content.loadingErrorMessage.text = getString(this)
     }
 
     private fun Int.showErrorInShackBar() {
-        binding.root.showSnackBar(this)
+        binding.appBarMain.root.showSnackBar(this)
     }
 
     fun onLoadingSuccess() {

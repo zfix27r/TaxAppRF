@@ -1,6 +1,7 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.error.DataErrorCBR
+import com.taxapprf.data.error.DataErrorConnection
 import com.taxapprf.data.local.excel.ExcelDaoImpl
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
@@ -16,6 +17,7 @@ import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import kotlinx.coroutines.flow.flow
+import java.lang.Exception
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -100,9 +102,18 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     private fun SaveTransactionModel.updateCBRRate() {
-        val rate = cbrapi.getCurrency(date).execute().body()
-            ?.getCurrencyRate(currency)
-            ?: throw DataErrorCBR()
-        rateCBR = rate.roundUpToTwo()
+        try {
+            val request = cbrapi.getCurrency(date).execute()
+
+            try {
+                rateCBR = request.body()!!
+                    .getCurrencyRate(currency)!!
+                    .roundUpToTwo()
+            } catch (_: Exception) {
+                throw DataErrorCBR()
+            }
+        } catch (_: Exception) {
+            throw DataErrorConnection()
+        }
     }
 }

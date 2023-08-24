@@ -1,13 +1,13 @@
 package com.taxapprf.taxapp.ui.sign.`in`
 
+import android.text.Editable
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.user.SignInUseCase
-import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.domain.user.SignInModel
-import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
-import com.taxapprf.taxapp.ui.error.UIErrorEmailIncorrect
-import com.taxapprf.taxapp.ui.error.UIErrorPasswordLength
-import com.taxapprf.taxapp.ui.isEmailPattern
+import com.taxapprf.domain.user.SignInUseCase
+import com.taxapprf.taxapp.R
+import com.taxapprf.taxapp.ui.BaseViewModel
+import com.taxapprf.taxapp.ui.isEmailIncorrect
+import com.taxapprf.taxapp.ui.isErrorPasswordRange
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -20,32 +20,32 @@ import javax.inject.Inject
 class SignInViewModel @Inject constructor(
     private val singInUseCase: SignInUseCase,
 ) : BaseViewModel() {
-    fun signIn(email: String, password: String) {
-        if (email.isErrorInputEmailChecker()) return
-        if (password.isErrorInputPasswordChecker()) return
+    private var email = ""
+    private var password = ""
 
-        val signInModel = SignInModel(email, password)
+    fun signIn() {
+        if (isUnlock) {
+            val signInModel = SignInModel(email, password)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            singInUseCase.execute(signInModel)
-                .onStart { start() }
-                .catch { error(it) }
-                .collectLatest { success() }
+            viewModelScope.launch(Dispatchers.IO) {
+                singInUseCase.execute(signInModel)
+                    .onStart { start() }
+                    .catch { error(it) }
+                    .collectLatest { success() }
+            }
         }
     }
 
-    private fun String.isErrorInputEmailChecker(): Boolean {
-        if (isEmpty()) error(UIErrorEmailEmpty())
-        else if (!isEmailPattern()) error(UIErrorEmailIncorrect())
-        else return false
-
-        return true
+    fun checkEmail(cEmail: Editable?) = check {
+        email = cEmail.toString()
+        if (email.isEmpty()) R.string.error_email_empty
+        else if (email.isEmailIncorrect()) R.string.error_email_incorrect
+        else null
     }
 
-    private fun String.isErrorInputPasswordChecker(): Boolean {
-        if (length < 8) error(UIErrorPasswordLength())
-        else return false
-
-        return true
+    fun checkPassword(cPassword: Editable?) = check {
+        password = cPassword.toString()
+        if (password.isErrorPasswordRange()) R.string.error_password_length
+        else null
     }
 }

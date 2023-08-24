@@ -1,14 +1,17 @@
 package com.taxapprf.data
 
+import android.content.Context
+import android.net.ConnectivityManager
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.taxapprf.data.error.DataErrorConnection
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
-import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionType
+import java.net.SocketTimeoutException
 import kotlin.math.abs
 import kotlin.math.floor
 
@@ -16,16 +19,15 @@ inline fun <T> safeCall(call: () -> T): T {
     return try {
         call()
     } catch (e: Exception) {
-        throw e.toAppError()
+        throw when (e) {
+            is FirebaseAuthUserCollisionException -> DataErrorUserEmailAlreadyUse()
+            is FirebaseAuthInvalidCredentialsException -> DataErrorUserWrongPassword()
+            is FirebaseAuthInvalidUserException -> DataErrorUserWrongPassword()
+            is FirebaseException -> DataErrorUser()
+            is SocketTimeoutException -> DataErrorConnection()
+            else -> e
+        }
     }
-}
-
-fun Exception.toAppError() = when (this) {
-    is FirebaseAuthUserCollisionException -> DataErrorUserEmailAlreadyUse()
-    is FirebaseAuthInvalidCredentialsException -> DataErrorUserWrongPassword()
-    is FirebaseAuthInvalidUserException -> DataErrorUserWrongPassword()
-    is FirebaseException -> DataErrorUser()
-    else -> this
 }
 
 fun Double.roundUpToTwo() = floor(this * 100.0) / 100.0
@@ -44,4 +46,10 @@ fun updateTax(sum: Double, type: String, rateCBR: Double): Double {
 
     val newTax = newSum * rateCBR * 0.13 * k
     return newTax.roundUpToTwo()
+}
+
+fun Context.isNetworkAvailable(): Boolean {
+    val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val info = manager.activeNetworkInfo
+    return info != null && info.isConnected
 }

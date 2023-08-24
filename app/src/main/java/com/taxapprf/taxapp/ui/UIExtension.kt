@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
@@ -19,13 +20,18 @@ import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.floor
 
-fun View.showSnackBar(msg: Int) =
-    Snackbar.make(this, msg, Snackbar.LENGTH_SHORT).show()
-
-fun String.isEmailPattern(): Boolean {
-    val p = Pattern.compile("\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*\\.\\w{2,4}")
-    return p.matcher(this).matches()
+fun CoordinatorLayout.showSnackBar(msg: Int) {
+    val snack = Snackbar.make(this, msg, Snackbar.LENGTH_SHORT)
+    snack.anchorView = this.findViewById(R.id.fab)
+    snack.show()
 }
+
+fun String.isEmailIncorrect(): Boolean {
+    val p = Pattern.compile("\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*\\.\\w{2,4}")
+    return !p.matcher(this).matches()
+}
+
+fun String.isErrorPasswordRange() = length < 8 || length > 16
 
 fun View.hideKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

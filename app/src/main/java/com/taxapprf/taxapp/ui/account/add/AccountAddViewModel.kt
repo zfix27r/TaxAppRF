@@ -1,11 +1,11 @@
 package com.taxapprf.taxapp.ui.account.add
 
+import android.text.Editable
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.account.SwitchAccountModel
 import com.taxapprf.domain.account.SwitchAccountUseCase
+import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.taxapp.ui.error.UIErrorEmailEmpty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -18,26 +18,25 @@ import javax.inject.Inject
 class AccountAddViewModel @Inject constructor(
     private val switchAccountUseCase: SwitchAccountUseCase
 ) : BaseViewModel() {
-    private var oldAccountModel: AccountModel? = null
-    fun saveAccount(accountName: String) {
-        oldAccountModel?.let { oldAccountModel ->
-            if (accountName.isErrorInputAccountChecker()) return
-
-            val switchAccountModel = SwitchAccountModel(oldAccountModel.name, accountName)
+    private var accountName = ""
+    fun saveAccount() {
+        if (isUnlock) {
+            val switchAccountModel = SwitchAccountModel(account.name, accountName)
 
             viewModelScope.launch(Dispatchers.IO) {
                 switchAccountUseCase.execute(switchAccountModel)
-                    .onStart { start() }
+                    .onStart { startWithLock() }
                     .catch { error(it) }
                     .collectLatest { success() }
             }
         }
     }
 
-    private fun String.isErrorInputAccountChecker(): Boolean {
-        if (isEmpty()) error(UIErrorEmailEmpty())
-        else return false
-
-        return true
+    fun checkName(cAccountName: Editable?) = check {
+        accountName = cAccountName.toString()
+        if (accountName.isErrorNameRange()) R.string.error_input_account_incorrect
+        else null
     }
+
+    private fun String.isErrorNameRange() = length < 3 || length > 16
 }

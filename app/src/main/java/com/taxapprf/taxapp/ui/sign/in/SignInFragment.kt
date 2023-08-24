@@ -17,8 +17,7 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSignInCreate.setOnClickListener { signIn() }
-
+        binding.buttonSignInCreate.setOnClickListener { checkSignIn() }
         viewModel.attach()
     }
 
@@ -30,10 +29,15 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
         navToReports()
     }
 
-    private fun signIn() {
-        val inputEmail = binding.editSignInEmail.text.toString()
-        val inputPassword = binding.editSignInPassword.text.toString()
-        viewModel.signIn(inputEmail, inputPassword)
+    private fun checkSignIn() {
+        val updateEmailResult = viewModel
+            .checkEmail(binding.editSignInEmail.text)
+            .updateEditError(binding.editSignInEmail)
+        val updatePasswordResult = viewModel
+            .checkPassword(binding.editSignInPassword.text)
+            .updateEditError(binding.editSignInPassword)
+
+        if (updateEmailResult && updatePasswordResult) viewModel.signIn()
     }
 
     private fun navToReports() {
