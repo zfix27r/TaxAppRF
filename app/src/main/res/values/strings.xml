@@ -18,6 +18,9 @@
     <string name="response_error_data_is_empty"></string>
 
 
+    <string name="data_error_connection">Проверьте соединение с интернетом и попробуйте еще раз</string>
+
+
     <string-array name="symbols">
         <item name="rub">@string/symbol_rub</item>
     </string-array>

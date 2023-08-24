@@ -1,6 +1,7 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.error.DataErrorCBR
+import com.taxapprf.data.error.DataErrorConnection
 import com.taxapprf.data.local.excel.ExcelDaoImpl
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
@@ -102,14 +103,17 @@ class TransactionRepositoryImpl @Inject constructor(
 
     private fun SaveTransactionModel.updateCBRRate() {
         try {
-            rateCBR = cbrapi
-                .getCurrency(date)
-                .execute()
-                .body()!!
-                .getCurrencyRate(currency)!!
-                .roundUpToTwo()
+            val request = cbrapi.getCurrency(date).execute()
+
+            try {
+                rateCBR = request.body()!!
+                    .getCurrencyRate(currency)!!
+                    .roundUpToTwo()
+            } catch (_: Exception) {
+                throw DataErrorCBR()
+            }
         } catch (_: Exception) {
-            throw DataErrorCBR()
+            throw DataErrorConnection()
         }
     }
 }

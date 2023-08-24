@@ -17,6 +17,8 @@ class AccountAddFragment : BaseFragment(R.layout.fragment_account_add) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.attachWithAccount()
+
+        toolbar.updateMenu()
     }
 
     override fun onAuthReady() {

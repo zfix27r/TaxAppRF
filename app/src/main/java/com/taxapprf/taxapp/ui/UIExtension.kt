@@ -20,8 +20,11 @@ import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.floor
 
-fun CoordinatorLayout.showSnackBar(msg: Int) =
-    Snackbar.make(this, msg, Snackbar.LENGTH_SHORT).show()
+fun CoordinatorLayout.showSnackBar(msg: Int) {
+    val snack = Snackbar.make(this, msg, Snackbar.LENGTH_SHORT)
+    snack.anchorView = this.findViewById(R.id.fab)
+    snack.show()
+}
 
 fun String.isEmailIncorrect(): Boolean {
     val p = Pattern.compile("\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*\\.\\w{2,4}")

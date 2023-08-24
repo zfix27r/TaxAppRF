@@ -52,8 +52,10 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     fun checkSum(cSum: Editable?) = check {
         sum = 0.0
 
-        cSum?.let {
-            if (it.isNotEmpty()) sum = it.toString().toDouble()
+        try {
+            sum = cSum.toString().toDouble()
+        } catch (_: java.lang.Exception) {
+
         }
 
         if (sum == 0.0) R.string.transaction_detail_error_sum_empty

@@ -14,6 +14,7 @@ import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.data.error.DataErrorCBR
+import com.taxapprf.data.error.DataErrorConnection
 import com.taxapprf.data.error.DataErrorExcel
 import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.error.DataErrorInternal
@@ -122,13 +123,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             is DataErrorExternal -> R.string.data_external_error.showErrorInShackBar()
             is DataErrorExcel -> R.string.data_error_excel.showErrorInShackBar()
             is DataErrorCBR -> R.string.data_error_cbr.showErrorInShackBar()
+            is DataErrorConnection -> R.string.data_error_connection.showErrorInShackBar()
             is DataErrorUserWrongPassword -> R.string.error_sign_in.showErrorInShackBar()
             is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use.showErrorInShackBar()
             else -> throw t
         }
     }
 
-    private fun Int.showErrorWithRepeat() {
+    private fun Int.showError() {
         binding.appBarMain.content.loadingErrorGroup.isVisible = true
         binding.appBarMain.content.loadingErrorMessage.text = getString(this)
     }
