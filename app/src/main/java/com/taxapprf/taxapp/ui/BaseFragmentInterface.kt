@@ -1,6 +1,7 @@
 package com.taxapprf.taxapp.ui
 
 import androidx.appcompat.view.ActionMode
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputEditText
@@ -58,7 +59,7 @@ interface BaseFragmentInterface {
     }
 
     fun onLoadingRetry() {
-
+        mainActivity.binding.appBarMain.content.loadingErrorGroup.isVisible = false
     }
 
     fun onError(t: Throwable) {
@@ -85,11 +86,13 @@ interface BaseFragmentInterface {
         actionMode = mainActivity.startSupportActionMode(callback.invoke())
     }
 
-    fun Int?.updateEditError(edit: TextInputEditText) {
+    fun Int?.updateEditError(edit: TextInputEditText): Boolean {
         this?.let {
             edit.error = fragment.getString(it)
+            return false
         } ?: run {
             edit.error = null
+            return true
         }
     }
 }

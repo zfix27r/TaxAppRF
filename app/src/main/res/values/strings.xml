@@ -158,6 +158,7 @@
     <string name="data_external_error">внешняя ошибка</string>
     <string name="data_error">Ошибка</string>
     <string name="data_error_excel">ошибка экселя</string>
+    <string name="data_error_cbr">Курс ЦБ РФ не найден</string>
     <string name="data_error_socket_timeout">Превышено время ожидания. Повторите попытку.</string>
     <string name="currency_converter_sum_rub">RUB</string>
     <string name="currency_converter_sum_hint">0.00</string>

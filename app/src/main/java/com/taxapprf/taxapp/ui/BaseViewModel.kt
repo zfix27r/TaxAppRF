@@ -11,7 +11,9 @@ import javax.inject.Inject
 
 open class BaseViewModel @Inject constructor() : ViewModel() {
     private var isLoadingDelayTimeout = false
-    var isLock = false
+    private var isLock = false
+    val isUnlock
+        get() = !isLock
 
     private val _state = MutableLiveData<BaseState>()
     val state: LiveData<BaseState> = _state
@@ -57,12 +59,7 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
         if (isLoadingDelayTimeout) isLoadingDelayTimeout = false
     }
 
-    fun check(function: () -> Int?): Int? {
-        isLock = true
-        return function().apply {
-            if (this == null) isLock = false
-        }
-    }
+    fun check(function: () -> Int?) = function()
 
     companion object {
         private const val LOADING_DELAY = 300L

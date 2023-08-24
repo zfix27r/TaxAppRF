@@ -30,14 +30,14 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     }
 
     private fun checkSignIn() {
-        viewModel
+        val updateEmailResult = viewModel
             .checkEmail(binding.editSignInEmail.text)
             .updateEditError(binding.editSignInEmail)
-        viewModel
+        val updatePasswordResult = viewModel
             .checkPassword(binding.editSignInPassword.text)
             .updateEditError(binding.editSignInPassword)
 
-        viewModel.signIn()
+        if (updateEmailResult && updatePasswordResult) viewModel.signIn()
     }
 
     private fun navToReports() {

@@ -20,12 +20,12 @@ class AccountAddViewModel @Inject constructor(
 ) : BaseViewModel() {
     private var accountName = ""
     fun saveAccount() {
-        if (!isLock) {
+        if (isUnlock) {
             val switchAccountModel = SwitchAccountModel(account.name, accountName)
 
             viewModelScope.launch(Dispatchers.IO) {
                 switchAccountUseCase.execute(switchAccountModel)
-                    .onStart { start() }
+                    .onStart { startWithLock() }
                     .catch { error(it) }
                     .collectLatest { success() }
             }

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
@@ -19,7 +20,7 @@ import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.floor
 
-fun View.showSnackBar(msg: Int) =
+fun CoordinatorLayout.showSnackBar(msg: Int) =
     Snackbar.make(this, msg, Snackbar.LENGTH_SHORT).show()
 
 fun String.isEmailIncorrect(): Boolean {

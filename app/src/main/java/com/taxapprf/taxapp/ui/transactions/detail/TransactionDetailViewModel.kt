@@ -40,38 +40,25 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     var type: String = TransactionType.TRADE.name
     var sum: Double = SUM_DEFAULT
 
-    var hasError = false
-
-    fun checkName(cName: Editable?): Int? {
-        hasError = true
-        return if (cName != null && cName.length > NAME_MAX_LENGTH)
-            R.string.transaction_detail_error_name_too_long
-        else {
-            hasError = false
-            name = cName.toString()
-            null
-        }
+    fun checkName(cName: Editable?) = check {
+        name = cName.toString()
+        if (name.isNameRangeIncorrect()) R.string.transaction_detail_error_name_too_long
+        else null
     }
 
-    fun checkDate(cDate: Editable?) = cDate.toString().saveDateOrGetStringMessage()
-    fun checkDate(year: Int, month: Int, dayOfMonth: Int) =
-        "$dayOfMonth/$month/$year".saveDateOrGetStringMessage()
+    fun checkDate(cDate: Editable?) = checkDate(cDate.toString())
+    fun checkDate(year: Int, month: Int, dayOfMonth: Int) = checkDate("$dayOfMonth/$month/$year")
 
-    fun checkSum(cSum: Editable?): Int? {
-        hasError = true
-        var checkedSum = 0.0
+    fun checkSum(cSum: Editable?) = check {
+        sum = 0.0
 
         cSum?.let {
-            if (it.isNotEmpty()) checkedSum = it.toString().toDouble()
+            if (it.isNotEmpty()) sum = it.toString().toDouble()
         }
 
-        return if (checkedSum == 0.0) R.string.transaction_detail_error_sum_empty
-        else if (checkedSum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
-        else {
-            hasError = false
-            sum = checkedSum
-            null
-        }
+        if (sum == 0.0) R.string.transaction_detail_error_sum_empty
+        else if (sum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
+        else null
     }
 
     fun getSaveTransactionModel(): SaveTransactionModel {
@@ -95,15 +82,11 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
 
     private fun String.getYear() = split("/")[2].toInt()
 
-    private fun String.saveDateOrGetStringMessage(): Int? {
-        hasError = true
-        return if (isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
-        else if (isDateFormatIncorrect()) R.string.transaction_detail_error_date_format
-        else {
-            hasError = false
-            date = this
-            null
-        }
+    private fun checkDate(cDate: String) = check {
+        date = cDate
+        if (date.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
+        else if (date.isDateFormatIncorrect()) R.string.transaction_detail_error_date_format
+        else null
     }
 
     private fun getCurrentDate() = dateFormat.format(LocalDate.now())
@@ -128,6 +111,8 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         val checkYear = getYear()
         return checkYear < DATE_YEAR_MIN || checkYear > Year.now().value
     }
+
+    private fun String.isNameRangeIncorrect() = length > NAME_MAX_LENGTH
 
     companion object {
         const val NAME_DEFAULT = ""

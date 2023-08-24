@@ -30,20 +30,21 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     }
 
     private fun checkSignUp() {
-        viewModel
+        val updateEmailResult = viewModel
             .checkEmail(binding.editSignUpEmail.text)
             .updateEditError(binding.editSignUpEmail)
-        viewModel
+        val updateNameResult = viewModel
             .checkName(binding.editSignUpName.text)
             .updateEditError(binding.editSignUpName)
-        viewModel
+        val updatePhoneResult = viewModel
             .checkPhone(binding.editSignUpPhone.text)
             .updateEditError(binding.editSignUpPhone)
-        viewModel
+        val updatePasswordResult = viewModel
             .checkPassword(binding.editSignUpPassword.text)
             .updateEditError(binding.editSignUpPassword)
 
-        viewModel.signUp()
+        if (updateEmailResult && updateNameResult && updatePhoneResult && updatePasswordResult)
+            viewModel.signUp()
     }
 
     private fun navToReports() {

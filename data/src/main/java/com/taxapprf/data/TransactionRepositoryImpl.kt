@@ -16,6 +16,7 @@ import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.GetTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import kotlinx.coroutines.flow.flow
+import java.lang.Exception
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -100,9 +101,15 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     private fun SaveTransactionModel.updateCBRRate() {
-        val rate = cbrapi.getCurrency(date).execute().body()
-            ?.getCurrencyRate(currency)
-            ?: throw DataErrorCBR()
-        rateCBR = rate.roundUpToTwo()
+        try {
+            rateCBR = cbrapi
+                .getCurrency(date)
+                .execute()
+                .body()!!
+                .getCurrencyRate(currency)!!
+                .roundUpToTwo()
+        } catch (_: Exception) {
+            throw DataErrorCBR()
+        }
     }
 }

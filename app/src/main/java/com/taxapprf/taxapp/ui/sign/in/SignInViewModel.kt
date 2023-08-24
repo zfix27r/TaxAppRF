@@ -24,7 +24,7 @@ class SignInViewModel @Inject constructor(
     private var password = ""
 
     fun signIn() {
-        if (!isLock) {
+        if (isUnlock) {
             val signInModel = SignInModel(email, password)
 
             viewModelScope.launch(Dispatchers.IO) {

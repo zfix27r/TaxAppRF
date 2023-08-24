@@ -30,9 +30,9 @@ class AccountAddFragment : BaseFragment(R.layout.fragment_account_add) {
     }
 
     private fun accountCreate() {
-        viewModel
+        val updateNameResult = viewModel
             .checkName(binding.editAddAccountName.text)
             .updateEditError(binding.editAddAccountName)
-        viewModel.saveAccount()
+        if (updateNameResult) viewModel.saveAccount()
     }
 }
