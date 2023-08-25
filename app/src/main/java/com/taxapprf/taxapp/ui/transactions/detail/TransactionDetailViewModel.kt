@@ -47,7 +47,12 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun checkDate(cDate: Editable?) = checkDate(cDate.toString())
-    fun checkDate(year: Int, month: Int, dayOfMonth: Int) = checkDate("$dayOfMonth/$month/$year")
+    fun checkDate(year: Int, month: Int, dayOfMonth: Int): Int? {
+        val dayFormatted = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
+        val monthFormatted = if (month < 10) "0$month" else dayOfMonth.toString()
+
+        return checkDate("$dayFormatted/$monthFormatted/$year")
+    }
 
     fun checkSum(cSum: Editable?) = check {
         sum = 0.0
@@ -86,8 +91,8 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
 
     private fun checkDate(cDate: String) = check {
         date = cDate
-        if (date.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
-        else if (date.isDateFormatIncorrect()) R.string.transaction_detail_error_date_format
+        if (date.isDateFormatIncorrect()) R.string.transaction_detail_error_date_format
+        else if (date.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
         else null
     }
 

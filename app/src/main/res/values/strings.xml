@@ -33,7 +33,7 @@
     <string name="menu_home">Home</string>
     <string name="menuExit">Выйти</string>
     <string name="menuChangeAccount">Другой счёт</string>
-    <string name="menuRatesToday">Курсы валют на сегодня</string>
+    <string name="menuRatesToday">Курсы сегодня</string>
     <string name="menuConverter">Конвертер валют</string>
     <string name="menuNewTransaction">Новая сделка</string>
     <string name="menuTransactionDetail">Редактирование сделки</string>
@@ -80,9 +80,9 @@
     <string name="text_sign_up_under_button">Заполните все поля</string>
     <string name="error_email_empty">Введите ваш email</string>
     <string name="error_email_incorrect">Некорректный email</string>
-    <string name="error_name_range">Введите ваше имя (до 16 символов)</string>
+    <string name="error_name_range">Введите ваше имя (от 3 до 16 символов)</string>
     <string name="error_phone_empty">Введите ваш телефон</string>
-    <string name="error_password_length">Введите пароль, который больше 8 символов</string>
+    <string name="error_password_length">Введите пароль (от 8 до 16 символов)</string>
     <string name="message__sign_up_success">"Пользователь добавлен!"</string>
 
     <!--FirstAccountFragment-->
@@ -90,7 +90,7 @@
     <string name="button_first_account_ok">Создать</string>
     <string name="button_first_account_cancel">Пропустить</string>
     <string name="text_first_account_under_bottom">Введите имя счета</string>
-    <string name="error_input_account_incorrect">Введите имя счета (от 1 до 16 символов)</string>
+    <string name="error_input_account_incorrect">Введите имя счета (от 3 до 16 символов)</string>
 
     <!-- TaxesFragment-->
     <string name="textTaxesYear">Отчетный год</string>
@@ -166,5 +166,6 @@
     <string name="currency_converter_sum_rub">RUB</string>
     <string name="currency_converter_sum_hint">0.00</string>
     <string name="currency_converter_sum_default">1</string>
+    <string name="sign_title_name">Вход</string>
 
 </resources>

@@ -44,7 +44,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_email_date"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/offset_16"
         android:layout_marginTop="@dimen/margin_vertical_20dp"
@@ -76,7 +76,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_email_sum"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/offset_16"
         android:layout_marginEnd="@dimen/offset_16"

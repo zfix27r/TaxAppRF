@@ -37,7 +37,6 @@ class SignUpViewModel @Inject constructor(
             }
         }
     }
-
     fun checkEmail(cEmail: Editable?) = check {
         email = cEmail.toString()
         if (email.isEmpty()) R.string.error_email_empty
