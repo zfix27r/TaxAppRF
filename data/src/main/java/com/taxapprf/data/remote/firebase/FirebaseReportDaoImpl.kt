@@ -8,8 +8,7 @@ import com.taxapprf.data.remote.firebase.dao.FirebaseReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.report.DeleteReportModel
-import com.taxapprf.domain.report.GetReportModel
-import com.taxapprf.domain.report.GetReportsModel
+import com.taxapprf.domain.report.ObserveReportsModel
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.report.SaveReportModel
 import kotlinx.coroutines.channels.awaitClose
@@ -21,7 +20,7 @@ import kotlinx.coroutines.tasks.await
 class FirebaseReportDaoImpl(
     private val fb: FirebaseAPI,
 ) : FirebaseReportDao {
-    override fun getReports(getReportsModel: GetReportsModel) =
+    override fun getReports(getReportsModel: ObserveReportsModel) =
         callbackFlow<Result<List<ReportModel>>> {
             safeCall {
                 val reference = fb.getReportsPath(getReportsModel.accountKey)

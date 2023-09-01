@@ -8,7 +8,6 @@ import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.report.DeleteReportModel
-import com.taxapprf.domain.report.GetReportModel
 import com.taxapprf.domain.report.SaveReportModel
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel

@@ -1,6 +1,5 @@
 package com.taxapprf.domain.report
 
-data class GetReportModel(
+data class ObserveReportsModel(
     val accountKey: String,
-    val yearKey: String,
 )
