@@ -6,8 +6,10 @@ import com.google.firebase.database.ValueEventListener
 import com.taxapprf.data.error.external.DataErrorExternalGetReport
 import com.taxapprf.data.remote.firebase.dao.FirebaseReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
+import com.taxapprf.data.remote.firebase.model.GetReportModel
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.report.DeleteReportModel
+import com.taxapprf.domain.report.ObserveReportModel
 import com.taxapprf.domain.report.ObserveReportsModel
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.report.SaveReportModel
@@ -20,10 +22,36 @@ import kotlinx.coroutines.tasks.await
 class FirebaseReportDaoImpl(
     private val fb: FirebaseAPI,
 ) : FirebaseReportDao {
-    override fun getReports(getReportsModel: ObserveReportsModel) =
+    override fun observeReport(observeReportModel: ObserveReportModel) =
+        callbackFlow<Result<ReportModel>> {
+            safeCall {
+                val reference =
+                    fb.getReportPath(observeReportModel.accountKey, observeReportModel.yearKey)
+
+                val callback = object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        snapshot.getValue(FirebaseReportModel::class.java)?.toReportModel()?.let {
+                            trySendBlocking(Result.success(it))
+                        } ?: run {
+                            trySendBlocking(Result.failure(DataErrorExternalGetReport()))
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        trySendBlocking(Result.failure(DataErrorExternalGetReport(error.message)))
+                    }
+                }
+
+                reference.addValueEventListener(callback)
+
+                awaitClose { reference.removeEventListener(callback) }
+            }
+        }
+
+    override fun observeReports(observeReportsModel: ObserveReportsModel) =
         callbackFlow<Result<List<ReportModel>>> {
             safeCall {
-                val reference = fb.getReportsPath(getReportsModel.accountKey)
+                val reference = fb.getReportsPath(observeReportsModel.accountKey)
 
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
