@@ -1,7 +1,5 @@
 package com.taxapprf.data
 
-import android.content.Context
-import android.net.ConnectivityManager
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -35,10 +33,10 @@ fun Double.roundUpToTwo() = floor(this * 100.0) / 100.0
 fun updateTax(sum: Double, type: String, rateCBR: Double): Double {
     var newSum = sum
     val k = when (type) {
-        TransactionType.COMMISSION.name -> 0.0
+        TransactionType.COMMISSION.name -> -1.0
         TransactionType.FUNDING_WITHDRAWAL.name -> {
             newSum = abs(sum)
-            -1.0
+            0.0
         }
 
         else -> 1.0
@@ -46,10 +44,4 @@ fun updateTax(sum: Double, type: String, rateCBR: Double): Double {
 
     val newTax = newSum * rateCBR * 0.13 * k
     return newTax.roundUpToTwo()
-}
-
-fun Context.isNetworkAvailable(): Boolean {
-    val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val info = manager.activeNetworkInfo
-    return info != null && info.isConnected
 }
