@@ -36,15 +36,8 @@ class ReportsViewModel @Inject constructor(
         getReportsUseCase.execute(getReportsModel)
             .onStart { start() }
             .catch { error(it) }
-            .collectLatest { result ->
-                result.exceptionOrNull()
-                    ?.let { error(it) }
-                    ?: run {
-                        result.getOrNull()?.let { results ->
-                            _reports.postValue(results)
-                        }
-                    }
-
+            .collectLatest {
+                _reports.postValue(it)
                 success()
             }
     }

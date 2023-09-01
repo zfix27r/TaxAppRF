@@ -6,6 +6,7 @@ import com.taxapprf.data.local.excel.ExcelDaoImpl
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
+import com.taxapprf.data.remote.firebase.model.GetReportModel
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.report.DeleteReportModel
 import com.taxapprf.domain.report.SaveReportModel

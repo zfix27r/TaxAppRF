@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.report.ObserveReportModel
+import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
@@ -17,8 +19,10 @@ import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,12 +30,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
+    private val observeReportUseCase: ObserveReportUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val getExcelToShareUseCase: GetExcelToShareUseCase,
     private val getExcelToStorageUseCase: GetExcelToStorageUseCase,
 ) : BaseViewModel() {
     lateinit var report: ReportModel
+
+    fun observeReport(yearKey: String): Flow<ReportModel> {
+        val observeReportModel = ObserveReportModel(account.name, yearKey)
+        return observeReportUseCase.execute(observeReportModel)
+            .onStart { start() }
+            .catch { error(it) }
+            .onEach { success() }
+    }
 
     private val _transactions = MutableLiveData<List<TransactionModel>>()
     val transactions: LiveData<List<TransactionModel>> = _transactions
