@@ -92,13 +92,14 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     override fun onAuthReady() {
         super.onAuthReady()
 
-        mainViewModel.report?.let {
-            viewModel.report = it
+        mainViewModel.report?.let { oldReportModel ->
+            viewModel.report = oldReportModel
             mainViewModel.report = null
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(it.year).collectLatest {
+                    viewModel.observeReport(oldReportModel.year).collectLatest {
+                        viewModel.report = it
                         it.updateToolbar()
                     }
                 }
