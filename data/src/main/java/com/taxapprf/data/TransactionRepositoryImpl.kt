@@ -44,7 +44,7 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     private suspend fun SaveTransactionModel.updatePathTransaction() {
-        toDeleteTransactionModel()?.let {
+        asDeleteTransactionModel()?.let {
             if (isReportYearChanged())
                 firebaseTransactionDao.deleteTransaction(it)
         }

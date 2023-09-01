@@ -5,8 +5,5 @@ data class DeleteTransactionModel(
     val yearKey: String,
     val transactionKey: String,
 
-    val transactionTax: Double,
-
-    val reportTax: Double,
     val reportSize: Int,
 )

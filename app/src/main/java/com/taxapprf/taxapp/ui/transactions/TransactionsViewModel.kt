@@ -36,6 +36,8 @@ class TransactionsViewModel @Inject constructor(
     private val getExcelToShareUseCase: GetExcelToShareUseCase,
     private val getExcelToStorageUseCase: GetExcelToStorageUseCase,
 ) : BaseViewModel() {
+    private var transactionsSize = 0
+
     lateinit var report: ReportModel
 
     fun observeReport(yearKey: String): Flow<ReportModel> {
@@ -57,30 +59,21 @@ class TransactionsViewModel @Inject constructor(
         getTransactionsUseCase.execute(getTransactionsModel)
             .onStart { start() }
             .catch { error(it) }
+            .onEach { transactionsSize = it.size }
             .collectLatest {
                 _transactions.postValue(it)
                 success()
             }
     }
 
-    fun deleteTransaction() = viewModelScope.launch(Dispatchers.IO) {
-        deleteTransaction?.let { transaction ->
-            val deleteTransactionModel =
-                DeleteTransactionModel(
-                    accountKey = account.name,
-                    yearKey = report.year,
-                    transactionKey = transaction.key,
-                    transactionTax = transaction.tax,
-                    reportTax = report.tax,
-                    reportSize = report.size,
-                )
-
-            deleteTransaction = null
-
-            deleteTransactionUseCase.execute(deleteTransactionModel)
-                .onStart { start() }
-                .catch { error(it) }
-                .collectLatest { success() }
+    fun deleteTransaction() {
+        deleteTransactionModel?.let { deleteTransactionModel ->
+            viewModelScope.launch(Dispatchers.IO) {
+                deleteTransactionUseCase.execute(deleteTransactionModel)
+                    .onStart { start() }
+                    .catch { error(it) }
+                    .collectLatest { success() }
+            }
         }
     }
 
@@ -111,4 +104,18 @@ class TransactionsViewModel @Inject constructor(
                 }
         }
     }
+
+    private val deleteTransactionModel
+        get() = deleteTransaction?.let { transaction ->
+            val deleteModel = DeleteTransactionModel(
+                accountKey = account.name,
+                yearKey = report.year,
+                transactionKey = transaction.key,
+                reportSize = report.size,
+            )
+
+            deleteTransaction = null
+            deleteModel
+        }
+
 }
