@@ -2,6 +2,6 @@ package com.taxapprf.domain.account
 
 
 data class SwitchAccountModel(
-    val oldAccountName: String,
-    val newAccountName: String
+    val passiveAccountKey: String,
+    val activeAccountKey: String
 )

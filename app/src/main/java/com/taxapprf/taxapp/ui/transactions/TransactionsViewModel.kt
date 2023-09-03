@@ -41,7 +41,7 @@ class TransactionsViewModel @Inject constructor(
     lateinit var report: ReportModel
 
     fun observeReport(yearKey: String): Flow<ReportModel> {
-        val observeReportModel = ObserveReportModel(account.accountKey, yearKey)
+        val observeReportModel = ObserveReportModel(account.key, yearKey)
         return observeReportUseCase.execute(observeReportModel)
             .onStart { start() }
             .catch { error(it) }
@@ -55,7 +55,7 @@ class TransactionsViewModel @Inject constructor(
     lateinit var excelUri: Uri
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
-        val getTransactionsModel = GetTransactionsModel(account.accountKey, report.year)
+        val getTransactionsModel = GetTransactionsModel(account.key, report.year)
         getTransactionsUseCase.execute(getTransactionsModel)
             .onStart { start() }
             .catch { error(it) }
@@ -108,7 +108,7 @@ class TransactionsViewModel @Inject constructor(
     private val deleteTransactionModel
         get() = deleteTransaction?.let { transaction ->
             val deleteModel = DeleteTransactionModel(
-                accountKey = account.accountKey,
+                accountKey = account.key,
                 yearKey = report.year,
                 transactionKey = transaction.key,
                 reportSize = reportSize,

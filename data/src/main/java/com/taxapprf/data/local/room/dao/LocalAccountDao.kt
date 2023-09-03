@@ -20,8 +20,5 @@ interface LocalAccountDao {
     fun save(localAccountEntities: List<LocalAccountEntity>): List<Long>
 
     @Delete
-    fun delete(localAccountEntity: LocalAccountEntity): Int
-
-    @Query("DELETE FROM account")
-    fun deleteAll()
+    fun delete(localAccountEntities: List<LocalAccountEntity>): Int
 }

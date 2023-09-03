@@ -65,9 +65,6 @@ class FirebaseAccountDaoImpl @Inject constructor(
             fb.getAccountsPath()
                 .updateChildren(firebaseAccountModels)
                 .await()
-
-            fb.getAccountsPath()
-                .get().await().children.mapNotNull { println(it) }
         }
     }
 
