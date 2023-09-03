@@ -4,20 +4,21 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.TABLE_NAME
+import com.taxapprf.domain.Sync
 
 @Entity(tableName = TABLE_NAME)
 data class LocalAccountEntity(
     @PrimaryKey
     @ColumnInfo(name = ACCOUNT_KEY)
-    val accountKey: String,
+    override val key: String,
     @ColumnInfo(name = IS_ACTIVE)
     val isActive: Boolean,
 
     @ColumnInfo(name = IS_SYNC)
-    val isSync: Boolean,
+    override val isSync: Boolean,
     @ColumnInfo(name = SYNC_AT)
-    val syncAt: Long,
-) {
+    override val syncAt: Long,
+) : Sync {
     companion object {
         const val TABLE_NAME = "account"
 

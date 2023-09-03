@@ -55,7 +55,7 @@ class TransactionsViewModel @Inject constructor(
     lateinit var excelUri: Uri
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
-        val getTransactionsModel = GetTransactionsModel(account.key, report.year)
+        val getTransactionsModel = GetTransactionsModel(account.key, report.key)
         getTransactionsUseCase.execute(getTransactionsModel)
             .onStart { start() }
             .catch { error(it) }
@@ -109,7 +109,7 @@ class TransactionsViewModel @Inject constructor(
         get() = deleteTransaction?.let { transaction ->
             val deleteModel = DeleteTransactionModel(
                 accountKey = account.key,
-                yearKey = report.year,
+                yearKey = report.key,
                 transactionKey = transaction.key,
                 reportSize = reportSize,
             )

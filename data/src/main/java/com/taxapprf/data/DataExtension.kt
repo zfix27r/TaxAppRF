@@ -11,6 +11,8 @@ import com.taxapprf.data.error.DataErrorUserWrongPassword
 import com.taxapprf.domain.Sync
 import com.taxapprf.domain.transaction.TransactionType
 import java.net.SocketTimeoutException
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import kotlin.math.abs
 import kotlin.math.floor
 
@@ -58,8 +60,6 @@ fun <T : Sync> MutableMap<String, T>.sync(
     val saveLocalList = mutableListOf<T>()
     val saveRemoteList = mutableListOf<T>()
 
-    println("@@ $this")
-    println("@@ $remoteList")
     remoteList.map {
         if (cache.isCached(it.key)) {
             if (cache.isNotSync(it.key)) {
@@ -89,3 +89,5 @@ private fun <T : Sync> MutableMap<String, T>.isNotSync(key: String) =
 
 private fun <T : Sync> MutableMap<String, T>.isExpired(sync: T) =
     getValue(sync.key).syncAt <= sync.syncAt
+
+fun getTime() = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)

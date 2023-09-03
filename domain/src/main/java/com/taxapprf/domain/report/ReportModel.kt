@@ -1,7 +1,11 @@
 package com.taxapprf.domain.report
 
+import com.taxapprf.domain.Sync
+
 data class ReportModel(
-    val year: String,
+    override val key: String,
     val tax: Double,
     val size: Int,
-)
+    override val isSync: Boolean,
+    override val syncAt: Long,
+) : Sync

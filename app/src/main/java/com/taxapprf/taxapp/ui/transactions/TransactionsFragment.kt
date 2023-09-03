@@ -98,7 +98,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(oldReportModel.year).collectLatest {
+                    viewModel.observeReport(oldReportModel.key).collectLatest {
                         viewModel.report = it
                         it.updateToolbar()
                     }
@@ -133,7 +133,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun ReportModel.updateToolbar() {
-        val title = String.format(getString(R.string.transactions_title), year)
+        val title = String.format(getString(R.string.transactions_title), key)
         val subtitle = String.format(getString(R.string.transactions_subtitle), tax)
         toolbar.updateToolbar(title, subtitle)
     }

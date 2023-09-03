@@ -20,38 +20,34 @@ class AccountRepositoryImpl @Inject constructor(
     private val firebaseAccountDao: FirebaseAccountDaoImpl,
 ) : AccountRepository {
     override fun getAccounts() = channelFlow {
-        val localAccounts = mutableMapOf<String, AccountModel>()
+        val local = mutableMapOf<String, AccountModel>()
 
         launch {
             localAccountDao.observeAll().collectLatest { accounts ->
-                localAccounts.clear()
+                local.clear()
                 send(
                     accounts.map {
                         val account = it.toAccountModel()
-                        localAccounts[account.key] = account
+                        local[account.key] = account
                         account
                     }
                 )
-                println(localAccounts)
             }
         }
 
         launch {
             firebaseAccountDao.observeAccounts().collectLatest { result ->
                 result.getOrNull()?.let { accounts ->
-                    localAccounts.sync(
+                    local.sync(
                         accounts,
                         saveLocal = {
-                            println("@@@@@@ saveLocal $it")
                             localAccountDao.save(it.toListLocalAccountEntity())
                         },
                         deleteLocal = {
-                            println("@@@@@@ deleteLocal $it")
                             localAccountDao.delete(it.toListLocalAccountEntity())
                         },
                         saveRemote = {
                             launch {
-                                println("@@@@@@ saveRemote $it")
                                 firebaseAccountDao.saveAccounts(it.toMapFirebaseAccountModel())
                             }
                         }
@@ -73,7 +69,7 @@ class AccountRepositoryImpl @Inject constructor(
         }
 
     private fun LocalAccountEntity.toAccountModel() =
-        AccountModel(accountKey, isActive, isSync, syncAt)
+        AccountModel(key, isActive, isSync, syncAt)
 
     private fun List<AccountModel>.toListLocalAccountEntity() = map {
         LocalAccountEntity(it.key, it.isActive, true, it.syncAt)
@@ -90,13 +86,13 @@ class AccountRepositoryImpl @Inject constructor(
     private fun SwitchAccountModel.toListLocalAccountEntity(syncAt: Long) =
         listOf(
             LocalAccountEntity(
-                accountKey = passiveAccountKey,
+                key = passiveAccountKey,
                 isActive = false,
                 isSync = true,
                 syncAt = syncAt
             ),
             LocalAccountEntity(
-                accountKey = activeAccountKey,
+                key = activeAccountKey,
                 isActive = true,
                 isSync = true,
                 syncAt = syncAt

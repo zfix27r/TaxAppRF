@@ -4,6 +4,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.taxapprf.data.error.external.DataErrorExternalGetReport
+import com.taxapprf.data.getTime
 import com.taxapprf.data.remote.firebase.dao.FirebaseReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 import com.taxapprf.data.remote.firebase.model.GetReportModel
@@ -101,19 +102,30 @@ class FirebaseReportDaoImpl(
     override suspend fun saveReport(saveReportModel: SaveReportModel) {
         safeCall {
             with(saveReportModel) {
-                fb.getReportPath(accountKey, yearKey)
-                    .setValue(saveReportModel.toFirebaseReportModel())
+                fb.getReportPath(accountKey, key)
+                    .setValue(saveReportModel.toFirebaseReportModel(getTime()))
                     .await()
             }
         }
     }
 
-    private fun getDefaultReportModel(getYear: String) = ReportModel(
-        year = getYear,
-        tax = 0.0,
-        size = 0,
-    )
+    override suspend fun saveReports(reportModels: Map<String, FirebaseReportModel>) {
+        safeCall {
+            fb.getAccountsPath()
+                .updateChildren(reportModels)
+                .await()
+        }
+    }
 
-    private fun SaveReportModel.toFirebaseReportModel() =
-        FirebaseReportModel(yearKey, tax, size)
+    private fun getDefaultReportModel(getYear: String) =
+        ReportModel(
+            key = getYear,
+            tax = 0.0,
+            size = 0,
+            isSync = true,
+            syncAt = 0
+        )
+
+    private fun SaveReportModel.toFirebaseReportModel(syncAt: Long) =
+        FirebaseReportModel(key, tax, size, syncAt)
 }

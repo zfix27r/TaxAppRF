@@ -47,7 +47,7 @@ class ReportsViewModel @Inject constructor(
             val deleteReportModel =
                 DeleteReportModel(
                     accountKey = account.key,
-                    yearKey = report.year,
+                    yearKey = report.key,
                 )
 
             deleteReport = null

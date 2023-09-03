@@ -69,7 +69,7 @@ class ExcelCreator(
         report: ReportModel,
         transactions: List<TransactionModel>,
     ) {
-        val sheet = workbook.createSheet(report.year)
+        val sheet = workbook.createSheet(report.key)
         var rownum = 0
         var cell: Cell
         var row: Row
@@ -77,7 +77,7 @@ class ExcelCreator(
 
         //1
         cell = row.createCell(0, CellType.STRING)
-        val s = String.format("Расчет налога за %s год", report.year)
+        val s = String.format("Расчет налога за %s год", report.key)
         cell.setCellValue(s)
         sheet.addMergedRegion(CellRangeAddress(0, 0, 0, 6))
         rownum++
