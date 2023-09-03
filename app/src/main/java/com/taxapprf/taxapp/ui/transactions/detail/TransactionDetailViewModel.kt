@@ -72,7 +72,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
 
     fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
-            accountKey = account.name,
+            accountKey = account.accountKey,
             yearKey = date.getYear().toString(),
             transactionKey = transaction?.key,
             date = date,
@@ -83,7 +83,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         ).apply {
             report?.let {
                 reportYear = it.year
-                reportTax = it.tax
+//                reportTax = it.tax
                 reportSize = it.size
             }
         }

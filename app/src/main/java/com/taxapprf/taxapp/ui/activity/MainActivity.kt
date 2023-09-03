@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             is DataErrorConnection -> R.string.data_error_connection.showErrorInShackBar()
             is DataErrorUserWrongPassword -> R.string.error_sign_in.showErrorInShackBar()
             is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use.showErrorInShackBar()
-            else -> R.string.data_error.showErrorInShackBar()
+            else -> throw t//R.string.data_error.showErrorInShackBar()
         }
     }
 
@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun MainViewModel.observeAccount() {
         account.observe(this@MainActivity) { _account ->
             _account?.let {
-                drawer.account.text = it.name
+                drawer.account.text = it.accountKey
                 fabVisibilityManager()
             }
         }
@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun MainViewModel.observeAccounts() {
         accounts.observe(this@MainActivity) { accounts ->
             if (accounts.isNotEmpty()) {
-                accountsAdapter.submitList(accounts.filter { !it.active })
+                accountsAdapter.submitList(accounts.filter { !it.isActive })
                 fabVisibilityManager()
             } else {
                 onLoadingError(DataErrorUser())

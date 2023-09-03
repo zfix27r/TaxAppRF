@@ -32,7 +32,7 @@ interface BaseFragmentInterface {
             _account?.let {
                 baseViewModel.account = it
                 onAuthReady()
-            } ?: fragment.findNavController().popBackStack()
+            }
         }
     }
 

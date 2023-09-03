@@ -60,11 +60,11 @@ class TransactionRepositoryImpl @Inject constructor(
                 val deleteReportModel = DeleteReportModel(accountKey, yearKey)
                 firebaseReportDao.deleteReport(deleteReportModel)
             } else {
-                val newTax = (reportTax - transactionTax).roundUpToTwo()
+/*                val newTax = (reportTax - transactionTax).roundUpToTwo()
 
                 val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
                 firebaseReportDao.saveReport(saveReportModel)
-                firebaseTransactionDao.deleteTransaction(deleteTransactionModel)
+                firebaseTransactionDao.deleteTransaction(deleteTransactionModel)*/
             }
 
             emit(Unit)
