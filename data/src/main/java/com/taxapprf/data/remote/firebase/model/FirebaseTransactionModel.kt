@@ -14,14 +14,14 @@ data class FirebaseTransactionModel(
 ) {
     fun toTransactionModel(key: String?): TransactionModel? {
         val transactionKey = key ?: return null
-        val name = name ?: ""
+        val name = name
         val date = date ?: return null
         val type = type ?: return null
         val currency = currency ?: return null
         val rateCBR = rateCBR
         val sum = sum ?: return null
         val tax = tax
-        val syncAt = syncAt ?: return null
+        val syncAt = syncAt ?: 0
 
         return TransactionModel(
             transactionKey,

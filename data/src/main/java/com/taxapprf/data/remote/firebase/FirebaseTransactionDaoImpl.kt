@@ -25,6 +25,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override fun observeTransactions(observeTransactionsModel: ObserveTransactionsModel) =
         callbackFlow<Result<List<TransactionModel>>> {
             safeCall {
+                println("@@@@@@@@@@@@@@@@@@@@@@@@@2 23")
                 val reference =
                     fb.getTransactionsPath(
                         observeTransactionsModel.accountKey,
@@ -33,6 +34,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
 
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        println(snapshot)
                         val transactions = snapshot.children.mapNotNull {
                             it.getValue(FirebaseTransactionModel::class.java)
                                 ?.toTransactionModel(it.key)

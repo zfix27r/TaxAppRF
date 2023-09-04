@@ -22,4 +22,5 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/activity_main_drawer_header"
         app:menu="@menu/not_auth_drawer" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

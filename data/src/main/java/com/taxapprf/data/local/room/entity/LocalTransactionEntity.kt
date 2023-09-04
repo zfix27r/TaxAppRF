@@ -22,7 +22,7 @@ data class LocalTransactionEntity(
     val yearKey: String,
 
     @ColumnInfo(name = NAME)
-    val name: String,
+    val name: String?,
     @ColumnInfo(name = DATE)
     val date: String,
     @ColumnInfo(name = TYPE)

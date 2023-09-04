@@ -112,7 +112,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private fun TransactionsViewModel.observeTransactions() =
         transactions.observe(viewLifecycleOwner) { transaction ->
             transaction?.let {
-                if (it.isEmpty()) findNavController().popBackStack()
                 adapter.submitList(it)
             }
         }

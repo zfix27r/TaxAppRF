@@ -4,7 +4,7 @@ import com.taxapprf.domain.Sync
 
 data class TransactionModel(
     override val key: String,
-    val name: String,
+    val name: String?,
     val date: String,
     val type: String,
     val currency: String,

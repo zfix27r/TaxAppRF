@@ -8,25 +8,22 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
-import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.data.remote.firebase.model.GetReportModel
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.report.DeleteReportModel
-import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.report.SaveReportModel
-import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetExcelToShareModel
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.ObserveTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.TransactionModel
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -40,6 +37,7 @@ class TransactionRepositoryImpl @Inject constructor(
         channelFlow {
             val local = mutableMapOf<String, TransactionModel>()
 
+            println("@@@@@@@@@@@ 1" + observeTransactionsModel)
             launch {
                 localTransactionDao.observeAll(
                     observeTransactionsModel.accountKey,
@@ -53,12 +51,14 @@ class TransactionRepositoryImpl @Inject constructor(
                             transaction
                         }
                     )
+                    println("@@@@@@@@@@@ 2 " + transactions)
                 }
             }
 
             launch {
                 firebaseTransactionDao.observeTransactions(observeTransactionsModel)
                     .collectLatest { result ->
+                        println("@@@@@@@@@@@ 3 " + result)
                         result.getOrNull()?.let { reports ->
                             local.sync(
                                 reports,
