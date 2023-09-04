@@ -28,8 +28,6 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        println("@@@@@@@@@@@@@@@@@@@@2 1")
-
         viewModel.attachWithAccount()
         currentStackSavedState.observeDelete()
 

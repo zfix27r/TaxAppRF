@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun onSignOut() {
-        drawer.hideAuth()
+        drawer.hideWithoutAuth()
         navToSign()
     }
 

@@ -5,12 +5,12 @@ import androidx.room.Entity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.ACCOUNT_KEY
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TABLE_NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TRANSACTION_KEY
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.YEAR_KEY
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.REPORT_KEY
 import com.taxapprf.domain.Sync
 
 @Entity(
     tableName = TABLE_NAME,
-    primaryKeys = [TRANSACTION_KEY, ACCOUNT_KEY, YEAR_KEY]
+    primaryKeys = [TRANSACTION_KEY, ACCOUNT_KEY, REPORT_KEY]
 )
 data class LocalTransactionEntity(
     @ColumnInfo(name = TRANSACTION_KEY)
@@ -18,8 +18,8 @@ data class LocalTransactionEntity(
 
     @ColumnInfo(name = ACCOUNT_KEY)
     val accountKey: String,
-    @ColumnInfo(name = YEAR_KEY)
-    val yearKey: String,
+    @ColumnInfo(name = REPORT_KEY)
+    val reportKey: String,
 
     @ColumnInfo(name = NAME)
     val name: String?,
@@ -46,7 +46,7 @@ data class LocalTransactionEntity(
 
         const val TRANSACTION_KEY = "transaction_key"
         const val ACCOUNT_KEY = "account_key"
-        const val YEAR_KEY = "year_key"
+        const val REPORT_KEY = "report_key"
 
         const val NAME = "name"
         const val DATE = "date"

@@ -9,7 +9,6 @@ import com.taxapprf.data.remote.firebase.dao.FirebaseTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.transaction.DeleteTransactionModel
-import com.taxapprf.domain.transaction.ObserveTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 import kotlinx.coroutines.channels.awaitClose
@@ -22,19 +21,16 @@ import javax.inject.Inject
 class FirebaseTransactionDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
 ) : FirebaseTransactionDao {
-    override fun observeTransactions(observeTransactionsModel: ObserveTransactionsModel) =
+    override fun observeTransactions(
+        accountKey: String,
+        reportKey: String
+    ) =
         callbackFlow<Result<List<TransactionModel>>> {
             safeCall {
-                println("@@@@@@@@@@@@@@@@@@@@@@@@@2 23")
-                val reference =
-                    fb.getTransactionsPath(
-                        observeTransactionsModel.accountKey,
-                        observeTransactionsModel.yearKey
-                    )
+                val reference = fb.getTransactionsPath(accountKey, reportKey)
 
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        println(snapshot)
                         val transactions = snapshot.children.mapNotNull {
                             it.getValue(FirebaseTransactionModel::class.java)
                                 ?.toTransactionModel(it.key)
@@ -86,7 +82,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override suspend fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) {
         safeCall {
             with(deleteTransactionModel) {
-                fb.getTransactionsPath(accountKey, yearKey)
+                fb.getTransactionsPath(accountKey, reportKey)
                     .child(transactionKey)
                     .setValue(null)
                     .await()

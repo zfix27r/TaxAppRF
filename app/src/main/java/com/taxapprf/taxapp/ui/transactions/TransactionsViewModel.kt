@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -41,7 +42,7 @@ class TransactionsViewModel @Inject constructor(
 
     lateinit var report: ReportModel
 
-    fun observeReport(yearKey: String): Flow<ReportModel> {
+    fun observeReport(yearKey: String): Flow<List<ReportModel>> {
         val observeReportModel = ObserveReportModel(account.key, yearKey)
         return observeReportUseCase.execute(observeReportModel)
             .onStart { start() }
@@ -111,13 +112,14 @@ class TransactionsViewModel @Inject constructor(
         get() = deleteTransaction?.let { transaction ->
             val deleteModel = DeleteTransactionModel(
                 accountKey = account.key,
-                yearKey = report.key,
+                reportKey = report.key,
                 transactionKey = transaction.key,
+                transactionTax = transaction.tax,
                 reportSize = reportSize,
+                reportTax = report.tax
             )
 
             deleteTransaction = null
             deleteModel
         }
-
 }

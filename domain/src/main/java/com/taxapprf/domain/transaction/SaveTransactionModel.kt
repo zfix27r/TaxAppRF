@@ -15,6 +15,7 @@ data class SaveTransactionModel(
 ) {
     lateinit var reportYear: String
     var reportSize by Delegates.notNull<Int>()
+    var reportTax by Delegates.notNull<Double>()
 
     var rateCBR by Delegates.notNull<Double>()
     var tax by Delegates.notNull<Double>()
@@ -26,7 +27,9 @@ data class SaveTransactionModel(
                 accountKey,
                 reportYear,
                 transactionKey,
-                reportSize
+                tax,
+                reportSize,
+                reportTax
             )
         }
 }

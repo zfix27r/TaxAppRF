@@ -20,7 +20,7 @@ class SignFragment : BaseFragment(R.layout.fragment_sign) {
 
         if (mainViewModel.isSignIn) {
             mainViewModel.loading()
-            drawer.showAuth()
+            drawer.showWithAuth()
             navToReports()
         }
 

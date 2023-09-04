@@ -3,9 +3,19 @@ package com.taxapprf.taxapp.ui
 import androidx.appcompat.view.ActionMode
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.withResumed
+import androidx.lifecycle.withStarted
 import com.google.android.material.textfield.TextInputEditText
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
+import kotlinx.coroutines.launch
 
 interface BaseFragmentInterface {
     val mainActivity: MainActivity
@@ -19,6 +29,14 @@ interface BaseFragmentInterface {
         baseViewModel = this
         baseViewModel.observeState()
         mainActivity.binding.appBarMain.content.loadingRetry.setOnClickListener { onLoadingRetry() }
+        fragment.lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_PAUSE) {
+                    hideActionMode()
+                    fragment.lifecycle.removeObserver(this)
+                }
+            }
+        })
     }
 
     fun BaseViewModel.attachWithAccount() {
@@ -83,6 +101,13 @@ interface BaseFragmentInterface {
 
     fun showActionMode(callback: () -> BaseActionModeCallback) {
         actionMode = mainActivity.startSupportActionMode(callback.invoke())
+    }
+
+    fun hideActionMode() {
+        actionMode?.let {
+            it.finish()
+            actionMode = null
+        }
     }
 
     fun Int?.updateEditError(edit: TextInputEditText): Boolean {
