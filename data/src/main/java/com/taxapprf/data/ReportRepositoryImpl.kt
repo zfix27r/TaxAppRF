@@ -46,7 +46,10 @@ class ReportRepositoryImpl @Inject constructor(
                         },
                         saveRemote = {
                             launch {
-                                firebaseReportDao.saveReports(it.toMapFirebaseReportModel())
+                                firebaseReportDao.saveReports(
+                                    observeReportModel.accountKey,
+                                    it.toMapFirebaseReportModel()
+                                )
                             }
                         }
                     )
@@ -84,7 +87,10 @@ class ReportRepositoryImpl @Inject constructor(
                         },
                         saveRemote = {
                             launch {
-                                firebaseReportDao.saveReports(it.toMapFirebaseReportModel())
+                                firebaseReportDao.saveReports(
+                                    observeReportsModel.accountKey,
+                                    it.toMapFirebaseReportModel()
+                                )
                             }
                         }
                     )

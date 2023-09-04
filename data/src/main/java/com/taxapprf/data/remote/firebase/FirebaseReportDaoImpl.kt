@@ -109,9 +109,12 @@ class FirebaseReportDaoImpl(
         }
     }
 
-    override suspend fun saveReports(reportModels: Map<String, FirebaseReportModel>) {
+    override suspend fun saveReports(
+        accountKey: String,
+        reportModels: Map<String, FirebaseReportModel>
+    ) {
         safeCall {
-            fb.getAccountsPath()
+            fb.getReportsPath(accountKey)
                 .updateChildren(reportModels)
                 .await()
         }

@@ -36,6 +36,10 @@ object DataModule {
     @Provides
     fun provideReportDao(db: LocalDatabase) = db.reportDao()
 
+    @Singleton
+    @Provides
+    fun provideTransactionDao(db: LocalDatabase) = db.transactionDao()
+
     @Provides
     @Singleton
     fun provideHttpClient(): OkHttpClient {

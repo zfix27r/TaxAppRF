@@ -13,8 +13,8 @@ import com.taxapprf.domain.transaction.GetExcelToShareModel
 import com.taxapprf.domain.transaction.GetExcelToShareUseCase
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
-import com.taxapprf.domain.transaction.GetTransactionsModel
-import com.taxapprf.domain.transaction.GetTransactionsUseCase
+import com.taxapprf.domain.transaction.ObserveTransactionsModel
+import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
     private val observeReportUseCase: ObserveReportUseCase,
-    private val getTransactionsUseCase: GetTransactionsUseCase,
+    private val getTransactionsUseCase: ObserveTransactionsUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val getExcelToShareUseCase: GetExcelToShareUseCase,
     private val getExcelToStorageUseCase: GetExcelToStorageUseCase,
@@ -57,7 +57,7 @@ class TransactionsViewModel @Inject constructor(
     lateinit var excelUri: Uri
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
-        val getTransactionsModel = GetTransactionsModel(account.key, report.key)
+        val getTransactionsModel = ObserveTransactionsModel(account.key, report.key)
         getTransactionsUseCase.execute(getTransactionsModel)
             .onStart { start() }
             .catch { error(it) }

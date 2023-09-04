@@ -132,9 +132,9 @@ class ExcelCreator(
             cell = row.createCell(4, CellType.STRING)
             cell.setCellValue(transaction.currency)
             cell = row.createCell(5, CellType.NUMERIC)
-            cell.setCellValue(transaction.rateCBR)
+            cell.setCellValue(transaction.rateCBR ?: 0.0)
             cell = row.createCell(6, CellType.NUMERIC)
-            cell.setCellValue(transaction.tax)
+            cell.setCellValue(transaction.tax ?: 0.0)
         }
     }
 }

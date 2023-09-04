@@ -3,31 +3,95 @@ package com.taxapprf.data
 import com.taxapprf.data.error.DataErrorCBR
 import com.taxapprf.data.error.DataErrorConnection
 import com.taxapprf.data.local.excel.ExcelDaoImpl
+import com.taxapprf.data.local.room.dao.LocalTransactionDao
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
+import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
+import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.data.remote.firebase.model.GetReportModel
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.report.DeleteReportModel
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.report.SaveReportModel
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetExcelToShareModel
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
-import com.taxapprf.domain.transaction.GetTransactionsModel
+import com.taxapprf.domain.transaction.ObserveTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.domain.transaction.TransactionModel
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.lang.Exception
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
+    private val localTransactionDao: LocalTransactionDao,
     private val firebaseTransactionDao: FirebaseTransactionDaoImpl,
     private val firebaseReportDao: FirebaseReportDaoImpl,
     private val cbrapi: CBRAPI,
     private val excelDao: ExcelDaoImpl,
 ) : TransactionRepository {
-    override fun getTransactions(getTransactionModel: GetTransactionsModel) =
-        firebaseTransactionDao.getTransactions(getTransactionModel)
+    override fun observeTransactions(observeTransactionsModel: ObserveTransactionsModel) =
+        channelFlow {
+            val local = mutableMapOf<String, TransactionModel>()
+
+            launch {
+                localTransactionDao.observeAll(
+                    observeTransactionsModel.accountKey,
+                    observeTransactionsModel.yearKey
+                ).collectLatest { transactions ->
+                    local.clear()
+                    send(
+                        transactions.map {
+                            val transaction = it.toTransactionModel()
+                            local[transaction.key] = transaction
+                            transaction
+                        }
+                    )
+                }
+            }
+
+            launch {
+                firebaseTransactionDao.observeTransactions(observeTransactionsModel)
+                    .collectLatest { result ->
+                        result.getOrNull()?.let { reports ->
+                            local.sync(
+                                reports,
+                                saveLocal = {
+                                    localTransactionDao.save(
+                                        it.toListLocalTransactionEntity(
+                                            observeTransactionsModel.accountKey,
+                                            observeTransactionsModel.yearKey
+                                        )
+                                    )
+                                },
+                                deleteLocal = {
+                                    localTransactionDao.delete(
+                                        it.toListLocalTransactionEntity(
+                                            observeTransactionsModel.accountKey,
+                                            observeTransactionsModel.yearKey
+                                        )
+                                    )
+                                },
+                                saveRemote = {
+                                    launch {
+                                        firebaseTransactionDao.saveTransactions(
+                                            observeTransactionsModel.accountKey,
+                                            observeTransactionsModel.yearKey,
+                                            it.toMapFirebaseTransactionModel()
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    }
+            }
+        }
 
     override fun saveTransaction(saveTransactionModel: SaveTransactionModel) = flow {
         saveTransactionModel.saveAndUpdatePath()
@@ -60,11 +124,11 @@ class TransactionRepositoryImpl @Inject constructor(
                 val deleteReportModel = DeleteReportModel(accountKey, yearKey)
                 firebaseReportDao.deleteReport(deleteReportModel)
             } else {
-/*                val newTax = (reportTax - transactionTax).roundUpToTwo()
+                /*                val newTax = (reportTax - transactionTax).roundUpToTwo()
 
-                val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
-                firebaseReportDao.saveReport(saveReportModel)
-                firebaseTransactionDao.deleteTransaction(deleteTransactionModel)*/
+                                val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
+                                firebaseReportDao.saveReport(saveReportModel)
+                                firebaseTransactionDao.deleteTransaction(deleteTransactionModel)*/
             }
 
             emit(Unit)
@@ -115,5 +179,47 @@ class TransactionRepositoryImpl @Inject constructor(
         } catch (_: Exception) {
             throw DataErrorConnection()
         }
+    }
+
+    private fun LocalTransactionEntity.toTransactionModel() =
+        TransactionModel(key, name, date, type, currency, rateCBR, sum, tax, isSync, syncAt)
+
+    private fun List<TransactionModel>.toListLocalTransactionEntity(
+        accountKey: String,
+        yearKey: String
+    ) = map {
+        LocalTransactionEntity(
+            key = it.key,
+            accountKey = accountKey,
+            yearKey = yearKey,
+            name = it.name,
+            date = it.date,
+            type = it.type,
+            currency = it.currency,
+            rateCBR = it.rateCBR,
+            sum = it.sum,
+            tax = it.tax,
+            isSync = it.isSync,
+            syncAt = it.syncAt
+        )
+    }
+
+    private fun List<TransactionModel>.toMapFirebaseTransactionModel(): MutableMap<String, FirebaseTransactionModel> {
+        val accounts = mutableMapOf<String, FirebaseTransactionModel>()
+        map {
+            accounts.put(
+                it.key, FirebaseTransactionModel(
+                    name = it.name,
+                    date = it.date,
+                    type = it.type,
+                    currency = it.currency,
+                    rateCBR = it.rateCBR,
+                    sum = it.sum,
+                    tax = it.tax,
+                    syncAt = it.syncAt
+                )
+            )
+        }
+        return accounts
     }
 }

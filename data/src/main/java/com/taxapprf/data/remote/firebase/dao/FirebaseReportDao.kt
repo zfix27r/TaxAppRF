@@ -14,6 +14,6 @@ interface FirebaseReportDao {
     fun observeReports(observeReportsModel: ObserveReportsModel): Flow<Result<List<ReportModel>>>
     suspend fun getReport(getReportModel: GetReportModel): ReportModel
     suspend fun saveReport(saveReportModel: SaveReportModel)
-    suspend fun saveReports(reportModels: Map<String, FirebaseReportModel>)
+    suspend fun saveReports(accountKey: String, reportModels: Map<String, FirebaseReportModel>)
     suspend fun deleteReport(deleteReportModel: DeleteReportModel)
 }
