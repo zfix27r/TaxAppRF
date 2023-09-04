@@ -36,7 +36,6 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
 
     override fun onAuthReady() {
         super.onAuthReady()
-
         viewModel.report = mainViewModel.report
         viewModel.transaction = mainViewModel.transaction
         viewModel.currency = resources.getString(R.string.transaction_currency_usd)

@@ -83,7 +83,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         ).apply {
             report?.let {
                 reportYear = it.key
-//                reportTax = it.tax
+                reportTax = it.tax
                 reportSize = it.size
             }
         }
