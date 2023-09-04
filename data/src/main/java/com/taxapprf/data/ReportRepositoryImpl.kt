@@ -1,6 +1,5 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.error.external.DataErrorExternalGetReport
 import com.taxapprf.data.local.room.dao.LocalReportDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
@@ -13,7 +12,6 @@ import com.taxapprf.domain.report.ReportModel
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,10 +19,41 @@ class ReportRepositoryImpl @Inject constructor(
     private val localReportDao: LocalReportDao,
     private val firebaseReportDao: FirebaseReportDaoImpl,
 ) : ReportRepository {
-    override fun observeReport(observeReportModel: ObserveReportModel) =
-        firebaseReportDao.observeReport(observeReportModel).map {
-            it.getOrElse { throw DataErrorExternalGetReport() }
+    override fun observeReport(observeReportModel: ObserveReportModel) = channelFlow {
+        val local = mutableMapOf<String, ReportModel>()
+
+        launch {
+            localReportDao.observe(observeReportModel.accountKey, observeReportModel.yearKey)
+                .collectLatest { report ->
+                    report.toReportModel().let {
+                        local.clear()
+                        local[report.key] = it
+                        send(it)
+                    }
+                }
         }
+
+        launch {
+            firebaseReportDao.observeReport(observeReportModel).collectLatest { result ->
+                result.getOrNull()?.let { report ->
+                    local.sync(
+                        listOf(report),
+                        saveLocal = {
+                            localReportDao.save(it.toListLocalReportEntity(observeReportModel.accountKey))
+                        },
+                        deleteLocal = {
+                            localReportDao.delete(it.toListLocalReportEntity(observeReportModel.accountKey))
+                        },
+                        saveRemote = {
+                            launch {
+                                firebaseReportDao.saveReports(it.toMapFirebaseReportModel())
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
 
     override fun observeReports(observeReportsModel: ObserveReportsModel) = channelFlow {
         val local = mutableMapOf<String, ReportModel>()
@@ -86,12 +115,14 @@ class ReportRepositoryImpl @Inject constructor(
     private fun List<ReportModel>.toMapFirebaseReportModel(): MutableMap<String, FirebaseReportModel> {
         val accounts = mutableMapOf<String, FirebaseReportModel>()
         map {
-            accounts.put(it.key, FirebaseReportModel(
-                key = it.key,
-                tax = it.tax,
-                size = it.size,
-                syncAt = it.syncAt
-            ))
+            accounts.put(
+                it.key, FirebaseReportModel(
+                    key = it.key,
+                    tax = it.tax,
+                    size = it.size,
+                    syncAt = it.syncAt
+                )
+            )
         }
         return accounts
     }

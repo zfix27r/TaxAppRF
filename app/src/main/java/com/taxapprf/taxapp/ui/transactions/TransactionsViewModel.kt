@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -46,6 +47,7 @@ class TransactionsViewModel @Inject constructor(
             .onStart { start() }
             .catch { error(it) }
             .onEach { success() }
+            .flowOn(Dispatchers.IO)
     }
 
     private val _transactions = MutableLiveData<List<TransactionModel>>()
