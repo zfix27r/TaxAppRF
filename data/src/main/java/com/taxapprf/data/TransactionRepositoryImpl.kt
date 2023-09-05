@@ -3,34 +3,41 @@ package com.taxapprf.data
 import com.taxapprf.data.error.DataErrorCBR
 import com.taxapprf.data.error.DataErrorConnection
 import com.taxapprf.data.local.excel.ExcelDaoImpl
+import com.taxapprf.data.local.room.dao.LocalTransactionDao
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
+import com.taxapprf.data.remote.firebase.model.GetReportModel
+import com.taxapprf.data.sync.SyncTransactions
 import com.taxapprf.domain.TransactionRepository
-import com.taxapprf.domain.report.DeleteReportModel
-import com.taxapprf.domain.report.GetReportModel
 import com.taxapprf.domain.report.SaveReportModel
-import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetExcelToShareModel
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
-import com.taxapprf.domain.transaction.GetTransactionsModel
+import com.taxapprf.domain.transaction.ObserveTransactionsModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import kotlinx.coroutines.flow.flow
-import java.lang.Exception
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
+    private val localTransactionDao: LocalTransactionDao,
     private val firebaseTransactionDao: FirebaseTransactionDaoImpl,
     private val firebaseReportDao: FirebaseReportDaoImpl,
     private val cbrapi: CBRAPI,
     private val excelDao: ExcelDaoImpl,
 ) : TransactionRepository {
-    override fun getTransactions(getTransactionModel: GetTransactionsModel) =
-        firebaseTransactionDao.getTransactions(getTransactionModel)
+    override fun observeTransactions(observeTransactionsModel: ObserveTransactionsModel) =
+        SyncTransactions(
+            localTransactionDao,
+            firebaseTransactionDao,
+            observeTransactionsModel.accountKey,
+            observeTransactionsModel.reportKey
+        ).observe()
 
     override fun saveTransaction(saveTransactionModel: SaveTransactionModel) = flow {
         saveTransactionModel.saveAndUpdatePath()
+        firebaseTransactionDao.saveTransaction(saveTransactionModel)
         emit(Unit)
     }
 
@@ -40,11 +47,10 @@ class TransactionRepositoryImpl @Inject constructor(
 
         updatePathTransaction()
 
-        firebaseTransactionDao.saveTransaction(this)
     }
 
     private suspend fun SaveTransactionModel.updatePathTransaction() {
-        toDeleteTransactionModel()?.let {
+        asDeleteTransactionModel()?.let {
             if (isReportYearChanged())
                 firebaseTransactionDao.deleteTransaction(it)
         }
@@ -52,18 +58,33 @@ class TransactionRepositoryImpl @Inject constructor(
         incrementAndSave(accountKey, yearKey)
     }
 
+    private suspend fun SaveTransactionModel.incrementAndSave(
+        accountKey: String,
+        yearKey: String
+    ) {
+        val getReportModel = GetReportModel(accountKey, yearKey)
+
+        firebaseReportDao.get(getReportModel).let {
+            val newTax = (it.tax + tax).roundUpToTwo()
+            val newSize = it.size + 1
+            val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
+            firebaseReportDao.save(saveReportModel)
+        }
+    }
+
     override fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) = flow {
         with(deleteTransactionModel) {
             val newSize = reportSize - 1
 
             if (newSize == 0) {
-                val deleteReportModel = DeleteReportModel(accountKey, yearKey)
-                firebaseReportDao.deleteReport(deleteReportModel)
+                firebaseReportDao.delete(accountKey, reportKey)
             } else {
-                val newTax = (reportTax - transactionTax).roundUpToTwo()
+                val transactionTax = transactionTax ?: 0.0
 
-                val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
-                firebaseReportDao.saveReport(saveReportModel)
+                val newTax = (reportTax - transactionTax).roundUpToTwo()
+                val saveReportModel = SaveReportModel(accountKey, reportKey, newTax, newSize)
+                firebaseReportDao.save(saveReportModel)
+
                 firebaseTransactionDao.deleteTransaction(deleteTransactionModel)
             }
 
@@ -86,20 +107,6 @@ class TransactionRepositoryImpl @Inject constructor(
 
             emit(Unit)
         }
-
-    private suspend fun SaveTransactionModel.incrementAndSave(
-        accountKey: String,
-        yearKey: String
-    ) {
-        val getReportModel = GetReportModel(accountKey, yearKey)
-
-        firebaseReportDao.getReport(getReportModel).let {
-            val newTax = (it.tax + tax).roundUpToTwo()
-            val newSize = it.size + 1
-            val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
-            firebaseReportDao.saveReport(saveReportModel)
-        }
-    }
 
     private fun SaveTransactionModel.updateCBRRate() {
         try {

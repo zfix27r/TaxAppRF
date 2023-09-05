@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.report.DeleteReportModel
 import com.taxapprf.domain.report.DeleteReportUseCase
-import com.taxapprf.domain.report.GetReportsModel
-import com.taxapprf.domain.report.GetReportsUseCase
+import com.taxapprf.domain.report.ObserveReportsModel
+import com.taxapprf.domain.report.ObserveReportsUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelUseCase
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReportsViewModel @Inject constructor(
-    private val getReportsUseCase: GetReportsUseCase,
+    private val getReportsUseCase: ObserveReportsUseCase,
     private val saveReportsFromUriUseCase: SaveTransactionsFromExcelUseCase,
     private val deleteReportUseCase: DeleteReportUseCase,
 ) : BaseViewModel() {
@@ -32,19 +32,12 @@ class ReportsViewModel @Inject constructor(
     var deleteReport: ReportModel? = null
 
     fun loadReports() = viewModelScope.launch(Dispatchers.IO) {
-        val getReportsModel = GetReportsModel(account.name)
+        val getReportsModel = ObserveReportsModel(account.key)
         getReportsUseCase.execute(getReportsModel)
             .onStart { start() }
             .catch { error(it) }
-            .collectLatest { result ->
-                result.exceptionOrNull()
-                    ?.let { error(it) }
-                    ?: run {
-                        result.getOrNull()?.let { results ->
-                            _reports.postValue(results)
-                        }
-                    }
-
+            .collectLatest {
+                _reports.postValue(it)
                 success()
             }
     }
@@ -53,8 +46,8 @@ class ReportsViewModel @Inject constructor(
         deleteReport?.let { report ->
             val deleteReportModel =
                 DeleteReportModel(
-                    accountKey = account.name,
-                    yearKey = report.year,
+                    accountKey = account.key,
+                    reportKey = report.key,
                 )
 
             deleteReport = null
@@ -68,7 +61,7 @@ class ReportsViewModel @Inject constructor(
 
     fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {
         intent?.data?.path?.let { uri ->
-            val saveReportsFromUriModel = SaveTransactionsFromExcelModel(account.name, uri)
+            val saveReportsFromUriModel = SaveTransactionsFromExcelModel(account.key, uri)
             saveReportsFromUriUseCase.execute(saveReportsFromUriModel)
                 .onStart { start() }
                 .catch { error(it) }

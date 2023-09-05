@@ -16,7 +16,7 @@ import org.mockito.quality.Strictness
 import org.mockito.MockitoSession
 
 class GetTransactionsUseCaseTest {
-    private lateinit var getTransactionsUseCase: GetTransactionsUseCase
+    private lateinit var getTransactionsUseCase: ObserveTransactionsUseCase
     @Mock
     private lateinit var mockRepository: TransactionRepository
     private lateinit var mockitoSession: MockitoSession
@@ -28,7 +28,7 @@ class GetTransactionsUseCaseTest {
             .initMocks(this)
             .strictness(Strictness.STRICT_STUBS)
             .startMocking()
-        getTransactionsUseCase = GetTransactionsUseCase(mockRepository)
+        getTransactionsUseCase = ObserveTransactionsUseCase(mockRepository)
     }
 
     @AfterEach

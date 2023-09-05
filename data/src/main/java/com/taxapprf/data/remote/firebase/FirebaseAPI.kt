@@ -9,7 +9,7 @@ import javax.inject.Inject
 class FirebaseAPI @Inject constructor() {
     private val database =
         FirebaseDatabase.getInstance()
-            .apply { setPersistenceEnabled(true) }
+
     private val reference = database.reference
 
     val auth = FirebaseAuth.getInstance()

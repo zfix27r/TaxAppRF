@@ -25,11 +25,13 @@ class TransactionAdapterViewHolder(
     fun bind(transactionModel: TransactionModel) {
         transaction = transactionModel
 
-        with(binding.textViewTransactionsAdapterItemName) {
-            if (transaction.name.isEmpty()) isVisible = false
-            else {
-                text = transaction.name
-                isVisible = true
+        transaction.name?.let {
+            with(binding.textViewTransactionsAdapterItemName) {
+                if (it.isEmpty()) isVisible = false
+                else {
+                    text = transaction.name
+                    isVisible = true
+                }
             }
         }
         binding.textViewTransactionsAdapterItemType.setText(transaction.type.getTransactionName())

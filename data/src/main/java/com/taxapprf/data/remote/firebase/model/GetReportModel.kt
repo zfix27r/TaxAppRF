@@ -1,4 +1,4 @@
-package com.taxapprf.domain.report
+package com.taxapprf.data.remote.firebase.model
 
 data class GetReportModel(
     val accountKey: String,

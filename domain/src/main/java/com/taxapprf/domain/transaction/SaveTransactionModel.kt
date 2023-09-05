@@ -14,22 +14,22 @@ data class SaveTransactionModel(
     val sum: Double,
 ) {
     lateinit var reportYear: String
-    var reportTax by Delegates.notNull<Double>()
     var reportSize by Delegates.notNull<Int>()
+    var reportTax by Delegates.notNull<Double>()
 
     var rateCBR by Delegates.notNull<Double>()
     var tax by Delegates.notNull<Double>()
 
     fun isReportYearChanged() = reportYear != yearKey
-    fun toDeleteTransactionModel() =
+    fun asDeleteTransactionModel() =
         transactionKey?.let {
             DeleteTransactionModel(
                 accountKey,
                 reportYear,
                 transactionKey,
                 tax,
-                reportTax,
-                reportSize
+                reportSize,
+                reportTax
             )
         }
 }

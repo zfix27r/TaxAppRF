@@ -8,9 +8,13 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
@@ -20,6 +24,8 @@ import com.taxapprf.taxapp.ui.checkStoragePermission
 import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
 import com.taxapprf.taxapp.ui.share
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -86,21 +92,30 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     override fun onAuthReady() {
         super.onAuthReady()
 
-        mainViewModel.report?.let {
-            viewModel.report = it
+        mainViewModel.report?.let { oldReportModel ->
+            viewModel.report = oldReportModel
             mainViewModel.report = null
+
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.observeReport(oldReportModel.key).collectLatest { reports ->
+                        reports.firstOrNull()?.let {
+                            viewModel.report = it
+                            it.updateToolbar()
+                        } ?: findNavController().popBackStack()
+                    }
+                }
+            }
+
             viewModel.loadTransactions()
-            updateUI()
-        } ?: findNavController().popBackStack()
+        }
     }
 
     private fun TransactionsViewModel.observeTransactions() =
         transactions.observe(viewLifecycleOwner) { transaction ->
             transaction?.let {
-                if (it.isEmpty()) findNavController().popBackStack()
                 adapter.submitList(it)
-                updateUI()
-            } ?: findNavController().popBackStack()
+            }
         }
 
     override fun onSuccessShare() {
@@ -118,10 +133,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         findNavController().popBackStack()
     }
 
-    private fun updateUI() {
-        val title = String.format(getString(R.string.transactions_title), viewModel.report.year)
-        val subtitle =
-            String.format(getString(R.string.transactions_subtitle), viewModel.report.tax)
+    private fun ReportModel.updateToolbar() {
+        val title = String.format(getString(R.string.transactions_title), key)
+        val subtitle = String.format(getString(R.string.transactions_subtitle), tax)
         toolbar.updateToolbar(title, subtitle)
     }
 

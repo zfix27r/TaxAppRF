@@ -75,36 +75,28 @@ class MainViewModel @Inject constructor(
 
     fun switchAccount(newAccountName: String) = viewModelScope.launch(Dispatchers.IO) {
         _account.value?.let { oldAccountModel ->
-            val switchAccountModel = SwitchAccountModel(oldAccountModel.name, newAccountName)
+            val switchAccountModel = SwitchAccountModel(oldAccountModel.key, newAccountName)
             switchAccountUseCase.execute(switchAccountModel)
                 .onStart { _state.loading() }
                 .collectLatest { _state.success() }
         }
     }
 
-    private fun Result<List<AccountModel>>.updateAccounts() {
-        exceptionOrNull()
-            ?.let { _state.error(it) }
-            ?: run {
-                getOrNull()?.let { accounts ->
-                    if (accounts.isNotEmpty()) {
-                        accounts.find { it.active }?.let {
-                            _accounts.postValue(accounts)
-                            _account.postValue(it)
-                        } ?: run {
-                            val accountsWithActiveAccount = accounts.setActiveAccount()
-                            _accounts.postValue(accountsWithActiveAccount)
-                            _account.postValue(accountsWithActiveAccount.first())
-                        }
-                    } else {
-                        listOf<List<AccountModel>>()
-                    }
-                } ?: run { listOf<List<AccountModel>>() }
+    private fun List<AccountModel>.updateAccounts() {
+        if (isNotEmpty()) {
+            find { it.isActive }?.let {
+                _accounts.postValue(this)
+                _account.postValue(it)
+            } ?: run {
+                val accountsWithActiveAccount = setActiveAccount()
+                _accounts.postValue(accountsWithActiveAccount)
+                _account.postValue(accountsWithActiveAccount.first())
             }
+        }
     }
 
     private fun List<AccountModel>.setActiveAccount() = mapIndexed { index, accountModel ->
-        if (index == 0) accountModel.copy(active = true)
+        if (index == 0) accountModel.copy(isActive = true)
         else accountModel
     }
 
