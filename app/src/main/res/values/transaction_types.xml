@@ -5,7 +5,7 @@
         <item>@string/transaction_type_commission</item>
         <item>@string/transaction_type_funding_withdrawal</item>
     </string-array>
-    <string name="transaction_type_trade">сделка</string>
-    <string name="transaction_type_commission">поручение</string>
-    <string name="transaction_type_funding_withdrawal">фонд/вывод</string>
+    <string name="transaction_type_trade">Сделка</string>
+    <string name="transaction_type_commission">Комиссия</string>
+    <string name="transaction_type_funding_withdrawal">Ввод/вывод средств</string>
 </resources>

@@ -66,6 +66,10 @@ class ReportsViewModel @Inject constructor(
         }
     }
 
+    fun onSwipedReport(position: Int) {
+        deleteReport = _reports.value?.get(position)
+    }
+
     fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {
         intent?.data?.path?.let { uri ->
             val saveReportsFromUriModel = SaveTransactionsFromExcelModel(account.name, uri)
