@@ -18,9 +18,9 @@ data class FirebaseTransactionModel(
         val date = date ?: return null
         val type = type ?: return null
         val currency = currency ?: return null
-        val rateCBR = rateCBR
+        val rateCBR = rateCBR ?: 0.0
         val sum = sum ?: return null
-        val tax = tax
+        val tax = tax ?: 0.0
         val syncAt = syncAt ?: 0
 
         return TransactionModel(
@@ -32,8 +32,9 @@ data class FirebaseTransactionModel(
             rateCBR,
             sum,
             tax,
-            true,
-            syncAt
+            isSync = true,
+            isDeferredDelete = false,
+            syncAt = syncAt
         )
     }
 }

@@ -4,8 +4,8 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.report.DeleteReportModel
-import com.taxapprf.domain.report.DeleteReportUseCase
+import com.taxapprf.domain.report.DeleteWithTransactionsModel
+import com.taxapprf.domain.report.DeleteReportWithTransactionsUseCase
 import com.taxapprf.domain.report.ObserveReportsModel
 import com.taxapprf.domain.report.ObserveReportsUseCase
 import com.taxapprf.domain.report.ReportModel
@@ -24,7 +24,7 @@ import javax.inject.Inject
 class ReportsViewModel @Inject constructor(
     private val getReportsUseCase: ObserveReportsUseCase,
     private val saveReportsFromUriUseCase: SaveTransactionsFromExcelUseCase,
-    private val deleteReportUseCase: DeleteReportUseCase,
+    private val deleteReportUseCase: DeleteReportWithTransactionsUseCase,
 ) : BaseViewModel() {
     private val _reports = MutableLiveData<List<ReportModel>>()
     val reports: LiveData<List<ReportModel>> = _reports
@@ -45,7 +45,7 @@ class ReportsViewModel @Inject constructor(
     fun deleteReport() = viewModelScope.launch(Dispatchers.IO) {
         deleteReport?.let { report ->
             val deleteReportModel =
-                DeleteReportModel(
+                DeleteWithTransactionsModel(
                     accountKey = account.key,
                     reportKey = report.key,
                 )

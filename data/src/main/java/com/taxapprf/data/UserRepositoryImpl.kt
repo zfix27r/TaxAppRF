@@ -9,7 +9,9 @@ import com.taxapprf.domain.user.UserModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserRepositoryImpl @Inject constructor(
     private val firebaseUserDao: FirebaseUserDaoImpl,
     private val firebaseAccountDao: FirebaseAccountDaoImpl

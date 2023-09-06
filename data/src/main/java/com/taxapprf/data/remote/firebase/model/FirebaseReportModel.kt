@@ -14,6 +14,6 @@ data class FirebaseReportModel(
         val size = this.size ?: return null
         val syncAt = this.syncAt ?: 0L
 
-        return ReportModel(key, tax, size, true, syncAt)
+        return ReportModel(key, tax, size, isSync = true, isDeferredDelete = false, syncAt = syncAt)
     }
 }

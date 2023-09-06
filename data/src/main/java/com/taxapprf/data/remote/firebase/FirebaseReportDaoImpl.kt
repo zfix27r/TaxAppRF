@@ -85,9 +85,16 @@ class FirebaseReportDaoImpl(
             fb.getReportPath(accountKey, reportKey)
                 .setValue(null)
                 .await()
+        }
+    }
 
-            fb.getTransactionsPath(accountKey, reportKey)
-                .setValue(null)
+    override suspend fun deleteAll(
+        accountKey: String,
+        mapFirebaseReportModels: Map<String, FirebaseReportModel?>
+    ) {
+        safeCall {
+            fb.getReportsPath(accountKey)
+                .updateChildren(mapFirebaseReportModels)
                 .await()
         }
     }
@@ -95,20 +102,20 @@ class FirebaseReportDaoImpl(
     override suspend fun save(saveReportModel: SaveReportModel) {
         safeCall {
             with(saveReportModel) {
-                fb.getReportPath(accountKey, key)
+                fb.getReportPath(accountKey, reportKey)
                     .setValue(saveReportModel.toFirebaseReportModel(getTime()))
                     .await()
             }
         }
     }
 
-    override suspend fun save(
+    override suspend fun saveAll(
         accountKey: String,
-        reportModels: Map<String, FirebaseReportModel>
+        mapFirebaseReportModels: Map<String, FirebaseReportModel>
     ) {
         safeCall {
             fb.getReportsPath(accountKey)
-                .updateChildren(reportModels)
+                .updateChildren(mapFirebaseReportModels)
                 .await()
         }
     }
@@ -119,9 +126,10 @@ class FirebaseReportDaoImpl(
             tax = 0.0,
             size = 0,
             isSync = true,
+            isDeferredDelete = false,
             syncAt = 0
         )
 
     private fun SaveReportModel.toFirebaseReportModel(syncAt: Long) =
-        FirebaseReportModel(key, tax, size, syncAt)
+        FirebaseReportModel(reportKey, tax, size, syncAt)
 }

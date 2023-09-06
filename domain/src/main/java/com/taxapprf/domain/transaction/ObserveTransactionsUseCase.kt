@@ -7,5 +7,5 @@ class ObserveTransactionsUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
     fun execute(observeTransactionsModel: ObserveTransactionsModel) =
-        repository.observeTransactions(observeTransactionsModel)
+        repository.observe(observeTransactionsModel)
 }

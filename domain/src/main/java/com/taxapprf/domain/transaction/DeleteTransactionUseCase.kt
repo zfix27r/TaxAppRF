@@ -6,6 +6,6 @@ import javax.inject.Inject
 class DeleteTransactionUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
-    fun execute(deleteTransactionModel: DeleteTransactionModel) =
-        repository.deleteTransaction(deleteTransactionModel)
+    suspend fun execute(deleteTransactionModel: DeleteTransactionModel) =
+        repository.delete(deleteTransactionModel)
 }

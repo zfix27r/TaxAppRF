@@ -7,5 +7,5 @@ class SaveTransactionsFromExcelUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
     fun execute(saveReportsFromExcelModel: SaveTransactionsFromExcelModel) =
-        repository.saveTransactionsFromExcel(saveReportsFromExcelModel)
+        repository.saveFromExcel(saveReportsFromExcelModel)
 }

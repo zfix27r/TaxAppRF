@@ -11,10 +11,10 @@ import com.taxapprf.domain.transaction.TransactionModel
 import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
-    fun observeTransactions(observeTransactionsModel: ObserveTransactionsModel): Flow<List<TransactionModel>>
-    fun saveTransaction(saveTransactionModel: SaveTransactionModel): Flow<Unit>
-    fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel): Flow<Unit>
+    fun observe(observeTransactionsModel: ObserveTransactionsModel): Flow<List<TransactionModel>>
+    fun save(saveTransactionModel: SaveTransactionModel): Flow<Unit>
+    fun delete(deleteTransactionModel: DeleteTransactionModel): Flow<Unit>
     fun getExcelToShare(getExcelToShareModel: GetExcelToShareModel): Flow<Uri>
     fun getExcelToStorage(getExcelToStorageModel: GetExcelToStorageModel): Flow<Uri>
-    fun saveTransactionsFromExcel(saveTransactionsFromExcelModel: SaveTransactionsFromExcelModel): Flow<Unit>
+    fun saveFromExcel(saveTransactionsFromExcelModel: SaveTransactionsFromExcelModel): Flow<Unit>
 }

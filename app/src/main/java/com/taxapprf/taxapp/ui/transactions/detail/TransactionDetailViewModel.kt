@@ -73,20 +73,14 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
             accountKey = account.key,
-            yearKey = date.getYear().toString(),
+            reportKey = date.getYear().toString(),
             transactionKey = transaction?.key,
             date = date,
             name = name,
             currency = currency,
             type = type,
-            sum = sum
-        ).apply {
-            report?.let {
-                reportYear = it.key
-                reportTax = it.tax
-                reportSize = it.size
-            }
-        }
+            sum = sum,
+        )
     }
 
     private fun String.getYear() = split("/")[2].toInt()

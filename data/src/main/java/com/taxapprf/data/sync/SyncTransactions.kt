@@ -2,13 +2,13 @@ package com.taxapprf.data.sync
 
 import com.taxapprf.data.local.room.dao.LocalTransactionDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
-import com.taxapprf.data.remote.firebase.dao.FirebaseTransactionDao
+import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 
 class SyncTransactions(
     private val localDao: LocalTransactionDao,
-    private val remoteDao: FirebaseTransactionDao,
+    private val remoteDao: RemoteTransactionDao,
     private val accountKey: String,
     private val reportKey: String,
 ) : SyncManager<LocalTransactionEntity, TransactionModel, FirebaseTransactionModel>() {
@@ -16,10 +16,13 @@ class SyncTransactions(
 
     override fun getLocal() = localDao.getAll(accountKey, reportKey)
 
-    override fun observeRemote() = remoteDao.observeTransactions(accountKey, reportKey)
+    override fun observeRemote() = remoteDao.observeAll(accountKey, reportKey)
+    override suspend fun deleteRemote(models: Map<String, FirebaseTransactionModel?>) {
+        remoteDao.deleteAll(accountKey, reportKey, models)
+    }
 
     override suspend fun saveRemote(models: Map<String, FirebaseTransactionModel>) {
-        remoteDao.saveTransactions(accountKey, reportKey, models)
+        remoteDao.saveAll(accountKey, reportKey, models)
     }
 
     override fun deleteLocal(models: List<LocalTransactionEntity>) {
@@ -63,10 +66,23 @@ class SyncTransactions(
                 sum = it.sum,
                 tax = it.tax,
                 isSync = it.isSync,
+                isDeferredDelete = it.isDeferredDelete,
                 syncAt = it.syncAt
             )
         }
 
     override fun LocalTransactionEntity.mapLocalToApp() =
-        TransactionModel(key, name, date, type, currency, rateCBR, sum, tax, isSync, syncAt)
+        TransactionModel(
+            key,
+            name,
+            date,
+            type,
+            currency,
+            rateCBR,
+            sum,
+            tax,
+            isSync,
+            isDeferredDelete,
+            syncAt
+        )
 }

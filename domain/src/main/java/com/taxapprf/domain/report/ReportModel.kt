@@ -7,5 +7,6 @@ data class ReportModel(
     val tax: Double,
     val size: Int,
     override val isSync: Boolean,
+    override val isDeferredDelete: Boolean,
     override val syncAt: Long,
 ) : Sync

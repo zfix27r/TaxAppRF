@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetCurrencyRateTodayFromCBRUseCase @Inject constructor(
     private val repository: CurrencyRepository
 ) {
-    fun execute(currency: String) = repository.getTodayCurrency(currency)
+    fun execute(currency: String) = repository.observe(currency)
 }

@@ -8,12 +8,14 @@ import com.taxapprf.domain.currency.CurrencyModel
 import kotlinx.coroutines.flow.flow
 import java.lang.Exception
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
+@Singleton
 class CurrencyRepositoryImpl @Inject constructor(
     private val cbrapi: CBRAPI,
 ) : CurrencyRepository {
-    override fun getTodayCurrency(date: String) = flow {
+    override fun observe(date: String) = flow {
         try {
             val request = cbrapi.getCurrency(date).execute()
 
@@ -35,4 +37,19 @@ class CurrencyRepositoryImpl @Inject constructor(
             throw DataErrorConnection()
         }
     }
+
+    override fun getCurrencyRate(date: String, currency: String) =
+        try {
+            val request = cbrapi.getCurrency(date).execute()
+
+            try {
+                request.body()!!
+                    .getCurrencyRate(currency)!!
+                    .roundUpToTwo()
+            } catch (_: Exception) {
+                -1.0
+            }
+        } catch (_: Exception) {
+            0.0
+        }
 }

@@ -1,7 +1,9 @@
 package com.taxapprf.data.di
 
 import android.content.Context
+import android.net.ConnectivityManager
 import androidx.room.Room
+import com.taxapprf.data.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseAPI
@@ -42,21 +44,29 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .retryOnConnectionFailure(false)
-            .build()
-    }
+    fun provideConnectivityManager(@ApplicationContext context: Context) =
+        context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
 
     @Provides
     @Singleton
-    fun provideRetrofit(httpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
+    fun provideNetworkManager(connectivityManager: ConnectivityManager) =
+        NetworkManager(connectivityManager)
+
+    @Provides
+    @Singleton
+    fun provideHttpClient(): OkHttpClient =
+        OkHttpClient.Builder()
+            .retryOnConnectionFailure(false)
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(httpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
             .baseUrl("https://www.cbr.ru/scripts/")
             .client(httpClient)
             .addConverterFactory(SimpleXmlConverterFactory.create())
             .build()
-    }
 
     @Provides
     @Singleton

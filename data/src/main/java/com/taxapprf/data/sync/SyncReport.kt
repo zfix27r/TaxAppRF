@@ -5,6 +5,7 @@ import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 import com.taxapprf.domain.report.ReportModel
+import kotlinx.coroutines.flow.map
 
 class SyncReport(
     private val localDao: LocalReportDao,
@@ -12,22 +13,29 @@ class SyncReport(
     private val accountKey: String,
     private val reportKey: String,
 ) : SyncManager<LocalReportEntity, ReportModel, FirebaseReportModel>() {
-    override fun observeLocal() = localDao.observe(accountKey, reportKey)
+    override fun observeLocal() = localDao.observe(accountKey, reportKey).map {
+        it?.let { listOf(it) } ?: run { emptyList() }
+    }
 
     override fun getLocal() = localDao.get(accountKey, reportKey)
+        ?.let { listOf(it) } ?: run { emptyList() }
+
 
     override fun observeRemote() = remoteDao.observe(accountKey, reportKey)
+    override suspend fun deleteRemote(models: Map<String, FirebaseReportModel?>) {
+        remoteDao.deleteAll(accountKey, models)
+    }
 
     override suspend fun saveRemote(models: Map<String, FirebaseReportModel>) {
-        remoteDao.save(accountKey, models)
+        remoteDao.saveAll(accountKey, models)
     }
 
     override fun deleteLocal(models: List<LocalReportEntity>) {
-        localDao.delete(models)
+        localDao.deleteAll(models)
     }
 
     override fun saveLocal(models: List<LocalReportEntity>) {
-        localDao.save(models)
+        localDao.saveAll(models)
     }
 
     override fun List<ReportModel>.mapAppToRemote(): Map<String, FirebaseReportModel> {
@@ -53,10 +61,11 @@ class SyncReport(
                 tax = it.tax,
                 size = it.size,
                 isSync = it.isSync,
+                isDeferredDelete = it.isDeferredDelete,
                 syncAt = it.syncAt
             )
         }
 
     override fun LocalReportEntity.mapLocalToApp() =
-        ReportModel(key, tax, size, isSync, syncAt)
+        ReportModel(key, tax, size, isSync, isDeferredDelete, syncAt)
 }

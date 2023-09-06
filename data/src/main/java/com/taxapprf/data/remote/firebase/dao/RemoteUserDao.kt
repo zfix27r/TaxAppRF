@@ -5,7 +5,7 @@ import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.UserModel
 
 
-interface FirebaseUserDao {
+interface RemoteUserDao {
     suspend fun signInAnonymously()
 
     suspend fun signInWithEmailAndPassword(signInModel: SignInModel)

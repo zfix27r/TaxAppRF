@@ -13,6 +13,9 @@ interface LocalAccountDao {
     @Query("SELECT * FROM account")
     fun observeAll(): Flow<List<LocalAccountEntity>>
 
+    @Query("SELECT * FROM account")
+    fun getAll(): List<LocalAccountEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(localAccountEntity: LocalAccountEntity): Long
 

@@ -6,5 +6,6 @@ data class AccountModel(
     override val key: String,
     val isActive: Boolean,
     override val isSync: Boolean,
+    override val isDeferredDelete: Boolean,
     override val syncAt: Long,
 ) : Sync

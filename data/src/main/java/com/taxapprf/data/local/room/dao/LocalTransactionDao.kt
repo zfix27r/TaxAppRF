@@ -31,4 +31,7 @@ interface LocalTransactionDao {
 
     @Delete
     fun delete(localTransactionEntities: List<LocalTransactionEntity>): Int
+
+    @Query("UPDATE `transaction` SET is_deferred_delete = 1 WHERE transaction_key = :transactionKey")
+    fun deleteDeferred(transactionKey: String): Int
 }

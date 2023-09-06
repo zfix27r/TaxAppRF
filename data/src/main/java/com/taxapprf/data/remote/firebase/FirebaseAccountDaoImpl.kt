@@ -3,7 +3,7 @@ package com.taxapprf.data.remote.firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.taxapprf.data.remote.firebase.dao.FirebaseAccountDao
+import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
 import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.account.AccountModel
@@ -18,8 +18,8 @@ import javax.inject.Inject
 
 class FirebaseAccountDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
-) : FirebaseAccountDao {
-    override fun observeAccounts() = callbackFlow<Result<List<AccountModel>>> {
+) : RemoteAccountDao {
+    override fun observeAll() = callbackFlow<Result<List<AccountModel>>> {
         safeCall {
             val callback = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -51,7 +51,7 @@ class FirebaseAccountDaoImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveAccount(firebaseAccountModel: FirebaseAccountModel) {
+    override suspend fun save(firebaseAccountModel: FirebaseAccountModel) {
         safeCall {
             fb.getAccountsPath()
                 .child(firebaseAccountModel.name!!)
@@ -60,16 +60,24 @@ class FirebaseAccountDaoImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveAccounts(firebaseAccountModels: Map<String, FirebaseAccountModel>) {
+    override suspend fun saveAll(mapFirebaseAccountModels: Map<String, FirebaseAccountModel>) {
         safeCall {
             fb.getAccountsPath()
-                .updateChildren(firebaseAccountModels)
+                .updateChildren(mapFirebaseAccountModels)
+                .await()
+        }
+    }
+
+    override suspend fun deleteAll(mapFirebaseAccountModels: Map<String, FirebaseAccountModel?>) {
+        safeCall {
+            fb.getAccountsPath()
+                .updateChildren(mapFirebaseAccountModels)
                 .await()
         }
     }
 
     override suspend fun saveDefaultAccount() {
         val firebaseAccountModel = FirebaseAccountModel("default", true)
-        saveAccount(firebaseAccountModel)
+        save(firebaseAccountModel)
     }
 }

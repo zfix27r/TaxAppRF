@@ -7,5 +7,5 @@ class ObserveReportUseCase @Inject constructor(
     private val repository: ReportRepository
 ) {
     fun execute(observeReportModel: ObserveReportModel) =
-        repository.observeReport(observeReportModel)
+        repository.observe(observeReportModel)
 }

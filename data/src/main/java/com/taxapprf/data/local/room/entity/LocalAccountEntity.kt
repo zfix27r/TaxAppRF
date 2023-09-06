@@ -16,6 +16,8 @@ data class LocalAccountEntity(
 
     @ColumnInfo(name = IS_SYNC)
     override val isSync: Boolean,
+    @ColumnInfo(name = IS_DEFERRED_DELETE)
+    override val isDeferredDelete: Boolean,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long,
 ) : Sync {
@@ -26,6 +28,7 @@ data class LocalAccountEntity(
         const val IS_ACTIVE = "is_active"
 
         const val IS_SYNC = "is_sync"
+        const val IS_DEFERRED_DELETE = "is_deferred_delete"
         const val SYNC_AT = "sync_at"
     }
 }

@@ -30,14 +30,16 @@ data class LocalTransactionEntity(
     @ColumnInfo(name = CURRENCY)
     val currency: String,
     @ColumnInfo(name = RATE_CBR)
-    val rateCBR: Double?,
+    val rateCBR: Double,
     @ColumnInfo(name = SUM)
     val sum: Double,
     @ColumnInfo(name = TAX)
-    val tax: Double?,
+    val tax: Double,
 
     @ColumnInfo(name = IS_SYNC)
     override val isSync: Boolean,
+    @ColumnInfo(name = IS_DEFERRED_DELETE)
+    override val isDeferredDelete: Boolean,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long,
 ) : Sync {
@@ -57,6 +59,7 @@ data class LocalTransactionEntity(
         const val TAX = "tax"
 
         const val IS_SYNC = "is_sync"
+        const val IS_DEFERRED_DELETE = "is_deferred_delete"
         const val SYNC_AT = "sync_at"
     }
 }
