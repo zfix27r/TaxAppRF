@@ -49,7 +49,9 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     fun checkDate(cDate: Editable?) = checkDate(cDate.toString())
     fun checkDate(year: Int, month: Int, dayOfMonth: Int): Int? {
         val dayFormatted = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
-        val monthFormatted = if (month < 10) "0$month" else dayOfMonth.toString()
+        val monthIncremented = month + 1
+        val monthFormatted =
+            if (monthIncremented < 10) "0$monthIncremented" else monthIncremented.toString()
 
         return checkDate("$dayFormatted/$monthFormatted/$year")
     }
@@ -70,7 +72,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
 
     fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
-            accountKey = account.name,
+            accountKey = account.key,
             yearKey = date.getYear().toString(),
             transactionKey = transaction?.key,
             date = date,
@@ -80,7 +82,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
             sum = sum
         ).apply {
             report?.let {
-                reportYear = it.year
+                reportYear = it.key
                 reportTax = it.tax
                 reportSize = it.size
             }

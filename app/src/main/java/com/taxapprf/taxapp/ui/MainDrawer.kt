@@ -64,23 +64,22 @@ class MainDrawer(
         userEmail.text = userModel.email
     }
 
-    fun showAuth() {
+    fun showWithAuth() {
         userName.isVisible = true
         userEmail.isVisible = true
         logOut.isVisible = true
         accounts.isVisible = true
-        recycler.isVisible = true
 
         navView.menu.clear()
         navView.inflateMenu(R.menu.auth_drawer)
     }
 
-    fun hideAuth() {
+    fun hideWithoutAuth() {
+        expandLessAccounts()
         userName.isVisible = false
         userEmail.isVisible = false
         logOut.isVisible = false
         accounts.isVisible = false
-        recycler.isVisible = false
 
         navView.menu.clear()
         navView.inflateMenu(R.menu.not_auth_drawer)
