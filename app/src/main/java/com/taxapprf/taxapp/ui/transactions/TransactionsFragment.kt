@@ -13,6 +13,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
@@ -33,6 +34,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private val binding by viewBinding(FragmentTransactionsBinding::bind)
     private val viewModel by viewModels<TransactionsViewModel>()
     private val adapter = TransactionsAdapter { transactionAdapterCallback }
+    lateinit var itemTouchHelper: ItemTouchHelper
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,6 +45,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         prepToolbar()
         prepView()
         prepListeners()
+
+        itemTouchHelper = ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
+        itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
+
+        viewModel.observeTransactions()
     }
 
     private fun prepToolbar() {
@@ -96,28 +103,25 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(oldReportModel.key).collectLatest { report ->
-                        println("!!!!!!!!!!!!!!")
-                        report?.let {
-                            println("@@!!@@ $it")
-                            report.updateToolbar()
-                        }
+                    viewModel.observeReport(oldReportModel.key).collectLatest { reports ->
+                        reports.firstOrNull()?.let {
+                            viewModel.report = it
+                            it.updateToolbar()
+                        } ?: findNavController().popBackStack()
                     }
                 }
             }
 
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeTransactions(oldReportModel.key)
-                        .collectLatest { transactions ->
-                            if (transactions.isNotEmpty()) {
-                                adapter.submitList(transactions)
-                            }
-                        }
-                }
-            }
+            viewModel.loadTransactions()
         }
     }
+
+    private fun TransactionsViewModel.observeTransactions() =
+        transactions.observe(viewLifecycleOwner) { transaction ->
+            transaction?.let {
+                adapter.submitList(it)
+            }
+        }
 
     override fun onSuccessShare() {
         super.onSuccessShare()
@@ -166,6 +170,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                     }
                 }
             }
+        }
+
+        override fun onSwiped(position: Int) {
+            viewModel.onSwipedTransaction(position)
+            viewModel.deleteTransaction()
         }
     }
 
