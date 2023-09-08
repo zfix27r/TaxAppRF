@@ -1,11 +1,11 @@
-package com.taxapprf.taxapp.ui.reports
+package com.taxapprf.taxapp.ui.transactions
 
 import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 
-class ItemTouchHelperCallback (private val callback: ReportsAdapterCallback) :
+class TransactionTouchHelperCallback (private val callback: TransactionsAdapterCallback) :
     ItemTouchHelper.Callback() {
 
     override fun isItemViewSwipeEnabled(): Boolean {
