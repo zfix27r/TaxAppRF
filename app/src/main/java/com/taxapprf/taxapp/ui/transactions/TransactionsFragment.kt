@@ -13,6 +13,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
@@ -33,6 +34,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private val binding by viewBinding(FragmentTransactionsBinding::bind)
     private val viewModel by viewModels<TransactionsViewModel>()
     private val adapter = TransactionsAdapter { transactionAdapterCallback }
+    lateinit var itemTouchHelper: ItemTouchHelper
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,6 +45,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         prepToolbar()
         prepView()
         prepListeners()
+
+        itemTouchHelper = ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
+        itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
 
         viewModel.observeTransactions()
     }
@@ -165,6 +170,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                     }
                 }
             }
+        }
+
+        override fun onSwiped(position: Int) {
+            viewModel.onSwipedTransaction(position)
+            viewModel.deleteTransaction()
         }
     }
 

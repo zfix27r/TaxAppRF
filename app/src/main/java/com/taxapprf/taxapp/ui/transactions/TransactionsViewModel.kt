@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -79,6 +78,11 @@ class TransactionsViewModel @Inject constructor(
             }
         }
     }
+
+    fun onSwipedTransaction(position: Int) {
+        deleteTransaction = _transactions.value?.get(position)
+    }
+
 
     fun getExcelToStorage() = viewModelScope.launch(Dispatchers.IO) {
         transactions.value?.let { transactions ->
