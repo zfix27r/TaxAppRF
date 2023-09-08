@@ -61,7 +61,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveAll(
+    override suspend fun save(
         accountKey: String,
         reportKey: String,
         transactionKey: String?,
@@ -70,16 +70,18 @@ class FirebaseTransactionDaoImpl @Inject constructor(
         safeCall {
             val ref = fb.getTransactionsPath(accountKey, reportKey)
 
-            transactionKey?.let {
-                ref.child(transactionKey)
-            }
+            val key = transactionKey
+                ?: ref.push().key
+                ?: throw DataErrorExternal()
 
-            ref.setValue(firebaseTransactionModel)
+            ref
+                .child(key)
+                .setValue(firebaseTransactionModel)
                 .await()
         }
     }
 
-    override suspend fun deleteAll(
+    override suspend fun delete(
         accountKey: String,
         reportKey: String,
         transactionKey: String

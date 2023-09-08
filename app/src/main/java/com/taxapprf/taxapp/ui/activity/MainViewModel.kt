@@ -21,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -73,9 +74,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun switchAccount(newAccountName: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun switchAccount(accountModel: AccountModel) = viewModelScope.launch(Dispatchers.IO) {
         _account.value?.let { oldAccountModel ->
-            val switchAccountModel = SwitchAccountModel(oldAccountModel.key, newAccountName)
+            val switchAccountModel = SwitchAccountModel(
+                oldAccountModel.id, oldAccountModel.key,
+                accountModel.id, accountModel.key
+            )
             switchAccountUseCase.execute(switchAccountModel)
                 .onStart { _state.loading() }
                 .collectLatest { _state.success() }
@@ -109,7 +113,7 @@ class MainViewModel @Inject constructor(
 
     fun saveTransaction(saveTransactionModel: SaveTransactionModel) =
         viewModelScope.launch(Dispatchers.IO) {
-            saveTransactionUseCase.execute(saveTransactionModel)
+            flow { emit(saveTransactionUseCase.execute(saveTransactionModel)) }
                 .onStart { _state.loading() }
                 .catch { _state.error(it) }
                 .collectLatest { _state.success() }

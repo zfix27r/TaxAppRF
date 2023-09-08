@@ -3,7 +3,7 @@ package com.taxapprf.data.di
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.room.Room
-import com.taxapprf.data.NetworkManager
+import com.taxapprf.domain.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.remote.cbrapi.CBRAPI
 import com.taxapprf.data.remote.firebase.FirebaseAPI

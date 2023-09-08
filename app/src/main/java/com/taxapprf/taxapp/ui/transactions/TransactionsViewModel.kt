@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.report.ObserveReportModel
 import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
@@ -13,16 +12,14 @@ import com.taxapprf.domain.transaction.GetExcelToShareModel
 import com.taxapprf.domain.transaction.GetExcelToShareUseCase
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
-import com.taxapprf.domain.transaction.ObserveTransactionsModel
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -42,14 +39,12 @@ class TransactionsViewModel @Inject constructor(
 
     lateinit var report: ReportModel
 
-    fun observeReport(yearKey: String): Flow<List<ReportModel>> {
-        val observeReportModel = ObserveReportModel(account.key, yearKey)
-        return observeReportUseCase.execute(observeReportModel)
+    fun observeReport(yearKey: String) =
+        observeReportUseCase.execute(account.key, yearKey)
             .onStart { start() }
             .catch { error(it) }
             .onEach { success() }
             .flowOn(Dispatchers.IO)
-    }
 
     private val _transactions = MutableLiveData<List<TransactionModel>>()
     val transactions: LiveData<List<TransactionModel>> = _transactions
@@ -58,8 +53,7 @@ class TransactionsViewModel @Inject constructor(
     lateinit var excelUri: Uri
 
     fun loadTransactions() = viewModelScope.launch(Dispatchers.IO) {
-        val getTransactionsModel = ObserveTransactionsModel(account.key, report.key)
-        getTransactionsUseCase.execute(getTransactionsModel)
+        getTransactionsUseCase.execute(account.key, report.key)
             .onStart { start() }
             .catch { error(it) }
             .onEach { reportSize = it.size }
@@ -72,7 +66,7 @@ class TransactionsViewModel @Inject constructor(
     fun deleteTransaction() {
         deleteTransactionModel?.let { deleteTransactionModel ->
             viewModelScope.launch(Dispatchers.IO) {
-                deleteTransactionUseCase.execute(deleteTransactionModel)
+                flow { emit(deleteTransactionUseCase.execute(deleteTransactionModel)) }
                     .onStart { start() }
                     .catch { error(it) }
                     .collectLatest { success() }

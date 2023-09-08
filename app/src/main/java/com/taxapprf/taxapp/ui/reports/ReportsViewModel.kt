@@ -4,9 +4,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.report.DeleteWithTransactionsModel
 import com.taxapprf.domain.report.DeleteReportWithTransactionsUseCase
-import com.taxapprf.domain.report.ObserveReportsModel
 import com.taxapprf.domain.report.ObserveReportsUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
@@ -16,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,8 +31,7 @@ class ReportsViewModel @Inject constructor(
     var deleteReport: ReportModel? = null
 
     fun loadReports() = viewModelScope.launch(Dispatchers.IO) {
-        val getReportsModel = ObserveReportsModel(account.key)
-        getReportsUseCase.execute(getReportsModel)
+        getReportsUseCase.execute(account.key)
             .onStart { start() }
             .catch { error(it) }
             .collectLatest {
@@ -44,15 +42,8 @@ class ReportsViewModel @Inject constructor(
 
     fun deleteReport() = viewModelScope.launch(Dispatchers.IO) {
         deleteReport?.let { report ->
-            val deleteReportModel =
-                DeleteWithTransactionsModel(
-                    accountKey = account.key,
-                    reportKey = report.key,
-                )
-
             deleteReport = null
-
-            deleteReportUseCase.execute(deleteReportModel)
+            flow { emit(deleteReportUseCase.execute(report.id, account.key, report.key)) }
                 .onStart { start() }
                 .catch { error(it) }
                 .collectLatest { success() }

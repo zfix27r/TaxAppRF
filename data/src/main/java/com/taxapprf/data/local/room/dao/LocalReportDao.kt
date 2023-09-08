@@ -16,7 +16,7 @@ interface LocalReportDao {
     @Query("SELECT * FROM report WHERE account_key = :accountKey")
     fun observeAll(accountKey: String): Flow<List<LocalReportEntity>>
 
-    @Query("SELECT * FROM report WHERE account_key = :accountKey AND report_key = :reportKey LIMIT 1")
+    @Query("SELECT * FROM report WHERE  account_key = :accountKey AND report_key = :reportKey LIMIT 1")
     fun get(accountKey: String, reportKey: String): LocalReportEntity?
 
     @Query("SELECT * FROM report WHERE account_key = :accountKey")
@@ -28,12 +28,18 @@ interface LocalReportDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveAll(reportEntities: List<LocalReportEntity>): List<Long>
 
+    @Query("DELETE FROM report WHERE id = :id")
+    fun delete(id: Int): Int
+
     @Delete
-    fun deleteAll(localReportEntities: List<LocalReportEntity>): Int
+    fun deleteAll(reportEntities: List<LocalReportEntity>): Int
 
-    @Query("DELETE FROM report WHERE account_key = :accountKey AND report_key = :reportKey")
-    fun delete(accountKey: String, reportKey: String): Int
-
-    @Query("UPDATE report SET is_deferred_delete = 1 WHERE account_key = :accountKey AND report_key = :reportKey")
+    @Query("UPDATE report SET is_delete = 1, is_sync = 0 WHERE account_key = :accountKey AND report_key = :reportKey")
     fun deleteDeferred(accountKey: String, reportKey: String): Int
+
+    @Query("UPDATE report SET is_delete = 1, is_sync = 0 WHERE id = :id")
+    fun deleteDeferred(id: Int): Int
+
+    @Query("UPDATE report SET is_delete = 1, is_sync = 0 WHERE id = :ids")
+    fun deleteAllDeferred(ids: List<Int>): Int
 }

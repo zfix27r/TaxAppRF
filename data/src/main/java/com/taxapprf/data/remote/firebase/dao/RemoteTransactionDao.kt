@@ -16,14 +16,14 @@ interface RemoteTransactionDao {
         mapFirebaseTransactionsModel: Map<String, FirebaseTransactionModel>
     )
 
-    suspend fun saveAll(
+    suspend fun save(
         accountKey: String,
         reportKey: String,
         transactionKey: String?,
         firebaseTransactionModel: FirebaseTransactionModel
     )
 
-    suspend fun deleteAll(
+    suspend fun delete(
         accountKey: String,
         reportKey: String,
         transactionKey: String

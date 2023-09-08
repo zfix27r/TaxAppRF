@@ -13,10 +13,11 @@ data class FirebaseAccountModel(
         val syncAt = syncAt ?: 0L
 
         return AccountModel(
+            id = 0,
             accountKey,
             active,
             isSync = true,
-            isDeferredDelete = false,
+            isDelete = false,
             syncAt = syncAt
         )
     }

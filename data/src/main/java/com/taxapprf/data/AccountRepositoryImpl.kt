@@ -19,7 +19,7 @@ class AccountRepositoryImpl @Inject constructor(
     private val remoteAccountDao: FirebaseAccountDaoImpl,
 ) : AccountRepository {
     override fun getAccounts() =
-        SyncAccounts(localAccountDao, remoteAccountDao).observe()
+        SyncAccounts(localAccountDao, remoteAccountDao).observeAll()
 
     override fun switchAccount(switchAccountModel: SwitchAccountModel) =
         flow {
@@ -35,24 +35,26 @@ class AccountRepositoryImpl @Inject constructor(
     private fun SwitchAccountModel.toListLocalAccountEntity(syncAt: Long) =
         listOf(
             LocalAccountEntity(
-                key = passiveAccountKey,
+                id = inactiveAccountId,
+                key = inactiveAccountKey,
                 isActive = false,
                 isSync = true,
-                isDeferredDelete = false,
+                isDelete = false,
                 syncAt = syncAt
             ),
             LocalAccountEntity(
+                id = activeAccountId ?: 0,
                 key = activeAccountKey,
                 isActive = true,
                 isSync = true,
-                isDeferredDelete = false,
+                isDelete = false,
                 syncAt = syncAt
             ),
         )
 
     private fun SwitchAccountModel.toMapFirebaseAccountModel(syncAt: Long) =
         mapOf(
-            passiveAccountKey to FirebaseAccountModel(passiveAccountKey, false, syncAt),
+            inactiveAccountKey to FirebaseAccountModel(inactiveAccountKey, false, syncAt),
             activeAccountKey to FirebaseAccountModel(activeAccountKey, true, syncAt)
         )
 }

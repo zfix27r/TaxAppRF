@@ -5,6 +5,7 @@ import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
+import com.taxapprf.domain.NetworkManager
 import com.taxapprf.domain.account.SwitchAccountUseCase
 import com.taxapprf.domain.currency.GetCurrencyRateTodayFromCBRUseCase
 import com.taxapprf.domain.report.DeleteReportWithTransactionsUseCase
@@ -67,8 +68,18 @@ object DomainModule {
         ObserveTransactionsUseCase(repositoryImpl)
 
     @Provides
-    fun provideSaveTransactionUseCase(repositoryImpl: TransactionRepositoryImpl) =
-        SaveTransactionUseCase(repositoryImpl)
+    fun provideSaveTransactionUseCase(
+        networkManager: NetworkManager,
+        reportRepositoryImpl: ReportRepositoryImpl,
+        transactionRepositoryImpl: TransactionRepositoryImpl,
+        currencyRepositoryImpl: CurrencyRepositoryImpl
+    ) =
+        SaveTransactionUseCase(
+            networkManager,
+            reportRepositoryImpl,
+            transactionRepositoryImpl,
+            currencyRepositoryImpl
+        )
 
     @Provides
     fun provideDeleteTransactionUseCase(repositoryImpl: TransactionRepositoryImpl) =
@@ -87,8 +98,11 @@ object DomainModule {
         SaveTransactionsFromExcelUseCase(repositoryImpl)
 
     @Provides
-    fun provideDeleteReportUseCase(repositoryImpl: ReportRepositoryImpl) =
-        DeleteReportWithTransactionsUseCase(repositoryImpl)
+    fun provideDeleteReportUseCase(
+        repositoryImpl: ReportRepositoryImpl,
+        transactionRepositoryImpl: TransactionRepositoryImpl
+    ) =
+        DeleteReportWithTransactionsUseCase(repositoryImpl, transactionRepositoryImpl)
 
     @Provides
     fun provideGetExcelToStorageUseCase(transactionRepositoryImpl: TransactionRepositoryImpl) =

@@ -98,11 +98,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(oldReportModel.key).collectLatest { reports ->
-                        reports.firstOrNull()?.let {
-                            viewModel.report = it
-                            it.updateToolbar()
-                        } ?: findNavController().popBackStack()
+                    viewModel.observeReport(oldReportModel.key).collectLatest { report ->
+                        report?.let {
+                            viewModel.report = report
+                            report.updateToolbar()
+                        }
                     }
                 }
             }

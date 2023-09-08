@@ -37,7 +37,6 @@ class SyncReports(
         map {
             map.put(
                 it.key, FirebaseReportModel(
-                    key = it.key,
                     tax = it.tax,
                     size = it.size,
                     syncAt = it.syncAt
@@ -50,16 +49,17 @@ class SyncReports(
     override fun List<ReportModel>.mapAppToLocal() =
         map {
             LocalReportEntity(
+                id = it.id,
                 key = it.key,
                 accountKey = accountKey,
                 tax = it.tax,
                 size = it.size,
                 isSync = it.isSync,
-                isDeferredDelete = it.isDeferredDelete,
+                isDelete = it.isDelete,
                 syncAt = it.syncAt
             )
         }
 
     override fun LocalReportEntity.mapLocalToApp() =
-        ReportModel(key, tax, size, isSync, isDeferredDelete, syncAt)
+        ReportModel(id, key, tax, size, isSync, isDelete, syncAt)
 }

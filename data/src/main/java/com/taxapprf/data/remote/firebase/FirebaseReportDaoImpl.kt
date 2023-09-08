@@ -26,10 +26,13 @@ class FirebaseReportDaoImpl(
                 val reference =
                     fb.getReportPath(accountKey, reportKey)
 
+                println("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                println(fb.getReportsPath(accountKey).get().await())
+
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         snapshot.getValue(FirebaseReportModel::class.java)
-                            ?.toReportModel()
+                            ?.toReportModel(snapshot.key)
                             ?.let { trySendBlocking(Result.success(listOf(it))) }
                     }
 
@@ -49,10 +52,13 @@ class FirebaseReportDaoImpl(
             safeCall {
                 val reference = fb.getReportsPath(accountKey)
 
+                println("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                println(fb.getReportsPath(accountKey).get().await())
+
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val reports = snapshot.children.mapNotNull {
-                            it.getValue(FirebaseReportModel::class.java)?.toReportModel()
+                            it.getValue(FirebaseReportModel::class.java)?.toReportModel(it.key)
                         }
                         trySendBlocking(Result.success(reports))
                     }
@@ -71,11 +77,13 @@ class FirebaseReportDaoImpl(
     override suspend fun get(getReportModel: GetReportModel) =
         safeCall {
             with(getReportModel) {
-                fb.getReportPath(accountKey, yearKey)
+                val snapshot = fb.getReportPath(accountKey, yearKey)
                     .get()
                     .await()
+
+                snapshot
                     .getValue(FirebaseReportModel::class.java)
-                    ?.toReportModel()
+                    ?.toReportModel(snapshot.key)
                     ?: getDefaultReportModel(yearKey)
             }
         }
@@ -103,7 +111,7 @@ class FirebaseReportDaoImpl(
         safeCall {
             with(saveReportModel) {
                 fb.getReportPath(accountKey, reportKey)
-                    .setValue(saveReportModel.toFirebaseReportModel(getTime()))
+                    .setValue(saveReportModel.toFirebaseReportModel())
                     .await()
             }
         }
@@ -122,14 +130,15 @@ class FirebaseReportDaoImpl(
 
     private fun getDefaultReportModel(getYear: String) =
         ReportModel(
+            id = 0,
             key = getYear,
             tax = 0.0,
             size = 0,
             isSync = true,
-            isDeferredDelete = false,
+            isDelete = false,
             syncAt = 0
         )
 
-    private fun SaveReportModel.toFirebaseReportModel(syncAt: Long) =
-        FirebaseReportModel(reportKey, tax, size, syncAt)
+    private fun SaveReportModel.toFirebaseReportModel() =
+        FirebaseReportModel(tax, size, getTime())
 }

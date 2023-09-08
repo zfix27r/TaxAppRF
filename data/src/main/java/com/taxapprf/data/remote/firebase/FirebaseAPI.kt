@@ -29,17 +29,17 @@ class FirebaseAPI @Inject constructor() {
         .child(uid)
         .child(accountKey)
 
-    fun getReportPath(accountKey: String, year: String) = reference
+    fun getReportPath(accountKey: String, reportKey: String) = reference
         .child(REPORTS)
         .child(uid)
         .child(accountKey)
-        .child(year)
+        .child(reportKey)
 
-    fun getTransactionsPath(accountKey: String, year: String) = reference
+    fun getTransactionsPath(accountKey: String, reportKey: String) = reference
         .child(TRANSACTIONS)
         .child(uid)
         .child(accountKey)
-        .child(year)
+        .child(reportKey)
 
     companion object {
         const val ACCOUNTS = "accounts"

@@ -21,6 +21,7 @@ import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
+import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.ui.Error
@@ -58,9 +59,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val accountsAdapter = MainAccountsAdapter {
         object : MainAccountsAdapterCallback {
-            override fun onClick(accountName: String) {
+            override fun onClick(accountModel: AccountModel) {
                 binding.drawerLayout.close()
-                viewModel.switchAccount(accountName)
+                viewModel.switchAccount(accountModel)
             }
 
             override fun onClickAdd() {

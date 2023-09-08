@@ -2,24 +2,28 @@ package com.taxapprf.data.local.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.ACCOUNT_KEY
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TABLE_NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TRANSACTION_KEY
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.REPORT_KEY
+import com.taxapprf.data.sync.IS_DELETE
+import com.taxapprf.data.sync.IS_SYNC
+import com.taxapprf.data.sync.SYNC_AT
 import com.taxapprf.domain.Sync
 
-@Entity(
-    tableName = TABLE_NAME,
-    primaryKeys = [TRANSACTION_KEY, ACCOUNT_KEY, REPORT_KEY]
-)
+@Entity(tableName = TABLE_NAME)
 data class LocalTransactionEntity(
-    @ColumnInfo(name = TRANSACTION_KEY)
-    override val key: String,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = ID)
+    val id: Int,
 
     @ColumnInfo(name = ACCOUNT_KEY)
     val accountKey: String,
     @ColumnInfo(name = REPORT_KEY)
     val reportKey: String,
+    @ColumnInfo(name = TRANSACTION_KEY)
+    override val key: String,
 
     @ColumnInfo(name = NAME)
     val name: String?,
@@ -38,13 +42,15 @@ data class LocalTransactionEntity(
 
     @ColumnInfo(name = IS_SYNC)
     override val isSync: Boolean,
-    @ColumnInfo(name = IS_DEFERRED_DELETE)
-    override val isDeferredDelete: Boolean,
+    @ColumnInfo(name = IS_DELETE)
+    override val isDelete: Boolean,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long,
 ) : Sync {
     companion object {
         const val TABLE_NAME = "transaction"
+
+        const val ID = "id"
 
         const val TRANSACTION_KEY = "transaction_key"
         const val ACCOUNT_KEY = "account_key"
@@ -57,9 +63,5 @@ data class LocalTransactionEntity(
         const val RATE_CBR = "rate_cbr"
         const val SUM = "sum"
         const val TAX = "tax"
-
-        const val IS_SYNC = "is_sync"
-        const val IS_DEFERRED_DELETE = "is_deferred_delete"
-        const val SYNC_AT = "sync_at"
     }
 }

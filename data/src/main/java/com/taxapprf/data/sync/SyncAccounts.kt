@@ -48,14 +48,15 @@ class SyncAccounts(
     override fun List<AccountModel>.mapAppToLocal() =
         map {
             LocalAccountEntity(
+                id = it.id,
                 key = it.key,
                 isActive = it.isActive,
-                isDeferredDelete = it.isDeferredDelete,
+                isDelete = it.isDelete,
                 isSync = it.isSync,
                 syncAt = it.syncAt
             )
         }
 
     override fun LocalAccountEntity.mapLocalToApp() =
-        AccountModel(key, isActive, isSync, isDeferredDelete, syncAt)
+        AccountModel(id, key, isActive, isSync, isDelete, syncAt)
 }

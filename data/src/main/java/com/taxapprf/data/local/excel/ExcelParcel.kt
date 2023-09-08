@@ -47,7 +47,7 @@ class ExcelParcel(private val saveExcelToFirebaseModel: SaveTransactionsFromExce
 
                 val transaction = SaveTransactionModel(
                     accountKey = saveExcelToFirebaseModel.accountKey,
-                    reportKey = date.split("/")[2],
+                    newReportKey = date.split("/")[2],
                     date = date,
                     name = row.getCell(0).stringCellValue,
                     currency = row.getCell(4).stringCellValue,

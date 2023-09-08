@@ -35,6 +35,6 @@ class AccountAddFragment : BaseFragment(R.layout.fragment_account_add) {
         val updateNameResult = viewModel
             .checkName(binding.editAddAccountName.text)
             .updateEditError(binding.editAddAccountName)
-        if (updateNameResult) viewModel.saveAccount()
+        if (updateNameResult) viewModel.switchAccount()
     }
 }

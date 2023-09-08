@@ -40,6 +40,11 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     var type: String = TransactionType.TRADE.name
     var sum: Double = SUM_DEFAULT
 
+    private val tax
+        get() = transaction?.let { if (sum == it.sum) it.tax else null }
+    private val rateCBRF
+        get() = transaction?.let { if (sum == it.sum) it.rateCBRF else null }
+
     fun checkName(cName: Editable?) = check {
         name = cName.toString()
         if (name.isNameRangeIncorrect()) R.string.transaction_detail_error_name_too_long
@@ -73,13 +78,16 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
             accountKey = account.key,
-            reportKey = date.getYear().toString(),
+            reportKey = report?.key,
             transactionKey = transaction?.key,
+            newReportKey = date.getYear().toString(),
             date = date,
             name = name,
             currency = currency,
             type = type,
             sum = sum,
+            tax = tax,
+            rateCBR = rateCBRF
         )
     }
 

@@ -4,9 +4,17 @@ import com.taxapprf.domain.Sync
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.launch
 
-abstract class SyncManager<L : Sync, A : Sync, R>() {
+const val IS_SYNC = "is_sync"
+const val IS_DELETE = "is_delete"
+const val SYNC_AT = "sync_at"
+
+abstract class SyncManager<L : Sync, A : Sync, R> {
     abstract fun observeLocal(): Flow<List<L>>
     abstract fun getLocal(): List<L>
     abstract fun L.mapLocalToApp(): A
@@ -20,10 +28,15 @@ abstract class SyncManager<L : Sync, A : Sync, R>() {
     abstract suspend fun saveRemote(models: Map<String, R>)
     abstract suspend fun deleteRemote(models: Map<String, R?>)
 
-    fun observe() =
+    fun observe() = observeAll().map {
+        if (it.isEmpty()) it.first() else null
+    }
+
+    fun observeAll() =
         channelFlow {
             launch {
                 observeLocal().collectLatest { models ->
+                    println("! 1 ! $models")
                     if (models.isNotEmpty()) send(models.map { it.mapLocalToApp() })
                     else send(emptyList<A>())
                 }
@@ -32,6 +45,7 @@ abstract class SyncManager<L : Sync, A : Sync, R>() {
             launch {
                 observeRemote().collectLatest { result ->
                     result.getOrNull()?.let { models ->
+                        println("! 2 ! $models")
                         val cache = mutableMapOf<String, A>()
 
                         getLocal().map {
@@ -39,6 +53,7 @@ abstract class SyncManager<L : Sync, A : Sync, R>() {
                             cache[model.key] = model
                         }
 
+                        println("! 3 ! $cache")
                         cache.sync(
                             models,
                             saveLocal = { saveLocal(it.mapAppToLocal()) },
@@ -65,12 +80,20 @@ abstract class SyncManager<L : Sync, A : Sync, R>() {
         val saveRemoteList = mutableListOf<T>()
         val deleteRemoteList = mutableMapOf<String, R?>()
 
+        println("@@@@@!! 1")
         remoteList.map {
+            println("@@@@@!! 2")
             if (cache.isCached(it.key)) {
-                if (cache.isNotSync(it.key)) {
-                    if (cache.isDelete(it.key)) deleteRemoteList[it.key] = null
-                    else if (cache.isExpired(it)) saveLocalList.add(it)
-                    else saveRemoteList.add(it)
+                println("@@@@@!! 3")
+                if (cache.isExpired(it)) {
+                    println("@@@@@!! 6")
+                    saveLocalList.add(it)
+                } else if (cache.isNotSync(it.key)) {
+                    println("@@@@@!! 4")
+                    if (cache.isDelete(it.key)) {
+                        println("@@@@@!! 5")
+                        deleteRemoteList[it.key] = null
+                    } else saveRemoteList.add(it)
                 }
 
                 cache.remove(it.key)
@@ -98,5 +121,5 @@ abstract class SyncManager<L : Sync, A : Sync, R>() {
         getValue(sync.key).syncAt <= sync.syncAt
 
     private fun <T : Sync> MutableMap<String, T>.isDelete(key: String) =
-        getValue(key).isDeferredDelete
+        !getValue(key).isDelete
 }

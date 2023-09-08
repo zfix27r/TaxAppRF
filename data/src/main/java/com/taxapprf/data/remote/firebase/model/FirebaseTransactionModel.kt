@@ -24,6 +24,7 @@ data class FirebaseTransactionModel(
         val syncAt = syncAt ?: 0
 
         return TransactionModel(
+            id = 0,
             transactionKey,
             name,
             date,
@@ -33,7 +34,7 @@ data class FirebaseTransactionModel(
             sum,
             tax,
             isSync = true,
-            isDeferredDelete = false,
+            isDelete = false,
             syncAt = syncAt
         )
     }

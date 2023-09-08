@@ -38,7 +38,7 @@ class TransactionAdapterViewHolder(
         binding.textViewTransactionsAdapterItemDate.text = transaction.date
         binding.textViewTransactionsAdapterItemSum.text = transaction.sum.toString()
         binding.textViewTransactionsAdapterItemCurrency.text = transaction.currency
-        binding.textViewTransactionsAdapterItemRateCbr.text = transaction.rateCBR.toString()
+        binding.textViewTransactionsAdapterItemRateCbr.text = transaction.rateCBRF.toString()
         binding.textViewTransactionsAdapterItemTax.text = transaction.tax.toString()
     }
 }

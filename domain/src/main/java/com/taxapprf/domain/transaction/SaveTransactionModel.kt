@@ -5,6 +5,8 @@ data class SaveTransactionModel(
     val reportKey: String? = null,
     val transactionKey: String? = null,
 
+    val newReportKey: String,
+
     val date: String,
     val name: String,
     val currency: String,

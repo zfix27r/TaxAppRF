@@ -42,7 +42,7 @@ class SyncTransactions(
                     date = it.date,
                     type = it.type,
                     currency = it.currency,
-                    rateCBR = it.rateCBR,
+                    rateCBR = it.rateCBRF,
                     sum = it.sum,
                     tax = it.tax,
                     syncAt = it.syncAt
@@ -55,6 +55,7 @@ class SyncTransactions(
     override fun List<TransactionModel>.mapAppToLocal() =
         map {
             LocalTransactionEntity(
+                id = it.id,
                 key = it.key,
                 accountKey = accountKey,
                 reportKey = reportKey,
@@ -62,17 +63,18 @@ class SyncTransactions(
                 date = it.date,
                 type = it.type,
                 currency = it.currency,
-                rateCBR = it.rateCBR,
+                rateCBR = it.rateCBRF,
                 sum = it.sum,
                 tax = it.tax,
                 isSync = it.isSync,
-                isDeferredDelete = it.isDeferredDelete,
+                isDelete = it.isDelete,
                 syncAt = it.syncAt
             )
         }
 
     override fun LocalTransactionEntity.mapLocalToApp() =
         TransactionModel(
+            id,
             key,
             name,
             date,
@@ -82,7 +84,7 @@ class SyncTransactions(
             sum,
             tax,
             isSync,
-            isDeferredDelete,
+            isDelete,
             syncAt
         )
 }

@@ -19,9 +19,12 @@ class AccountAddViewModel @Inject constructor(
     private val switchAccountUseCase: SwitchAccountUseCase
 ) : BaseViewModel() {
     private var accountName = ""
-    fun saveAccount() {
+    fun switchAccount() {
         if (isUnlock) {
-            val switchAccountModel = SwitchAccountModel(account.key, accountName)
+            val switchAccountModel = SwitchAccountModel(
+                account.id, account.key,
+                activeAccountKey = accountName
+            )
 
             viewModelScope.launch(Dispatchers.IO) {
                 switchAccountUseCase.execute(switchAccountModel)
