@@ -3,10 +3,7 @@ package com.taxapprf.data.local.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.ACCOUNT_KEY
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TABLE_NAME
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TRANSACTION_KEY
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.REPORT_KEY
 import com.taxapprf.data.sync.IS_DELETE
 import com.taxapprf.data.sync.IS_SYNC
 import com.taxapprf.data.sync.SYNC_AT
@@ -33,8 +30,8 @@ data class LocalTransactionEntity(
     val type: String,
     @ColumnInfo(name = CURRENCY)
     val currency: String,
-    @ColumnInfo(name = RATE_CBR)
-    val rateCBR: Double,
+    @ColumnInfo(name = RATE_CBRF)
+    val rateCBRF: Double,
     @ColumnInfo(name = SUM)
     val sum: Double,
     @ColumnInfo(name = TAX)
@@ -60,7 +57,7 @@ data class LocalTransactionEntity(
         const val DATE = "date"
         const val TYPE = "type"
         const val CURRENCY = "currency"
-        const val RATE_CBR = "rate_cbr"
+        const val RATE_CBRF = "rate_cbrf"
         const val SUM = "sum"
         const val TAX = "tax"
     }

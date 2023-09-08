@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalTransactionDao {
-    @Query("SELECT * FROM `transaction` WHERE transaction_key = :transactionKey LIMIT 1")
+    @Query("SELECT * FROM `transaction` WHERE transaction_key = :transactionKey AND is_delete = 0 LIMIT 1")
     fun observe(transactionKey: String): Flow<LocalTransactionEntity>
 
-    @Query("SELECT * FROM `transaction` WHERE account_key = :accountKey AND report_key = :reportKey")
+    @Query("SELECT * FROM `transaction` WHERE account_key = :accountKey AND report_key = :reportKey AND is_delete = 0")
     fun observeAll(accountKey: String, reportKey: String): Flow<List<LocalTransactionEntity>>
 
     @Query("SELECT * FROM `transaction` WHERE account_key = :accountKey AND report_key = :reportKey")

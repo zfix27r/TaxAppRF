@@ -3,6 +3,7 @@ package com.taxapprf.data.remote.firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.error.external.DataErrorExternalGetReport
 import com.taxapprf.data.getTime
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
@@ -26,9 +27,6 @@ class FirebaseReportDaoImpl(
                 val reference =
                     fb.getReportPath(accountKey, reportKey)
 
-                println("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                println(fb.getReportsPath(accountKey).get().await())
-
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         snapshot.getValue(FirebaseReportModel::class.java)
@@ -51,9 +49,6 @@ class FirebaseReportDaoImpl(
         callbackFlow<Result<List<ReportModel>>> {
             safeCall {
                 val reference = fb.getReportsPath(accountKey)
-
-                println("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                println(fb.getReportsPath(accountKey).get().await())
 
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -96,14 +91,16 @@ class FirebaseReportDaoImpl(
         }
     }
 
-    override suspend fun deleteAll(
-        accountKey: String,
-        mapFirebaseReportModels: Map<String, FirebaseReportModel?>
-    ) {
+    override suspend fun deleteAll(accountKey: String, reportModels: List<ReportModel>) {
         safeCall {
-            fb.getReportsPath(accountKey)
-                .updateChildren(mapFirebaseReportModels)
-                .await()
+            reportModels.map {
+                val path = fb.getReportsPath(accountKey)
+                val key = if (it.key == "") path.push().key ?: throw DataErrorExternal() else it.key
+                path
+                    .child(key)
+                    .setValue(null)
+                    .await()
+            }
         }
     }
 
@@ -117,14 +114,16 @@ class FirebaseReportDaoImpl(
         }
     }
 
-    override suspend fun saveAll(
-        accountKey: String,
-        mapFirebaseReportModels: Map<String, FirebaseReportModel>
-    ) {
+    override suspend fun saveAll(accountKey: String, reportModels: List<ReportModel>) {
         safeCall {
-            fb.getReportsPath(accountKey)
-                .updateChildren(mapFirebaseReportModels)
-                .await()
+            reportModels.map {
+                val path = fb.getReportsPath(accountKey)
+                val key = if (it.key == "") path.push().key ?: throw DataErrorExternal() else it.key
+                path
+                    .child(key)
+                    .setValue(it.toFirebaseReportModel())
+                    .await()
+            }
         }
     }
 
@@ -140,5 +139,8 @@ class FirebaseReportDaoImpl(
         )
 
     private fun SaveReportModel.toFirebaseReportModel() =
+        FirebaseReportModel(tax, size, getTime())
+
+    private fun ReportModel.toFirebaseReportModel() =
         FirebaseReportModel(tax, size, getTime())
 }

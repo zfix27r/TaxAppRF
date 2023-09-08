@@ -3,7 +3,6 @@ package com.taxapprf.data.sync
 import com.taxapprf.data.local.room.dao.LocalTransactionDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
-import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
 
 class SyncTransactions(
@@ -11,17 +10,17 @@ class SyncTransactions(
     private val remoteDao: RemoteTransactionDao,
     private val accountKey: String,
     private val reportKey: String,
-) : SyncManager<LocalTransactionEntity, TransactionModel, FirebaseTransactionModel>() {
+) : SyncManager<LocalTransactionEntity, TransactionModel>() {
     override fun observeLocal() = localDao.observeAll(accountKey, reportKey)
 
     override fun getLocal() = localDao.getAll(accountKey, reportKey)
 
     override fun observeRemote() = remoteDao.observeAll(accountKey, reportKey)
-    override suspend fun deleteRemote(models: Map<String, FirebaseTransactionModel?>) {
+    override suspend fun deleteRemote(models: List<TransactionModel>) {
         remoteDao.deleteAll(accountKey, reportKey, models)
     }
 
-    override suspend fun saveRemote(models: Map<String, FirebaseTransactionModel>) {
+    override suspend fun saveRemote(models: List<TransactionModel>) {
         remoteDao.saveAll(accountKey, reportKey, models)
     }
 
@@ -33,44 +32,23 @@ class SyncTransactions(
         localDao.save(models)
     }
 
-    override fun List<TransactionModel>.mapAppToRemote(): Map<String, FirebaseTransactionModel> {
-        val map = mutableMapOf<String, FirebaseTransactionModel>()
-        map {
-            map.put(
-                it.key, FirebaseTransactionModel(
-                    name = it.name,
-                    date = it.date,
-                    type = it.type,
-                    currency = it.currency,
-                    rateCBR = it.rateCBRF,
-                    sum = it.sum,
-                    tax = it.tax,
-                    syncAt = it.syncAt
-                )
-            )
-        }
-        return map
-    }
-
-    override fun List<TransactionModel>.mapAppToLocal() =
-        map {
-            LocalTransactionEntity(
-                id = it.id,
-                key = it.key,
-                accountKey = accountKey,
-                reportKey = reportKey,
-                name = it.name,
-                date = it.date,
-                type = it.type,
-                currency = it.currency,
-                rateCBR = it.rateCBRF,
-                sum = it.sum,
-                tax = it.tax,
-                isSync = it.isSync,
-                isDelete = it.isDelete,
-                syncAt = it.syncAt
-            )
-        }
+    override fun TransactionModel.mapAppToLocal(local: TransactionModel?): LocalTransactionEntity =
+        LocalTransactionEntity(
+            id = local?.id ?: id,
+            key = key,
+            accountKey = accountKey,
+            reportKey = reportKey,
+            name = name,
+            date = date,
+            type = type,
+            currency = currency,
+            rateCBRF = rateCBRF,
+            sum = sum,
+            tax = tax,
+            isSync = local?.isSync ?: isSync,
+            isDelete = local?.isDelete ?: isDelete,
+            syncAt = local?.syncAt ?: syncAt
+        )
 
     override fun LocalTransactionEntity.mapLocalToApp() =
         TransactionModel(
@@ -80,7 +58,7 @@ class SyncTransactions(
             date,
             type,
             currency,
-            rateCBR,
+            rateCBRF,
             sum,
             tax,
             isSync,

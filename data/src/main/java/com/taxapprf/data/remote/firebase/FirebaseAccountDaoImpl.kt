@@ -60,19 +60,29 @@ class FirebaseAccountDaoImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveAll(mapFirebaseAccountModels: Map<String, FirebaseAccountModel>) {
+    override suspend fun saveAll(accountModels: List<AccountModel>) {
         safeCall {
-            fb.getAccountsPath()
-                .updateChildren(mapFirebaseAccountModels)
-                .await()
+            val path = fb.getAccountsPath()
+
+            accountModels.map {
+                path
+                    .child(it.key)
+                    .setValue(it.toFirebaseAccountModel())
+                    .await()
+            }
         }
     }
 
-    override suspend fun deleteAll(mapFirebaseAccountModels: Map<String, FirebaseAccountModel?>) {
+    override suspend fun deleteAll(accountModels: List<AccountModel>) {
         safeCall {
-            fb.getAccountsPath()
-                .updateChildren(mapFirebaseAccountModels)
-                .await()
+            val path = fb.getAccountsPath()
+
+            accountModels.map {
+                path
+                    .child(it.key)
+                    .setValue(null)
+                    .await()
+            }
         }
     }
 
@@ -80,4 +90,7 @@ class FirebaseAccountDaoImpl @Inject constructor(
         val firebaseAccountModel = FirebaseAccountModel("default", true)
         save(firebaseAccountModel)
     }
+
+    private fun AccountModel.toFirebaseAccountModel() =
+        FirebaseAccountModel(name = key, active = isActive, syncAt = syncAt)
 }

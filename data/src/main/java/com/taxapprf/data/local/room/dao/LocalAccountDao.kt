@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalAccountDao {
-    @Query("SELECT * FROM account")
+    @Query("SELECT * FROM account WHERE is_delete = 0")
     fun observeAll(): Flow<List<LocalAccountEntity>>
 
     @Query("SELECT * FROM account")

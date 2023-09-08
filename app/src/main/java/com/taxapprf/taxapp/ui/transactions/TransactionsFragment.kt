@@ -43,8 +43,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         prepToolbar()
         prepView()
         prepListeners()
-
-        viewModel.observeTransactions()
     }
 
     private fun prepToolbar() {
@@ -99,24 +97,27 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
                     viewModel.observeReport(oldReportModel.key).collectLatest { report ->
+                        println("!!!!!!!!!!!!!!")
                         report?.let {
-                            viewModel.report = report
+                            println("@@!!@@ $it")
                             report.updateToolbar()
                         }
                     }
                 }
             }
 
-            viewModel.loadTransactions()
-        }
-    }
-
-    private fun TransactionsViewModel.observeTransactions() =
-        transactions.observe(viewLifecycleOwner) { transaction ->
-            transaction?.let {
-                adapter.submitList(it)
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.observeTransactions(oldReportModel.key)
+                        .collectLatest { transactions ->
+                            if (transactions.isNotEmpty()) {
+                                adapter.submitList(transactions)
+                            }
+                        }
+                }
             }
         }
+    }
 
     override fun onSuccessShare() {
         super.onSuccessShare()

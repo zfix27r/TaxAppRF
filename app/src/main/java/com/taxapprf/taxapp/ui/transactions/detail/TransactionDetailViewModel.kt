@@ -40,6 +40,9 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     var type: String = TransactionType.TRADE.name
     var sum: Double = SUM_DEFAULT
 
+    private val id
+        get() = transaction?.id
+
     private val tax
         get() = transaction?.let { if (sum == it.sum) it.tax else null }
     private val rateCBRF
@@ -77,6 +80,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
 
     fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
+            id = id,
             accountKey = account.key,
             reportKey = report?.key,
             transactionKey = transaction?.key,
@@ -87,7 +91,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
             type = type,
             sum = sum,
             tax = tax,
-            rateCBR = rateCBRF
+            rateCBRF = rateCBRF
         )
     }
 

@@ -81,8 +81,6 @@ class MainViewModel @Inject constructor(
                 accountModel.id, accountModel.key
             )
             switchAccountUseCase.execute(switchAccountModel)
-                .onStart { _state.loading() }
-                .collectLatest { _state.success() }
         }
     }
 

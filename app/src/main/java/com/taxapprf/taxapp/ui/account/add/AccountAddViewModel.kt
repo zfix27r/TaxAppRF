@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +28,7 @@ class AccountAddViewModel @Inject constructor(
             )
 
             viewModelScope.launch(Dispatchers.IO) {
-                switchAccountUseCase.execute(switchAccountModel)
+                flow<Unit> { switchAccountUseCase.execute(switchAccountModel) }
                     .onStart { startWithLock() }
                     .catch { error(it) }
                     .collectLatest { success() }

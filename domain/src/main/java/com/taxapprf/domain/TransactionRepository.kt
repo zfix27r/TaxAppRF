@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 interface TransactionRepository {
     fun observeAll(accountKey: String, reportKey: String): Flow<List<TransactionModel>>
     suspend fun save(saveTransactionModel: SaveTransactionModel)
-    suspend fun update(saveTransactionModel: SaveTransactionModel, rateCBRF: Double)
     suspend fun delete(deleteTransactionModel: DeleteTransactionModel)
     suspend fun deleteAll(accountKey: String, reportKey: String)
     fun getExcelToShare(getExcelToShareModel: GetExcelToShareModel): Flow<Uri>

@@ -1,6 +1,8 @@
 package com.taxapprf.domain.transaction
 
 data class SaveTransactionModel(
+    val id: Int? = null,
+
     val accountKey: String,
     val reportKey: String? = null,
     val transactionKey: String? = null,
@@ -13,6 +15,6 @@ data class SaveTransactionModel(
     val type: String,
     val sum: Double,
 
-    val tax: Double? = null,
-    val rateCBR: Double? = null,
+    var tax: Double? = null,
+    var rateCBRF: Double? = null,
 )

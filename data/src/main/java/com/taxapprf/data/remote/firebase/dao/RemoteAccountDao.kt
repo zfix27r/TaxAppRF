@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface RemoteAccountDao {
     fun observeAll(): Flow<Result<List<AccountModel>>>
     suspend fun save(firebaseAccountModel: FirebaseAccountModel)
-    suspend fun saveAll(mapFirebaseAccountModels: Map<String, FirebaseAccountModel>)
-    suspend fun deleteAll(mapFirebaseAccountModels: Map<String, FirebaseAccountModel?>)
+    suspend fun saveAll(accountModels: List<AccountModel>)
+    suspend fun deleteAll(accountModels: List<AccountModel>)
     suspend fun saveDefaultAccount()
 }

@@ -52,12 +52,17 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override suspend fun saveAll(
         accountKey: String,
         reportKey: String,
-        mapFirebaseTransactionsModel: Map<String, FirebaseTransactionModel>
+        transactionModels: List<TransactionModel>
     ) {
         safeCall {
-            fb.getTransactionsPath(accountKey, reportKey)
-                .updateChildren(mapFirebaseTransactionsModel)
-                .await()
+            val path = fb.getTransactionsPath(accountKey, reportKey)
+            transactionModels.map {
+                val key = if (it.key == "") path.push().key ?: throw DataErrorExternal() else it.key
+                path
+                    .child(key)
+                    .setValue(it.toFirebaseTransactionModel())
+                    .await()
+            }
         }
     }
 
@@ -97,12 +102,29 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override suspend fun deleteAll(
         accountKey: String,
         reportKey: String,
-        mapFirebaseTransactionsModel: Map<String, FirebaseTransactionModel?>
+        transactionModels: List<TransactionModel>
     ) {
         safeCall {
-            fb.getTransactionsPath(accountKey, reportKey)
-                .updateChildren(mapFirebaseTransactionsModel)
-                .await()
+            val path = fb.getTransactionsPath(accountKey, reportKey)
+            transactionModels.map {
+                val key = if (it.key == "") path.push().key ?: throw DataErrorExternal() else it.key
+                path
+                    .child(key)
+                    .setValue(null)
+                    .await()
+            }
         }
     }
+
+    private fun TransactionModel.toFirebaseTransactionModel() =
+        FirebaseTransactionModel(
+            name = name,
+            date = date,
+            type = type,
+            currency = currency,
+            rateCBR = rateCBRF,
+            sum = sum,
+            tax = tax,
+            syncAt = syncAt
+        )
 }

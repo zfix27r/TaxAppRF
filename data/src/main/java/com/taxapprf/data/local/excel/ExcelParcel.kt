@@ -2,8 +2,11 @@ package com.taxapprf.data.local.excel
 
 import android.os.Environment
 import com.taxapprf.data.error.DataErrorInternal
+import com.taxapprf.data.getTime
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.domain.transaction.TransactionModel
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
@@ -17,10 +20,10 @@ import java.util.Locale
 
 
 class ExcelParcel(private val saveExcelToFirebaseModel: SaveTransactionsFromExcelModel) {
-    fun parse(): List<SaveTransactionModel> {
+    fun parse(): List<LocalTransactionEntity> {
         if (saveExcelToFirebaseModel.filePath.isEmpty()) throw DataErrorInternal()
 
-        val transactions = mutableListOf<SaveTransactionModel>()
+        val transactions = mutableListOf<LocalTransactionEntity>()
 
         val path = Environment
             .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -45,16 +48,22 @@ class ExcelParcel(private val saveExcelToFirebaseModel: SaveTransactionsFromExce
                 val row = rowIterator.next()
                 val date = row.getCell(2).parseDate()
 
-                val transaction = SaveTransactionModel(
+
+                val transaction = LocalTransactionEntity(
+                    id = 0,
                     accountKey = saveExcelToFirebaseModel.accountKey,
-                    newReportKey = date.split("/")[2],
-                    date = date,
+                    reportKey = date.split("/")[2],
+                    key = "",
                     name = row.getCell(0).stringCellValue,
-                    currency = row.getCell(4).stringCellValue,
+                    date = date,
                     type = row.getCell(1).stringCellValue,
+                    currency = row.getCell(4).stringCellValue,
+                    rateCBRF = row.getCell(5).numericCellValue,
                     sum = row.getCell(3).numericCellValue,
-                    rateCBR = row.getCell(5).numericCellValue,
-                    tax = row.getCell(6).numericCellValue
+                    tax = row.getCell(6).numericCellValue,
+                    isSync = false,
+                    isDelete = false,
+                    syncAt = getTime()
                 )
                 transactions.add(transaction)
             }

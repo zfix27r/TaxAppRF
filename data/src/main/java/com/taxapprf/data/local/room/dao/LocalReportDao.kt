@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalReportDao {
-    @Query("SELECT * FROM report WHERE account_key = :accountKey AND report_key = :reportKey LIMIT 1")
+    @Query("SELECT * FROM report WHERE account_key = :accountKey AND report_key = :reportKey AND is_delete = 0 LIMIT 1")
     fun observe(accountKey: String, reportKey: String): Flow<LocalReportEntity?>
 
-    @Query("SELECT * FROM report WHERE account_key = :accountKey")
+    @Query("SELECT * FROM report WHERE account_key = :accountKey AND is_delete = 0")
     fun observeAll(accountKey: String): Flow<List<LocalReportEntity>>
 
     @Query("SELECT * FROM report WHERE  account_key = :accountKey AND report_key = :reportKey LIMIT 1")

@@ -2,6 +2,7 @@ package com.taxapprf.domain.account
 
 import com.taxapprf.domain.Sync
 
+
 data class AccountModel(
     val id: Int,
     override val key: String,

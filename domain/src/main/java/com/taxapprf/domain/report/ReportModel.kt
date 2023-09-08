@@ -2,6 +2,7 @@ package com.taxapprf.domain.report
 
 import com.taxapprf.domain.Sync
 
+
 data class ReportModel(
     val id: Int,
     override val key: String,

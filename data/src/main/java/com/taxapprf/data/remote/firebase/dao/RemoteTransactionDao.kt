@@ -13,7 +13,7 @@ interface RemoteTransactionDao {
     suspend fun saveAll(
         accountKey: String,
         reportKey: String,
-        mapFirebaseTransactionsModel: Map<String, FirebaseTransactionModel>
+        transactionModels: List<TransactionModel>
     )
 
     suspend fun save(
@@ -32,6 +32,6 @@ interface RemoteTransactionDao {
     suspend fun deleteAll(
         accountKey: String,
         reportKey: String,
-        mapFirebaseTransactionsModel: Map<String, FirebaseTransactionModel?>
+        transactionModels: List<TransactionModel>
     )
 }

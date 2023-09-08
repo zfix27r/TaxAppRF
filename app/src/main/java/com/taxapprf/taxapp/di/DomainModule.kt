@@ -18,6 +18,7 @@ import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.transaction.GetExcelToShareUseCase
 import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
+import com.taxapprf.domain.transaction.UpdateTaxTransactionUseCase
 import com.taxapprf.domain.user.GetUserUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
 import com.taxapprf.domain.user.SignInUseCase
@@ -75,6 +76,18 @@ object DomainModule {
         currencyRepositoryImpl: CurrencyRepositoryImpl
     ) =
         SaveTransactionUseCase(
+            reportRepositoryImpl,
+            transactionRepositoryImpl,
+        )
+
+    @Provides
+    fun provideUpdateTaxTransactionUseCase(
+        networkManager: NetworkManager,
+        reportRepositoryImpl: ReportRepositoryImpl,
+        transactionRepositoryImpl: TransactionRepositoryImpl,
+        currencyRepositoryImpl: CurrencyRepositoryImpl
+    ) =
+        UpdateTaxTransactionUseCase(
             networkManager,
             reportRepositoryImpl,
             transactionRepositoryImpl,

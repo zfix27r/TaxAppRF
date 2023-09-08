@@ -1,6 +1,7 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.local.room.dao.LocalReportDao
+import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.sync.SyncReport
 import com.taxapprf.data.sync.SyncReports
@@ -64,15 +65,27 @@ class ReportRepositoryImpl @Inject constructor(
     }
 
     private fun SaveTransactionModel.updateNewReport() {
-        localDao.get(accountKey, newReportKey)?.let { newReport ->
-            localDao.save(
-                newReport.copy(
-                    size = newReport.size + 1,
-                    tax = newReport.tax + (tax ?: 0.0),
-                    isSync = false,
-                    syncAt = getTime()
-                )
-            )
+        var id: Int? = null
+        var newSize = 1
+        var newTax = tax ?: 0.0
+
+        localDao.get(accountKey, newReportKey)?.let {
+            id = it.id
+            newSize += it.size
+            newTax += it.tax
         }
+
+        localDao.save(
+            LocalReportEntity(
+                id = id ?: 0,
+                accountKey = accountKey,
+                key = newReportKey,
+                tax = newTax,
+                size = newSize,
+                isSync = false,
+                isDelete = false,
+                syncAt = getTime()
+            )
+        )
     }
 }

@@ -6,6 +6,6 @@ import javax.inject.Inject
 class SwitchAccountUseCase @Inject constructor(
     private val repository: AccountRepository
 ) {
-    fun execute(switchAccountModel: SwitchAccountModel) =
+    suspend fun execute(switchAccountModel: SwitchAccountModel) =
         repository.switchAccount(switchAccountModel)
 }
