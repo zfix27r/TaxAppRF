@@ -40,21 +40,23 @@ class ReportRepositoryImpl @Inject constructor(
     private fun SaveTransactionModel.deleteOrUpdateOldReport() {
         transactionKey?.let {
             reportKey?.let { reportKey ->
-                localDao.get(accountKey, reportKey)?.let { oldReport ->
-                    val newSize = oldReport.size - 1
+                if (reportKey != newReportKey) {
+                    localDao.get(accountKey, reportKey)?.let { oldReport ->
+                        val newSize = oldReport.size - 1
 
-                    if (newSize == 0) {
-                        localDao.deleteDeferred(accountKey, reportKey)
-                    } else {
-                        val newTax = oldReport.tax - (tax ?: 0.0)
-                        localDao.save(
-                            oldReport.copy(
-                                size = newSize,
-                                tax = newTax,
-                                isSync = false,
-                                syncAt = getTime()
+                        if (newSize == 0) {
+                            localDao.deleteDeferred(accountKey, reportKey)
+                        } else {
+                            val newTax = oldReport.tax - (tax ?: 0.0)
+                            localDao.save(
+                                oldReport.copy(
+                                    size = newSize,
+                                    tax = newTax,
+                                    isSync = false,
+                                    syncAt = getTime()
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -77,7 +79,7 @@ class ReportRepositoryImpl @Inject constructor(
                 id = id ?: 0,
                 accountKey = accountKey,
                 key = newReportKey,
-                tax = newTax,
+                tax = newTax.roundUpToTwo(),
                 size = newSize,
                 isSync = false,
                 isDelete = false,

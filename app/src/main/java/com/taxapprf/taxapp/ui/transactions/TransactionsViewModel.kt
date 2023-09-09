@@ -122,7 +122,6 @@ class TransactionsViewModel @Inject constructor(
                 val saveTransactionModel = SaveTransactionModel(
                     id = transaction.id,
                     accountKey = account.accountKey,
-                    reportKey = report.reportKey,
                     transactionKey = transaction.transactionKey,
                     newReportKey = report.reportKey,
                     date = transaction.date,
