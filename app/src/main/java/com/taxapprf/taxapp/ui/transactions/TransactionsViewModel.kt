@@ -11,7 +11,9 @@ import com.taxapprf.domain.transaction.GetExcelToShareUseCase
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
+import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.transaction.UpdateTaxTransactionUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +33,7 @@ class TransactionsViewModel @Inject constructor(
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val getExcelToShareUseCase: GetExcelToShareUseCase,
     private val getExcelToStorageUseCase: GetExcelToStorageUseCase,
+    private val updateTaxTransactionUseCase: UpdateTaxTransactionUseCase,
 ) : BaseViewModel() {
     private var reportSize = 0
 
@@ -54,6 +57,7 @@ class TransactionsViewModel @Inject constructor(
             .onEach {
                 success()
                 transactions = it
+                updateTax()
             }
             .flowOn(Dispatchers.IO)
 
@@ -111,4 +115,24 @@ class TransactionsViewModel @Inject constructor(
             deleteTransaction = null
             deleteModel
         }
+
+    private fun updateTax() = viewModelScope.launch(Dispatchers.IO) {
+        transactions?.map { transaction ->
+            if (transaction.rateCBRF == 0.0) {
+                val saveTransactionModel = SaveTransactionModel(
+                    id = transaction.id,
+                    accountKey = account.accountKey,
+                    reportKey = report.reportKey,
+                    transactionKey = transaction.transactionKey,
+                    newReportKey = report.reportKey,
+                    date = transaction.date,
+                    name = transaction.name ?: "",
+                    currency = transaction.currency,
+                    type = transaction.type,
+                    sum = transaction.sum
+                )
+                updateTaxTransactionUseCase.execute(saveTransactionModel)
+            }
+        }
+    }
 }
