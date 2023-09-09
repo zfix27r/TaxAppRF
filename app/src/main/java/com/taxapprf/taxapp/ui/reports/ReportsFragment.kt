@@ -7,7 +7,10 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -19,6 +22,8 @@ import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
 import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
@@ -40,22 +45,18 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
         itemTouchHelper = ItemTouchHelper(ReportTouchHelperCallback(reportsAdapterCallback))
         itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
-
-        viewModel.observerReports()
-    }
-
-    private fun ReportsViewModel.observerReports() {
-        reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
     }
 
     override fun onAuthReady() {
         super.onAuthReady()
-        viewModel.loadReports()
-    }
 
-    override fun onLoadingRetry() {
-        super.onLoadingRetry()
-        viewModel.loadReports()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.observeReports().collectLatest { reports ->
+                    adapter.submitList(reports)
+                }
+            }
+        }
     }
 
     private fun prepToolbar() {

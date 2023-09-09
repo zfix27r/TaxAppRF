@@ -7,7 +7,6 @@ import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.data.safeCall
-import com.taxapprf.domain.transaction.TransactionModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
@@ -22,15 +21,19 @@ class FirebaseTransactionDaoImpl @Inject constructor(
         accountKey: String,
         reportKey: String
     ) =
-        callbackFlow<Result<List<TransactionModel>>> {
+        callbackFlow<Result<List<FirebaseTransactionModel>>> {
             safeCall {
                 val reference = fb.getTransactionsPath(accountKey, reportKey)
+
+//                reference.setValue(null).await()
 
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val transactions = snapshot.children.mapNotNull {
                             it.getValue(FirebaseTransactionModel::class.java)
-                                ?.toTransactionModel(it.key)
+                                ?.apply {
+                                    key = it.key
+                                }
                         }
 
                         trySendBlocking(Result.success(transactions))
@@ -48,23 +51,6 @@ class FirebaseTransactionDaoImpl @Inject constructor(
                 }
             }
         }
-
-    override suspend fun saveAll(
-        accountKey: String,
-        reportKey: String,
-        transactionModels: List<TransactionModel>
-    ) {
-        safeCall {
-            val path = fb.getTransactionsPath(accountKey, reportKey)
-            transactionModels.map {
-                val key = if (it.key == "") path.push().key ?: throw DataErrorExternal() else it.key
-                path
-                    .child(key)
-                    .setValue(it.toFirebaseTransactionModel())
-                    .await()
-            }
-        }
-    }
 
     override suspend fun save(
         accountKey: String,
@@ -102,12 +88,14 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override suspend fun deleteAll(
         accountKey: String,
         reportKey: String,
-        transactionModels: List<TransactionModel>
+        transactionModels: List<FirebaseTransactionModel>
     ) {
         safeCall {
             val path = fb.getTransactionsPath(accountKey, reportKey)
             transactionModels.map {
-                val key = if (it.key == "") path.push().key ?: throw DataErrorExternal() else it.key
+                val key =
+                    (if (it.key == "") path.push().key else it.key) ?: throw DataErrorExternal()
+
                 path
                     .child(key)
                     .setValue(null)
@@ -116,15 +104,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
         }
     }
 
-    private fun TransactionModel.toFirebaseTransactionModel() =
-        FirebaseTransactionModel(
-            name = name,
-            date = date,
-            type = type,
-            currency = currency,
-            rateCBR = rateCBRF,
-            sum = sum,
-            tax = tax,
-            syncAt = syncAt
-        )
+    override suspend fun pushAndGetKey(accountKey: String, reportKey: String) =
+        fb.getTransactionsPath(accountKey, reportKey).push().key
+
 }

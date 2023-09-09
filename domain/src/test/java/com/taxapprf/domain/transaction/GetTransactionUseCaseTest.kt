@@ -39,7 +39,7 @@ class GetTransactionUseCaseTest {
     fun `execute should call getTransactionModel on repository and return the result`() = runBlocking {
         val transactionKey = "123456"
         val expectedTransaction = TransactionModel(
-            key = transactionKey,
+            transactionKey = transactionKey,
             type = "Trade",
             id = "456789",
             date = "2023-07-31",

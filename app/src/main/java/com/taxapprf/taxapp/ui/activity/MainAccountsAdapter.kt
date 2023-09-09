@@ -55,7 +55,7 @@ class MainAccountsAdapter(
         override fun areItemsTheSame(
             oldItem: AccountModel,
             newItem: AccountModel
-        ) = oldItem.key == newItem.key
+        ) = oldItem.accountKey == newItem.accountKey
 
         override fun areContentsTheSame(
             oldItem: AccountModel,

@@ -5,13 +5,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.error.external.DataErrorExternalGetReport
-import com.taxapprf.data.getTime
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
-import com.taxapprf.data.remote.firebase.model.GetReportModel
 import com.taxapprf.data.safeCall
-import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.report.SaveReportModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
@@ -22,7 +18,7 @@ class FirebaseReportDaoImpl(
     private val fb: FirebaseAPI,
 ) : RemoteReportDao {
     override fun observe(accountKey: String, reportKey: String) =
-        callbackFlow<Result<List<ReportModel>>> {
+        callbackFlow<Result<FirebaseReportModel?>> {
             safeCall {
                 val reference =
                     fb.getReportPath(accountKey, reportKey)
@@ -30,8 +26,9 @@ class FirebaseReportDaoImpl(
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         snapshot.getValue(FirebaseReportModel::class.java)
-                            ?.toReportModel(snapshot.key)
-                            ?.let { trySendBlocking(Result.success(listOf(it))) }
+                            ?.apply {
+                                key = snapshot.key
+                            }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
@@ -46,14 +43,17 @@ class FirebaseReportDaoImpl(
         }
 
     override fun observeAll(accountKey: String) =
-        callbackFlow<Result<List<ReportModel>>> {
+        callbackFlow<Result<List<FirebaseReportModel>>> {
             safeCall {
                 val reference = fb.getReportsPath(accountKey)
 
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val reports = snapshot.children.mapNotNull {
-                            it.getValue(FirebaseReportModel::class.java)?.toReportModel(it.key)
+                            it.getValue(FirebaseReportModel::class.java)
+                                ?.apply {
+                                    key = it.key
+                                }
                         }
                         trySendBlocking(Result.success(reports))
                     }
@@ -69,19 +69,19 @@ class FirebaseReportDaoImpl(
             }
         }
 
-    override suspend fun get(getReportModel: GetReportModel) =
-        safeCall {
-            with(getReportModel) {
-                val snapshot = fb.getReportPath(accountKey, yearKey)
-                    .get()
-                    .await()
-
-                snapshot
-                    .getValue(FirebaseReportModel::class.java)
-                    ?.toReportModel(snapshot.key)
-                    ?: getDefaultReportModel(yearKey)
+    /*
+        override suspend fun get(getReportModel: GetReportModel) =
+            safeCall {
+                with(getReportModel) {
+                    fb.getReportPath(accountKey, yearKey)
+                        .get()
+                        .await()
+                        .getValue(FirebaseReportModel::class.java)
+                        ?.toReportModel(snapshot.key)
+                        ?: getDefaultReportModel(yearKey)
+                }
             }
-        }
+    */
 
     override suspend fun delete(accountKey: String, reportKey: String) {
         safeCall {
@@ -91,11 +91,14 @@ class FirebaseReportDaoImpl(
         }
     }
 
-    override suspend fun deleteAll(accountKey: String, reportModels: List<ReportModel>) {
+    override suspend fun deleteAll(accountKey: String, reportModels: List<FirebaseReportModel>) {
         safeCall {
             reportModels.map {
                 val path = fb.getReportsPath(accountKey)
-                val key = if (it.key == "") path.push().key ?: throw DataErrorExternal() else it.key
+
+                val key = (if (it.key == "") path.push().key else it.key)
+                    ?: throw DataErrorExternal()
+
                 path
                     .child(key)
                     .setValue(null)
@@ -104,43 +107,32 @@ class FirebaseReportDaoImpl(
         }
     }
 
-    override suspend fun save(saveReportModel: SaveReportModel) {
-        safeCall {
-            with(saveReportModel) {
-                fb.getReportPath(accountKey, reportKey)
-                    .setValue(saveReportModel.toFirebaseReportModel())
-                    .await()
+    /*
+        override suspend fun save(saveReportModel: SaveReportModel) {
+            safeCall {
+                with(saveReportModel) {
+                    fb.getReportPath(accountKey, reportKey)
+                        .setValue(saveReportModel.toFirebaseReportModel())
+                        .await()
+                }
             }
         }
-    }
+    */
 
-    override suspend fun saveAll(accountKey: String, reportModels: List<ReportModel>) {
+    override suspend fun saveAll(accountKey: String, reportModels: List<FirebaseReportModel>) {
         safeCall {
             reportModels.map {
                 val path = fb.getReportsPath(accountKey)
-                val key = if (it.key == "") path.push().key ?: throw DataErrorExternal() else it.key
+
+                val key = (if (it.key == "") path.push().key else it.key)
+                    ?: throw DataErrorExternal()
+
                 path
                     .child(key)
-                    .setValue(it.toFirebaseReportModel())
+                    .setValue(it)
                     .await()
             }
         }
     }
 
-    private fun getDefaultReportModel(getYear: String) =
-        ReportModel(
-            id = 0,
-            key = getYear,
-            tax = 0.0,
-            size = 0,
-            isSync = true,
-            isDelete = false,
-            syncAt = 0
-        )
-
-    private fun SaveReportModel.toFirebaseReportModel() =
-        FirebaseReportModel(tax, size, getTime())
-
-    private fun ReportModel.toFirebaseReportModel() =
-        FirebaseReportModel(tax, size, getTime())
 }

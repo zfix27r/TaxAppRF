@@ -3,12 +3,9 @@ package com.taxapprf.data
 import com.taxapprf.data.local.room.dao.LocalReportDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
-import com.taxapprf.data.sync.SyncReport
 import com.taxapprf.data.sync.SyncReports
 import com.taxapprf.domain.ReportRepository
-import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,10 +14,10 @@ class ReportRepositoryImpl @Inject constructor(
     private val localDao: LocalReportDao,
     private val remoteDao: FirebaseReportDaoImpl,
 ) : ReportRepository {
-    override fun observe(accountKey: String, reportKey: String): Flow<ReportModel?> =
-        SyncReport(localDao, remoteDao, accountKey, reportKey).observe()
+    override fun observe(accountKey: String, reportKey: String) =
+        SyncReports(localDao, remoteDao, accountKey, reportKey).observe()
 
-    override fun observeAll(accountKey: String): Flow<List<ReportModel>> =
+    override fun observeAll(accountKey: String) =
         SyncReports(localDao, remoteDao, accountKey).observeAll()
 
     override suspend fun delete(id: Int) {

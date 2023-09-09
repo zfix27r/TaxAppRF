@@ -17,11 +17,11 @@ interface LocalAccountDao {
     fun getAll(): List<LocalAccountEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(localAccountEntity: LocalAccountEntity): Long
+    fun saveAll(localAccountEntity: LocalAccountEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(localAccountEntities: List<LocalAccountEntity>): List<Long>
+    fun saveAll(localAccountEntities: List<LocalAccountEntity>): List<Long>
 
     @Delete
-    fun delete(localAccountEntities: List<LocalAccountEntity>): Int
+    fun deleteAll(localAccountEntities: List<LocalAccountEntity>): Int
 }

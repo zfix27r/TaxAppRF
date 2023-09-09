@@ -46,10 +46,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         prepView()
         prepListeners()
 
-        itemTouchHelper = ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
+        itemTouchHelper =
+            ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
         itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
-
-        viewModel.observeTransactions()
     }
 
     private fun prepToolbar() {
@@ -103,25 +102,24 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(oldReportModel.key).collectLatest { reports ->
-                        reports.firstOrNull()?.let {
+                    viewModel.observeReport(oldReportModel.reportKey).collectLatest { report ->
+                        report?.let {
                             viewModel.report = it
                             it.updateToolbar()
-                        } ?: findNavController().popBackStack()
+                        }
                     }
                 }
             }
 
-            viewModel.loadTransactions()
-        }
-    }
-
-    private fun TransactionsViewModel.observeTransactions() =
-        transactions.observe(viewLifecycleOwner) { transaction ->
-            transaction?.let {
-                adapter.submitList(it)
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.observeTransactions().collectLatest { transactions ->
+                        adapter.submitList(transactions)
+                    }
+                }
             }
         }
+    }
 
     override fun onSuccessShare() {
         super.onSuccessShare()
@@ -139,7 +137,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun ReportModel.updateToolbar() {
-        val title = String.format(getString(R.string.transactions_title), key)
+        val title = String.format(getString(R.string.transactions_title), reportKey)
         val subtitle = String.format(getString(R.string.transactions_subtitle), tax)
         toolbar.updateToolbar(title, subtitle)
     }

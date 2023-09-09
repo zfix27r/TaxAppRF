@@ -22,7 +22,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     var report: ReportModel? = null
     var transaction: TransactionModel? = null
         set(value) {
-            transactionKey = value?.key
+            transactionKey = value?.transactionKey
             name = value?.name ?: NAME_DEFAULT
             date = value?.date ?: getCurrentDate()
             type = value?.type ?: TransactionType.TRADE.name
@@ -81,9 +81,9 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
             id = id,
-            accountKey = account.key,
-            reportKey = report?.key,
-            transactionKey = transaction?.key,
+            accountKey = account.accountKey,
+            reportKey = report?.reportKey,
+            transactionKey = transaction?.transactionKey,
             newReportKey = date.getYear().toString(),
             date = date,
             name = name,

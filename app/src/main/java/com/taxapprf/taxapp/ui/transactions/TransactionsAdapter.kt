@@ -27,7 +27,7 @@ class TransactionsAdapter(
         override fun areItemsTheSame(
             oldItem: TransactionModel,
             newItem: TransactionModel
-        ) = oldItem.key == newItem.key
+        ) = oldItem.transactionKey == newItem.transactionKey
 
         override fun areContentsTheSame(
             oldItem: TransactionModel,

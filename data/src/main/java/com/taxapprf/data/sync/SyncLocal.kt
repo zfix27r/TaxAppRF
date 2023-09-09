@@ -1,6 +1,6 @@
-package com.taxapprf.domain
+package com.taxapprf.data.sync
 
-interface Sync {
+interface SyncLocal {
     val key: String
     val isSync: Boolean
     val isDelete: Boolean

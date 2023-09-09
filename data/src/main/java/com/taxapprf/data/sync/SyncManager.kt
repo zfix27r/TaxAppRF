@@ -1,108 +1,131 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.domain.Sync
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 
 const val IS_SYNC = "is_sync"
 const val IS_DELETE = "is_delete"
 const val SYNC_AT = "sync_at"
 
-abstract class SyncManager<L : Sync, A : Sync> {
-    abstract fun observeLocal(): Flow<List<L>>
-    abstract fun getLocal(): List<L>
-    abstract fun L.mapLocalToApp(): A
-    abstract fun A.mapAppToLocal(local: A? = null): L
+abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App> {
+    protected abstract fun observeLocal(): Flow<Local?>
+    protected abstract fun observeAllLocal(): Flow<List<Local>>
 
-    abstract fun observeRemote(): Flow<Result<List<A>>>
-    abstract fun saveLocal(models: List<L>)
-    abstract fun deleteLocal(models: List<L>)
-    abstract suspend fun saveRemote(models: List<A>)
-    abstract suspend fun deleteRemote(models: List<A>)
+    protected abstract fun getLocal(): Local?
+    protected abstract fun getAllLocal(): List<Local>
 
-    fun observe() = observeAll().map {
-        if (it.isEmpty()) it.first() else null
-    }
+    protected abstract fun Local.toRemote(remote: Remote? = null): Remote
+    protected abstract fun Local.toApp(): App
 
-    fun observeAll() =
+    protected abstract fun saveAllLocal(locals: List<Local>)
+    protected abstract fun deleteAllLocal(locals: List<Local>)
+
+    protected abstract fun observeRemote(): Flow<Result<Remote?>>
+    protected abstract fun observeAllRemote(): Flow<Result<List<Remote>>>
+
+    protected abstract fun Remote.toLocal(local: Local? = null): Local?
+
+    protected abstract suspend fun saveAllRemote(locales: List<Local>)
+    protected abstract suspend fun deleteAllRemote(remotes: List<Remote>)
+
+    fun observe() =
         channelFlow {
             launch {
-                observeLocal().collectLatest { models ->
-                    println("! 1 ! $models")
-                    if (models.isNotEmpty()) send(models.map { it.mapLocalToApp() })
-                    else send(emptyList<A>())
+                observeLocal().collectLatest { local ->
+                    println("local $local")
+                    send(local?.toApp())
                 }
             }
 
             launch {
                 observeRemote().collectLatest { result ->
-                    result.getOrNull()?.let { models ->
-                        println("! 2 ! $models")
-                        val cache = mutableMapOf<String, A>()
-                        getLocal().map {
-                            val model = it.mapLocalToApp()
-                            cache[model.key] = model
-                        }
-
-                        cache.sync(
-                            models,
-                            saveLocal = { saveLocal(it) },
-                            deleteLocal = { deleteLocal(it) },
-                            saveRemote = { launch { saveRemote(it) } },
-                            deleteRemote = { launch { deleteRemote(it) } }
-                        )
+                    result.getOrNull()?.let { remote ->
+                        println("remote $remote")
+                        val locals = mutableMapOf<String, Local>()
+                        val remotes = listOf(remote)
+                        getLocal()?.let { locals[it.key] = it }
+                        locals.sync(remotes)
                     }
                 }
+
             }
         }
 
-    fun MutableMap<String, A>.sync(
-        remoteList: List<A>,
-        saveLocal: (List<L>) -> Unit,
-        deleteLocal: (List<L>) -> Unit,
-        saveRemote: (List<A>) -> Unit,
-        deleteRemote: (List<A>) -> Unit,
-    ) {
-        val cache = this
-        val saveLocalList = mutableListOf<L>()
-        val deleteLocalList = mutableListOf<L>()
-
-        val saveRemoteList = mutableListOf<A>()
-        val deleteRemoteList = mutableListOf<A>()
-
-        remoteList.map { remote ->
-            if (cache.containsKey(remote.key)) {
-                cache.getValue(remote.key).let { local ->
-                    if (!local.isSync) {
-                        if (local.isDelete) {
-                            deleteRemoteList.add(local)
-                            deleteLocalList.add(local.mapAppToLocal())
-                        } else saveRemoteList.add(local)
-                    } else if (local.syncAt < remote.syncAt) {
-                        saveLocalList.add(remote.mapAppToLocal(local))
-                    }
-
-                    cache.remove(remote.key)
+    fun observeAll() =
+        channelFlow {
+            launch {
+                observeAllLocal().collectLatest { locals ->
+                    println("locals $locals")
+                    send(locals.map { it.toApp() })
                 }
-            } else saveLocalList.add(remote.mapAppToLocal())
+            }
+
+            launch {
+                observeAllRemote().collectLatest { result ->
+                    result.getOrNull()?.let { remotes ->
+                        println("remotes $remotes")
+                        val locals = mutableMapOf<String, Local>()
+                        getAllLocal().map { locals[it.key] = it }
+                        locals.sync(remotes)
+                    }
+                }
+
+            }
         }
 
-        /*        cache.map {
-                    if (it.value.isSync) deleteLocalList.add(it.value.mapAppToLocal())
-                    else saveRemoteList.add(it.value)
-                }*/
+    private suspend fun MutableMap<String, Local>.sync(remotes: List<Remote>) {
+        val locals = this
+        val saveLocalList = mutableListOf<Local>()
+        val deleteLocalList = mutableListOf<Local>()
+
+        val saveRemoteList = mutableListOf<Local>()
+        val deleteRemoteList = mutableListOf<Remote>()
+
+        remotes.map { remote ->
+            val remoteKey = remote.key ?: "-"
+
+            if (locals.containsKey(remoteKey)) {
+                locals.getValue(remoteKey).let { local ->
+                    val remoteSyncAt = remote.syncAt ?: 0
+
+                    if (local.syncAt < remoteSyncAt) {
+                        remote.toLocal(local)?.let { saveLocalList.add(it) }
+                    } else if (!local.isSync) {
+                        if (local.isDelete) {
+                            deleteRemoteList.add(local.toRemote(remote))
+                            deleteLocalList.add(local)
+                        } else {
+                            saveRemoteList.add(local)
+                        }
+                    } else if (local.syncAt > remoteSyncAt) {
+                        saveRemoteList.add(local)
+                    }
+
+                    locals.remove(remote.key)
+                }
+            } else remote.toLocal()?.let { saveLocalList.add(it) }
+        }
+
+        locals.map {
+            val local = it.value
+            if (local.isSync || local.isDelete) deleteLocalList.add(local)
+            else saveRemoteList.add(local)
+        }
 
         println("saveLocalList $saveLocalList")
         println("deleteLocalList $deleteLocalList")
         println("saveRemoteList $saveRemoteList")
         println("deleteRemoteList $deleteRemoteList")
 
-        if (saveLocalList.isNotEmpty()) saveLocal(saveLocalList)
-        if (deleteLocalList.isNotEmpty()) deleteLocal(deleteLocalList)
-        if (saveRemoteList.isNotEmpty()) saveRemote(saveRemoteList)
-        if (deleteRemoteList.isNotEmpty()) deleteRemote(deleteRemoteList)
+        if (saveLocalList.isNotEmpty()) saveAllLocal(saveLocalList)
+        if (deleteLocalList.isNotEmpty()) deleteAllLocal(deleteLocalList)
+        if (saveRemoteList.isNotEmpty())
+            withContext(coroutineContext) { launch { saveAllRemote(saveRemoteList) } }
+        if (deleteRemoteList.isNotEmpty())
+            withContext(coroutineContext) { launch { deleteAllRemote(deleteRemoteList) } }
     }
 }

@@ -3,43 +3,60 @@ package com.taxapprf.data.sync
 import com.taxapprf.data.local.room.dao.LocalAccountDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
+import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
 import com.taxapprf.domain.account.AccountModel
 
 class SyncAccounts(
     private val localDao: LocalAccountDao,
     private val remoteDao: RemoteAccountDao,
-) : SyncManager<LocalAccountEntity, AccountModel>() {
-    override fun observeLocal() = localDao.observeAll()
+) : SyncManager<LocalAccountEntity, FirebaseAccountModel, AccountModel>() {
+    override fun observeLocal() = TODO()
+    override fun observeAllLocal() = localDao.observeAll()
 
-    override fun getLocal() = localDao.getAll()
+    override fun getLocal() = TODO()
+    override fun getAllLocal() = localDao.getAll()
 
-    override fun observeRemote() = remoteDao.observeAll()
-    override suspend fun deleteRemote(models: List<AccountModel>) {
-        remoteDao.deleteAll(models)
+    override fun deleteAllLocal(locals: List<LocalAccountEntity>) {
+        localDao.deleteAll(locals)
     }
 
-    override suspend fun saveRemote(models: List<AccountModel>) {
-        remoteDao.saveAll(models)
+    override fun saveAllLocal(locals: List<LocalAccountEntity>) {
+        localDao.saveAll(locals)
     }
 
-    override fun deleteLocal(models: List<LocalAccountEntity>) {
-        localDao.delete(models)
-    }
+    override fun LocalAccountEntity.toApp(): AccountModel =
+        AccountModel(id, key, isActive, isSync, isDelete, syncAt)
 
-    override fun saveLocal(models: List<LocalAccountEntity>) {
-        localDao.save(models)
-    }
-
-    override fun AccountModel.mapAppToLocal(local: AccountModel?): LocalAccountEntity =
-        LocalAccountEntity(
-            id = local?.id ?: id,
+    override fun LocalAccountEntity.toRemote(remote: FirebaseAccountModel?) =
+        FirebaseAccountModel(
             key = key,
             isActive = isActive,
-            isSync = local?.isSync ?: isSync,
-            isDelete = local?.isDelete ?: isDelete,
-            syncAt = local?.syncAt ?: syncAt
+            syncAt = syncAt
         )
 
-    override fun LocalAccountEntity.mapLocalToApp() =
-        AccountModel(id, key, isActive, isSync, isDelete, syncAt)
+    override fun observeRemote() = TODO()
+    override fun observeAllRemote() = remoteDao.observeAll()
+
+    override suspend fun deleteAllRemote(remotes: List<FirebaseAccountModel>) {
+        remoteDao.deleteAll(remotes)
+    }
+
+    override suspend fun saveAllRemote(locales: List<LocalAccountEntity>) {
+        remoteDao.saveAll(locales.map { it.toRemote() })
+    }
+
+    override fun FirebaseAccountModel.toLocal(local: LocalAccountEntity?): LocalAccountEntity? {
+        val key = key ?: return null
+        val isActive = isActive ?: false
+        val syncAt = syncAt ?: 0L
+
+        return LocalAccountEntity(
+            id = 0,
+            key = key,
+            isActive = isActive,
+            isSync = true,
+            isDelete = false,
+            syncAt = syncAt
+        )
+    }
 }

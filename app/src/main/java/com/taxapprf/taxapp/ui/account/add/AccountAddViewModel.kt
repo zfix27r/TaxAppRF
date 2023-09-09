@@ -23,7 +23,7 @@ class AccountAddViewModel @Inject constructor(
     fun switchAccount() {
         if (isUnlock) {
             val switchAccountModel = SwitchAccountModel(
-                account.id, account.key,
+                account.id, account.accountKey,
                 activeAccountKey = accountName
             )
 

@@ -7,7 +7,7 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TABL
 import com.taxapprf.data.sync.IS_DELETE
 import com.taxapprf.data.sync.IS_SYNC
 import com.taxapprf.data.sync.SYNC_AT
-import com.taxapprf.domain.Sync
+import com.taxapprf.data.sync.SyncLocal
 
 @Entity(tableName = TABLE_NAME)
 data class LocalTransactionEntity(
@@ -43,7 +43,7 @@ data class LocalTransactionEntity(
     override val isDelete: Boolean,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long,
-) : Sync {
+) : SyncLocal {
     companion object {
         const val TABLE_NAME = "transaction"
 

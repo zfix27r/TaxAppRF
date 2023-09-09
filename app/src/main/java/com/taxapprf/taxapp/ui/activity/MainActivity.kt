@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun MainViewModel.observeAccount() {
         account.observe(this@MainActivity) { _account ->
             _account?.let {
-                drawer.account.text = it.key
+                drawer.account.text = it.accountKey
                 fabVisibilityManager()
             }
         }

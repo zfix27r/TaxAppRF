@@ -18,7 +18,7 @@ class AccountRepositoryImpl @Inject constructor(
         SyncAccounts(localDao, remoteDao).observeAll()
 
     override suspend fun switchAccount(switchAccountModel: SwitchAccountModel) {
-        localDao.save(switchAccountModel.toListLocalAccountEntity())
+        localDao.saveAll(switchAccountModel.toListLocalAccountEntity())
     }
 
     private fun SwitchAccountModel.toListLocalAccountEntity() =
