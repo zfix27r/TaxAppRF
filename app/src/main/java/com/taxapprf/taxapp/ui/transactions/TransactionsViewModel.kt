@@ -35,8 +35,6 @@ class TransactionsViewModel @Inject constructor(
     private val getExcelToStorageUseCase: GetExcelToStorageUseCase,
     private val updateTaxTransactionUseCase: UpdateTaxTransactionUseCase,
 ) : BaseViewModel() {
-    private var reportSize = 0
-
     lateinit var report: ReportModel
     private var transactions: List<TransactionModel>? = null
 
@@ -67,10 +65,6 @@ class TransactionsViewModel @Inject constructor(
                 deleteTransactionUseCase.execute(deleteTransactionModel)
             }
         }
-    }
-
-    fun onSwipedTransaction(position: Int) {
-        deleteTransaction = transactions?.get(position)
     }
 
     fun getExcelToStorage() = viewModelScope.launch(Dispatchers.IO) {
@@ -104,11 +98,12 @@ class TransactionsViewModel @Inject constructor(
     private val deleteTransactionModel
         get() = deleteTransaction?.let { transaction ->
             val deleteModel = DeleteTransactionModel(
+                id = transaction.id,
                 accountKey = account.accountKey,
                 reportKey = report.reportKey,
                 transactionKey = transaction.transactionKey,
                 transactionTax = transaction.tax,
-                reportSize = reportSize,
+                reportSize = report.size,
                 reportTax = report.tax
             )
 
@@ -118,20 +113,24 @@ class TransactionsViewModel @Inject constructor(
 
     private fun updateTax() = viewModelScope.launch(Dispatchers.IO) {
         transactions?.map { transaction ->
-            if (transaction.rateCBRF == 0.0) {
-                val saveTransactionModel = SaveTransactionModel(
-                    id = transaction.id,
-                    accountKey = account.accountKey,
-                    transactionKey = transaction.transactionKey,
-                    newReportKey = report.reportKey,
-                    date = transaction.date,
-                    name = transaction.name ?: "",
-                    currency = transaction.currency,
-                    type = transaction.type,
-                    sum = transaction.sum
-                )
-                updateTaxTransactionUseCase.execute(saveTransactionModel)
-            }
+            if (transaction.rateCBRF == 0.0)
+                updateTaxTransactionUseCase.execute(transaction.toSaveTransactionModel())
         }
     }
+
+    private fun TransactionModel.toSaveTransactionModel() =
+        SaveTransactionModel(
+            id = id,
+            accountKey = account.accountKey,
+            reportKey = report.reportKey,
+            transactionKey = transactionKey,
+            newReportKey = report.reportKey,
+            date = date,
+            name = name ?: "",
+            currency = currency,
+            type = type,
+            sum = sum,
+            tax = tax,
+            rateCBRF = rateCBRF
+        )
 }

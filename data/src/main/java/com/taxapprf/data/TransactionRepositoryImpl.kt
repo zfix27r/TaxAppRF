@@ -6,7 +6,6 @@ import com.taxapprf.data.local.room.dao.LocalTransactionDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
 import com.taxapprf.data.sync.SyncTransactions
-import com.taxapprf.domain.NetworkManager
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetExcelToShareModel
@@ -16,13 +15,11 @@ import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.TransactionModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TransactionRepositoryImpl @Inject constructor(
-    private val networkManager: NetworkManager,
     private val localDao: LocalTransactionDao,
     private val remoteDao: FirebaseTransactionDaoImpl,
     private val excelDao: ExcelDaoImpl
@@ -40,17 +37,7 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun delete(deleteTransactionModel: DeleteTransactionModel) {
-        with(deleteTransactionModel) {
-            val tax = reportTax - transactionTax
-            val size = reportSize - 1
-
-            if (networkManager.available)
-                remoteDao.delete(accountKey, reportKey, transactionKey)
-            else
-                localDao.deleteDeferred(transactionKey)
-
-//            updateOrDeleteReport(accountKey, reportKey, tax, size)
-        }
+        localDao.deleteDeferred(deleteTransactionModel.id)
     }
 
     override suspend fun deleteAll(accountKey: String, reportKey: String) {

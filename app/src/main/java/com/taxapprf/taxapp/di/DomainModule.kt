@@ -70,10 +70,8 @@ object DomainModule {
 
     @Provides
     fun provideSaveTransactionUseCase(
-        networkManager: NetworkManager,
         reportRepositoryImpl: ReportRepositoryImpl,
         transactionRepositoryImpl: TransactionRepositoryImpl,
-        currencyRepositoryImpl: CurrencyRepositoryImpl
     ) =
         SaveTransactionUseCase(
             reportRepositoryImpl,
@@ -95,8 +93,11 @@ object DomainModule {
         )
 
     @Provides
-    fun provideDeleteTransactionUseCase(repositoryImpl: TransactionRepositoryImpl) =
-        DeleteTransactionUseCase(repositoryImpl)
+    fun provideDeleteTransactionUseCase(
+        reportRepositoryImpl: ReportRepositoryImpl,
+        transactionRepositoryImpl: TransactionRepositoryImpl
+    ) =
+        DeleteTransactionUseCase(reportRepositoryImpl, transactionRepositoryImpl)
 
     @Provides
     fun provideObserveReportUseCase(repositoryImpl: ReportRepositoryImpl) =

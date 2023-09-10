@@ -10,35 +10,37 @@ class TransactionAdapterViewHolder(
     private val binding: FragmentTransactionsAdapterItemBinding,
     private val callback: TransactionsAdapterCallback,
 ) : RecyclerView.ViewHolder(binding.root) {
-    private lateinit var transaction: TransactionModel
+    private lateinit var _transaction: TransactionModel
+    val transaction
+        get() = _transaction
 
     init {
         binding.root.setOnClickListener {
-            callback.onClick(transaction)
+            callback.onClick(_transaction)
         }
 
         binding.buttonTransactionsAdapterItemMore.setOnClickListener {
-            callback.onClickMore(transaction)
+            callback.onClickMore(_transaction)
         }
     }
 
     fun bind(transactionModel: TransactionModel) {
-        transaction = transactionModel
+        _transaction = transactionModel
 
-        transaction.name?.let {
+        _transaction.name?.let {
             with(binding.textViewTransactionsAdapterItemName) {
                 if (it.isEmpty()) isVisible = false
                 else {
-                    text = transaction.name
+                    text = _transaction.name
                     isVisible = true
                 }
             }
         }
-        binding.textViewTransactionsAdapterItemType.setText(transaction.type.getTransactionName())
-        binding.textViewTransactionsAdapterItemDate.text = transaction.date
-        binding.textViewTransactionsAdapterItemSum.text = transaction.sum.toString()
-        binding.textViewTransactionsAdapterItemCurrency.text = transaction.currency
-        binding.textViewTransactionsAdapterItemRateCbr.text = transaction.rateCBRF.toString()
-        binding.textViewTransactionsAdapterItemTax.text = transaction.tax.toString()
+        binding.textViewTransactionsAdapterItemType.setText(_transaction.type.getTransactionName())
+        binding.textViewTransactionsAdapterItemDate.text = _transaction.date
+        binding.textViewTransactionsAdapterItemSum.text = _transaction.sum.toString()
+        binding.textViewTransactionsAdapterItemCurrency.text = _transaction.currency
+        binding.textViewTransactionsAdapterItemRateCbr.text = _transaction.rateCBRF.toString()
+        binding.textViewTransactionsAdapterItemTax.text = _transaction.tax.toString()
     }
 }

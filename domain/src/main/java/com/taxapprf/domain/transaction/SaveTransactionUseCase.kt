@@ -10,6 +10,6 @@ class SaveTransactionUseCase @Inject constructor(
 ) {
     suspend fun execute(saveTransactionModel: SaveTransactionModel) {
         transactionRepository.save(saveTransactionModel)
-        reportRepository.updateAfterSaveTransaction(saveTransactionModel)
+        reportRepository.updateAfterUpdateTransaction(saveTransactionModel)
     }
 }

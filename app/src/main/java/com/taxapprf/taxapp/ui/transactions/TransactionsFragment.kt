@@ -45,10 +45,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         prepToolbar()
         prepView()
         prepListeners()
-
-        itemTouchHelper =
-            ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
-        itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
     }
 
     private fun prepToolbar() {
@@ -77,6 +73,10 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun prepView() {
         binding.recyclerTransactions.adapter = adapter
+        itemTouchHelper =
+            ItemTouchHelper(TransactionsAdapterTouchHelperCallback(transactionAdapterCallback))
+        itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
+
     }
 
     private fun prepListeners() {
@@ -158,9 +158,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                         item: MenuItem
                     ) = when (item.itemId) {
                         R.id.action_menu_delete -> {
-                            viewModel.deleteTransaction = transactionModel
-                            actionMode?.finish()
-                            navToTransactionDelete()
+                            navToTransactionDelete(transactionModel)
                             true
                         }
 
@@ -170,9 +168,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
             }
         }
 
-        override fun onSwiped(position: Int) {
-            viewModel.onSwipedTransaction(position)
-            viewModel.deleteTransaction()
+        override fun onSwiped(transactionModel: TransactionModel) {
+            navToTransactionDelete(transactionModel)
         }
     }
 
@@ -195,7 +192,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         }
     }
 
-    private fun navToTransactionDelete() {
+    private fun navToTransactionDelete(transactionModel: TransactionModel) {
+        viewModel.deleteTransaction = transactionModel
+        actionMode?.finish()
         findNavController().navigate(R.id.action_transactions_to_delete_dialog)
     }
 

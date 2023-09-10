@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 
-class TransactionTouchHelperCallback (private val callback: TransactionsAdapterCallback) :
-    ItemTouchHelper.Callback() {
-
+class TransactionsAdapterTouchHelperCallback(
+    private val callback: TransactionsAdapterCallback
+) : ItemTouchHelper.Callback() {
     override fun isItemViewSwipeEnabled(): Boolean {
         return true
     }
@@ -30,7 +30,8 @@ class TransactionTouchHelperCallback (private val callback: TransactionsAdapterC
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        callback.onSwiped(viewHolder.adapterPosition)
+        val transaction = (viewHolder as TransactionAdapterViewHolder).transaction
+        callback.onSwiped(transaction)
     }
 
     override fun onChildDraw(

@@ -19,7 +19,7 @@ class UpdateTaxTransactionUseCase @Inject constructor(
                 if (newRateCBRF > 0) {
                     rateCBRF = newRateCBRF
                     transactionRepository.save(saveTransactionModel)
-                    reportRepository.updateAfterSaveTransaction(saveTransactionModel)
+                    reportRepository.updateAfterUpdateTransaction(saveTransactionModel)
                 }
             }
         }
