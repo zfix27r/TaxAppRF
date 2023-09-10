@@ -25,17 +25,13 @@ class ReportsViewModel @Inject constructor(
     private val saveReportsFromUriUseCase: SaveTransactionsFromExcelUseCase,
     private val deleteReportUseCase: DeleteReportWithTransactionsUseCase,
 ) : BaseViewModel() {
-    private var reports: List<ReportModel>? = null
     var deleteReport: ReportModel? = null
 
     fun observeReports() =
         getReportsUseCase.execute(account.accountKey)
             .onStart { start() }
             .catch { error(it) }
-            .onEach {
-                success()
-                reports = it
-            }
+            .onEach { success() }
             .flowOn(Dispatchers.IO)
 
     fun deleteReport() = viewModelScope.launch(Dispatchers.IO) {
@@ -54,10 +50,6 @@ class ReportsViewModel @Inject constructor(
                 .catch { error(it) }
                 .collectLatest { success() }
         }
-    }
-
-    fun onSwipedReport(position: Int) {
-        deleteReport = reports?.get(position)
     }
 
     fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {

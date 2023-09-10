@@ -38,9 +38,10 @@ class ReportRepositoryImpl @Inject constructor(
                     if (reportKey != newReportKey) {
                         deleteOrUpdateOldReport(accountKey, reportKey, tax)
                         updateReport(accountKey, reportKey, tax, isAdd = true)
-                    }
-                    updateReport(accountKey, reportKey, tax)
+                    } else updateReport(accountKey, reportKey, tax)
                 }
+            } ?: run {
+                updateReport(accountKey, newReportKey, tax, isAdd = true)
             }
         }
     }
@@ -82,10 +83,15 @@ class ReportRepositoryImpl @Inject constructor(
     ) {
         var id: Int? = null
         var newSize = 0
-        var newTax = tax ?: 0.0
+        var newTax = 0.0
 
-        if (isDelete) newTax--
-        else if (isAdd) newTax++
+        if (isDelete) {
+            newSize--
+            tax?.let { newTax -= it }
+        } else if (isAdd) {
+            newSize++
+            tax?.let { newTax += it }
+        }
 
         localDao.get(accountKey, reportKey)?.let {
             id = it.id

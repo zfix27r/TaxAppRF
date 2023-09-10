@@ -37,6 +37,7 @@ class TransactionsViewModel @Inject constructor(
 ) : BaseViewModel() {
     lateinit var report: ReportModel
     private var transactions: List<TransactionModel>? = null
+    private var isUpdateTaxRun = false
 
     fun observeReport(reportKey: String) =
         observeReportUseCase.execute(account.accountKey, reportKey)
@@ -111,10 +112,17 @@ class TransactionsViewModel @Inject constructor(
             deleteModel
         }
 
-    private fun updateTax() = viewModelScope.launch(Dispatchers.IO) {
-        transactions?.map { transaction ->
-            if (transaction.rateCBRF == 0.0)
-                updateTaxTransactionUseCase.execute(transaction.toSaveTransactionModel())
+    private fun updateTax() {
+        if (!isUpdateTaxRun) {
+            isUpdateTaxRun = true
+
+            viewModelScope.launch(Dispatchers.IO) {
+                transactions?.map { transaction ->
+                    if (transaction.rateCBRF == 0.0)
+                        updateTaxTransactionUseCase.execute(transaction.toSaveTransactionModel())
+                }
+                isUpdateTaxRun = false
+            }
         }
     }
 

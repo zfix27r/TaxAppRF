@@ -8,22 +8,24 @@ class ReportsAdapterViewHolder(
     private val binding: FragmentReportsAdapterItemBinding,
     private val callback: ReportsAdapterCallback,
 ) : RecyclerView.ViewHolder(binding.root) {
-    private lateinit var report: ReportModel
+    private lateinit var _report: ReportModel
+    val report
+        get() = _report
 
     init {
         binding.root.setOnClickListener {
-            callback.onClick(report)
+            callback.onClick(_report)
         }
 
         binding.buttonReportsAdapterItemMore.setOnClickListener {
-            callback.onClickMore(report)
+            callback.onClickMore(_report)
         }
     }
 
     fun bind(reportAdapterModel: ReportModel) {
-        report = reportAdapterModel
+        _report = reportAdapterModel
 
-        binding.textReportsAdapterItemYear.text = report.reportKey
-        binding.textReportsAdapterItemTax.text = report.tax.toString()
+        binding.textReportsAdapterItemYear.text = _report.reportKey
+        binding.textReportsAdapterItemTax.text = _report.tax.toString()
     }
 }

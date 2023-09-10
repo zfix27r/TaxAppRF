@@ -43,7 +43,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         fab.setOnClickListener { navToTransactionDetail() }
         binding.recyclerYearStatements.adapter = adapter
 
-        itemTouchHelper = ItemTouchHelper(ReportTouchHelperCallback(reportsAdapterCallback))
+        itemTouchHelper = ItemTouchHelper(ReportAdapterTouchHelperCallback(reportsAdapterCallback))
         itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
     }
 
@@ -99,9 +99,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                             item: MenuItem
                         ) = when (item.itemId) {
                             R.id.action_menu_delete -> {
-                                viewModel.deleteReport = reportModel
-                                actionMode?.finish()
-                                navToDeleteDialog()
+                                navToDeleteDialog(reportModel)
                                 true
                             }
 
@@ -111,13 +109,14 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                 }
             }
 
-            override fun onSwiped(position: Int) {
-                viewModel.onSwipedReport(position)
-                viewModel.deleteReport()
+            override fun onSwiped(reportModel: ReportModel) {
+                navToDeleteDialog(reportModel)
             }
         }
 
-    private fun navToDeleteDialog() {
+    private fun navToDeleteDialog(reportModel: ReportModel) {
+        viewModel.deleteReport = reportModel
+        actionMode?.finish()
         findNavController().navigate(R.id.action_reports_to_delete_dialog)
     }
 

@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 
-class ReportTouchHelperCallback (private val callback: ReportsAdapterCallback) :
+class ReportAdapterTouchHelperCallback(private val callback: ReportsAdapterCallback) :
     ItemTouchHelper.Callback() {
     override fun isItemViewSwipeEnabled(): Boolean {
         return true
@@ -29,7 +29,8 @@ class ReportTouchHelperCallback (private val callback: ReportsAdapterCallback) :
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        callback.onSwiped(viewHolder.adapterPosition)
+        val report = (viewHolder as ReportsAdapterViewHolder).report
+        callback.onSwiped(report)
     }
 
     override fun onChildDraw(
