@@ -21,6 +21,8 @@ interface LocalReportDao {
 
     @Query("SELECT * FROM report WHERE account_key = :accountKey")
     fun getAll(accountKey: String): List<LocalReportEntity>
+    @Query("SELECT * FROM report WHERE account_key = :accountKey AND is_delete = 1")
+    fun getAllDelete(accountKey: String): List<LocalReportEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(reportEntity: LocalReportEntity): Long

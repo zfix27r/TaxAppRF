@@ -113,7 +113,7 @@ class TransactionsViewModel @Inject constructor(
         }
 
     private fun updateTax() {
-        if (!isUpdateTaxRun) {
+/*        if (!isUpdateTaxRun) {
             isUpdateTaxRun = true
 
             viewModelScope.launch(Dispatchers.IO) {
@@ -123,7 +123,7 @@ class TransactionsViewModel @Inject constructor(
                 }
                 isUpdateTaxRun = false
             }
-        }
+        }*/
     }
 
     private fun TransactionModel.toSaveTransactionModel() =

@@ -17,6 +17,7 @@ class SyncTransactions(
 
     override fun getLocal() = TODO()
     override fun getAllLocal() = localDao.getAll(accountKey, reportKey)
+    override fun getAllDeleteLocal() = localDao.getAllDelete(accountKey)
 
     override fun deleteAllLocal(locals: List<LocalTransactionEntity>) {
         localDao.deleteAll(locals)

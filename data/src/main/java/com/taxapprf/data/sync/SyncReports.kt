@@ -17,6 +17,7 @@ class SyncReports(
 
     override fun getLocal() = localDao.get(accountKey, reportKey)
     override fun getAllLocal() = localDao.getAll(accountKey)
+    override fun getAllDeleteLocal() = localDao.getAllDelete(accountKey)
 
     override fun deleteAllLocal(locals: List<LocalReportEntity>) {
         localDao.deleteAll(locals)

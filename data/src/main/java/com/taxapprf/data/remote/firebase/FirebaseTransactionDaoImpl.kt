@@ -25,7 +25,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
             safeCall {
                 val reference = fb.getTransactionsPath(accountKey, reportKey)
 
-//                reference.setValue(null).await()
+                reference.setValue(null).await()
 
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {

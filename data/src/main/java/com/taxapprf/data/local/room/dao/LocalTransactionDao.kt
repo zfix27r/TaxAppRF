@@ -20,6 +20,9 @@ interface LocalTransactionDao {
     @Query("SELECT * FROM `transaction` WHERE account_key = :accountKey AND report_key = :reportKey")
     fun getAll(accountKey: String, reportKey: String): List<LocalTransactionEntity>
 
+    @Query("SELECT * FROM `transaction` WHERE account_key = :accountKey AND is_delete = 1")
+    fun getAllDelete(accountKey: String): List<LocalTransactionEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(localTransactionEntity: LocalTransactionEntity): Long
 

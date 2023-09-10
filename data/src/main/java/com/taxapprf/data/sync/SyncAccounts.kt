@@ -15,6 +15,7 @@ class SyncAccounts(
 
     override fun getLocal() = TODO()
     override fun getAllLocal() = localDao.getAll()
+    override fun getAllDeleteLocal() = localDao.getAllDelete()
 
     override fun deleteAllLocal(locals: List<LocalAccountEntity>) {
         localDao.deleteAll(locals)

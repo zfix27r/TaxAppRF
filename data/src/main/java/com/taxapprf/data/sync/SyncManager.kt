@@ -17,6 +17,7 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App> {
 
     protected abstract fun getLocal(): Local?
     protected abstract fun getAllLocal(): List<Local>
+    protected abstract fun getAllDeleteLocal(): List<Local>
 
     protected abstract fun Local.toRemote(remote: Remote? = null): Remote
     protected abstract fun Local.toApp(): App
@@ -30,13 +31,20 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App> {
     protected abstract fun Remote.toLocal(local: Local? = null): Local?
 
     protected abstract suspend fun saveAllRemote(locales: List<Local>)
-    protected abstract suspend fun deleteAllRemote(remotes: List<Remote>)
+    protected abstract suspend fun  deleteAllRemote(remotes: List<Remote>)
+
+    private val saveLocalList = mutableListOf<Local>()
+    private val deleteLocalList = mutableListOf<Local>()
+
+    private val saveRemoteList = mutableListOf<Local>()
+    private val deleteRemoteList = mutableListOf<Remote>()
+
+    private var isLock = false
 
     fun observe() =
         channelFlow {
             launch {
                 observeLocal().collectLatest { local ->
-                    println("local $local")
                     send(local?.toApp())
                 }
             }
@@ -44,7 +52,6 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App> {
             launch {
                 observeRemote().collectLatest { result ->
                     result.getOrNull()?.let { remote ->
-                        println("remote $remote")
                         val locals = mutableMapOf<String, Local>()
                         val remotes = listOf(remote)
                         getLocal()?.let { locals[it.key] = it }
@@ -61,29 +68,32 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App> {
                 observeAllLocal().collectLatest { locals ->
                     println("locals $locals")
                     send(locals.map { it.toApp() })
+
+//                    val deletes = getAllDeleteLocal()
+//                    if (deletes.isNotEmpty()) {
+//                        deleteAllRemote(deletes.map { it.toRemote() })
+//                    }
                 }
             }
 
-            launch {
-                observeAllRemote().collectLatest { result ->
-                    result.getOrNull()?.let { remotes ->
-                        println("remotes $remotes")
-                        val locals = mutableMapOf<String, Local>()
-                        getAllLocal().map { locals[it.key] = it }
-                        locals.sync(remotes)
+            if (!isLock) {
+                isLock = true
+                launch {
+                    observeAllRemote().collectLatest { result ->
+                        result.getOrNull()?.let { remotes ->
+                            println("remotes $remotes")
+                            val locals = mutableMapOf<String, Local>()
+                            getAllLocal().map { locals[it.key] = it }
+                            locals.sync(remotes)
+                        }
+                        isLock = false
                     }
                 }
-
             }
         }
 
     private suspend fun MutableMap<String, Local>.sync(remotes: List<Remote>) {
         val locals = this
-        val saveLocalList = mutableListOf<Local>()
-        val deleteLocalList = mutableListOf<Local>()
-
-        val saveRemoteList = mutableListOf<Local>()
-        val deleteRemoteList = mutableListOf<Remote>()
 
         remotes.map { remote ->
             val remoteKey = remote.key ?: "-"
@@ -95,15 +105,10 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App> {
                     if (local.syncAt < remoteSyncAt) {
                         remote.toLocal(local)?.let { saveLocalList.add(it) }
                     } else if (!local.isSync) {
-                        if (local.isDelete) {
-                            deleteRemoteList.add(local.toRemote(remote))
-                            deleteLocalList.add(local)
-                        } else {
-                            saveRemoteList.add(local)
-                        }
-                    } else if (local.syncAt > remoteSyncAt) {
+                        if (local.isDelete) deleteLocalAndRemote(local, remote)
+                        else saveRemoteList.add(local)
+                    } else if (local.syncAt > remoteSyncAt)
                         saveRemoteList.add(local)
-                    }
 
                     locals.remove(remote.key)
                 }
@@ -123,9 +128,14 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App> {
 
         if (saveLocalList.isNotEmpty()) saveAllLocal(saveLocalList)
         if (deleteLocalList.isNotEmpty()) deleteAllLocal(deleteLocalList)
-        if (saveRemoteList.isNotEmpty())
-            withContext(coroutineContext) { launch { saveAllRemote(saveRemoteList) } }
+/*        if (saveRemoteList.isNotEmpty())
+            withContext(coroutineContext) { launch { saveAllRemote(saveRemoteList) } }*/
         if (deleteRemoteList.isNotEmpty())
             withContext(coroutineContext) { launch { deleteAllRemote(deleteRemoteList) } }
+    }
+
+    private fun deleteLocalAndRemote(local: Local, remote: Remote?) {
+        deleteRemoteList.add(local.toRemote(remote))
+        deleteLocalList.add(local)
     }
 }
