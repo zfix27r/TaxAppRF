@@ -71,6 +71,8 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
             ) {
                 currenciesAdapter.getItem(position)?.let {
                     viewModel.currency = it
+                    val newSum = binding.editCurrencyConverterSum.text.toString()
+                    if (newSum != "") viewModel.setSum(newSum.toDouble())
                 }
             }
 

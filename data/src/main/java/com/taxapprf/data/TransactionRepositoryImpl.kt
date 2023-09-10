@@ -42,19 +42,42 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     private suspend fun SaveTransactionModel.saveAndUpdatePath() {
+        updateOldPathTransaction()
+
         updateCBRRate()
         tax = updateTax(sum, type, rateCBR)
 
         updatePathTransaction()
     }
 
-    private suspend fun SaveTransactionModel.updatePathTransaction() {
+    private suspend fun SaveTransactionModel.updateOldPathTransaction() {
         asDeleteTransactionModel()?.let {
-            if (isReportYearChanged())
+            if (isReportYearChanged()) {
                 firebaseTransactionDao.deleteTransaction(it)
+                if (reportSize < 2)
+                    firebaseReportDao.delete(accountKey, reportYear)
+                else
+                    decrementAndSave(accountKey, reportYear)
+            }
         }
+    }
 
+    private suspend fun SaveTransactionModel.updatePathTransaction() {
         incrementAndSave(accountKey, yearKey)
+    }
+
+    private suspend fun SaveTransactionModel.decrementAndSave(
+        accountKey: String,
+        reportKey: String
+    ) {
+        val getReportModel = GetReportModel(accountKey, reportKey)
+
+        firebaseReportDao.get(getReportModel).let {
+            val newTax = (it.tax - tax).roundUpToTwo()
+            val newSize = it.size - 1
+            val saveReportModel = SaveReportModel(accountKey, reportKey, newTax, newSize)
+            firebaseReportDao.save(saveReportModel)
+        }
     }
 
     private suspend fun SaveTransactionModel.incrementAndSave(
