@@ -19,7 +19,7 @@ import javax.inject.Inject
 class FirebaseAccountDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
 ) : FirebaseAccountDao {
-    override fun getAccounts() = callbackFlow<Result<List<AccountModel>>> {
+    override fun observeAccounts() = callbackFlow<Result<List<AccountModel>>> {
         safeCall {
             val callback = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -65,9 +65,6 @@ class FirebaseAccountDaoImpl @Inject constructor(
             fb.getAccountsPath()
                 .updateChildren(firebaseAccountModels)
                 .await()
-
-            fb.getAccountsPath()
-                .get().await().children.mapNotNull { println(it) }
         }
     }
 

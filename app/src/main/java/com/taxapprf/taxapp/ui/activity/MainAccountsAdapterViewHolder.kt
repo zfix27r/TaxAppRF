@@ -12,13 +12,13 @@ class MainAccountsAdapterViewHolder(
 
     init {
         binding.drawerHeaderItem.setOnClickListener {
-            callback.onClick(account.name)
+            callback.onClick(account.key)
         }
     }
 
     fun bind(accountModel: AccountModel) {
         account = accountModel
 
-        binding.drawerHeaderItemTitle.text = account.name
+        binding.drawerHeaderItemTitle.text = account.key
     }
 }

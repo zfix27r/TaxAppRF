@@ -14,8 +14,8 @@ data class SaveTransactionModel(
     val sum: Double,
 ) {
     lateinit var reportYear: String
-    var reportTax by Delegates.notNull<Double>()
     var reportSize by Delegates.notNull<Int>()
+    var reportTax by Delegates.notNull<Double>()
 
     var rateCBR by Delegates.notNull<Double>()
     var tax by Delegates.notNull<Double>()
@@ -27,9 +27,9 @@ data class SaveTransactionModel(
                 accountKey,
                 reportYear,
                 transactionKey,
-                transactionTax = tax,
-                reportTax = reportTax,
-                reportSize
+                tax,
+                reportSize,
+                reportTax
             )
         }
 }

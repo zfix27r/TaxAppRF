@@ -13,6 +13,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
@@ -33,6 +34,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private val binding by viewBinding(FragmentTransactionsBinding::bind)
     private val viewModel by viewModels<TransactionsViewModel>()
     private val adapter = TransactionsAdapter { transactionAdapterCallback }
+    lateinit var itemTouchHelper: ItemTouchHelper
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,6 +45,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         prepToolbar()
         prepView()
         prepListeners()
+
+        itemTouchHelper = ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
+        itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
 
         viewModel.observeTransactions()
     }
@@ -98,9 +103,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(oldReportModel.year).collectLatest {
-                        viewModel.report = it
-                        it.updateToolbar()
+                    viewModel.observeReport(oldReportModel.key).collectLatest { reports ->
+                        reports.firstOrNull()?.let {
+                            viewModel.report = it
+                            it.updateToolbar()
+                        } ?: findNavController().popBackStack()
                     }
                 }
             }
@@ -112,7 +119,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private fun TransactionsViewModel.observeTransactions() =
         transactions.observe(viewLifecycleOwner) { transaction ->
             transaction?.let {
-                if (it.isEmpty()) findNavController().popBackStack()
                 adapter.submitList(it)
             }
         }
@@ -133,7 +139,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun ReportModel.updateToolbar() {
-        val title = String.format(getString(R.string.transactions_title), year)
+        val title = String.format(getString(R.string.transactions_title), key)
         val subtitle = String.format(getString(R.string.transactions_subtitle), tax)
         toolbar.updateToolbar(title, subtitle)
     }
@@ -164,6 +170,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                     }
                 }
             }
+        }
+
+        override fun onSwiped(position: Int) {
+            viewModel.onSwipedTransaction(position)
+            viewModel.deleteTransaction()
         }
     }
 

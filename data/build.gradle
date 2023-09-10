@@ -41,6 +41,10 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
 
+    implementation "androidx.room:room-runtime:$rootProject.androidxRoomVersion"
+    kapt "androidx.room:room-compiler:$rootProject.androidxRoomVersion"
+    implementation "androidx.room:room-ktx:$rootProject.androidxRoomVersion"
+
     implementation "com.google.firebase:firebase-bom:$firebaseBomVersion"
     implementation "com.google.firebase:firebase-database-ktx:$firebaseDatabaseVersrion"
     implementation "com.google.firebase:firebase-auth-ktx:$firebaseAuthVersrion"

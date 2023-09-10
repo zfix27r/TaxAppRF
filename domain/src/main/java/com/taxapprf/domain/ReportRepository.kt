@@ -7,7 +7,7 @@ import com.taxapprf.domain.report.ReportModel
 import kotlinx.coroutines.flow.Flow
 
 interface ReportRepository {
-    fun observeReport(observeReportModel: ObserveReportModel): Flow<ReportModel>
+    fun observeReport(observeReportModel: ObserveReportModel): Flow<List<ReportModel>>
     fun observeReports(observeReportsModel: ObserveReportsModel): Flow<List<ReportModel>>
     fun deleteReport(deleteReportModel: DeleteReportModel): Flow<Unit>
 }

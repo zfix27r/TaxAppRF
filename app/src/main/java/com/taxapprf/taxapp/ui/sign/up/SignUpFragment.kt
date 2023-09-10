@@ -25,7 +25,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
         super.onSuccess()
 
         mainViewModel.loading()
-        drawer.showAuth()
+        drawer.showWithAuth()
         navToReports()
     }
 

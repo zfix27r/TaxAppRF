@@ -9,6 +9,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.R
@@ -24,6 +25,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     private val binding by viewBinding(FragmentReportsBinding::bind)
     private val viewModel by viewModels<ReportsViewModel>()
     private val adapter = ReportsAdapter { reportsAdapterCallback }
+    lateinit var itemTouchHelper: ItemTouchHelper
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,6 +37,9 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
         fab.setOnClickListener { navToTransactionDetail() }
         binding.recyclerYearStatements.adapter = adapter
+
+        itemTouchHelper = ItemTouchHelper(ReportTouchHelperCallback(reportsAdapterCallback))
+        itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
 
         viewModel.observerReports()
     }
@@ -70,7 +75,9 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     private fun SavedStateHandle.observeDelete() {
         getLiveData<Boolean>(DeleteDialogFragment.DELETE_ACCEPTED).observe(viewLifecycleOwner) {
             if (it) viewModel.deleteReport()
-            else viewModel.deleteReport = null
+            else {
+                viewModel.deleteReport = null
+            }
         }
     }
 
@@ -101,6 +108,11 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                         }
                     }
                 }
+            }
+
+            override fun onSwiped(position: Int) {
+                viewModel.onSwipedReport(position)
+                viewModel.deleteReport()
             }
         }
 
