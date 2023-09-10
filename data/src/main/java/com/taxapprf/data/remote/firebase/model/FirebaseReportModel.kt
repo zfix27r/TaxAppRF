@@ -3,7 +3,7 @@ package com.taxapprf.data.remote.firebase.model
 import com.taxapprf.domain.report.ReportModel
 
 data class FirebaseReportModel(
-    val key: String? = null,
+    var key: String? = null,
     val tax: Double? = null,
     val size: Int? = null,
     val syncAt: Long? = null
