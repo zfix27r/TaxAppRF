@@ -22,29 +22,30 @@ abstract class SyncManager<L : Sync, A : Sync, R>() {
 
     fun observe() =
         channelFlow {
-            launch {
+/*            launch {
                 observeLocal().collectLatest { models ->
                     if (models.isNotEmpty()) send(models.map { it.mapLocalToApp() })
                     else send(emptyList<A>())
                 }
-            }
+            }*/
 
             launch {
                 observeRemote().collectLatest { result ->
                     result.getOrNull()?.let { models ->
-                        val cache = mutableMapOf<String, A>()
+                        send(models)
+                        /*                        val cache = mutableMapOf<String, A>()
 
-                        getLocal().map {
-                            val model = it.mapLocalToApp()
-                            cache[model.key] = model
-                        }
+                                                getLocal().map {
+                                                    val model = it.mapLocalToApp()
+                                                    cache[model.key] = model
+                                                }
 
-                        cache.sync(
-                            models,
-                            saveLocal = { saveLocal(it.mapAppToLocal()) },
-                            deleteLocal = { deleteLocal(it.mapAppToLocal()) },
-                            saveRemote = { launch { saveRemote(it.mapAppToRemote()) } }
-                        )
+                                                cache.sync(
+                                                    models,
+                                                    saveLocal = { saveLocal(it.mapAppToLocal()) },
+                                                    deleteLocal = { deleteLocal(it.mapAppToLocal()) },
+                                                    saveRemote = { launch { saveRemote(it.mapAppToRemote()) } }
+                                                )*/
                     }
                 }
             }

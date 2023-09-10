@@ -46,7 +46,6 @@ class TransactionRepositoryImpl @Inject constructor(
         tax = updateTax(sum, type, rateCBR)
 
         updatePathTransaction()
-
     }
 
     private suspend fun SaveTransactionModel.updatePathTransaction() {

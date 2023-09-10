@@ -29,6 +29,7 @@ class FirebaseReportDaoImpl(
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         snapshot.getValue(FirebaseReportModel::class.java)
+                            ?.apply { key = snapshot.key }
                             ?.toReportModel()
                             ?.let { trySendBlocking(Result.success(listOf(it))) }
                     }
@@ -52,7 +53,9 @@ class FirebaseReportDaoImpl(
                 val callback = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val reports = snapshot.children.mapNotNull {
-                            it.getValue(FirebaseReportModel::class.java)?.toReportModel()
+                            it.getValue(FirebaseReportModel::class.java)
+                                ?.apply { key = it.key }
+                                ?.toReportModel()
                         }
                         trySendBlocking(Result.success(reports))
                     }
@@ -95,6 +98,7 @@ class FirebaseReportDaoImpl(
     override suspend fun save(saveReportModel: SaveReportModel) {
         safeCall {
             with(saveReportModel) {
+                println("@@@@ $saveReportModel")
                 fb.getReportPath(accountKey, key)
                     .setValue(saveReportModel.toFirebaseReportModel(getTime()))
                     .await()
@@ -123,5 +127,5 @@ class FirebaseReportDaoImpl(
         )
 
     private fun SaveReportModel.toFirebaseReportModel(syncAt: Long) =
-        FirebaseReportModel(key, tax, size, syncAt)
+        FirebaseReportModel(key, tax, size)
 }
