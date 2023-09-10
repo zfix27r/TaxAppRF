@@ -109,8 +109,10 @@ class TransactionsViewModel @Inject constructor(
         get() = deleteTransaction?.let { transaction ->
             val deleteModel = DeleteTransactionModel(
                 accountKey = account.name,
-                yearKey = report.year,
+                reportKey = report.year,
                 transactionKey = transaction.key,
+                transactionTax = transaction.tax,
+                reportTax = report.tax,
                 reportSize = report.size,
             )
 

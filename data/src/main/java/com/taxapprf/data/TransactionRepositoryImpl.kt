@@ -57,12 +57,12 @@ class TransactionRepositoryImpl @Inject constructor(
             val newSize = reportSize - 1
 
             if (newSize == 0) {
-                val deleteReportModel = DeleteReportModel(accountKey, yearKey)
+                val deleteReportModel = DeleteReportModel(accountKey, reportKey)
                 firebaseReportDao.deleteReport(deleteReportModel)
             } else {
                 val newTax = (reportTax - transactionTax).roundUpToTwo()
 
-                val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
+                val saveReportModel = SaveReportModel(accountKey, reportKey, newTax, newSize)
                 firebaseReportDao.saveReport(saveReportModel)
                 firebaseTransactionDao.deleteTransaction(deleteTransactionModel)
             }

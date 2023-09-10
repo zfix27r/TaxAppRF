@@ -65,7 +65,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override suspend fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) {
         safeCall {
             with(deleteTransactionModel) {
-                fb.getTransactionsPath(accountKey, yearKey)
+                fb.getTransactionsPath(accountKey, reportKey)
                     .child(transactionKey)
                     .setValue(null)
                     .await()
