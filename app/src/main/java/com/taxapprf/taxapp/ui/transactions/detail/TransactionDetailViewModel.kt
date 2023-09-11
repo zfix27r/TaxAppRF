@@ -28,6 +28,8 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
             type = value?.type ?: TransactionType.TRADE.name
             currency = value?.currency ?: CURRENCY_DEFAULT
             sum = value?.sum ?: SUM_DEFAULT
+            rateCBR = value?.rateCBR ?: 0.0
+            tax = value?.tax ?: 0.0
             field = value
         }
 
@@ -39,6 +41,9 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     var currency: String = CURRENCY_DEFAULT
     var type: String = TransactionType.TRADE.name
     var sum: Double = SUM_DEFAULT
+
+    private var rateCBR = 0.0
+    private var tax = 0.0
 
     fun checkName(cName: Editable?) = check {
         name = cName.toString()
@@ -71,7 +76,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun getSaveTransactionModel(): SaveTransactionModel {
-        return SaveTransactionModel(
+        val saveTransactionModel = SaveTransactionModel(
             accountKey = account.key,
             yearKey = date.getYear().toString(),
             transactionKey = transaction?.key,
@@ -87,6 +92,10 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
                 reportSize = it.size
             }
         }
+        saveTransactionModel.rateCBR = rateCBR
+        saveTransactionModel.tax = tax
+
+        return saveTransactionModel
     }
 
     private fun String.getYear() = split("/")[2].toInt()

@@ -46,7 +46,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         prepView()
         prepListeners()
 
-        itemTouchHelper = ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
+        itemTouchHelper =
+            ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
         itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
 
         viewModel.observeTransactions()
@@ -118,9 +119,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun TransactionsViewModel.observeTransactions() =
         transactions.observe(viewLifecycleOwner) { transaction ->
-            transaction?.let {
-                adapter.submitList(it)
-            }
+            if (transaction.isNotEmpty()) adapter.submitList(transaction)
+            else findNavController().popBackStack()
         }
 
     override fun onSuccessShare() {
