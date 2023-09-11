@@ -121,7 +121,7 @@
     <string name="textSumRub">Налог, руб.: </string>
 
     <!-- NewTransactionFragment-->
-    <string name="editNewTransId"> Сделка</string>
+    <string name="editNewTransId">Наименование операции</string>
     <string name="editNewTransDate">Дата сделки ДД/ММ/ГГГГ</string>
     <string name="editNewTransSum">Сумма</string>
     <string name="buttonNewTransAdd">Добавить</string>
