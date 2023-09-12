@@ -104,7 +104,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
         }
     }
 
-    override suspend fun pushAndGetKey(accountKey: String, reportKey: String) =
+    override suspend fun getKey(accountKey: String, reportKey: String) =
         fb.getTransactionsPath(accountKey, reportKey).push().key
 
 }

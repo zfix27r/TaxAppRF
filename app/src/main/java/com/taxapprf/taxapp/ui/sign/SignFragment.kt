@@ -19,7 +19,7 @@ class SignFragment : BaseFragment(R.layout.fragment_sign) {
         toolbar.updateMenu()
 
         if (mainViewModel.isSignIn) {
-            mainViewModel.loading()
+            mainViewModel.showLoading()
             drawer.showWithAuth()
             navToReports()
         }

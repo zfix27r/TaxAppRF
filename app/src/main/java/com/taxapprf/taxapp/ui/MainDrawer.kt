@@ -56,12 +56,19 @@ class MainDrawer(
         }
     }
 
-    fun updateUserProfile(userModel: UserModel) {
-        userModel.avatar?.let {
-            userAvatar.setImageURI(it)
+    fun auth(userModel: UserModel?) {
+        userModel?.let {
+            it.updateUserInfo()
+            showWithAuth()
+        } ?: run {
+            hideWithoutAuth()
         }
-        userName.text = userModel.name
-        userEmail.text = userModel.email
+    }
+
+    private fun UserModel.updateUserInfo() {
+        avatar?.let { userAvatar.setImageURI(it) }
+        userName.text = name
+        userEmail.text = email
     }
 
     fun showWithAuth() {
@@ -75,7 +82,7 @@ class MainDrawer(
     }
 
     fun hideWithoutAuth() {
-        expandLessAccounts()
+        userAvatar.setImageResource(R.drawable.free_icon_tax_10994810)
         userName.isVisible = false
         userEmail.isVisible = false
         logOut.isVisible = false

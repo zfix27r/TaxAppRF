@@ -24,7 +24,7 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     override fun onSuccess() {
         super.onSuccess()
 
-        mainViewModel.loading()
+        mainViewModel.showLoading()
         drawer.showWithAuth()
         navToReports()
     }

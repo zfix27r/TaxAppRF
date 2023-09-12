@@ -58,11 +58,12 @@ class SyncTransactions(
     }
 
     override suspend fun saveAllRemote(locales: List<LocalTransactionEntity>) {
+        val updateRemotes = mutableMapOf<String, FirebaseTransactionModel>()
         locales.map { transition ->
-            if (transition.key != "")
+            if (transition.key.isEmptyKey())
                 remoteDao.save(accountKey, reportKey, transition.key, transition.toRemote())
             else {
-                remoteDao.pushAndGetKey(accountKey, reportKey)?.let { key ->
+                remoteDao.getKey(accountKey, reportKey)?.let { key ->
                     localDao.save(transition.copy(key = key))
                     remoteDao.save(accountKey, reportKey, key, transition.toRemote())
                 }

@@ -28,7 +28,7 @@ interface RemoteTransactionDao {
         transactionModels: List<FirebaseTransactionModel>
     )
 
-    suspend fun pushAndGetKey(
+    suspend fun getKey(
         accountKey: String,
         reportKey: String,
     ): String?

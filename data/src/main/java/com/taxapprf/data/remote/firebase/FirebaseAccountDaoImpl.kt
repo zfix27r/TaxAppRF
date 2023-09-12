@@ -1,5 +1,6 @@
 package com.taxapprf.data.remote.firebase
 
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -18,6 +19,38 @@ import javax.inject.Inject
 class FirebaseAccountDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
 ) : RemoteAccountDao {
+
+    fun observer(onChildAdded: (FirebaseAccountModel) -> Unit) {
+        println("###############")
+        callbackFlow<Result<List<FirebaseAccountModel>>> {
+            val callback = object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    println("onChildAdded $snapshot")
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    println("onChildChanged $snapshot")
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    println("onChildRemoved $snapshot")
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    println("onChildMoved $snapshot")
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    println("onCancelled $error")
+                }
+            }
+
+            fb.getAccountsPath().addChildEventListener(callback)
+
+            awaitClose { fb.getAccountsPath().removeEventListener(callback) }
+        }
+    }
+
     override fun observeAll() = callbackFlow<Result<List<FirebaseAccountModel>>> {
         safeCall {
             val callback = object : ValueEventListener {

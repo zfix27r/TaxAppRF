@@ -5,7 +5,10 @@ import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
 import com.taxapprf.data.sync.SyncAccounts
 import com.taxapprf.domain.AccountRepository
+import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.account.SwitchAccountModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,6 +19,10 @@ class AccountRepositoryImpl @Inject constructor(
 ) : AccountRepository {
     override fun getAccounts() =
         SyncAccounts(localDao, remoteDao).observeAll()
+
+    override fun observeAccounts() {
+        remoteDao.observer({})
+    }
 
     override suspend fun switchAccount(switchAccountModel: SwitchAccountModel) {
         localDao.saveAll(switchAccountModel.toListLocalAccountEntity())

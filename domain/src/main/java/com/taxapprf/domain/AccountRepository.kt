@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
     fun getAccounts(): Flow<List<AccountModel>>
+    fun observeAccounts()
     suspend fun switchAccount(switchAccountModel: SwitchAccountModel)
 }

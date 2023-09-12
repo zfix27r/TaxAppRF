@@ -15,6 +15,7 @@ import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.account.GetAccountsUseCase
+import com.taxapprf.domain.account.ObserveAccountsUseCase
 import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.transaction.GetExcelToShareUseCase
 import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
@@ -55,6 +56,9 @@ object DomainModule {
     @Provides
     fun provideGetAccountsUseCase(repositoryImpl: AccountRepositoryImpl) =
         GetAccountsUseCase(repositoryImpl)
+    @Provides
+    fun provideObserveAccountsUseCase(repositoryImpl: AccountRepositoryImpl) =
+        ObserveAccountsUseCase(repositoryImpl)
 
     @Provides
     fun provideSwitchAccountUseCase(repositoryImpl: AccountRepositoryImpl) =

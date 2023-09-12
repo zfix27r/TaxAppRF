@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.account.GetAccountsUseCase
+import com.taxapprf.domain.account.ObserveAccountsUseCase
 import com.taxapprf.domain.account.SwitchAccountModel
 import com.taxapprf.domain.account.SwitchAccountUseCase
 import com.taxapprf.domain.report.ReportModel
@@ -19,9 +20,11 @@ import com.taxapprf.domain.user.UserModel
 import com.taxapprf.taxapp.ui.BaseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,6 +33,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val isSignInUseCase: IsSignInUseCase,
     private val getUserUseCase: GetUserUseCase,
+    observeAccountsUseCase: ObserveAccountsUseCase,
     private val getAccountsUseCase: GetAccountsUseCase,
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
@@ -53,7 +57,16 @@ class MainViewModel @Inject constructor(
     var report: ReportModel? = null
     var transaction: TransactionModel? = null
 
-    fun loading() {
+
+    init {
+        observeAccountsUseCase.execute()
+    }
+
+    val user1 = getUserUseCase.execute().showLoading()
+
+    val account1 = getAccountsUseCase.execute().showLoading()
+
+    fun showLoading() {
         viewModelScope.launch(Dispatchers.IO) {
             getAccountsUseCase.execute()
                 .onStart { _state.loading() }
@@ -104,7 +117,7 @@ class MainViewModel @Inject constructor(
 
     fun signOut() = viewModelScope.launch(Dispatchers.IO) {
         signOutUseCase.execute()
-            .onStart { loading() }
+            .onStart { showLoading() }
             .catch { error(it) }
             .collectLatest { _state.signOut() }
     }
@@ -116,4 +129,10 @@ class MainViewModel @Inject constructor(
                 .catch { _state.error(it) }
                 .collectLatest { _state.success() }
         }
+
+    private fun <T> Flow<T>.showLoading() =
+        this
+            .onStart { _state.loading() }
+            .catch { _state.error(it) }
+            .onEach { _state.success() }
 }

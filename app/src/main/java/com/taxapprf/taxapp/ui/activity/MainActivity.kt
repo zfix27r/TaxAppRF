@@ -5,7 +5,10 @@ import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -32,6 +35,7 @@ import com.taxapprf.taxapp.ui.SignOut
 import com.taxapprf.taxapp.ui.Success
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
@@ -183,20 +187,39 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun MainViewModel.observeAccounts() {
-        accounts.observe(this@MainActivity) { accounts ->
-            if (accounts.isNotEmpty()) {
-                accountsAdapter.submitList(accounts.filter { !it.isActive })
-                fabVisibilityManager()
-            } else {
-                onLoadingError(DataErrorUser())
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                account1.collectLatest { accounts ->
+                    accountsAdapter.submitList(accounts.filter { !it.isActive })
+                    fabVisibilityManager()
+                }
             }
         }
+        /*
+                accounts.observe(this@MainActivity) { accounts ->
+                    if (accounts.isNotEmpty()) {
+                        accountsAdapter.submitList(accounts.filter { !it.isActive })
+                        fabVisibilityManager()
+                    } else {
+                        onLoadingError(DataErrorUser())
+                    }
+                }*/
     }
 
     private fun MainViewModel.observeUser() {
-        user.observe(this@MainActivity) { user ->
-            drawer.updateUserProfile(user)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                user1.collectLatest { user ->
+                    drawer.auth(user)
+                }
+            }
         }
+        /*
+
+                user.observe(this@MainActivity) { user ->
+                    drawer.updateUserProfile(user)
+                }
+        */
     }
 
     private fun NavController.observeCurrentBackStack() {
