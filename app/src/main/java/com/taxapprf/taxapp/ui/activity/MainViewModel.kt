@@ -10,6 +10,7 @@ import com.taxapprf.domain.account.ObserveAccountsUseCase
 import com.taxapprf.domain.account.SwitchAccountModel
 import com.taxapprf.domain.account.SwitchAccountUseCase
 import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.transaction.TransactionModel
@@ -38,6 +39,7 @@ class MainViewModel @Inject constructor(
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
+    syncAllUseCase: SyncAllUseCase
 ) : ViewModel() {
     private val _state = ActivityStateLiveData()
     val state: LiveData<BaseState> = _state
@@ -65,6 +67,8 @@ class MainViewModel @Inject constructor(
     val user1 = getUserUseCase.execute().showLoading()
 
     val account1 = getAccountsUseCase.execute().showLoading()
+
+    val sync = syncAllUseCase.execute()
 
     fun showLoading() {
         viewModelScope.launch(Dispatchers.IO) {

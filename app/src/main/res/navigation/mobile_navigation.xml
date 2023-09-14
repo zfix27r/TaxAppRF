@@ -12,9 +12,30 @@
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
+
     <action
         android:id="@+id/action_global_reports"
         app:destination="@id/reports"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"
+        app:popUpTo="@id/mobile_navigation"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_currency_converter"
+        app:destination="@id/currency_converter"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"
+        app:popUpTo="@id/mobile_navigation"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_currency_rates_today"
+        app:destination="@id/currency_rates_today"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
@@ -112,13 +133,13 @@
     <fragment
         android:id="@+id/currency_rates_today"
         android:name="com.taxapprf.taxapp.ui.currency.today.CurrencyRatesTodayFragment"
-        android:label="@string/menuRatesToday"
+        android:label="@string/menu_rates_today_name"
         tools:layout="@layout/fragment_rates_today" />
 
     <fragment
         android:id="@+id/currency_converter"
         android:name="com.taxapprf.taxapp.ui.currency.converter.CurrencyConverterFragment"
-        android:label="@string/menuConverter"
+        android:label="@string/menu_converter_name"
         tools:layout="@layout/fragment_currency_converter" />
 
     <fragment

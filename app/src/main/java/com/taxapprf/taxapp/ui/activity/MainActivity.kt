@@ -35,7 +35,6 @@ import com.taxapprf.taxapp.ui.SignOut
 import com.taxapprf.taxapp.ui.Success
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
@@ -54,10 +53,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     val drawer by lazy {
-        MainDrawer(binding.navView) {
-            binding.drawerLayout.close()
-            viewModel.signOut()
-        }
+        MainDrawer(
+            binding.navView,
+            reports = { navToReports() },
+            converter = { navToCurrencyConverter() },
+            currencies = { navToCurrencyRatesToday() },
+            sign = {},
+            signOut = { navToSignOut() }
+        )
     }
     val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
 
@@ -234,6 +237,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val currentDestination = navController.currentBackStack.value.last().destination.id
         if (fabVisibleDestinations.contains(currentDestination)) binding.appBarMain.fab.show()
         else binding.appBarMain.fab.hide()
+    }
+
+    private fun navToReports() {
+        binding.drawerLayout.close()
+        navController.navigate(R.id.action_global_reports)
+    }
+
+    private fun navToCurrencyConverter() {
+        binding.drawerLayout.close()
+        navController.navigate(R.id.action_global_currency_converter)
+    }
+
+    private fun navToCurrencyRatesToday() {
+        binding.drawerLayout.close()
+        navController.navigate(R.id.action_global_currency_rates_today)
+    }
+
+    private fun navToSignOut() {
+        binding.drawerLayout.close()
+        viewModel.signOut()
     }
 
     private fun navToAccountAdd() {

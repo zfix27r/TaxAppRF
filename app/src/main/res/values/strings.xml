@@ -33,8 +33,8 @@
     <string name="menu_home">Home</string>
     <string name="menuExit">Выйти</string>
     <string name="menuChangeAccount">Другой счёт</string>
-    <string name="menuRatesToday">Курсы сегодня</string>
-    <string name="menuConverter">Конвертер валют</string>
+    <string name="menu_rates_today_name">Курсы сегодня</string>
+    <string name="menu_converter_name">Конвертер валют</string>
     <string name="menuNewTransaction">Новая сделка</string>
     <string name="menuTransactionDetail">Редактирование сделки</string>
     <string name="menuTransactions">Годовой отчет</string>
@@ -167,5 +167,6 @@
     <string name="currency_converter_sum_hint">0.00</string>
     <string name="currency_converter_sum_default">1</string>
     <string name="sign_title_name">Вход</string>
+    <string name="sign_out_name">Выход</string>
 
 </resources>

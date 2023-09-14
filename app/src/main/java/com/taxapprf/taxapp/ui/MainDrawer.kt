@@ -11,7 +11,11 @@ import com.taxapprf.taxapp.R
 
 class MainDrawer(
     private val navView: NavigationView,
-    private val logOutCallback: () -> Unit,
+    private val reports: () -> Unit,
+    private val currencies: () -> Unit,
+    private val converter: () -> Unit,
+    private val sign: () -> Unit,
+    private val signOut: () -> Unit,
 ) {
     private val header
         get() = navView.getHeaderView(HEADER_POSITION)
@@ -29,8 +33,6 @@ class MainDrawer(
         get() = header.findViewById<Layer>(R.id.layerNavHeaderAccounts)
     val account: TextView
         get() = header.findViewById(R.id.textNavHeaderUserAccount)
-    private val logOut
-        get() = header.findViewById<ImageView>(R.id.imageNavHeaderUserLogOut)
 
     private var isAccountsExpand = false
 
@@ -51,45 +53,66 @@ class MainDrawer(
             isAccountsExpand = !isAccountsExpand
         }
 
-        logOut.setOnClickListener {
-            logOutCallback()
+        navView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.reports -> {
+                    reports()
+                    true
+                }
+
+                R.id.currency_rates_today -> {
+                    currencies()
+                    true
+                }
+
+                R.id.currency_converter -> {
+                    converter()
+                    true
+                }
+
+                R.id.sign -> {
+                    sign()
+                    true
+                }
+
+                R.id.sign_out -> {
+                    signOut()
+                    true
+                }
+
+                else -> false
+            }
         }
     }
 
     fun auth(userModel: UserModel?) {
-        userModel?.let {
-            it.updateUserInfo()
-            showWithAuth()
-        } ?: run {
-            hideWithoutAuth()
-        }
+        userModel.updateUserInfo()
+
+        userModel?.let { showWithAuth() }
+            ?: run { hideWithoutAuth() }
     }
 
-    private fun UserModel.updateUserInfo() {
-        avatar?.let { userAvatar.setImageURI(it) }
-        userName.text = name
-        userEmail.text = email
+    private fun UserModel?.updateUserInfo() {
+        this?.avatar?.let { userAvatar.setImageURI(it) }
+        userName.text = this?.name ?: ""
+        userEmail.text = this?.email ?: ""
     }
 
     fun showWithAuth() {
-        userName.isVisible = true
-        userEmail.isVisible = true
-        logOut.isVisible = true
         accounts.isVisible = true
+        recycler.isVisible = true
 
-        navView.menu.clear()
-        navView.inflateMenu(R.menu.auth_drawer)
+        navView.menu.findItem(R.id.sign).isVisible = false
+        navView.menu.findItem(R.id.sign_out).isVisible = true
     }
 
     fun hideWithoutAuth() {
         userAvatar.setImageResource(R.drawable.free_icon_tax_10994810)
-        userName.isVisible = false
-        userEmail.isVisible = false
-        logOut.isVisible = false
         accounts.isVisible = false
+        recycler.isVisible = false
 
-        navView.menu.clear()
-        navView.inflateMenu(R.menu.not_auth_drawer)
+        navView.menu.findItem(R.id.sign_out).isVisible = false
+        navView.menu.findItem(R.id.sign).isVisible = true
     }
 
     companion object {

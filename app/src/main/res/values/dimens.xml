@@ -37,7 +37,9 @@
     <dimen name="currency_converter_horizontal_offset">80dp</dimen>
 
     <!-- Drawer header -->
-    <dimen name="user_avatar_size">64dp</dimen>
+    <dimen name="drawer_avatar_size">120dp</dimen>
+    <dimen name="drawer_avatar_start_offset">-40dp</dimen>
+    <dimen name="drawer_header_item_title_start_offset">54dp</dimen>
 
     <!-- На удаление -->
 

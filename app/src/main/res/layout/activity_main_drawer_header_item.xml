@@ -12,7 +12,7 @@
         android:layout_width="@dimen/zero"
         android:gravity="center_vertical"
         android:layout_height="match_parent"
-        android:layout_marginStart="54dp"
+        android:layout_marginStart="@dimen/drawer_header_item_title_start_offset"
         android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
