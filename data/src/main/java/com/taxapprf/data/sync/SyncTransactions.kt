@@ -19,11 +19,11 @@ class SyncTransactions(
     override fun getAllLocal() = localDao.getAll(accountKey, reportKey)
     override fun getAllDeleteLocal() = localDao.getAllDelete(accountKey)
 
-    override fun deleteAllLocal(locals: List<LocalTransactionEntity>) {
+    override fun deleteLocalList(locals: List<LocalTransactionEntity>) {
         localDao.deleteAll(locals)
     }
 
-    override fun saveAllLocal(locals: List<LocalTransactionEntity>) {
+    override fun saveLocalList(locals: List<LocalTransactionEntity>) {
         localDao.saveAll(locals)
     }
 
@@ -51,13 +51,13 @@ class SyncTransactions(
     }
 
     override fun observeRemote() = TODO()
-    override fun observeAllRemote() = remoteDao.observeAll(accountKey, reportKey)
+    override fun getRemote() = remoteDao.observeAll(accountKey, reportKey)
 
-    override suspend fun deleteAllRemote(remotes: List<FirebaseTransactionModel>) {
+    override suspend fun deleteRemoteList(remotes: List<FirebaseTransactionModel>) {
         remoteDao.deleteAll(accountKey, reportKey, remotes)
     }
 
-    override suspend fun saveAllRemote(locales: List<LocalTransactionEntity>) {
+    override suspend fun saveRemoteList(locales: List<LocalTransactionEntity>) {
         val updateRemotes = mutableMapOf<String, FirebaseTransactionModel>()
         locales.map { transition ->
             if (transition.key.isEmptyKey())

@@ -4,29 +4,31 @@ import com.taxapprf.data.local.room.dao.LocalAccountDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
 import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
-import com.taxapprf.domain.account.AccountModel
 
 class SyncAccounts(
     private val localDao: LocalAccountDao,
     private val remoteDao: RemoteAccountDao,
-) : SyncManager<LocalAccountEntity, FirebaseAccountModel, AccountModel>() {
-    override fun observeLocal() = TODO()
-    override fun observeAllLocal() = localDao.observeAll()
+) : SyncManager<LocalAccountEntity, FirebaseAccountModel>() {
+    override fun getLocalList() =
+        localDao.getAll()
 
-    override fun getLocal() = TODO()
-    override fun getAllLocal() = localDao.getAll()
-    override fun getAllDeleteLocal() = localDao.getAllDelete()
-
-    override fun deleteAllLocal(locals: List<LocalAccountEntity>) {
+    override fun deleteLocalList(locals: List<LocalAccountEntity>) =
         localDao.deleteAll(locals)
-    }
 
-    override fun saveAllLocal(locals: List<LocalAccountEntity>) {
+    override fun saveLocalList(locals: List<LocalAccountEntity>) =
         localDao.saveAll(locals)
-    }
 
-    override fun LocalAccountEntity.toApp(): AccountModel =
-        AccountModel(id, key, isActive, isSync, isDelete, syncAt)
+    override suspend fun getRemoteList() =
+        remoteDao.getAll()
+
+    override suspend fun deleteRemoteList(remoteMap: Map<String, FirebaseAccountModel>) =
+        remoteDao.deleteAll(remoteMap)
+
+    override suspend fun saveRemoteList(remoteMap: Map<String, FirebaseAccountModel>) =
+        remoteDao.saveAll(remoteMap)
+
+    override suspend fun LocalAccountEntity.updateRemoteKey() =
+        remoteDao.getKey()?.let { copy(key = it) }
 
     override fun LocalAccountEntity.toRemote(remote: FirebaseAccountModel?) =
         FirebaseAccountModel(
@@ -34,17 +36,6 @@ class SyncAccounts(
             isActive = isActive,
             syncAt = syncAt
         )
-
-    override fun observeRemote() = TODO()
-    override fun observeAllRemote() = remoteDao.observeAll()
-
-    override suspend fun deleteAllRemote(remotes: List<FirebaseAccountModel>) {
-        remoteDao.deleteAll(remotes)
-    }
-
-    override suspend fun saveAllRemote(locales: List<LocalAccountEntity>) {
-        remoteDao.saveAll(locales.map { it.toRemote() })
-    }
 
     override fun FirebaseAccountModel.toLocal(local: LocalAccountEntity?): LocalAccountEntity? {
         val key = key ?: return null

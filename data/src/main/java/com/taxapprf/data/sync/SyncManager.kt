@@ -1,10 +1,5 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.domain.NetworkManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
@@ -13,106 +8,68 @@ const val IS_SYNC = "is_sync"
 const val IS_DELETE = "is_delete"
 const val SYNC_AT = "sync_at"
 
-abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App>(
-) {
-    protected abstract fun observeLocal(): Flow<Local?>
-    protected abstract fun observeAllLocal(): Flow<List<Local>>
+abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
+    protected abstract fun getLocalList(): List<Local>
+    protected abstract fun saveLocalList(locals: List<Local>): List<Long>
+    protected abstract fun deleteLocalList(locals: List<Local>): Int
 
-    protected abstract fun getLocal(): Local?
-    protected abstract fun getAllLocal(): List<Local>
-    protected abstract fun getAllDeleteLocal(): List<Local>
+    protected abstract suspend fun getRemoteList(): List<Remote>
+    protected abstract suspend fun saveRemoteList(remoteMap: Map<String, Remote>)
+    protected abstract suspend fun deleteRemoteList(remoteMap: Map<String, Remote>)
 
-    protected abstract fun Local.toRemote(remote: Remote? = null): Remote
-    protected abstract fun Local.toApp(): App
-
-    protected abstract fun saveAllLocal(locals: List<Local>)
-    protected abstract fun deleteAllLocal(locals: List<Local>)
-
-    protected abstract fun observeRemote(): Flow<Result<Remote?>>
-    protected abstract fun observeAllRemote(): Flow<Result<List<Remote>>>
-
+    protected abstract suspend fun Local.updateRemoteKey(): Local?
     protected abstract fun Remote.toLocal(local: Local? = null): Local?
+    protected abstract fun Local.toRemote(remote: Remote? = null): Remote
 
-    protected abstract suspend fun saveAllRemote(locales: List<Local>)
-    protected abstract suspend fun deleteAllRemote(remotes: List<Remote>)
+    suspend fun sync() {
+        val saveLocalList = mutableListOf<Local>()
+        val deleteLocalList = mutableListOf<Local>()
 
-    protected fun String.isEmptyKey() = this == ""
+        val saveRemoteList = mutableMapOf<String, Remote>()
+        val deleteRemoteList = mutableMapOf<String, Remote>()
 
-    private val saveLocalList = mutableListOf<Local>()
-    private val deleteLocalList = mutableListOf<Local>()
+        val remotes = getRemoteList()
+        val locals = getLocalList().toMapLocalList()
 
-    private val saveRemoteList = mutableListOf<Local>()
-    private val deleteRemoteList = mutableListOf<Remote>()
+        for (remote in remotes) {
+            val remoteKey = remote.key ?: continue
 
-    private var isLock = false
-
-    fun observe() =
-        channelFlow {
-            val locals = mutableMapOf<String, Local>()
-
-            launch(Dispatchers.IO) {
-                observeLocal().collectLatest { newLocal ->
-                    send(newLocal?.toApp())
-                    locals.update(newLocal)
-                }
+            if (!locals.containsKey(remoteKey)) {
+                remote.toLocal()?.let { saveLocalList.add(it) }
+                continue
             }
 
-            launch(Dispatchers.IO) {
-                observeRemote().collectLatest { result ->
-                    result.getOrNull()?.let { remote ->
-                        val remotes = listOf(remote)
-                        locals.sync(remotes)
+            locals.getValue(remoteKey).let { local ->
+                val remoteSyncAt = remote.syncAt ?: 0
+
+                if (local.syncAt < remoteSyncAt) {
+                    remote.toLocal(local)?.let { saveLocalList.add(it) }
+                } else if (!local.isSync) {
+                    if (local.isDelete)
+                        deleteRemoteList[local.key] = local.toRemote(remote)
+                    else
+                        saveRemoteList[local.key] = local.toRemote(remote)
+                } else if (local.syncAt > remoteSyncAt)
+                    saveRemoteList[local.key] = local.toRemote(remote)
+
+                locals.remove(remote.key)
+            }
+        }
+
+        locals.map { entry ->
+            val local = entry.value
+
+            if (local.isSync || local.isDelete)
+                deleteLocalList.add(local)
+            else {
+                if (local.key == "") {
+                    local.updateRemoteKey()?.let {
+                        saveLocalList.add(it)
+                        saveRemoteList[local.key] = it.toRemote()
                     }
-                }
+                } else
+                    saveRemoteList[local.key] = local.toRemote()
             }
-        }
-
-    fun observeAll() =
-        channelFlow {
-            launch(Dispatchers.IO) {
-                observeAllLocal().collectLatest { newLocals ->
-                    println("newLocals $newLocals")
-                    send(newLocals.map { it.toApp() })
-                }
-            }
-
-            launch(Dispatchers.IO) {
-                observeAllRemote().collectLatest { result ->
-                    result.getOrNull()?.let { remotes ->
-                        println("remotes $remotes")
-//                            locals.sync(remotes)
-                    }
-                }
-            }
-        }
-
-    private suspend fun MutableMap<String, Local>.sync(remotes: List<Remote>) {
-        val locals = this
-
-        remotes.map { remote ->
-            val remoteKey = remote.key ?: "-"
-
-            if (locals.containsKey(remoteKey)) {
-                locals.getValue(remoteKey).let { local ->
-                    val remoteSyncAt = remote.syncAt ?: 0
-
-                    if (local.syncAt < remoteSyncAt) {
-                        remote.toLocal(local)?.let { saveLocalList.add(it) }
-                    } else if (!local.isSync) {
-                        if (local.isDelete) deleteLocalAndRemote(local, remote)
-                        else saveRemoteList.add(local)
-                    } else if (local.syncAt > remoteSyncAt)
-                        saveRemoteList.add(local)
-
-                    locals.remove(remote.key)
-                }
-            } else remote.toLocal()?.let { saveLocalList.add(it) }
-        }
-
-        locals.map {
-            val local = it.value
-            if (local.isSync || local.isDelete) deleteLocalList.add(local)
-            else saveRemoteList.add(local)
         }
 
         println("saveLocalList $saveLocalList")
@@ -120,24 +77,17 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote, App>(
         println("saveRemoteList $saveRemoteList")
         println("deleteRemoteList $deleteRemoteList")
 
-        if (saveLocalList.isNotEmpty()) saveAllLocal(saveLocalList)
-        if (deleteLocalList.isNotEmpty()) deleteAllLocal(deleteLocalList)
-        /*        if (saveRemoteList.isNotEmpty())
-                    withContext(coroutineContext) { launch { saveAllRemote(saveRemoteList) } }*/
+        if (saveLocalList.isNotEmpty()) saveLocalList(saveLocalList)
+        if (deleteLocalList.isNotEmpty()) deleteLocalList(deleteLocalList)
+        if (saveRemoteList.isNotEmpty())
+            withContext(coroutineContext) { launch { saveRemoteList(saveRemoteList) } }
         if (deleteRemoteList.isNotEmpty())
-            withContext(coroutineContext) { launch { deleteAllRemote(deleteRemoteList) } }
+            withContext(coroutineContext) { launch { deleteRemoteList(deleteRemoteList) } }
     }
 
-    private fun deleteLocalAndRemote(local: Local, remote: Remote?) {
-        deleteRemoteList.add(local.toRemote(remote))
-        deleteLocalList.add(local)
-    }
-
-    private fun MutableMap<String, Local>.update(local: Local?) {
-        local?.let { this[it.key] = it }
-    }
-
-    private fun MutableMap<String, Local>.update(locals: List<Local>) {
-        locals.map { this[it.key] = it }
+    private fun List<Local>.toMapLocalList(): MutableMap<String, Local> {
+        val mapLocalList = mutableMapOf<String, Local>()
+        map { mapLocalList.put(it.key, it) }
+        return mapLocalList
     }
 }

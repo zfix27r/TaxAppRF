@@ -19,11 +19,11 @@ class SyncReports(
     override fun getAllLocal() = localDao.getAll(accountKey)
     override fun getAllDeleteLocal() = localDao.getAllDelete(accountKey)
 
-    override fun deleteAllLocal(locals: List<LocalReportEntity>) {
+    override fun deleteLocalList(locals: List<LocalReportEntity>) {
         localDao.deleteAll(locals)
     }
 
-    override fun saveAllLocal(locals: List<LocalReportEntity>) {
+    override fun saveLocalList(locals: List<LocalReportEntity>) {
         localDao.saveAll(locals)
     }
 
@@ -34,13 +34,13 @@ class SyncReports(
         FirebaseReportModel(key, tax, size, syncAt)
 
     override fun observeRemote() = remoteDao.observe(accountKey, reportKey)
-    override fun observeAllRemote() = remoteDao.observeAll(accountKey)
+    override fun getRemote() = remoteDao.observeAll(accountKey)
 
-    override suspend fun deleteAllRemote(remotes: List<FirebaseReportModel>) {
+    override suspend fun deleteRemoteList(remotes: List<FirebaseReportModel>) {
         remoteDao.deleteAll(accountKey, remotes)
     }
 
-    override suspend fun saveAllRemote(locales: List<LocalReportEntity>) {
+    override suspend fun saveRemoteList(locales: List<LocalReportEntity>) {
         remoteDao.saveAll(accountKey, locales.map { it.toRemote() })
     }
 

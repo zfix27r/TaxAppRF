@@ -16,12 +16,6 @@ interface LocalAccountDao {
     @Query("SELECT * FROM account")
     fun getAll(): List<LocalAccountEntity>
 
-    @Query("SELECT * FROM account WHERE is_delete = 1")
-    fun getAllDelete(): List<LocalAccountEntity>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveAll(localAccountEntity: LocalAccountEntity): Long
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveAll(localAccountEntities: List<LocalAccountEntity>): List<Long>
 
