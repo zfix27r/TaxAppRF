@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.activity
+package com.taxapprf.taxapp.ui.drawer
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,7 +10,7 @@ import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderAddBinding
 import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderItemBinding
 
 class MainAccountsAdapter(
-    private val callback: () -> MainAccountsAdapterCallback,
+    private val callback: DrawerAccountsAdapterCallback,
 ) : ListAdapter<AccountModel, RecyclerView.ViewHolder>(DiffCallback()) {
     override fun getItemCount(): Int {
         return super.getItemCount() + 1
@@ -36,13 +36,13 @@ class MainAccountsAdapter(
     private fun ViewGroup.getItemViewHolder(): MainAccountsAdapterViewHolder {
         val inflater = LayoutInflater.from(context)
         val binding = ActivityMainDrawerHeaderItemBinding.inflate(inflater, this, false)
-        return MainAccountsAdapterViewHolder(binding, callback.invoke())
+        return MainAccountsAdapterViewHolder(binding, callback)
     }
 
     private fun ViewGroup.getAddViewHolder(): MainAccountsAdapterAddViewHolder {
         val inflater = LayoutInflater.from(context)
         val binding = ActivityMainDrawerHeaderAddBinding.inflate(inflater, this, false)
-        return MainAccountsAdapterAddViewHolder(binding, callback.invoke())
+        return MainAccountsAdapterAddViewHolder(binding, callback)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

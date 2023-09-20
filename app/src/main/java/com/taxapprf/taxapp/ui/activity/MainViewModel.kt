@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.account.AccountModel
-import com.taxapprf.domain.account.GetAccountsUseCase
 import com.taxapprf.domain.account.ObserveAccountsUseCase
 import com.taxapprf.domain.account.SwitchAccountModel
 import com.taxapprf.domain.account.SwitchAccountUseCase
@@ -22,11 +21,14 @@ import com.taxapprf.taxapp.ui.BaseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,7 +37,6 @@ class MainViewModel @Inject constructor(
     private val isSignInUseCase: IsSignInUseCase,
     private val getUserUseCase: GetUserUseCase,
     observeAccountsUseCase: ObserveAccountsUseCase,
-    private val getAccountsUseCase: GetAccountsUseCase,
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
@@ -47,15 +48,6 @@ class MainViewModel @Inject constructor(
     val isSignIn
         get() = isSignInUseCase.execute()
 
-    private val _user = MutableLiveData<UserModel>()
-    val user: LiveData<UserModel> = _user
-
-    private val _accounts = MutableLiveData<List<AccountModel>>()
-    val accounts: LiveData<List<AccountModel>> = _accounts
-
-    private val _account = MutableLiveData<AccountModel?>()
-    val account: LiveData<AccountModel?> = _account
-
     var report: ReportModel? = null
     var transaction: TransactionModel? = null
 
@@ -64,32 +56,25 @@ class MainViewModel @Inject constructor(
         observeAccountsUseCase.execute()
     }
 
-    val user1 = getUserUseCase.execute().showLoading()
+    val user =
+        getUserUseCase.execute()
+            .showLoading()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                initialValue = null
+            )
 
-    val account1 = getAccountsUseCase.execute().showLoading()
+    val accounts =
+        observeAccountsUseCase.execute()
+            .showLoading()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                initialValue = null
+            )
 
     val sync = syncAllUseCase.execute()
-
-    fun showLoading() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getAccountsUseCase.execute()
-                .onStart { _state.loading() }
-                .catch { _state.error(it) }
-                .collectLatest {
-                    it.updateAccounts()
-                    _state.success()
-                }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            getUserUseCase.execute()
-                .collectLatest { _userModel ->
-                    _userModel?.let {
-                        _user.postValue(it)
-                    }
-                }
-        }
-    }
 
     fun switchAccount(accountModel: AccountModel) = viewModelScope.launch(Dispatchers.IO) {
         _account.value?.let { oldAccountModel ->

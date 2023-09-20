@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.activity
+package com.taxapprf.taxapp.ui.drawer
 
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.account.AccountModel
@@ -6,13 +6,13 @@ import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderItemBinding
 
 class MainAccountsAdapterViewHolder(
     private val binding: ActivityMainDrawerHeaderItemBinding,
-    private val callback: MainAccountsAdapterCallback,
+    private val callback: DrawerAccountsAdapterCallback,
 ) : RecyclerView.ViewHolder(binding.root) {
     private lateinit var account: AccountModel
 
     init {
         binding.drawerHeaderItem.setOnClickListener {
-            callback.onClick(account)
+            callback.switchAccount(account)
         }
     }
 

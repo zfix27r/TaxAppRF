@@ -29,10 +29,11 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.ui.Error
 import com.taxapprf.taxapp.ui.Loading
-import com.taxapprf.taxapp.ui.MainDrawer
+import com.taxapprf.taxapp.ui.drawer.Drawer
 import com.taxapprf.taxapp.ui.MainToolbar
 import com.taxapprf.taxapp.ui.SignOut
 import com.taxapprf.taxapp.ui.Success
+import com.taxapprf.taxapp.ui.drawer.DrawerCallback
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -52,33 +53,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         findNavController(this, R.id.nav_host_fragment_content_main)
     }
 
-    val drawer by lazy {
-        MainDrawer(
-            binding.navView,
-            reports = { navToReports() },
-            converter = { navToCurrencyConverter() },
-            currencies = { navToCurrencyRatesToday() },
-            sign = {},
-            signOut = { navToSignOut() }
-        )
-    }
+    val drawer by lazy { Drawer(binding.drawerLayout, binding.navView, drawerCallback) }
     val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
-
-    private val accountsAdapter = MainAccountsAdapter {
-        object : MainAccountsAdapterCallback {
-            override fun onClick(accountModel: AccountModel) {
-                binding.drawerLayout.close()
-                viewModel.switchAccount(accountModel)
-            }
-
-            override fun onClickAdd() {
-                if (navController.currentDestination?.id != R.id.account_add) {
-                    binding.drawerLayout.close()
-                    navToAccountAdd()
-                }
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,20 +156,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun MainViewModel.observeAccount() {
-        account.observe(this@MainActivity) { _account ->
-            _account?.let {
-                drawer.account.text = it.accountKey
-                fabVisibilityManager()
-            }
-        }
-    }
-
     private fun MainViewModel.observeAccounts() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                account1.collectLatest { accounts ->
-                    accountsAdapter.submitList(accounts.filter { !it.isActive })
+                accounts.collectLatest { accounts ->
+                    accounts?.let {
+                        drawer.updateAccounts(it)
+                        fabVisibilityManager()
+
+                    }
                     fabVisibilityManager()
                 }
             }
@@ -212,17 +183,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun MainViewModel.observeUser() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                user1.collectLatest { user ->
-                    drawer.auth(user)
+                user.collectLatest { user ->
+                    drawer.updateAuth(user)
                 }
             }
         }
-        /*
-
-                user.observe(this@MainActivity) { user ->
-                    drawer.updateUserProfile(user)
-                }
-        */
     }
 
     private fun NavController.observeCurrentBackStack() {
@@ -239,31 +204,35 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         else binding.appBarMain.fab.hide()
     }
 
-    private fun navToReports() {
-        binding.drawerLayout.close()
-        navController.navigate(R.id.action_global_reports)
-    }
+    private val drawerCallback =
+        object : DrawerCallback {
+            override fun navToReports() {
+                navController.navigate(R.id.action_global_reports)
+            }
 
-    private fun navToCurrencyConverter() {
-        binding.drawerLayout.close()
-        navController.navigate(R.id.action_global_currency_converter)
-    }
+            override fun navToCurrencyConverter() {
+                navController.navigate(R.id.action_global_currency_converter)
+            }
 
-    private fun navToCurrencyRatesToday() {
-        binding.drawerLayout.close()
-        navController.navigate(R.id.action_global_currency_rates_today)
-    }
+            override fun navToCurrencyRatesToday() {
+                navController.navigate(R.id.action_global_currency_rates_today)
+            }
 
-    private fun navToSignOut() {
-        binding.drawerLayout.close()
-        viewModel.signOut()
-    }
+            override fun navToSign() {
+                navController.navigate(R.id.action_global_sign)
+            }
 
-    private fun navToAccountAdd() {
-        navController.navigate(R.id.action_global_account_add)
-    }
+            override fun navToSignOut() {
+                viewModel.signOut()
+            }
 
-    private fun navToSign() {
-        navController.navigate(R.id.action_global_sign)
-    }
+            override fun navToAccountAdd() {
+                navController.navigate(R.id.action_global_account_add)
+            }
+
+            override fun switchAccount(accountModel: AccountModel) {
+                if (navController.currentDestination?.id != R.id.account_add)
+                    navToAccountAdd()
+            }
+        }
 }
