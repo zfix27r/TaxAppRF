@@ -2,11 +2,12 @@ package com.taxapprf.data
 
 import com.taxapprf.data.local.room.dao.LocalAccountDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
+import com.taxapprf.data.local.room.model.LocalAccountSwitchModel
 import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
 import com.taxapprf.data.sync.SyncAccounts
 import com.taxapprf.domain.AccountRepository
 import com.taxapprf.domain.account.AccountModel
-import com.taxapprf.domain.account.SwitchAccountModel
+import com.taxapprf.domain.account.AccountsModel
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,35 +19,21 @@ class AccountRepositoryImpl @Inject constructor(
 ) : AccountRepository {
     override fun observeAccounts() =
         localDao.observeAll()
-            .map { it.toAccountModel() }
+            .map { accounts ->
+                AccountsModel(
+                    active = accounts.find { it.isActive }?.toAccountModel(),
+                    inactive = accounts.filter { !it.isActive }.map { it.toAccountModel() }
+                )
+            }
 
     override suspend fun syncAccounts() =
         SyncAccounts(localDao, remoteDao).sync()
 
-    override suspend fun switchAccount(switchAccountModel: SwitchAccountModel) {
-        localDao.saveAll(switchAccountModel.toListLocalAccountEntity())
+    override suspend fun switchAccount(accountId: Int) {
+        localDao.resetActiveAccount()
+        localDao.setActiveAccount(accountId)
     }
 
-    private fun SwitchAccountModel.toListLocalAccountEntity() =
-        listOf(
-            LocalAccountEntity(
-                id = inactiveAccountId,
-                key = inactiveAccountKey,
-                isActive = false,
-                isSync = false,
-                isDelete = false,
-                syncAt = getTime()
-            ),
-            LocalAccountEntity(
-                id = activeAccountId ?: 0,
-                key = activeAccountKey,
-                isActive = true,
-                isSync = false,
-                isDelete = false,
-                syncAt = getTime()
-            )
-        )
-
-    private fun List<LocalAccountEntity>.toAccountModel() =
-        map { with(it) { AccountModel(id, key, isActive) } }
+    private fun LocalAccountEntity.toAccountModel() =
+        AccountModel(id, key, isActive)
 }

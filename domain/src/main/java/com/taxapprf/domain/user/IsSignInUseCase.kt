@@ -6,5 +6,5 @@ import javax.inject.Inject
 class IsSignInUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
-    fun execute() = repository.isSignIn()
+    suspend fun execute() = repository.isSignIn()
 }

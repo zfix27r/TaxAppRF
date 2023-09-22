@@ -21,4 +21,10 @@ interface LocalAccountDao {
 
     @Delete
     fun deleteAll(localAccountEntities: List<LocalAccountEntity>): Int
+
+    @Query("UPDATE account SET is_active = 0 WHERE is_active = 1")
+    fun resetActiveAccount()
+
+    @Query("UPDATE account SET is_active = 1 WHERE id = :accountId")
+    fun setActiveAccount(accountId: Int): Long
 }

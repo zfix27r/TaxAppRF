@@ -34,6 +34,8 @@ class Drawer(
     private val accountsAdapter by lazy { MainAccountsAdapter(accountsAdapterCallback) }
 
     init {
+        recycler.adapter = accountsAdapter
+
         accounts.setOnClickListener { expandAccounts() }
 
         navigationView.setNavigationItemSelectedListener {

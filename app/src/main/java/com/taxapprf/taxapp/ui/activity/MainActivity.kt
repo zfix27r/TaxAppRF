@@ -42,7 +42,7 @@ import java.net.SocketTimeoutException
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
-    val binding by viewBinding(ActivityMainBinding::bind)
+    private val binding by viewBinding(ActivityMainBinding::bind)
     private val viewModel by viewModels<MainViewModel>()
 
     private val mAppBarConfiguration by lazy {
@@ -67,12 +67,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         )
         setupWithNavController(binding.navView, navController)
 
-        drawer.recycler.adapter = accountsAdapter
-
         viewModel.observeState()
         viewModel.observeUser()
         viewModel.observeAccounts()
-        viewModel.observeAccount()
         navController.observeCurrentBackStack()
     }
 
@@ -128,8 +125,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun onSignOut() {
-        drawer.hideWithoutAuth()
-        navToSign()
+        viewModel.signOut()
     }
 
     private val topLevelDestinations = setOf(
@@ -227,12 +223,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             override fun navToAccountAdd() {
-                navController.navigate(R.id.action_global_account_add)
+                if (navController.currentDestination?.id != R.id.account_add)
+                    navController.navigate(R.id.action_global_account_add)
             }
 
             override fun switchAccount(accountModel: AccountModel) {
-                if (navController.currentDestination?.id != R.id.account_add)
-                    navToAccountAdd()
+                viewModel.switchAccount(accountModel)
             }
         }
 }

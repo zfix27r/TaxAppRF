@@ -14,12 +14,6 @@ import javax.inject.Inject
 class FirebaseUserDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
 ) : RemoteUserDao {
-    override suspend fun signInAnonymously() {
-        safeCall {
-            fb.auth.signInAnonymously().await()
-        }
-    }
-
     override suspend fun signInWithEmailAndPassword(signInModel: SignInModel) {
         safeCall {
             with(signInModel) {
@@ -44,7 +38,8 @@ class FirebaseUserDaoImpl @Inject constructor(
 
     override fun isSignIn() = fb.auth.currentUser != null
 
-    override suspend fun getProfile() =
+    override suspend fun
+            getProfile() =
         safeCall {
             fb.auth.currentUser?.let {
                 UserModel(

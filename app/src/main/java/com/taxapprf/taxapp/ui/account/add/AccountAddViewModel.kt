@@ -2,7 +2,6 @@ package com.taxapprf.taxapp.ui.account.add
 
 import android.text.Editable
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.SwitchAccountModel
 import com.taxapprf.domain.account.SwitchAccountUseCase
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel

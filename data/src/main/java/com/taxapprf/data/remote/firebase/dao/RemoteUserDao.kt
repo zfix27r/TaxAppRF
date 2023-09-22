@@ -6,8 +6,6 @@ import com.taxapprf.domain.user.UserModel
 
 
 interface RemoteUserDao {
-    suspend fun signInAnonymously()
-
     suspend fun signInWithEmailAndPassword(signInModel: SignInModel)
 
     suspend fun signUpWithEmailAndPassword(signUpModel: SignUpModel)

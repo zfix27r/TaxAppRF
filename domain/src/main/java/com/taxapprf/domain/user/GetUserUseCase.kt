@@ -5,5 +5,5 @@ import com.taxapprf.domain.UserRepository
 class GetUserUseCase(
     private val repository: UserRepository
 ) {
-    fun execute() = repository.getUser()
+    fun execute() = repository.observeUser()
 }

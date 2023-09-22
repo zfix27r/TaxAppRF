@@ -1,12 +1,10 @@
 package com.taxapprf.taxapp.ui.activity
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.account.AccountModel
 import com.taxapprf.domain.account.ObserveAccountsUseCase
-import com.taxapprf.domain.account.SwitchAccountModel
 import com.taxapprf.domain.account.SwitchAccountUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.sync.SyncAllUseCase
@@ -16,13 +14,11 @@ import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.user.GetUserUseCase
 import com.taxapprf.domain.user.IsSignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
-import com.taxapprf.domain.user.UserModel
 import com.taxapprf.taxapp.ui.BaseState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
@@ -35,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val isSignInUseCase: IsSignInUseCase,
-    private val getUserUseCase: GetUserUseCase,
+    getUserUseCase: GetUserUseCase,
     observeAccountsUseCase: ObserveAccountsUseCase,
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
@@ -45,16 +41,11 @@ class MainViewModel @Inject constructor(
     private val _state = ActivityStateLiveData()
     val state: LiveData<BaseState> = _state
 
-    val isSignIn
-        get() = isSignInUseCase.execute()
-
     var report: ReportModel? = null
     var transaction: TransactionModel? = null
 
-
-    init {
-        observeAccountsUseCase.execute()
-    }
+    val isSignIn
+        get() = isSignInUseCase.execute()
 
     val user =
         getUserUseCase.execute()
@@ -76,15 +67,16 @@ class MainViewModel @Inject constructor(
 
     val sync = syncAllUseCase.execute()
 
-    fun switchAccount(accountModel: AccountModel) = viewModelScope.launch(Dispatchers.IO) {
-        _account.value?.let { oldAccountModel ->
-            val switchAccountModel = SwitchAccountModel(
-                oldAccountModel.id, oldAccountModel.accountKey,
-                accountModel.id, accountModel.accountKey
-            )
-            switchAccountUseCase.execute(switchAccountModel)
+    fun switchAccount(accountModel: AccountModel) =
+        viewModelScope.launch(Dispatchers.IO) {
+            _account.value?.let { oldAccountModel ->
+                val switchAccountModel = SwitchAccountModel(
+                    oldAccountModel.id, oldAccountModel.accountKey,
+                    accountModel.id, accountModel.accountKey
+                )
+                switchAccountUseCase.execute(switchAccountModel)
+            }
         }
-    }
 
     private fun List<AccountModel>.updateAccounts() {
         if (isNotEmpty()) {
@@ -104,12 +96,10 @@ class MainViewModel @Inject constructor(
         else accountModel
     }
 
-    fun signOut() = viewModelScope.launch(Dispatchers.IO) {
-        signOutUseCase.execute()
-            .onStart { showLoading() }
-            .catch { error(it) }
-            .collectLatest { _state.signOut() }
-    }
+    fun signOut() =
+        viewModelScope.launch(Dispatchers.IO) {
+            signOutUseCase.execute()
+        }
 
     fun saveTransaction(saveTransactionModel: SaveTransactionModel) =
         viewModelScope.launch(Dispatchers.IO) {

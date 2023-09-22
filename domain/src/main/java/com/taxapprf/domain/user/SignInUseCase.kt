@@ -6,6 +6,6 @@ import javax.inject.Inject
 class SignInUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
-    fun execute(userLogInModel: SignInModel) =
+    suspend fun execute(userLogInModel: SignInModel) =
         repository.signIn(userLogInModel)
 }

@@ -1,12 +1,10 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseUserDaoImpl
 import com.taxapprf.domain.UserRepository
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.UserModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,29 +12,24 @@ import javax.inject.Singleton
 @Singleton
 class UserRepositoryImpl @Inject constructor(
     private val firebaseUserDao: FirebaseUserDaoImpl,
-    private val firebaseAccountDao: FirebaseAccountDaoImpl
 ) : UserRepository {
-    override fun getUser() = flow {
+    override fun observeUser() = flow {
         emit(firebaseUserDao.getProfile())
     }
 
-    override fun saveUser(userModel: UserModel): Flow<Unit> = flow {
-        emit(firebaseUserDao.saveProfile(userModel))
-    }
+    override suspend fun saveUser(userModel: UserModel) =
+        firebaseUserDao.saveProfile(userModel)
 
-    override fun signIn(signInModel: SignInModel) = flow {
-        emit(firebaseUserDao.signInWithEmailAndPassword(signInModel))
-    }
+    override suspend fun signIn(signInModel: SignInModel) =
+        firebaseUserDao.signInWithEmailAndPassword(signInModel)
 
-    override fun signUp(signUpModel: SignUpModel) = flow {
+    override suspend fun signUp(signUpModel: SignUpModel) =
         firebaseUserDao.signUpWithEmailAndPassword(signUpModel)
-        firebaseAccountDao.saveDefaultAccount()
-        emit(Unit)
+
+    override suspend fun signOut() {
+        firebaseUserDao.signOut()
     }
 
-    override fun signOut() = flow {
-        emit(firebaseUserDao.signOut())
-    }
-
-    override fun isSignIn() = firebaseUserDao.isSignIn()
+    override suspend fun isSignIn() =
+        firebaseUserDao.isSignIn()
 }
