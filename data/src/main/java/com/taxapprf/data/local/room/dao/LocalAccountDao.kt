@@ -26,5 +26,5 @@ interface LocalAccountDao {
     fun resetActiveAccount()
 
     @Query("UPDATE account SET is_active = 1 WHERE id = :accountId")
-    fun setActiveAccount(accountId: Int): Long
+    fun setActiveAccount(accountId: Int)
 }

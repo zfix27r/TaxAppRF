@@ -24,7 +24,7 @@ class ReportsAdapter(
         override fun areItemsTheSame(
             oldItem: ReportModel,
             newItem: ReportModel
-        ) = oldItem.reportKey == newItem.reportKey
+        ) = oldItem.name == newItem.name
 
         override fun areContentsTheSame(
             oldItem: ReportModel,

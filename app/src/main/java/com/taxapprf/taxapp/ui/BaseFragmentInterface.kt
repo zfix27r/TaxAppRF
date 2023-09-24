@@ -1,20 +1,17 @@
 package com.taxapprf.taxapp.ui
 
 import androidx.appcompat.view.ActionMode
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.withResumed
-import androidx.lifecycle.withStarted
 import com.google.android.material.textfield.TextInputEditText
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 interface BaseFragmentInterface {
@@ -28,7 +25,6 @@ interface BaseFragmentInterface {
     fun BaseViewModel.attach() {
         baseViewModel = this
         baseViewModel.observeState()
-        mainActivity.binding.appBarMain.content.loadingRetry.setOnClickListener { onLoadingRetry() }
         fragment.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 if (event == Lifecycle.Event.ON_PAUSE) {
@@ -45,10 +41,16 @@ interface BaseFragmentInterface {
     }
 
     private fun MainViewModel.observeAccount() {
-        account.observe(fragment.viewLifecycleOwner) { _account ->
-            _account?.let {
-                baseViewModel.account = it
-                onAuthReady()
+        fragment.lifecycleScope.launch {
+            fragment.viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userWithAccounts.collectLatest { userWithAccountsNullable ->
+                    userWithAccountsNullable?.let { userWithAccounts ->
+                        userWithAccounts.activeAccount?.let {
+                            baseViewModel.account = it
+                            onAuthReady()
+                        }
+                    }
+                }
             }
         }
     }
@@ -76,7 +78,7 @@ interface BaseFragmentInterface {
     }
 
     fun onLoadingRetry() {
-        mainActivity.binding.appBarMain.content.loadingErrorGroup.isVisible = false
+
     }
 
     fun onError(t: Throwable) {

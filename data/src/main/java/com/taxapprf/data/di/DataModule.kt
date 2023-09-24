@@ -10,6 +10,7 @@ import com.taxapprf.data.remote.firebase.FirebaseAPI
 import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseUserDaoImpl
+import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,23 +25,34 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataModule {
     private const val DB_NAME = "tax_app"
+    private const val DB_FILE_NAME = "$DB_NAME.db"
 
     @Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context) =
-        Room.databaseBuilder(context, LocalDatabase::class.java, DB_NAME).build()
+        Room.databaseBuilder(context, LocalDatabase::class.java, DB_NAME)
+            .createFromAsset(DB_FILE_NAME)
+            .build()
 
     @Singleton
     @Provides
-    fun provideAccountDao(db: LocalDatabase) = db.accountDao()
+    fun provideUserDao(db: LocalDatabase) =
+        db.userDao()
 
     @Singleton
     @Provides
-    fun provideReportDao(db: LocalDatabase) = db.reportDao()
+    fun provideAccountDao(db: LocalDatabase) =
+        db.accountDao()
 
     @Singleton
     @Provides
-    fun provideTransactionDao(db: LocalDatabase) = db.transactionDao()
+    fun provideReportDao(db: LocalDatabase) =
+        db.reportDao()
+
+    @Singleton
+    @Provides
+    fun provideTransactionDao(db: LocalDatabase) =
+        db.transactionDao()
 
     @Provides
     @Singleton
@@ -80,7 +92,8 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseUserDao(firebaseAPI: FirebaseAPI) = FirebaseUserDaoImpl(firebaseAPI)
+    fun provideFirebaseUserDao(firebaseAPI: FirebaseAPI): RemoteUserDao =
+        FirebaseUserDaoImpl(firebaseAPI)
 
     @Singleton
     @Provides

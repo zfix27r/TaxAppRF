@@ -8,9 +8,9 @@ import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.taxapprf.domain.account.AccountModel
-import com.taxapprf.domain.account.AccountsModel
+import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.UserModel
+import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 
 class Drawer(
@@ -22,79 +22,11 @@ class Drawer(
     private val userAvatar = header.findViewById<ImageView>(R.id.imageNavHeaderUserAvatar)
     private val userName = header.findViewById<TextView>(R.id.textNavHeaderUserName)
     private val userEmail = header.findViewById<TextView>(R.id.textNavHeaderUserEmail)
-    private val expand =
-        navigationView.findViewById<ImageView>(R.id.imageNavHeaderUserAccountExpand)
+    private val expand
+        get() = navigationView.findViewById<ImageView>(R.id.imageNavHeaderUserAccountExpand)
     private val recycler = header.findViewById<RecyclerView>(R.id.recyclerNavHeaderAccounts)
     private val accounts = header.findViewById<Layer>(R.id.layerNavHeaderAccounts)
     private val account: TextView = header.findViewById(R.id.textNavHeaderUserAccount)
-
-    private val expandLessIcon = R.drawable.ic_baseline_expand_less_24
-    private val expandMoreIcon = R.drawable.ic_baseline_expand_more_24
-
-    private val accountsAdapter by lazy { MainAccountsAdapter(accountsAdapterCallback) }
-
-    init {
-        recycler.adapter = accountsAdapter
-
-        accounts.setOnClickListener { expandAccounts() }
-
-        navigationView.setNavigationItemSelectedListener {
-            close()
-            it.onItemClick()
-        }
-    }
-
-    fun updateAuth(userModel: UserModel?) {
-        userModel.updateUserInfo()
-
-        userModel
-            ?.let { showWithAuth() }
-            ?: run { hideWithoutAuth() }
-    }
-
-    fun updateAccounts(accountsModel: AccountsModel?) {
-        accountsModel
-            ?.let { showWithAccounts(it) }
-            ?: run { hideWithoutAccounts() }
-    }
-
-    private fun UserModel?.updateUserInfo() {
-        this
-            ?.avatar
-            ?.let { userAvatar.setImageURI(it) }
-            ?: run { userAvatar.setImageResource(R.drawable.free_icon_tax_10994810) }
-
-        userName.text = this?.name ?: ""
-        userEmail.text = this?.email ?: ""
-    }
-
-    private fun showWithAccounts(accountsModel: AccountsModel) {
-        accountsAdapter.submitList(accountsModel.inactive)
-        account.text = accountsModel.active.accountKey
-
-        accounts.isVisible = true
-        recycler.isVisible = true
-    }
-
-    private fun hideWithoutAccounts() {
-        accounts.isVisible = false
-        recycler.isVisible = false
-    }
-
-    private fun showWithAuth() {
-        navigationView.menu.findItem(R.id.sign).isVisible = false
-        navigationView.menu.findItem(R.id.sign_out).isVisible = true
-    }
-
-    private fun hideWithoutAuth() {
-        navigationView.menu.findItem(R.id.sign_out).isVisible = false
-        navigationView.menu.findItem(R.id.sign).isVisible = true
-    }
-
-    private fun expandAccounts() {
-        expand.setImageResource(if (recycler.isVisible) expandLessIcon else expandMoreIcon)
-        recycler.isVisible = !recycler.isVisible
-    }
 
     private val accountsAdapterCallback =
         object : DrawerAccountsAdapterCallback {
@@ -108,6 +40,64 @@ class Drawer(
                 callback.navToAccountAdd()
             }
         }
+
+    private val accountsAdapter = MainAccountsAdapter(accountsAdapterCallback)
+
+    init {
+        recycler.adapter = accountsAdapter
+
+        accounts.setOnClickListener { expandAccounts() }
+
+        navigationView.setNavigationItemSelectedListener {
+            close()
+            it.onItemClick()
+        }
+    }
+
+    fun updateUser(
+        user: UserModel?,
+        defaultUserEmail: String,
+    ) {
+        user?.let { showWithAuth() }
+            ?: run { hideWithoutAuth() }
+
+        user?.avatar?.let { userAvatar.setImageURI(it) }
+            ?: run { userAvatar.setImageResource(R.drawable.free_icon_tax_10994810) }
+
+        userName.text = user?.name ?: ""
+        userEmail.text = user?.email ?: defaultUserEmail
+    }
+
+    fun updateActiveAccount(activeAccount: AccountModel?) {
+        account.text = activeAccount?.name
+    }
+
+    fun updateOtherAccounts(accounts: List<AccountModel>?) {
+        accountsAdapter.submitList(accounts)
+    }
+
+    private fun showWithAuth() {
+        accounts.isVisible = true
+        recycler.isVisible = false
+        expand.setImageResource(R.drawable.ic_baseline_expand_more_24)
+        navigationView.menu.findItem(R.id.sign).isVisible = false
+        navigationView.menu.findItem(R.id.sign_out).isVisible = true
+    }
+
+    private fun hideWithoutAuth() {
+        accounts.isVisible = false
+        recycler.isVisible = false
+        navigationView.menu.findItem(R.id.sign_out).isVisible = false
+        navigationView.menu.findItem(R.id.sign).isVisible = true
+    }
+
+    private fun expandAccounts() {
+        recycler.isVisible = !recycler.isVisible
+        expand.setImageResource(
+            if (recycler.isVisible) R.drawable.ic_baseline_expand_less_24
+            else R.drawable.ic_baseline_expand_more_24
+        )
+    }
 
     private fun MenuItem.onItemClick() =
         when (itemId) {

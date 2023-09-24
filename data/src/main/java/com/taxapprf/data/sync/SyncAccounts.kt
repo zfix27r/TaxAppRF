@@ -21,18 +21,14 @@ class SyncAccounts(
     override suspend fun getRemoteList() =
         remoteDao.getAll()
 
-    override suspend fun deleteRemoteList(remoteMap: Map<String, FirebaseAccountModel>) =
-        remoteDao.deleteAll(remoteMap)
-
-    override suspend fun saveRemoteList(remoteMap: Map<String, FirebaseAccountModel>) =
-        remoteDao.saveAll(remoteMap)
+    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseAccountModel?>) =
+        remoteDao.updateAll(remoteMap)
 
     override suspend fun LocalAccountEntity.updateRemoteKey() =
         remoteDao.getKey()?.let { copy(key = it) }
 
     override fun LocalAccountEntity.toRemote(remote: FirebaseAccountModel?) =
         FirebaseAccountModel(
-            key = key,
             isActive = isActive,
             syncAt = syncAt
         )
@@ -44,6 +40,7 @@ class SyncAccounts(
 
         return LocalAccountEntity(
             id = 0,
+            userId = 0,
             key = key,
             isActive = isActive,
             isSync = true,

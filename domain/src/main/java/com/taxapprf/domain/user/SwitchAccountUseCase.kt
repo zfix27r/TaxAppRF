@@ -3,8 +3,9 @@ package com.taxapprf.domain.user
 import com.taxapprf.domain.UserRepository
 import javax.inject.Inject
 
-class IsSignInUseCase @Inject constructor(
+class SwitchAccountUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
-    suspend fun execute() = repository.isSignIn()
+    suspend fun execute(accountId: Int) =
+        repository.switchAccount(accountId)
 }

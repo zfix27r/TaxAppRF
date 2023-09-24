@@ -11,7 +11,4 @@ data class TransactionModel(
     val rateCBRF: Double,
     val sum: Double,
     val tax: Double,
-    val isSync: Boolean,
-    val isDelete: Boolean,
-    val syncAt: Long,
 )

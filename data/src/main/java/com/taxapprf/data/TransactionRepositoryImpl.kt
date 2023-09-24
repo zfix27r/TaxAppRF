@@ -15,6 +15,7 @@ import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
 import com.taxapprf.domain.transaction.TransactionModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,8 +25,9 @@ class TransactionRepositoryImpl @Inject constructor(
     private val remoteDao: FirebaseTransactionDaoImpl,
     private val excelDao: ExcelDaoImpl
 ) : TransactionRepository {
-    override fun observeAll(accountKey: String, reportKey: String): Flow<List<TransactionModel>> =
-        SyncTransactions(localDao, remoteDao, accountKey, reportKey).observeAll()
+    override fun observeAll(accountKey: String, reportKey: String) =
+        localDao.observeAll(accountKey, reportKey)
+            .map { transitions -> transitions.map { it.toTransactionModel() } }
 
     override suspend fun save(saveTransactionModel: SaveTransactionModel) {
         with(saveTransactionModel) {
@@ -82,4 +84,7 @@ class TransactionRepositoryImpl @Inject constructor(
             isDelete = false,
             syncAt = getTime()
         )
+
+    private fun LocalTransactionEntity.toTransactionModel() =
+        TransactionModel(id, key, name, date, type, currency, rateCBRF, sum, tax)
 }

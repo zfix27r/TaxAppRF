@@ -24,7 +24,7 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId), BaseFragmentInterfa
         get() = findNavController().currentBackStackEntry!!.savedStateHandle
 
     protected val fab
-        get() = mainActivity.binding.appBarMain.fab
+        get() = mainActivity.fab
 
     protected val toolbar
         get() = mainActivity.toolbar

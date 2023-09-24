@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
@@ -24,7 +25,7 @@ import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
-import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.ui.Error
@@ -50,16 +51,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     val navController by lazy {
-        findNavController(this, R.id.nav_host_fragment_content_main)
+        val navHost =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
+        navHost.navController
     }
 
     val drawer by lazy { Drawer(binding.drawerLayout, binding.navView, drawerCallback) }
     val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
+    val fab by lazy { binding.appBarMain.fab }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        navController.setGraph(R.navigation.mobile_navigation)
 
         setSupportActionBar(binding.appBarMain.toolbar)
         setupActionBarWithNavController(
@@ -69,13 +71,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         viewModel.observeState()
         viewModel.observeUser()
-        viewModel.observeAccounts()
         navController.observeCurrentBackStack()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        if (viewModel.isSignIn) menuInflater.inflate(R.menu.reports_toolbar, menu)
-        else menuInflater.inflate(R.menu.main_toolbar, menu)
+        /*        if (viewModel.isSignIn) menuInflater.inflate(R.menu.reports_toolbar, menu)
+                else menuInflater.inflate(R.menu.main_toolbar, menu)*/
         return true
     }
 
@@ -152,35 +153,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun MainViewModel.observeAccounts() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                accounts.collectLatest { accounts ->
-                    accounts?.let {
-                        drawer.updateAccounts(it)
-                        fabVisibilityManager()
-
-                    }
-                    fabVisibilityManager()
-                }
-            }
-        }
-        /*
-                accounts.observe(this@MainActivity) { accounts ->
-                    if (accounts.isNotEmpty()) {
-                        accountsAdapter.submitList(accounts.filter { !it.isActive })
-                        fabVisibilityManager()
-                    } else {
-                        onLoadingError(DataErrorUser())
-                    }
-                }*/
-    }
-
     private fun MainViewModel.observeUser() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                user.collectLatest { user ->
-                    drawer.updateAuth(user)
+                userWithAccounts.collectLatest { userWithAccounts ->
+                    drawer.updateUser(
+                        userWithAccounts?.user,
+                        getString(R.string.default_email_name)
+                    )
+                    drawer.updateActiveAccount(userWithAccounts?.activeAccount)
+                    drawer.updateOtherAccounts(userWithAccounts?.otherAccounts)
                 }
             }
         }

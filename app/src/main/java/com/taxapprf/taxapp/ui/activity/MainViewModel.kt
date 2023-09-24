@@ -3,16 +3,14 @@ package com.taxapprf.taxapp.ui.activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.AccountModel
-import com.taxapprf.domain.account.ObserveAccountsUseCase
-import com.taxapprf.domain.account.SwitchAccountUseCase
+import com.taxapprf.domain.user.AccountModel
+import com.taxapprf.domain.user.SwitchAccountUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.user.GetUserUseCase
-import com.taxapprf.domain.user.IsSignInUseCase
+import com.taxapprf.domain.user.ObserveUserUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.taxapp.ui.BaseState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,9 +28,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val isSignInUseCase: IsSignInUseCase,
-    getUserUseCase: GetUserUseCase,
-    observeAccountsUseCase: ObserveAccountsUseCase,
+    observeUserUseCase: ObserveUserUseCase,
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
@@ -44,20 +40,8 @@ class MainViewModel @Inject constructor(
     var report: ReportModel? = null
     var transaction: TransactionModel? = null
 
-    val isSignIn
-        get() = isSignInUseCase.execute()
-
-    val user =
-        getUserUseCase.execute()
-            .showLoading()
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000L),
-                initialValue = null
-            )
-
-    val accounts =
-        observeAccountsUseCase.execute()
+    val userWithAccounts =
+        observeUserUseCase.execute()
             .showLoading()
             .stateIn(
                 viewModelScope,
@@ -69,32 +53,34 @@ class MainViewModel @Inject constructor(
 
     fun switchAccount(accountModel: AccountModel) =
         viewModelScope.launch(Dispatchers.IO) {
-            _account.value?.let { oldAccountModel ->
+/*            _account.value?.let { oldAccountModel ->
                 val switchAccountModel = SwitchAccountModel(
                     oldAccountModel.id, oldAccountModel.accountKey,
                     accountModel.id, accountModel.accountKey
                 )
                 switchAccountUseCase.execute(switchAccountModel)
-            }
+            }*/
         }
 
     private fun List<AccountModel>.updateAccounts() {
-        if (isNotEmpty()) {
-            find { it.isActive }?.let {
-                _accounts.postValue(this)
-                _account.postValue(it)
-            } ?: run {
-                val accountsWithActiveAccount = setActiveAccount()
-                _accounts.postValue(accountsWithActiveAccount)
-                _account.postValue(accountsWithActiveAccount.first())
-            }
-        }
+        /*        if (isNotEmpty()) {
+                    find { it.isActive }?.let {
+                        _accounts.postValue(this)
+                        _account.postValue(it)
+                    } ?: run {
+                        val accountsWithActiveAccount = setActiveAccount()
+                        _accounts.postValue(accountsWithActiveAccount)
+                        _account.postValue(accountsWithActiveAccount.first())
+                    }
+                }*/
     }
 
+/*
     private fun List<AccountModel>.setActiveAccount() = mapIndexed { index, accountModel ->
         if (index == 0) accountModel.copy(isActive = true)
         else accountModel
     }
+*/
 
     fun signOut() =
         viewModelScope.launch(Dispatchers.IO) {

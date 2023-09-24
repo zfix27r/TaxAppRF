@@ -29,15 +29,7 @@ class FirebaseAccountDaoImpl @Inject constructor(
                 }
         }
 
-    override suspend fun saveAll(accountModels: Map<String, FirebaseAccountModel>) {
-        safeCall {
-            fb.getAccountsPath()
-                .updateChildren(accountModels)
-                .await()
-        }
-    }
-
-    override suspend fun deleteAll(accountModels: Map<String, FirebaseAccountModel?>) {
+    override suspend fun updateAll(accountModels: Map<String, FirebaseAccountModel?>) {
         safeCall {
             fb.getAccountsPath()
                 .updateChildren(accountModels)

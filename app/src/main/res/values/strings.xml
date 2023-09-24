@@ -14,6 +14,7 @@
     <string name="sign_up_error_email_already_use">The email address is already in use by another account.</string>
     <string name="auth_error_session_expire">Сессия истекла</string>
     <string name="auth_error">Ошибка авторизации</string>
+    <string name="default_email_name">Локальная запись</string>
     <string name="default_account_name">По умолчанию</string>
     <string name="response_error_data_is_empty"></string>
 

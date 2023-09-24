@@ -28,7 +28,7 @@ class ReportsViewModel @Inject constructor(
     var deleteReport: ReportModel? = null
 
     fun observeReports() =
-        getReportsUseCase.execute(account.accountKey)
+        getReportsUseCase.execute(account.name)
             .onStart { start() }
             .catch { error(it) }
             .onEach { success() }
@@ -41,8 +41,8 @@ class ReportsViewModel @Inject constructor(
                 emit(
                     deleteReportUseCase.execute(
                         report.id,
-                        account.accountKey,
-                        report.reportKey
+                        account.name,
+                        report.name
                     )
                 )
             }
@@ -54,7 +54,7 @@ class ReportsViewModel @Inject constructor(
 
     fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {
         intent?.data?.path?.let { uri ->
-            val saveReportsFromUriModel = SaveTransactionsFromExcelModel(account.accountKey, uri)
+            val saveReportsFromUriModel = SaveTransactionsFromExcelModel(account.name, uri)
             saveReportsFromUriUseCase.execute(saveReportsFromUriModel)
                 .onStart { start() }
                 .catch { error(it) }

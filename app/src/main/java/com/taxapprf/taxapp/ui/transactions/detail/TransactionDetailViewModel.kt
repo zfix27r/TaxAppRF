@@ -81,8 +81,8 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
             id = id,
-            accountKey = account.accountKey,
-            reportKey = report?.reportKey,
+            accountKey = account.name,
+            reportKey = report?.name,
             transactionKey = transaction?.transactionKey,
             newReportKey = date.getYear().toString(),
             date = date,

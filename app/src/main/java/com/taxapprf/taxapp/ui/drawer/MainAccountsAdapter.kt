@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderAddBinding
 import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderItemBinding
 
@@ -55,7 +55,7 @@ class MainAccountsAdapter(
         override fun areItemsTheSame(
             oldItem: AccountModel,
             newItem: AccountModel
-        ) = oldItem.accountKey == newItem.accountKey
+        ) = oldItem.name == newItem.name
 
         override fun areContentsTheSame(
             oldItem: AccountModel,

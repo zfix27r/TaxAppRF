@@ -28,10 +28,10 @@ class SignInViewModel @Inject constructor(
             val signInModel = SignInModel(email, password)
 
             viewModelScope.launch(Dispatchers.IO) {
-                singInUseCase.execute(signInModel)
+/*                singInUseCase.execute(signInModel)
                     .onStart { start() }
                     .catch { error(it) }
-                    .collectLatest { success() }
+                    .collectLatest { success() }*/
             }
         }
     }

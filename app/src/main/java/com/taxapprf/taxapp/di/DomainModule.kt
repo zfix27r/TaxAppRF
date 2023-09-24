@@ -1,12 +1,12 @@
 package com.taxapprf.taxapp.di
 
-import com.taxapprf.data.AccountRepositoryImpl
 import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
+import com.taxapprf.data.SyncRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.NetworkManager
-import com.taxapprf.domain.account.SwitchAccountUseCase
+import com.taxapprf.domain.user.SwitchAccountUseCase
 import com.taxapprf.domain.currency.GetCurrencyRateTodayFromCBRUseCase
 import com.taxapprf.domain.report.DeleteReportWithTransactionsUseCase
 import com.taxapprf.domain.report.ObserveReportsUseCase
@@ -14,13 +14,12 @@ import com.taxapprf.domain.transaction.SaveTransactionsFromExcelUseCase
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
-import com.taxapprf.domain.account.ObserveAccountsUseCase
 import com.taxapprf.domain.report.ObserveReportUseCase
+import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.transaction.GetExcelToShareUseCase
 import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
 import com.taxapprf.domain.transaction.UpdateTaxTransactionUseCase
-import com.taxapprf.domain.user.GetUserUseCase
-import com.taxapprf.domain.user.IsSignInUseCase
+import com.taxapprf.domain.user.ObserveUserUseCase
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SignUpUseCase
@@ -33,35 +32,28 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 object DomainModule {
     @Provides
-    fun provideSignInUseCase(repositoryImpl: UserRepositoryImpl) =
-        SignInUseCase(repositoryImpl)
+    fun provideSignInUseCase(userRepositoryImpl: UserRepositoryImpl) =
+        SignInUseCase(userRepositoryImpl)
 
     @Provides
-    fun provideSignUpUseCase(repositoryImpl: UserRepositoryImpl) =
-        SignUpUseCase(repositoryImpl)
+    fun provideSignUpUseCase(userRepositoryImpl: UserRepositoryImpl) =
+        SignUpUseCase(userRepositoryImpl)
 
     @Provides
-    fun provideSignOutUseCase(repositoryImpl: UserRepositoryImpl) =
-        SignOutUseCase(repositoryImpl)
+    fun provideSignOutUseCase(userRepositoryImpl: UserRepositoryImpl) =
+        SignOutUseCase(userRepositoryImpl)
 
     @Provides
-    fun provideIsSignInUseCase(repositoryImpl: UserRepositoryImpl) =
-        IsSignInUseCase(repositoryImpl)
+    fun provideGetUserUseCase(userRepositoryImpl: UserRepositoryImpl) =
+        ObserveUserUseCase(userRepositoryImpl)
 
     @Provides
-    fun provideGetUserUseCase(repositoryImpl: UserRepositoryImpl) =
-        GetUserUseCase(repositoryImpl)
+    fun provideSwitchAccountUseCase(userRepositoryImpl: UserRepositoryImpl) =
+        SwitchAccountUseCase(userRepositoryImpl)
 
     @Provides
-    fun provideGetAccountsUseCase(repositoryImpl: AccountRepositoryImpl) =
-        GetAccountsUseCase(repositoryImpl)
-    @Provides
-    fun provideObserveAccountsUseCase(repositoryImpl: AccountRepositoryImpl) =
-        ObserveAccountsUseCase(repositoryImpl)
-
-    @Provides
-    fun provideSwitchAccountUseCase(repositoryImpl: AccountRepositoryImpl) =
-        SwitchAccountUseCase(repositoryImpl)
+    fun provideSyncAllUseCase(syncRepositoryImpl: SyncRepositoryImpl) =
+        SyncAllUseCase(syncRepositoryImpl)
 
     @Provides
     fun provideGetCurrencyRateTodayFromCBRUseCase(repositoryImpl: CurrencyRepositoryImpl) =

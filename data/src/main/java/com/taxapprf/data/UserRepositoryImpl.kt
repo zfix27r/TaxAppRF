@@ -1,35 +1,62 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.remote.firebase.FirebaseUserDaoImpl
+import android.net.Uri
+import com.taxapprf.data.local.room.dao.LocalAccountDao
+import com.taxapprf.data.local.room.dao.LocalUserDao
+import com.taxapprf.data.local.room.model.LocalUserWithAccounts
+import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.domain.UserRepository
+import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.UserModel
-import kotlinx.coroutines.flow.flow
+import com.taxapprf.domain.user.UserWithAccountsModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class UserRepositoryImpl @Inject constructor(
-    private val firebaseUserDao: FirebaseUserDaoImpl,
+    private val userLocalDao: LocalUserDao,
+    private val userRemoteDao: RemoteUserDao,
+    private val accountLocalDao: LocalAccountDao,
 ) : UserRepository {
-    override fun observeUser() = flow {
-        emit(firebaseUserDao.getProfile())
+    override fun observeUserWithAccounts(): Flow<UserWithAccountsModel> {
+        val email = userRemoteDao.getUser()?.email ?: LOCAL_USER_EMAIL
+
+        return userLocalDao.observe(email).map { userWithAccounts ->
+            UserWithAccountsModel(
+                user = userWithAccounts.first().toUserModel(),
+                activeAccount = userWithAccounts.find { it.isActive }?.toAccountModel(),
+                otherAccounts = userWithAccounts.filter { !it.isActive }.map { it.toAccountModel() }
+            )
+        }
     }
 
     override suspend fun saveUser(userModel: UserModel) =
-        firebaseUserDao.saveProfile(userModel)
+        userRemoteDao.updateUser(userModel)
 
     override suspend fun signIn(signInModel: SignInModel) =
-        firebaseUserDao.signInWithEmailAndPassword(signInModel)
+        userRemoteDao.signInWithEmailAndPassword(signInModel)
 
     override suspend fun signUp(signUpModel: SignUpModel) =
-        firebaseUserDao.signUpWithEmailAndPassword(signUpModel)
+        userRemoteDao.signUpWithEmailAndPassword(signUpModel)
 
     override suspend fun signOut() {
-        firebaseUserDao.signOut()
+        userRemoteDao.signOut()
     }
 
-    override suspend fun isSignIn() =
-        firebaseUserDao.isSignIn()
+    override suspend fun switchAccount(accountId: Int) {
+        accountLocalDao.resetActiveAccount()
+        accountLocalDao.setActiveAccount(accountId)
+    }
+
+    private fun LocalUserWithAccounts.toUserModel() =
+        UserModel(email, avatar?.let { Uri.parse(it) }, name, phone)
+
+    private fun LocalUserWithAccounts.toAccountModel() =
+        AccountModel(accountId, accountName)
+
+    companion object {
+        const val LOCAL_USER_EMAIL = "local"
+    }
 }

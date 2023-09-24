@@ -1,6 +1,6 @@
 package com.taxapprf.taxapp.ui.drawer
 
-import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.user.AccountModel
 
 interface DrawerAccountsAdapterCallback {
     fun switchAccount(accountModel: AccountModel)

@@ -7,14 +7,8 @@ import com.taxapprf.domain.user.UserModel
 
 interface RemoteUserDao {
     suspend fun signInWithEmailAndPassword(signInModel: SignInModel)
-
     suspend fun signUpWithEmailAndPassword(signUpModel: SignUpModel)
-
     fun signOut()
-
-    fun isSignIn(): Boolean
-
-    suspend fun getProfile(): UserModel?
-
-    suspend fun saveProfile(userModel: UserModel)
+    fun getUser(): UserModel?
+    suspend fun updateUser(userModel: UserModel)
 }

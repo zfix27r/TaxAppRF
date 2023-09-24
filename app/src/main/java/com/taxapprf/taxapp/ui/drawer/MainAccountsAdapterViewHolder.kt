@@ -1,7 +1,7 @@
 package com.taxapprf.taxapp.ui.drawer
 
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderItemBinding
 
 class MainAccountsAdapterViewHolder(
@@ -19,6 +19,6 @@ class MainAccountsAdapterViewHolder(
     fun bind(accountModel: AccountModel) {
         account = accountModel
 
-        binding.drawerHeaderItemTitle.text = account.accountKey
+        binding.drawerHeaderItemTitle.text = account.name
     }
 }

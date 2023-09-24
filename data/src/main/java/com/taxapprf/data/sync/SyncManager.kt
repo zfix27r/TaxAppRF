@@ -14,8 +14,7 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
     protected abstract fun deleteLocalList(locals: List<Local>): Int
 
     protected abstract suspend fun getRemoteList(): List<Remote>
-    protected abstract suspend fun saveRemoteList(remoteMap: Map<String, Remote>)
-    protected abstract suspend fun deleteRemoteList(remoteMap: Map<String, Remote>)
+    protected abstract suspend fun updateRemoteList(remoteMap: Map<String, Remote?>)
 
     protected abstract suspend fun Local.updateRemoteKey(): Local?
     protected abstract fun Remote.toLocal(local: Local? = null): Local?
@@ -25,8 +24,7 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
         val saveLocalList = mutableListOf<Local>()
         val deleteLocalList = mutableListOf<Local>()
 
-        val saveRemoteList = mutableMapOf<String, Remote>()
-        val deleteRemoteList = mutableMapOf<String, Remote>()
+        val updateRemoteList = mutableMapOf<String, Remote?>()
 
         val remotes = getRemoteList()
         val locals = getLocalList().toMapLocalList()
@@ -46,11 +44,11 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
                     remote.toLocal(local)?.let { saveLocalList.add(it) }
                 } else if (!local.isSync) {
                     if (local.isDelete)
-                        deleteRemoteList[local.key] = local.toRemote(remote)
+                        updateRemoteList[local.key] = null
                     else
-                        saveRemoteList[local.key] = local.toRemote(remote)
+                        updateRemoteList[local.key] = local.toRemote(remote)
                 } else if (local.syncAt > remoteSyncAt)
-                    saveRemoteList[local.key] = local.toRemote(remote)
+                    updateRemoteList[local.key] = local.toRemote(remote)
 
                 locals.remove(remote.key)
             }
@@ -65,24 +63,21 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
                 if (local.key == "") {
                     local.updateRemoteKey()?.let {
                         saveLocalList.add(it)
-                        saveRemoteList[local.key] = it.toRemote()
+                        updateRemoteList[local.key] = it.toRemote()
                     }
                 } else
-                    saveRemoteList[local.key] = local.toRemote()
+                    updateRemoteList[local.key] = local.toRemote()
             }
         }
 
         println("saveLocalList $saveLocalList")
         println("deleteLocalList $deleteLocalList")
-        println("saveRemoteList $saveRemoteList")
-        println("deleteRemoteList $deleteRemoteList")
+        println("updateRemoteList $updateRemoteList")
 
         if (saveLocalList.isNotEmpty()) saveLocalList(saveLocalList)
         if (deleteLocalList.isNotEmpty()) deleteLocalList(deleteLocalList)
-        if (saveRemoteList.isNotEmpty())
-            withContext(coroutineContext) { launch { saveRemoteList(saveRemoteList) } }
-        if (deleteRemoteList.isNotEmpty())
-            withContext(coroutineContext) { launch { deleteRemoteList(deleteRemoteList) } }
+        if (updateRemoteList.isNotEmpty())
+            withContext(coroutineContext) { launch { updateRemoteList(updateRemoteList) } }
     }
 
     private fun List<Local>.toMapLocalList(): MutableMap<String, Local> {

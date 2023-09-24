@@ -40,7 +40,7 @@ class TransactionsViewModel @Inject constructor(
     private var isUpdateTaxRun = false
 
     fun observeReport(reportKey: String) =
-        observeReportUseCase.execute(account.accountKey, reportKey)
+        observeReportUseCase.execute(account.name, reportKey)
             .onStart { start() }
             .catch { error(it) }
             .onEach { success() }
@@ -50,7 +50,7 @@ class TransactionsViewModel @Inject constructor(
     lateinit var excelUri: Uri
 
     fun observeTransactions() =
-        getTransactionsUseCase.execute(account.accountKey, report.reportKey)
+        getTransactionsUseCase.execute(account.name, report.name)
             .onStart { start() }
             .catch { error(it) }
             .onEach {
@@ -100,8 +100,8 @@ class TransactionsViewModel @Inject constructor(
         get() = deleteTransaction?.let { transaction ->
             val deleteModel = DeleteTransactionModel(
                 id = transaction.id,
-                accountKey = account.accountKey,
-                reportKey = report.reportKey,
+                accountKey = account.name,
+                reportKey = report.name,
                 transactionKey = transaction.transactionKey,
                 transactionTax = transaction.tax,
                 reportSize = report.size,
@@ -129,10 +129,10 @@ class TransactionsViewModel @Inject constructor(
     private fun TransactionModel.toSaveTransactionModel() =
         SaveTransactionModel(
             id = id,
-            accountKey = account.accountKey,
-            reportKey = report.reportKey,
+            accountKey = account.name,
+            reportKey = report.name,
             transactionKey = transactionKey,
-            newReportKey = report.reportKey,
+            newReportKey = report.name,
             date = date,
             name = name ?: "",
             currency = currency,

@@ -25,7 +25,7 @@ class ReportsAdapterViewHolder(
     fun bind(reportAdapterModel: ReportModel) {
         _report = reportAdapterModel
 
-        binding.textReportsAdapterItemYear.text = _report.reportKey
+        binding.textReportsAdapterItemYear.text = _report.name
         binding.textReportsAdapterItemTax.text = _report.tax.toString()
     }
 }

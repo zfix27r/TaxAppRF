@@ -1,5 +1,6 @@
 package com.taxapprf.data.remote.firebase
 
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
@@ -36,22 +37,12 @@ class FirebaseUserDaoImpl @Inject constructor(
         }
     }
 
-    override fun isSignIn() = fb.auth.currentUser != null
-
-    override suspend fun
-            getProfile() =
+    override fun getUser() =
         safeCall {
-            fb.auth.currentUser?.let {
-                UserModel(
-                    avatar = it.photoUrl,
-                    name = it.displayName,
-                    email = it.email,
-                    phone = it.phoneNumber,
-                )
-            }
+            fb.auth.currentUser?.toUserModel()
         }
 
-    override suspend fun saveProfile(userModel: UserModel) {
+    override suspend fun updateUser(userModel: UserModel) {
         safeCall {
             val profile = userProfileChangeRequest {
                 displayName = userModel.name
@@ -59,5 +50,16 @@ class FirebaseUserDaoImpl @Inject constructor(
 
             fb.auth.currentUser?.updateProfile(profile) ?: throw DataErrorUser()
         }
+    }
+
+    private fun FirebaseUser.toUserModel(): UserModel? {
+        val email = email ?: return null
+
+        return UserModel(
+            avatar = photoUrl,
+            name = displayName,
+            email = email,
+            phone = phoneNumber,
+        )
     }
 }

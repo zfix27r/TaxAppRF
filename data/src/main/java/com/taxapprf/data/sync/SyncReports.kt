@@ -4,45 +4,26 @@ import com.taxapprf.data.local.room.dao.LocalReportDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
-import com.taxapprf.domain.report.ReportModel
 
 class SyncReports(
     private val localDao: LocalReportDao,
     private val remoteDao: RemoteReportDao,
     private val accountKey: String,
-    private val reportKey: String = "",
-) : SyncManager<LocalReportEntity, FirebaseReportModel, ReportModel>() {
-    override fun observeLocal() = localDao.observe(accountKey, reportKey)
-    override fun observeAllLocal() = localDao.observeAll(accountKey)
+) : SyncManager<LocalReportEntity, FirebaseReportModel>() {
+    override fun getLocalList() =
+        localDao.getAll(accountKey)
 
-    override fun getLocal() = localDao.get(accountKey, reportKey)
-    override fun getAllLocal() = localDao.getAll(accountKey)
-    override fun getAllDeleteLocal() = localDao.getAllDelete(accountKey)
-
-    override fun deleteLocalList(locals: List<LocalReportEntity>) {
+    override fun deleteLocalList(locals: List<LocalReportEntity>) =
         localDao.deleteAll(locals)
-    }
 
-    override fun saveLocalList(locals: List<LocalReportEntity>) {
+    override fun saveLocalList(locals: List<LocalReportEntity>) =
         localDao.saveAll(locals)
-    }
 
-    override fun LocalReportEntity.toApp() =
-        ReportModel(id, key, tax, size, isSync, isDelete, syncAt)
+    override suspend fun getRemoteList() =
+        remoteDao.getAll(accountKey)
 
     override fun LocalReportEntity.toRemote(remote: FirebaseReportModel?) =
-        FirebaseReportModel(key, tax, size, syncAt)
-
-    override fun observeRemote() = remoteDao.observe(accountKey, reportKey)
-    override fun getRemote() = remoteDao.observeAll(accountKey)
-
-    override suspend fun deleteRemoteList(remotes: List<FirebaseReportModel>) {
-        remoteDao.deleteAll(accountKey, remotes)
-    }
-
-    override suspend fun saveRemoteList(locales: List<LocalReportEntity>) {
-        remoteDao.saveAll(accountKey, locales.map { it.toRemote() })
-    }
+        FirebaseReportModel(tax, size, syncAt)
 
     override fun FirebaseReportModel.toLocal(local: LocalReportEntity?): LocalReportEntity? {
         val key = key ?: return null
@@ -61,4 +42,10 @@ class SyncReports(
             syncAt = syncAt
         )
     }
+
+    override suspend fun LocalReportEntity.updateRemoteKey() =
+        remoteDao.getKey(accountKey)?.let { copy(key = it) }
+
+    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseReportModel?>) =
+        remoteDao.updateAll(accountKey, remoteMap)
 }

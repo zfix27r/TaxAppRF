@@ -5,6 +5,5 @@ import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
 interface RemoteAccountDao {
     suspend fun getKey(): String?
     suspend fun getAll(): List<FirebaseAccountModel>
-    suspend fun saveAll(accountModels: Map<String, FirebaseAccountModel>)
-    suspend fun deleteAll(accountModels: Map<String, FirebaseAccountModel?>)
+    suspend fun updateAll(accountModels: Map<String, FirebaseAccountModel?>)
 }
