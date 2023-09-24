@@ -1,8 +1,8 @@
 package com.taxapprf.data
 
 import android.net.Uri
-import com.taxapprf.data.local.room.dao.LocalAccountDao
-import com.taxapprf.data.local.room.dao.LocalUserDao
+import com.taxapprf.data.local.room.LocalAccountDao
+import com.taxapprf.data.local.room.LocalUserDao
 import com.taxapprf.data.local.room.model.LocalUserWithAccounts
 import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.domain.UserRepository

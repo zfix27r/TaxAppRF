@@ -1,10 +1,9 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.data.local.room.dao.LocalTransactionDao
+import com.taxapprf.data.local.room.LocalTransactionDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
-import com.taxapprf.domain.transaction.TransactionModel
 
 class SyncTransactions(
     private val localDao: LocalTransactionDao,

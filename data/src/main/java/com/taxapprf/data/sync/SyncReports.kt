@@ -1,6 +1,6 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.data.local.room.dao.LocalReportDao
+import com.taxapprf.data.local.room.LocalReportDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel

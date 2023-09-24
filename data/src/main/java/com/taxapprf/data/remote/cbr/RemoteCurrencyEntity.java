@@ -1,4 +1,4 @@
-package com.taxapprf.data.remote.cbrapi;
+package com.taxapprf.data.remote.cbr;
 
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -8,22 +8,22 @@ import java.util.Objects;
 
 
 @Root(name = "ValCurs", strict = false)
-public class Currency {
+public class RemoteCurrencyEntity {
     private Double rate;
 
     @ElementList(name = "Valute", inline = true)
-    private List<CurrencyRate> currencyList;
+    private List<RemoteRateEntity> currencyList;
 
-    public List<CurrencyRate> getCurrencyList() {
+    public List<RemoteRateEntity> getCurrencyList() {
         return currencyList;
     }
 
-    public void setCurrencyList(List<CurrencyRate> currencyList) {
+    public void setCurrencyList(List<RemoteRateEntity> currencyList) {
         this.currencyList = currencyList;
     }
 
     public Double getCurrencyRate(String valutaCode) {
-        for (CurrencyRate currency : currencyList) {
+        for (RemoteRateEntity currency : currencyList) {
             if (Objects.equals(currency.getCharCode(), valutaCode)) {
                 if (currency.getValue() != null)
                     this.rate = currency.getValue() / currency.getNominal();

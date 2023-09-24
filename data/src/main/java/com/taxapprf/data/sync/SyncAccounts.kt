@@ -1,6 +1,6 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.data.local.room.dao.LocalAccountDao
+import com.taxapprf.data.local.room.LocalAccountDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
 import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel

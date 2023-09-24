@@ -2,7 +2,8 @@ package com.taxapprf.data
 
 import com.taxapprf.data.error.DataErrorCBR
 import com.taxapprf.data.error.DataErrorConnection
-import com.taxapprf.data.remote.cbrapi.CBRAPI
+import com.taxapprf.data.local.room.LocalCBRDao
+import com.taxapprf.data.remote.cbr.RemoteCBRDao
 import com.taxapprf.domain.CurrencyRepository
 import com.taxapprf.domain.currency.CurrencyModel
 import kotlinx.coroutines.flow.flow
@@ -13,7 +14,8 @@ import javax.inject.Singleton
 
 @Singleton
 class CurrencyRepositoryImpl @Inject constructor(
-    private val cbrapi: CBRAPI,
+    private val localCBRDao: LocalCBRDao,
+    private val remoteCBRDao: RemoteCBRDao,
 ) : CurrencyRepository {
     override fun observe(date: String) = flow {
         try {

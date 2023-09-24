@@ -1,10 +1,10 @@
-package com.taxapprf.data.remote.cbrapi;
+package com.taxapprf.data.remote.cbr;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 @Root(name = "Valute", strict = false)
-public class CurrencyRate {
+public class RemoteRateEntity {
 
     @Element(name = "CharCode")
     private String charCode;

@@ -2,10 +2,9 @@ package com.taxapprf.data
 
 import android.net.Uri
 import com.taxapprf.data.local.excel.ExcelDaoImpl
-import com.taxapprf.data.local.room.dao.LocalTransactionDao
+import com.taxapprf.data.local.room.LocalTransactionDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
-import com.taxapprf.data.sync.SyncTransactions
 import com.taxapprf.domain.TransactionRepository
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetExcelToShareModel

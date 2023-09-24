@@ -1,4 +1,4 @@
-package com.taxapprf.data.local.room.dao
+package com.taxapprf.data.local.room
 
 import androidx.room.Dao
 import androidx.room.Delete

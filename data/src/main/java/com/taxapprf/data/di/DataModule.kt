@@ -5,7 +5,7 @@ import android.net.ConnectivityManager
 import androidx.room.Room
 import com.taxapprf.domain.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
-import com.taxapprf.data.remote.cbrapi.CBRAPI
+import com.taxapprf.data.remote.cbr.RemoteCBRDao
 import com.taxapprf.data.remote.firebase.FirebaseAPI
 import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
@@ -82,8 +82,8 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideCBRAPI(retrofit: Retrofit): CBRAPI {
-        return retrofit.create(CBRAPI::class.java)
+    fun provideCBRAPI(retrofit: Retrofit): RemoteCBRDao {
+        return retrofit.create(RemoteCBRDao::class.java)
     }
 
     @Singleton
