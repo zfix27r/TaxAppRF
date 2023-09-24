@@ -1,7 +1,8 @@
 package com.taxapprf.domain.currency
 
-data class CurrencyModel(
+data class CurrencyWithRateModel(
     val name: String,
-    val code: String,
+    val numCode: Int,
+    val charCode: String,
     val rate: Double,
 )

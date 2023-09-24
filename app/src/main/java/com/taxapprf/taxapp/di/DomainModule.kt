@@ -1,13 +1,14 @@
 package com.taxapprf.taxapp.di
 
-import com.taxapprf.data.CurrencyRepositoryImpl
+import com.taxapprf.data.CBRRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.domain.NetworkManager
+import com.taxapprf.domain.currency.GetCBRRateUseCase
 import com.taxapprf.domain.user.SwitchAccountUseCase
-import com.taxapprf.domain.currency.GetCurrencyRateTodayFromCBRUseCase
+import com.taxapprf.domain.currency.GetCBRRatesUseCase
 import com.taxapprf.domain.report.DeleteReportWithTransactionsUseCase
 import com.taxapprf.domain.report.ObserveReportsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelUseCase
@@ -56,8 +57,12 @@ object DomainModule {
         SyncAllUseCase(syncRepositoryImpl)
 
     @Provides
-    fun provideGetCurrencyRateTodayFromCBRUseCase(repositoryImpl: CurrencyRepositoryImpl) =
-        GetCurrencyRateTodayFromCBRUseCase(repositoryImpl)
+    fun provideGetCurrencyRateTodayFromCBRUseCase(currencyRepositoryImpl: CBRRepositoryImpl) =
+        GetCBRRatesUseCase(currencyRepositoryImpl)
+
+    @Provides
+    fun provideGetCBRRateUseCase(currencyRepositoryImpl: CBRRepositoryImpl) =
+        GetCBRRateUseCase(currencyRepositoryImpl)
 
     @Provides
     fun provideGetTransactionsUseCase(repositoryImpl: TransactionRepositoryImpl) =
@@ -78,7 +83,7 @@ object DomainModule {
         networkManager: NetworkManager,
         reportRepositoryImpl: ReportRepositoryImpl,
         transactionRepositoryImpl: TransactionRepositoryImpl,
-        currencyRepositoryImpl: CurrencyRepositoryImpl
+        currencyRepositoryImpl: CBRRepositoryImpl
     ) =
         UpdateTaxTransactionUseCase(
             networkManager,

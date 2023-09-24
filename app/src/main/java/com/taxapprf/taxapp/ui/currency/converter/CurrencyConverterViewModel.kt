@@ -3,7 +3,7 @@ package com.taxapprf.taxapp.ui.currency.converter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.currency.CurrencyConverterModel
-import com.taxapprf.domain.currency.GetCurrencyRateTodayFromCBRUseCase
+import com.taxapprf.domain.currency.GetCBRRatesUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.format
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CurrencyConverterViewModel @Inject constructor(
-    private val getTodayCBRRateUseCase: GetCurrencyRateTodayFromCBRUseCase,
+    private val getTodayCBRRateUseCase: GetCBRRatesUseCase,
 ) : BaseViewModel() {
     val converter = CurrencyConverterModel()
 
@@ -59,7 +59,7 @@ class CurrencyConverterViewModel @Inject constructor(
         }
 
     private fun updateRate() {
-        converter.rateCBR = converter.currencies.find { it.code == currency }?.rate
+        converter.rateCBR = converter.currencies.find { it.charCode == currency }?.rate
             ?: CurrencyConverterModel.DEFAULT_RATE_CBR
     }
 

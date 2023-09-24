@@ -12,10 +12,13 @@ import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
 import com.taxapprf.domain.transaction.TransactionType
 import java.net.SocketTimeoutException
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import kotlin.math.abs
 import kotlin.math.floor
+
+const val patternCBRDate = "dd/MM/yyyy"
 
 inline fun <T> safeCall(call: () -> T): T {
     return try {
@@ -51,4 +54,5 @@ fun updateTax(sum: Double, type: String, rateCBR: Double): Double {
     return newTax.roundUpToTwo()
 }
 
-fun getTime() = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+fun getEpochDate() = LocalDate.now().toEpochDay()
+fun getEpochTime() = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)

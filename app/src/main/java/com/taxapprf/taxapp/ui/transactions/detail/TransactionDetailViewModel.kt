@@ -87,7 +87,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
             newReportKey = date.getYear().toString(),
             date = date,
             name = name,
-            currency = currency,
+            currencyCharCode = currency,
             type = type,
             sum = sum,
             tax = tax,

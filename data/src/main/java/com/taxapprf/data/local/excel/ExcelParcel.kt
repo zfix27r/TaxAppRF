@@ -2,11 +2,9 @@ package com.taxapprf.data.local.excel
 
 import android.os.Environment
 import com.taxapprf.data.error.DataErrorInternal
-import com.taxapprf.data.getTime
+import com.taxapprf.data.getEpochTime
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
-import com.taxapprf.domain.transaction.SaveTransactionModel
-import com.taxapprf.domain.transaction.TransactionModel
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
@@ -63,7 +61,7 @@ class ExcelParcel(private val saveExcelToFirebaseModel: SaveTransactionsFromExce
                     tax = row.getCell(6).numericCellValue,
                     isSync = false,
                     isDelete = false,
-                    syncAt = getTime()
+                    syncAt = getEpochTime()
                 )
                 transactions.add(transaction)
             }

@@ -68,7 +68,7 @@ class ReportRepositoryImpl @Inject constructor(
                         size = newSize,
                         tax = newTax,
                         isSync = false,
-                        syncAt = getTime()
+                        syncAt = getEpochTime()
                     )
                 )
             }
@@ -109,7 +109,7 @@ class ReportRepositoryImpl @Inject constructor(
                 size = newSize,
                 isSync = false,
                 isDelete = false,
-                syncAt = getTime()
+                syncAt = getEpochTime()
             )
         )
     }

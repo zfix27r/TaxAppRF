@@ -9,26 +9,24 @@ import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.TABLE_NA
 data class LocalCBRRateEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = ID)
-    val id: Int,
+    val id: Int = 0,
 
-    @ColumnInfo(name = CURRENCY_ID)
-    val currencyId: Int,
+    @ColumnInfo(name = CHAR_CODE)
+    val charCode: String,
 
     @ColumnInfo(name = DATE)
     val date: Long,
     @ColumnInfo(name = RATE)
-    val rate: Long,
-    @ColumnInfo(name = UNIT)
-    val unit: Int,
+    val rate: Double,
 ) {
     companion object {
         const val TABLE_NAME = "cbr_rate"
 
         const val ID = "id"
-        const val CURRENCY_ID = "currency_id"
+
+        const val CHAR_CODE = "char_code"
 
         const val DATE = "date"
         const val RATE = "rate"
-        const val UNIT = "unit"
     }
 }

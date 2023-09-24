@@ -53,6 +53,10 @@ object DataModule {
     @Provides
     fun provideTransactionDao(db: LocalDatabase) =
         db.transactionDao()
+    @Singleton
+    @Provides
+    fun provideCBRDao(db: LocalDatabase) =
+        db.cbrDao()
 
     @Provides
     @Singleton

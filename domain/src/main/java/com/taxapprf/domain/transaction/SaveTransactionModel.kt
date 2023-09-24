@@ -9,9 +9,9 @@ data class SaveTransactionModel(
 
     val newReportKey: String,
 
-    val date: String,
+    val date: Long,
     val name: String,
-    val currency: String,
+    val currencyCharCode: String,
     val type: String,
     val sum: Double,
 

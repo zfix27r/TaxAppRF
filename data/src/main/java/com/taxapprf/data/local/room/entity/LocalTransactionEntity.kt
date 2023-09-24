@@ -3,6 +3,7 @@ package com.taxapprf.data.local.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.taxapprf.data.getEpochTime
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TABLE_NAME
 import com.taxapprf.data.sync.IS_DELETE
 import com.taxapprf.data.sync.IS_SYNC
@@ -25,7 +26,7 @@ data class LocalTransactionEntity(
     @ColumnInfo(name = NAME)
     val name: String?,
     @ColumnInfo(name = DATE)
-    val date: String,
+    val date: Long,
     @ColumnInfo(name = TYPE)
     val type: String,
     @ColumnInfo(name = CURRENCY)
@@ -38,11 +39,11 @@ data class LocalTransactionEntity(
     val tax: Double,
 
     @ColumnInfo(name = IS_SYNC)
-    override val isSync: Boolean,
+    override val isSync: Boolean = false,
     @ColumnInfo(name = IS_DELETE)
-    override val isDelete: Boolean,
+    override val isDelete: Boolean = false,
     @ColumnInfo(name = SYNC_AT)
-    override val syncAt: Long,
+    override val syncAt: Long = getEpochTime(),
 ) : SyncLocal {
     companion object {
         const val TABLE_NAME = "transaction"

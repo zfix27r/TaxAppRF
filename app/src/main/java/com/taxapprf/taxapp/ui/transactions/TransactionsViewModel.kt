@@ -135,7 +135,7 @@ class TransactionsViewModel @Inject constructor(
             newReportKey = report.name,
             date = date,
             name = name ?: "",
-            currency = currency,
+            currencyCharCode = currency,
             type = type,
             sum = sum,
             tax = tax,

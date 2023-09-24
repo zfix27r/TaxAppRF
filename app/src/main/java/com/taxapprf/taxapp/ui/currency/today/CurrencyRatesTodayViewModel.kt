@@ -3,8 +3,8 @@ package com.taxapprf.taxapp.ui.currency.today
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.currency.CurrencyModel
-import com.taxapprf.domain.currency.GetCurrencyRateTodayFromCBRUseCase
+import com.taxapprf.domain.currency.CurrencyWithRateModel
+import com.taxapprf.domain.currency.GetCBRRatesUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.format
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,12 +18,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CurrencyRatesTodayViewModel @Inject constructor(
-    private val getTodayCBRRateUseCase: GetCurrencyRateTodayFromCBRUseCase,
+    private val getTodayCBRRateUseCase: GetCBRRatesUseCase,
 ) : BaseViewModel() {
     private val date = Calendar.getInstance().time
 
-    private val _currencies = MutableLiveData<List<CurrencyModel>>()
-    val currencies: LiveData<List<CurrencyModel>> = _currencies
+    private val _currencies = MutableLiveData<List<CurrencyWithRateModel>>()
+    val currencies: LiveData<List<CurrencyWithRateModel>> = _currencies
 
     fun loading() = viewModelScope.launch(Dispatchers.IO) {
         getTodayCBRRateUseCase.execute(date.format())

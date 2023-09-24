@@ -3,7 +3,7 @@ package com.taxapprf.domain.currency
 data class CurrencyConverterModel(
     var sum: Double = DEFAULT_SUM,
     var currency: String = DEFAULT_CURRENCY,
-    var currencies: List<CurrencyModel> = listOf(),
+    var currencies: List<CurrencyWithRateModel> = listOf(),
     var rateCBR: Double = DEFAULT_RATE_CBR,
     var sumRub: Double = DEFAULT_SUM_RUB,
     var isModeSum: Boolean = true,

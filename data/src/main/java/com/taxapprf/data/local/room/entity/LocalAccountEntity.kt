@@ -3,7 +3,7 @@ package com.taxapprf.data.local.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.taxapprf.data.getTime
+import com.taxapprf.data.getEpochTime
 import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.TABLE_NAME
 import com.taxapprf.data.sync.IS_DELETE
 import com.taxapprf.data.sync.IS_SYNC
@@ -30,7 +30,7 @@ data class LocalAccountEntity(
     @ColumnInfo(name = IS_DELETE)
     override val isDelete: Boolean = false,
     @ColumnInfo(name = SYNC_AT)
-    override val syncAt: Long = getTime(),
+    override val syncAt: Long = getEpochTime(),
 ) : SyncLocal {
     companion object {
         const val TABLE_NAME = "account"

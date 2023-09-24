@@ -75,13 +75,10 @@ class TransactionRepositoryImpl @Inject constructor(
             name = name,
             date = date,
             type = type,
-            currency = currency,
+            currency = currencyCharCode,
             rateCBRF = newRateCBRF ?: rateCBRF ?: 0.0,
             sum = sum,
             tax = newTax ?: tax ?: 0.0,
-            isSync = false,
-            isDelete = false,
-            syncAt = getTime()
         )
 
     private fun LocalTransactionEntity.toTransactionModel() =

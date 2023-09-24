@@ -3,6 +3,7 @@ package com.taxapprf.taxapp.ui.activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.currency.GetCBRRateUseCase
 import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.SwitchAccountUseCase
 import com.taxapprf.domain.report.ReportModel
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +34,7 @@ class MainViewModel @Inject constructor(
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
+    private val getCBRRateUseCase: GetCBRRateUseCase,
     syncAllUseCase: SyncAllUseCase
 ) : ViewModel() {
     private val _state = ActivityStateLiveData()
@@ -39,6 +42,15 @@ class MainViewModel @Inject constructor(
 
     var report: ReportModel? = null
     var transaction: TransactionModel? = null
+
+    init {
+/*        viewModelScope.launch(Dispatchers.IO) {
+            val date = LocalDate.now().toEpochDay()
+            for (i in 0..900) {
+                getCBRRateUseCase.execute("USD", date - i)
+            }
+        }*/
+    }
 
     val userWithAccounts =
         observeUserUseCase.execute()
@@ -75,12 +87,12 @@ class MainViewModel @Inject constructor(
                 }*/
     }
 
-/*
-    private fun List<AccountModel>.setActiveAccount() = mapIndexed { index, accountModel ->
-        if (index == 0) accountModel.copy(isActive = true)
-        else accountModel
-    }
-*/
+    /*
+        private fun List<AccountModel>.setActiveAccount() = mapIndexed { index, accountModel ->
+            if (index == 0) accountModel.copy(isActive = true)
+            else accountModel
+        }
+    */
 
     fun signOut() =
         viewModelScope.launch(Dispatchers.IO) {
