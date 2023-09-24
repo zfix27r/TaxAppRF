@@ -126,7 +126,7 @@ class ExcelCreator(
             cell = row.createCell(1, CellType.STRING)
             cell.setCellValue(transaction.type)
             cell = row.createCell(2, CellType.STRING)
-            cell.setCellValue(transaction.date)
+            cell.setCellValue(transaction.date.toString())
             cell = row.createCell(3, CellType.NUMERIC)
             cell.setCellValue(transaction.sum)
             cell = row.createCell(4, CellType.STRING)

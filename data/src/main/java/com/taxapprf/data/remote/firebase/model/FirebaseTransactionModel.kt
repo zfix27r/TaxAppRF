@@ -4,7 +4,7 @@ import com.taxapprf.data.sync.SyncRemote
 
 data class FirebaseTransactionModel(
     val name: String? = null,
-    val date: String? = null,
+    val date: Long? = null,
     val type: String? = null,
     val currency: String? = null,
     val rateCBR: Double? = null,
