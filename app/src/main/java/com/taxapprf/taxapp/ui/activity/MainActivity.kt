@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 userWithAccounts.collectLatest { userWithAccounts ->
                     drawer.updateUser(
                         userWithAccounts?.user,
-                        getString(R.string.default_email_name)
+                        getString(R.string.default_user_name_name)
                     )
                     drawer.updateActiveAccount(userWithAccounts?.activeAccount)
                     drawer.updateOtherAccounts(userWithAccounts?.otherAccounts)

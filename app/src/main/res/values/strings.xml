@@ -4,7 +4,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="drawer_header_user_avatar_content_description">Navigation header</string>
     <string name="action_settings">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -14,7 +14,7 @@
     <string name="sign_up_error_email_already_use">The email address is already in use by another account.</string>
     <string name="auth_error_session_expire">Сессия истекла</string>
     <string name="auth_error">Ошибка авторизации</string>
-    <string name="default_email_name">Локальная запись</string>
+    <string name="default_user_name_name">Локальная запись</string>
     <string name="default_account_name">По умолчанию</string>
     <string name="response_error_data_is_empty"></string>
 
@@ -169,5 +169,6 @@
     <string name="currency_converter_sum_default">1</string>
     <string name="sign_title_name">Вход</string>
     <string name="sign_out_name">Выход</string>
+    <string name="drawer_header_user_account_expand_content_description">expand</string>
 
 </resources>

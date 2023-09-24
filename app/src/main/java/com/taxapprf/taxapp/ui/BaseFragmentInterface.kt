@@ -10,7 +10,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.textfield.TextInputEditText
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -20,7 +19,6 @@ interface BaseFragmentInterface {
     val fragment: Fragment
     var baseViewModel: BaseViewModel
     var actionMode: ActionMode?
-
 
     fun BaseViewModel.attach() {
         baseViewModel = this

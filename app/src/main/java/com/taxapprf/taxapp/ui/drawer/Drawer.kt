@@ -8,9 +8,9 @@ import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.UserModel
-import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 
 class Drawer(
@@ -19,24 +19,27 @@ class Drawer(
     private val callback: DrawerCallback,
 ) {
     private val header = navigationView.getHeaderView(HEADER_POSITION)
-    private val userAvatar = header.findViewById<ImageView>(R.id.imageNavHeaderUserAvatar)
-    private val userName = header.findViewById<TextView>(R.id.textNavHeaderUserName)
-    private val userEmail = header.findViewById<TextView>(R.id.textNavHeaderUserEmail)
-    private val expand
-        get() = navigationView.findViewById<ImageView>(R.id.imageNavHeaderUserAccountExpand)
-    private val recycler = header.findViewById<RecyclerView>(R.id.recyclerNavHeaderAccounts)
-    private val accounts = header.findViewById<Layer>(R.id.layerNavHeaderAccounts)
-    private val account: TextView = header.findViewById(R.id.textNavHeaderUserAccount)
+    private val userAvatar = header.findViewById<ImageView>(R.id.image_drawer_header_user_avatar)
+    private val userName = header.findViewById<TextView>(R.id.text_drawer_header_user_name)
+    private val userEmail = header.findViewById<TextView>(R.id.text_drawer_header_user_email)
+    private val expandAccounts
+        get() = navigationView.findViewById<ImageView>(R.id.image_drawer_header_user_account_expand)
+    private val accountsRecycler =
+        header.findViewById<RecyclerView>(R.id.recycler_drawer_header_accounts)
+    private val activeAccountLayer =
+        header.findViewById<Layer>(R.id.layer_drawer_header_active_account)
+    private val activeAccount: TextView =
+        header.findViewById(R.id.text_drawer_header_user_active_account)
 
     private val accountsAdapterCallback =
         object : DrawerAccountsAdapterCallback {
             override fun switchAccount(accountModel: AccountModel) {
-                close()
+                closeDrawer()
                 callback.switchAccount(accountModel)
             }
 
             override fun navToAddAccount() {
-                close()
+                closeDrawer()
                 callback.navToAccountAdd()
             }
         }
@@ -44,32 +47,35 @@ class Drawer(
     private val accountsAdapter = MainAccountsAdapter(accountsAdapterCallback)
 
     init {
-        recycler.adapter = accountsAdapter
-
-        accounts.setOnClickListener { expandAccounts() }
-
+        accountsRecycler.adapter = accountsAdapter
+        activeAccountLayer.setOnClickListener { expandAccounts() }
         navigationView.setNavigationItemSelectedListener {
-            close()
-            it.onItemClick()
+            closeDrawer()
+            it.onNavigationItemClick()
         }
     }
 
     fun updateUser(
         user: UserModel?,
-        defaultUserEmail: String,
+        defaultUserName: String,
     ) {
-        user?.let { showWithAuth() }
-            ?: run { hideWithoutAuth() }
-
-        user?.avatar?.let { userAvatar.setImageURI(it) }
-            ?: run { userAvatar.setImageResource(R.drawable.free_icon_tax_10994810) }
-
-        userName.text = user?.name ?: ""
-        userEmail.text = user?.email ?: defaultUserEmail
+        user?.let {
+            if (user.email != UserRepositoryImpl.LOCAL_USER_EMAIL) {
+                showWithAuth()
+                userAvatar.setImageURI(user.avatar)
+                userName.text = user.name
+                userEmail.text = user.email
+            }
+        } ?: run {
+            hideWithoutAuth()
+            userAvatar.setImageResource(R.drawable.ic_tax_app_logo)
+            userName.text = defaultUserName
+            userEmail.text = ""
+        }
     }
 
     fun updateActiveAccount(activeAccount: AccountModel?) {
-        account.text = activeAccount?.name
+        this.activeAccount.text = activeAccount?.name
     }
 
     fun updateOtherAccounts(accounts: List<AccountModel>?) {
@@ -77,29 +83,24 @@ class Drawer(
     }
 
     private fun showWithAuth() {
-        accounts.isVisible = true
-        recycler.isVisible = false
-        expand.setImageResource(R.drawable.ic_baseline_expand_more_24)
         navigationView.menu.findItem(R.id.sign).isVisible = false
         navigationView.menu.findItem(R.id.sign_out).isVisible = true
     }
 
     private fun hideWithoutAuth() {
-        accounts.isVisible = false
-        recycler.isVisible = false
         navigationView.menu.findItem(R.id.sign_out).isVisible = false
         navigationView.menu.findItem(R.id.sign).isVisible = true
     }
 
     private fun expandAccounts() {
-        recycler.isVisible = !recycler.isVisible
-        expand.setImageResource(
-            if (recycler.isVisible) R.drawable.ic_baseline_expand_less_24
+        accountsRecycler.isVisible = !accountsRecycler.isVisible
+        expandAccounts.setImageResource(
+            if (accountsRecycler.isVisible) R.drawable.ic_baseline_expand_less_24
             else R.drawable.ic_baseline_expand_more_24
         )
     }
 
-    private fun MenuItem.onItemClick() =
+    private fun MenuItem.onNavigationItemClick() =
         when (itemId) {
             R.id.reports -> {
                 callback.navToReports()
@@ -129,7 +130,7 @@ class Drawer(
             else -> false
         }
 
-    private fun close() = drawerLayout.close()
+    private fun closeDrawer() = drawerLayout.close()
 
     companion object {
         private const val HEADER_POSITION = 0
