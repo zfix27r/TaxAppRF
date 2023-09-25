@@ -36,7 +36,7 @@ class CBRRepositoryImpl @Inject constructor(
     }
 
     private fun Long.toCBRDate(): String {
-        val formatter = DateTimeFormatter.ofPattern(patternCBRDate)
+        val formatter = DateTimeFormatter.ofPattern(PATTERN_CBR_DATE)
         return LocalDate.ofEpochDay(this).format(formatter)
     }
 

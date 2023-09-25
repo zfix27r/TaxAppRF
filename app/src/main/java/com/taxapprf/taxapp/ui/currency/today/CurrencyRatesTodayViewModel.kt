@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -26,12 +27,6 @@ class CurrencyRatesTodayViewModel @Inject constructor(
     val currencies: LiveData<List<CurrencyWithRateModel>> = _currencies
 
     fun loading() = viewModelScope.launch(Dispatchers.IO) {
-        getTodayCBRRateUseCase.execute(date.format())
-            .onStart { start() }
-            .catch { error(it) }
-            .collectLatest {
-                _currencies.postValue(it)
-                success()
-            }
+        _currencies.postValue(getTodayCBRRateUseCase.execute(LocalDate.now().toEpochDay()))
     }
 }

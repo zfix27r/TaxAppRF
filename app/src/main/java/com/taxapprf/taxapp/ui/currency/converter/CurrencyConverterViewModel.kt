@@ -1,5 +1,6 @@
 package com.taxapprf.taxapp.ui.currency.converter
 
+import android.icu.util.LocaleData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.currency.CurrencyConverterModel
@@ -12,7 +13,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -26,15 +29,11 @@ class CurrencyConverterViewModel @Inject constructor(
     val sumRub = MutableLiveData<Double>()
 
     fun loading() = viewModelScope.launch(Dispatchers.IO) {
-        getTodayCBRRateUseCase.execute((Calendar.getInstance().time).format())
-            .onStart { start() }
-            .catch { error(it) }
-            .collectLatest {
-                converter.currencies = it
-                updateRate()
-                setSum(converter.sum)
-                success()
-            }
+        converter.currencies = getTodayCBRRateUseCase.execute(LocalDate.now().toEpochDay())
+
+        updateRate()
+        setSum(converter.sum)
+        success()
     }
 
     fun setSum(newSum: Double) {

@@ -12,6 +12,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
+import com.taxapprf.taxapp.ui.formatDate
 import com.taxapprf.taxapp.ui.getTransactionType
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
@@ -147,7 +148,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
     }
 
     private fun updateDateText() {
-        binding.editTextTransactionDetailDate.setText(viewModel.date)
+        binding.editTextTransactionDetailDate.setText(viewModel.date.formatDate())
     }
 
     private fun updateSumText() {

@@ -18,7 +18,7 @@ import java.time.ZoneOffset
 import kotlin.math.abs
 import kotlin.math.floor
 
-const val patternCBRDate = "dd/MM/yyyy"
+const val PATTERN_CBR_DATE = "dd/MM/uuuu"
 
 inline fun <T> safeCall(call: () -> T): T {
     return try {

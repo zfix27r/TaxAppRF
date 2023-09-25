@@ -7,9 +7,9 @@ import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
+import com.taxapprf.taxapp.ui.PATTERN_DATE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
-import java.time.Year
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
 import java.util.Locale
@@ -17,8 +17,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
-    private val dateFormat = DateTimeFormatter.ofPattern(DATE_PATTERN)
-
     var report: ReportModel? = null
     var transaction: TransactionModel? = null
         set(value) {
@@ -32,7 +30,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         }
 
     private var transactionKey: String? = null
-    var date: String = getCurrentDate()
+    var date: Long = getCurrentDate()
 
     var name: String = NAME_DEFAULT
 
@@ -84,7 +82,7 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
             accountKey = account.name,
             reportKey = report?.name,
             transactionKey = transaction?.transactionKey,
-            newReportKey = date.getYear().toString(),
+            newReportKey = date.getYear(),
             date = date,
             name = name,
             currencyCharCode = currency,
@@ -95,37 +93,36 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         )
     }
 
-    private fun String.getYear() = split("/")[2].toInt()
+    private fun Long.getYear() = LocalDate.ofEpochDay(this).year.toString()
 
-    private fun checkDate(cDate: String) = check {
-        date = cDate
-        if (date.isDateFormatIncorrect()) R.string.transaction_detail_error_date_format
-        else if (date.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
-        else null
-    }
+    private fun checkDate(cDate: String) =
+        check {
+            cDate.checkDateFormat().let { cDate ->
+                if (cDate == null) R.string.transaction_detail_error_date_format
+                else {
+                    date = cDate
+                    if (date.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
+                    else null
+                }
+            }
+        }
 
-    private fun getCurrentDate() = dateFormat.format(LocalDate.now())
+    private fun getCurrentDate() = LocalDate.now().toEpochDay()
 
-    private fun String.isDateFormatIncorrect(): Boolean {
-        var hasError = false
+    private fun String.checkDateFormat() =
         try {
             LocalDate.parse(
                 this,
                 DateTimeFormatter
-                    .ofPattern(DATE_PATTERN)
-                    .withLocale(Locale.ROOT)
+                    .ofPattern(PATTERN_DATE)
                     .withResolverStyle(ResolverStyle.STRICT)
-            )
+            ).toEpochDay()
         } catch (e: Exception) {
-            hasError = true
+            null
         }
-        return hasError
-    }
 
-    private fun String.isDateRangeIncorrect(): Boolean {
-        val checkYear = getYear()
-        return checkYear < DATE_YEAR_MIN || checkYear > Year.now().value
-    }
+    private fun Long.isDateRangeIncorrect() =
+        this > LocalDate.now().toEpochDay()
 
     private fun String.isNameRangeIncorrect() = length > NAME_MAX_LENGTH
 
@@ -133,9 +130,6 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
         const val NAME_DEFAULT = ""
         const val CURRENCY_DEFAULT = ""
         const val SUM_DEFAULT = 0.0
-
-        const val DATE_YEAR_MIN = 1992
-        const val DATE_PATTERN = "dd/MM/uuuu"
 
         const val NAME_MAX_LENGTH = 16
         const val SUM_MAX_LENGTH = 999999999999

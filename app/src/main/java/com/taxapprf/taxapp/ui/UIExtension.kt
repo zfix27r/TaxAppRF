@@ -12,13 +12,18 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+import com.taxapprf.data.PATTERN_CBR_DATE
 import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.floor
+
+const val PATTERN_DATE = "dd/MM/uuuu"
 
 fun CoordinatorLayout.showSnackBar(msg: Int) {
     val snack = Snackbar.make(this, msg, Snackbar.LENGTH_SHORT)
@@ -48,6 +53,11 @@ fun Activity.checkStoragePermission(): Boolean {
         false
     }
 }
+
+val formatter = DateTimeFormatter.ofPattern(PATTERN_CBR_DATE)
+
+fun Long.formatDate(): String =
+    LocalDate.ofEpochDay(this).format(formatter)
 
 fun Date.format(): String {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())

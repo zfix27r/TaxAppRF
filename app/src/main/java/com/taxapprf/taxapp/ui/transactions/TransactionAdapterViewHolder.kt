@@ -37,7 +37,7 @@ class TransactionAdapterViewHolder(
             }
         }
         binding.textViewTransactionsAdapterItemType.setText(_transaction.type.getTransactionName())
-        binding.textViewTransactionsAdapterItemDate.text = _transaction.date
+        binding.textViewTransactionsAdapterItemDate.text = _transaction.date.toString()
         binding.textViewTransactionsAdapterItemSum.text = _transaction.sum.toString()
         binding.textViewTransactionsAdapterItemCurrency.text = _transaction.currency
         binding.textViewTransactionsAdapterItemRateCbr.text = _transaction.rateCBRF.toString()
