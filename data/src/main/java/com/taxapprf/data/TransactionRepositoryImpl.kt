@@ -36,7 +36,9 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override suspend fun deleteTransactionStep1(deleteTransactionModel: DeleteTransactionModel) =
         with(deleteTransactionModel) {
+            println(deleteTransactionModel)
             localDao.getTransactionKeys(transactionId)?.let { transactionKeys ->
+                println(transactionKeys)
                 transactionKeys.transactionKey?.let { transactionKey ->
                     val deletedKey = LocalDeletedKeyEntity(
                         accountKey = transactionKeys.accountKey,

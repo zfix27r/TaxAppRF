@@ -23,7 +23,8 @@ class SaveTransactionUseCase @Inject constructor(
     }
 
     private fun SaveTransactionModel.toUpdateTaxModel(): UpdateTaxModel? {
-        val reportId = if (transactionId == null) newReportId else null
+        val reportId =
+            if (transactionId == null || reportId != newReportId) newReportId else reportId
         val transactionId = newTransactionId ?: return null
 
         return UpdateTaxModel(

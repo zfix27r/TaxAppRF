@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
@@ -200,8 +199,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun navToTransactionDelete(transactionModel: TransactionModel) {
         actionMode?.finish()
-        val bundle = bundleOf(DeleteDialogFragment.DELETE_TRANSACTION_ID to transactionModel.id)
-        findNavController().navigate(R.id.action_transactions_to_delete_dialog, bundle)
+        findNavController().navigate(
+            TransactionsFragmentDirections.actionTransactionsToDeleteDialog(
+                transactionModel.id
+            )
+        )
     }
 
     private fun navToTransactionDetail(transactionModel: TransactionModel) {

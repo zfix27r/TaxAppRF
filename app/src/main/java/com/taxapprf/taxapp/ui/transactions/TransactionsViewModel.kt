@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.tax.UpdateTaxUseCase
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.DeleteTransactionUseCase
 import com.taxapprf.domain.transaction.GetExcelToShareModel
@@ -11,9 +12,7 @@ import com.taxapprf.domain.transaction.GetExcelToShareUseCase
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
 import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
-import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.tax.UpdateTaxUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +45,6 @@ class TransactionsViewModel @Inject constructor(
             .onEach { success() }
             .flowOn(Dispatchers.IO)
 
-    var deleteTransaction: TransactionModel? = null
     lateinit var excelUri: Uri
 
     fun observeTransactions() =

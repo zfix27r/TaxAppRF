@@ -122,7 +122,11 @@
 
     <dialog
         android:id="@+id/delete_dialog"
-        android:name="com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment" />
+        android:name="com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment" >
+        <argument
+            android:name="transaction_id"
+            app:argType="integer" />
+    </dialog>
 
     <dialog
         android:id="@+id/transaction_detail"
