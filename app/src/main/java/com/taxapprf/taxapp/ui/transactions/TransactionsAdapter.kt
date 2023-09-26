@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
+import com.taxapprf.taxapp.ui.toDateFormat
+
 
 class TransactionsAdapter(
     private val callback: () -> TransactionsAdapterCallback,
@@ -23,6 +25,10 @@ class TransactionsAdapter(
         holder.bind(getItem(position))
     }
 
+    override fun submitList(list: List<TransactionModel>?) {
+        super.submitList(sortListByData(list))
+    }
+
     private class DiffCallback : DiffUtil.ItemCallback<TransactionModel>() {
         override fun areItemsTheSame(
             oldItem: TransactionModel,
@@ -33,5 +39,17 @@ class TransactionsAdapter(
             oldItem: TransactionModel,
             newItem: TransactionModel
         ) = oldItem == newItem
+    }
+
+    private fun sortListByData(list: List<TransactionModel>?):  List<TransactionModel>? {
+        list?.toMutableList()?.let {
+            it.sortWith { item1, item2 ->
+                val dateItem1 = item1.date.toDateFormat()
+                val dateItem2 = item2.date.toDateFormat()
+                dateItem1?.compareTo(dateItem2) ?: 0
+            }
+            return it
+        }
+        return list
     }
 }

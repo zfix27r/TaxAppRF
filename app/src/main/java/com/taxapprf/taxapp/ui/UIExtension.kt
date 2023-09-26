@@ -58,6 +58,11 @@ fun Date.format(): String {
     return dateFormat.format(this)
 }
 
+fun String.toDateFormat(): Date? {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return dateFormat.parse(this)
+}
+
 fun Double.format() = floor(this * 100.0) / 100.0
 
 fun Activity.share(uri: Uri) {
