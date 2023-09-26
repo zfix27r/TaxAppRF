@@ -12,14 +12,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
-import com.taxapprf.data.PATTERN_CBR_DATE
 import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.floor
 
@@ -54,17 +50,12 @@ fun Activity.checkStoragePermission(): Boolean {
     }
 }
 
-val formatter = DateTimeFormatter.ofPattern(PATTERN_CBR_DATE)
+val formatter = DateTimeFormatter.ofPattern(PATTERN_DATE)
 
 fun Long.formatDate(): String =
     LocalDate.ofEpochDay(this).format(formatter)
 
-fun Date.format(): String {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return dateFormat.format(this)
-}
-
-fun Double.format() = floor(this * 100.0) / 100.0
+fun Double.round() = floor(this * 100.0) / 100.0
 
 fun Activity.share(uri: Uri) {
     val emailIntent = Intent(Intent.ACTION_SEND)
@@ -74,14 +65,14 @@ fun Activity.share(uri: Uri) {
     startActivity(Intent.createChooser(emailIntent, "Send email..."))
 }
 
-fun String.getTransactionName() = when (this) {
-    TransactionType.COMMISSION.name -> R.string.transaction_type_commission
-    TransactionType.FUNDING_WITHDRAWAL.name -> R.string.transaction_type_funding_withdrawal
+fun Int.getTransactionName() = when (this) {
+    TransactionType.COMMISSION.k -> R.string.transaction_type_commission
+    TransactionType.FUNDING_WITHDRAWAL.k -> R.string.transaction_type_funding_withdrawal
     else -> R.string.transaction_type_trade
 }
 
 fun Activity.getTransactionType(typeName: String) = when (typeName) {
-    getString(R.string.transaction_type_commission) -> TransactionType.COMMISSION.name
-    getString(R.string.transaction_type_funding_withdrawal) -> TransactionType.FUNDING_WITHDRAWAL.name
-    else -> TransactionType.TRADE.name
+    getString(R.string.transaction_type_commission) -> TransactionType.COMMISSION.k
+    getString(R.string.transaction_type_funding_withdrawal) -> TransactionType.FUNDING_WITHDRAWAL.k
+    else -> TransactionType.TRADE.k
 }

@@ -3,7 +3,6 @@ package com.taxapprf.taxapp.ui.activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.currency.GetCBRRateUseCase
 import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.SwitchAccountUseCase
 import com.taxapprf.domain.report.ReportModel
@@ -11,6 +10,7 @@ import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.tax.UpdateTaxUseCase
 import com.taxapprf.domain.user.ObserveUserUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.taxapp.ui.BaseState
@@ -19,13 +19,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,22 +31,32 @@ class MainViewModel @Inject constructor(
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
-    private val getCBRRateUseCase: GetCBRRateUseCase,
+    private val updateTaxTransactionUseCase: UpdateTaxUseCase,
     syncAllUseCase: SyncAllUseCase
 ) : ViewModel() {
     private val _state = ActivityStateLiveData()
     val state: LiveData<BaseState> = _state
 
     var report: ReportModel? = null
+        get() {
+            val model = field
+            field = null
+            return model
+        }
     var transaction: TransactionModel? = null
+        get() {
+            val model = field
+            field = null
+            return model
+        }
 
     init {
-/*        viewModelScope.launch(Dispatchers.IO) {
-            val date = LocalDate.now().toEpochDay()
-            for (i in 0..900) {
-                getCBRRateUseCase.execute("USD", date - i)
-            }
-        }*/
+        /*        viewModelScope.launch(Dispatchers.IO) {
+                    val date = LocalDate.now().toEpochDay()
+                    for (i in 0..900) {
+                        getCBRRateUseCase.execute("USD", date - i)
+                    }
+                }*/
     }
 
     val userWithAccounts =
@@ -101,10 +108,7 @@ class MainViewModel @Inject constructor(
 
     fun saveTransaction(saveTransactionModel: SaveTransactionModel) =
         viewModelScope.launch(Dispatchers.IO) {
-            flow { emit(saveTransactionUseCase.execute(saveTransactionModel)) }
-                .onStart { _state.loading() }
-                .catch { _state.error(it) }
-                .collectLatest { _state.success() }
+            saveTransactionUseCase.execute(saveTransactionModel)
         }
 
     private fun <T> Flow<T>.showLoading() =

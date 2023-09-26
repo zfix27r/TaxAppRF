@@ -3,6 +3,7 @@ package com.taxapprf.taxapp.ui.reports
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.databinding.FragmentReportsAdapterItemBinding
+import com.taxapprf.taxapp.ui.round
 
 class ReportsAdapterViewHolder(
     private val binding: FragmentReportsAdapterItemBinding,
@@ -26,6 +27,6 @@ class ReportsAdapterViewHolder(
         _report = reportAdapterModel
 
         binding.textReportsAdapterItemYear.text = _report.name
-        binding.textReportsAdapterItemTax.text = _report.tax.toString()
+        binding.textReportsAdapterItemTax.text = _report.tax.round().toString()
     }
 }

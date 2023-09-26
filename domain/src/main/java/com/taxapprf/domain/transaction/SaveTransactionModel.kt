@@ -1,20 +1,19 @@
 package com.taxapprf.domain.transaction
 
 data class SaveTransactionModel(
-    val id: Int? = null,
+    val transactionId: Int? = null,
+    val reportId: Int? = null,
 
-    val accountKey: String,
-    val reportKey: String? = null,
-    val transactionKey: String? = null,
+    val accountId: Int,
+    val currencyId: Int,
 
-    val newReportKey: String,
-
-    val date: Long,
     val name: String,
-    val currencyCharCode: String,
-    val type: String,
+    val date: Long,
+    val type: Int,
     val sum: Double,
 
-    var tax: Double? = null,
-    var rateCBRF: Double? = null,
-)
+    val tax: Double? = null,
+) {
+    var newTransactionId: Int? = null
+    var newReportId: Int? = null
+}

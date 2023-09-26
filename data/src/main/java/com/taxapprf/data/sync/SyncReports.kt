@@ -5,6 +5,7 @@ import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 
+/*
 class SyncReports(
     private val localDao: LocalReportDao,
     private val remoteDao: RemoteReportDao,
@@ -48,4 +49,4 @@ class SyncReports(
 
     override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseReportModel?>) =
         remoteDao.updateAll(accountKey, remoteMap)
-}
+}*/

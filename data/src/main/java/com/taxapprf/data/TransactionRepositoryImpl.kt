@@ -2,10 +2,13 @@ package com.taxapprf.data
 
 import android.net.Uri
 import com.taxapprf.data.local.excel.ExcelDaoImpl
+import com.taxapprf.data.local.room.LocalDeletedKeyDao
 import com.taxapprf.data.local.room.LocalTransactionDao
+import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
-import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
+import com.taxapprf.data.local.room.model.GetTransactionWithCurrency
 import com.taxapprf.domain.TransactionRepository
+import com.taxapprf.domain.tax.UpdateTaxModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
 import com.taxapprf.domain.transaction.GetExcelToShareModel
 import com.taxapprf.domain.transaction.GetExcelToStorageModel
@@ -21,28 +24,47 @@ import javax.inject.Singleton
 @Singleton
 class TransactionRepositoryImpl @Inject constructor(
     private val localDao: LocalTransactionDao,
-    private val remoteDao: FirebaseTransactionDaoImpl,
+    private val deletedKeyDao: LocalDeletedKeyDao,
     private val excelDao: ExcelDaoImpl
 ) : TransactionRepository {
-    override fun observeAll(accountKey: String, reportKey: String) =
-        localDao.observeAll(accountKey, reportKey)
+    override fun observeAll(accountId: Int, reportId: Int) =
+        localDao.observeAll(accountId, reportId)
             .map { transitions -> transitions.map { it.toTransactionModel() } }
 
-    override suspend fun save(saveTransactionModel: SaveTransactionModel) {
-        with(saveTransactionModel) {
-            rateCBRF?.let {
-                if (it > 0) tax = (sum * it).roundUpToTwo()
+    override suspend fun save(saveTransactionModel: SaveTransactionModel) =
+        saveTransactionModel.toLocalTransactionEntity()?.let { localDao.save(it) }
+
+    override suspend fun deleteTransactionStep1(deleteTransactionModel: DeleteTransactionModel) =
+        with(deleteTransactionModel) {
+            localDao.getTransactionKeys(transactionId)?.let { transactionKeys ->
+                transactionKeys.transactionKey?.let { transactionKey ->
+                    val deletedKey = LocalDeletedKeyEntity(
+                        accountKey = transactionKeys.accountKey,
+                        reportKey = transactionKeys.reportKey,
+                        transactionKey = transactionKey,
+                        syncAt = transactionKeys.syncAt
+                    )
+                    deletedKeyDao.save(deletedKey)
+                }
+
+                localDao.delete(transactionId)
+                deleteTransactionModel.apply {
+                    transactionTax = transactionKeys.tax
+                }
+            } ?: run {
+                null
             }
-            localDao.save(toLocalTransactionEntity())
         }
-    }
 
-    override suspend fun delete(deleteTransactionModel: DeleteTransactionModel) {
-        localDao.deleteDeferred(deleteTransactionModel.id)
-    }
+    override suspend fun deleteAll(accountId: Int, reportId: Int) =
+        localDao.deleteAll(accountId, reportId)
 
-    override suspend fun deleteAll(accountKey: String, reportKey: String) {
-        localDao.deleteAllDeferred(accountKey, reportKey)
+    override suspend fun updateTax(updateTaxModel: UpdateTaxModel) {
+        with(updateTaxModel) {
+            tax?.let {
+                localDao.updateTax(transactionId, it)
+            }
+        }
     }
 
     override fun getExcelToShare(getExcelToShareModel: GetExcelToShareModel): Flow<Uri> =
@@ -57,30 +79,38 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override fun saveFromExcel(saveTransactionsFromExcelModel: SaveTransactionsFromExcelModel): Flow<Unit> =
         flow {
-            excelDao.saveExcel(saveTransactionsFromExcelModel)
-                .map { localDao.save(it) }
+/*            excelDao.saveExcel(saveTransactionsFromExcelModel)
+                .map { localDao.save(it) }*/
 
             emit(Unit)
         }
 
-    private fun SaveTransactionModel.toLocalTransactionEntity(
-        newRateCBRF: Double? = null,
-        newTax: Double? = null
-    ) =
-        LocalTransactionEntity(
-            id = id ?: 0,
-            accountKey = accountKey,
-            reportKey = newReportKey,
-            key = transactionKey ?: "",
+    private fun SaveTransactionModel.toLocalTransactionEntity(): LocalTransactionEntity? {
+        val transactionId = transactionId ?: LocalTransactionEntity.DEFAULT_ID
+        val reportId = newReportId ?: return null
+
+        return LocalTransactionEntity(
+            id = transactionId,
+            accountId = accountId,
+            reportId = reportId,
+            currencyId = currencyId,
             name = name,
             date = date,
             type = type,
-            currency = currencyCharCode,
-            rateCBRF = newRateCBRF ?: rateCBRF ?: 0.0,
-            sum = sum,
-            tax = newTax ?: tax ?: 0.0,
+            sum = sum
         )
+    }
 
-    private fun LocalTransactionEntity.toTransactionModel() =
-        TransactionModel(id, key, name, date, type, currency, rateCBRF, sum, tax)
+    private fun GetTransactionWithCurrency.toTransactionModel() =
+        TransactionModel(
+            id,
+            name,
+            date,
+            type,
+            sum,
+            tax,
+            currencyId,
+            currencyCharCode,
+            currencyRate
+        )
 }

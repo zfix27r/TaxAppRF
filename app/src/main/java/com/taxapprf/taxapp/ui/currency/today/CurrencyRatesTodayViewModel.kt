@@ -3,15 +3,11 @@ package com.taxapprf.taxapp.ui.currency.today
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.currency.CurrencyWithRateModel
-import com.taxapprf.domain.currency.GetCBRRatesUseCase
+import com.taxapprf.domain.cbr.CurrencyWithRateModel
+import com.taxapprf.domain.cbr.GetCBRRatesUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.taxapp.ui.format
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Calendar

@@ -8,6 +8,7 @@ import kotlin.math.abs
 class TransactionsAdapterTouchHelperCallback(
     private val callback: TransactionsAdapterCallback
 ) : ItemTouchHelper.Callback() {
+    private var viewHolder: RecyclerView.ViewHolder? = null
     override fun isItemViewSwipeEnabled(): Boolean {
         return true
     }
@@ -30,6 +31,7 @@ class TransactionsAdapterTouchHelperCallback(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        this.viewHolder = viewHolder
         val transaction = (viewHolder as TransactionAdapterViewHolder).transaction
         callback.onSwiped(transaction)
     }
@@ -53,6 +55,16 @@ class TransactionsAdapterTouchHelperCallback(
                 c, recyclerView, viewHolder, dX, dY,
                 actionState, isCurrentlyActive
             )
+        }
+    }
+
+    fun cancelSwipe() {
+        viewHolder?.let {
+            it.itemView
+                .animate()
+                .translationX(0f)
+                .alpha(1.0f)
+                .start()
         }
     }
 }

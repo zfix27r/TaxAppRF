@@ -5,6 +5,7 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 
+/*
 class SyncTransactions(
     private val localDao: LocalTransactionDao,
     private val remoteDao: RemoteTransactionDao,
@@ -64,4 +65,4 @@ class SyncTransactions(
 
     override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseTransactionModel?>) =
         remoteDao.updateAll(accountKey, reportKey, remoteMap)
-}
+}*/

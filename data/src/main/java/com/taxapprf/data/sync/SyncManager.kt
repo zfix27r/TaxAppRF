@@ -1,13 +1,22 @@
 package com.taxapprf.data.sync
 
+import com.taxapprf.data.getEpochTime
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 
+const val REMOTE_KEY = "remote_key"
 const val IS_SYNC = "is_sync"
 const val IS_DELETE = "is_delete"
 const val SYNC_AT = "sync_at"
 
+const val DEFAULT_KEY = ""
+const val DEFAULT_IS_SYNC = false
+const val DEFAULT_IS_DELETE = false
+val DEFAULT_SYNC_AT
+    get() = getEpochTime()
+
+/*
 abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
     protected abstract fun getLocalList(): List<Local>
     protected abstract fun saveLocalList(locals: List<Local>): List<Long>
@@ -44,11 +53,11 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
                     remote.toLocal(local)?.let { saveLocalList.add(it) }
                 } else if (!local.isSync) {
                     if (local.isDelete)
-                        updateRemoteList[local.key] = null
+                        updateRemoteList[local.remoteKey] = null
                     else
-                        updateRemoteList[local.key] = local.toRemote(remote)
+                        updateRemoteList[local.remoteKey] = local.toRemote(remote)
                 } else if (local.syncAt > remoteSyncAt)
-                    updateRemoteList[local.key] = local.toRemote(remote)
+                    updateRemoteList[local.remoteKey] = local.toRemote(remote)
 
                 locals.remove(remote.key)
             }
@@ -60,13 +69,13 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
             if (local.isSync || local.isDelete)
                 deleteLocalList.add(local)
             else {
-                if (local.key == "") {
+                if (local.remoteKey == "") {
                     local.updateRemoteKey()?.let {
                         saveLocalList.add(it)
-                        updateRemoteList[local.key] = it.toRemote()
+                        updateRemoteList[local.remoteKey] = it.toRemote()
                     }
                 } else
-                    updateRemoteList[local.key] = local.toRemote()
+                    updateRemoteList[local.remoteKey] = local.toRemote()
             }
         }
 
@@ -82,7 +91,7 @@ abstract class SyncManager<Local : SyncLocal, Remote : SyncRemote> {
 
     private fun List<Local>.toMapLocalList(): MutableMap<String, Local> {
         val mapLocalList = mutableMapOf<String, Local>()
-        map { mapLocalList.put(it.key, it) }
+        map { mapLocalList.put(it.remoteKey, it) }
         return mapLocalList
     }
-}
+}*/

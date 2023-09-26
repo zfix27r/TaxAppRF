@@ -26,8 +26,8 @@ class UserRepositoryImpl @Inject constructor(
         return userLocalDao.observe(email).map { userWithAccounts ->
             UserWithAccountsModel(
                 user = userWithAccounts.first().toUserModel(),
-                activeAccount = userWithAccounts.find { it.isActive }?.toAccountModel(),
-                otherAccounts = userWithAccounts.filter { !it.isActive }.map { it.toAccountModel() }
+                activeAccount = userWithAccounts.find { it.isAccountActive }?.toAccountModel(),
+                otherAccounts = userWithAccounts.filter { !it.isAccountActive }.map { it.toAccountModel() }
             )
         }
     }

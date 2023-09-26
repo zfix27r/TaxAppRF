@@ -15,10 +15,9 @@ import java.net.SocketTimeoutException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.floor
-
-const val PATTERN_CBR_DATE = "dd/MM/uuuu"
 
 inline fun <T> safeCall(call: () -> T): T {
     return try {
@@ -36,23 +35,6 @@ inline fun <T> safeCall(call: () -> T): T {
     }
 }
 
-fun Double.roundUpToTwo() = floor(this * 100.0) / 100.0
-
-fun updateTax(sum: Double, type: String, rateCBR: Double): Double {
-    var newSum = sum
-    val k = when (type) {
-        TransactionType.COMMISSION.name -> -1.0
-        TransactionType.FUNDING_WITHDRAWAL.name -> {
-            newSum = abs(sum)
-            0.0
-        }
-
-        else -> 1.0
-    }
-
-    val newTax = newSum * rateCBR * 0.13 * k
-    return newTax.roundUpToTwo()
-}
-
 fun getEpochDate() = LocalDate.now().toEpochDay()
 fun getEpochTime() = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+fun Long.getYear() = LocalDate.ofEpochDay(this).year.toString()

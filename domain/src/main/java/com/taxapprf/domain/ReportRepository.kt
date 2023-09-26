@@ -1,15 +1,15 @@
 package com.taxapprf.domain
 
 import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.tax.UpdateTaxModel
 import com.taxapprf.domain.transaction.DeleteTransactionModel
-import com.taxapprf.domain.transaction.SaveTransactionModel
 import kotlinx.coroutines.flow.Flow
 
 interface ReportRepository {
-    fun observe(accountKey: String, reportKey: String): Flow<ReportModel?>
-    fun observeAll(accountKey: String): Flow<List<ReportModel>>
-    suspend fun delete(id: Int)
-    suspend fun deleteAll(ids: List<Int>)
-    suspend fun updateAfterUpdateTransaction(saveTransactionModel: SaveTransactionModel)
-    suspend fun updateAfterUpdateTransaction(deleteTransactionModel: DeleteTransactionModel)
+    fun observe(reportId: Int): Flow<ReportModel?>
+    fun observeAll(accountId: Int): Flow<List<ReportModel>>
+    suspend fun deleteAll(accountId: Int): Int
+    suspend fun getReportId(accountId: Int, reportId: Int?, date: Long, transactionTax: Double?): Int
+    suspend fun updateTax(updateTaxModel: UpdateTaxModel)
+    suspend fun delete(deleteTransactionModel: DeleteTransactionModel)
 }

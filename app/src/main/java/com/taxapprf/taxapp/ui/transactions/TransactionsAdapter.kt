@@ -8,7 +8,7 @@ import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
 
 class TransactionsAdapter(
-    private val callback: () -> TransactionsAdapterCallback,
+    private val callback: TransactionsAdapterCallback,
 ) : ListAdapter<TransactionModel, TransactionAdapterViewHolder>(DiffCallback()) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -16,7 +16,7 @@ class TransactionsAdapter(
     ): TransactionAdapterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = FragmentTransactionsAdapterItemBinding.inflate(inflater, parent, false)
-        return TransactionAdapterViewHolder(binding, callback.invoke())
+        return TransactionAdapterViewHolder(binding, callback)
     }
 
     override fun onBindViewHolder(holder: TransactionAdapterViewHolder, position: Int) {

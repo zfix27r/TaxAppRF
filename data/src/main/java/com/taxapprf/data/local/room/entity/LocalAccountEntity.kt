@@ -5,8 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.taxapprf.data.getEpochTime
 import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.TABLE_NAME
-import com.taxapprf.data.sync.IS_DELETE
-import com.taxapprf.data.sync.IS_SYNC
+import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
 import com.taxapprf.data.sync.SyncLocal
 
@@ -14,21 +13,16 @@ import com.taxapprf.data.sync.SyncLocal
 data class LocalAccountEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = ID)
-    val id: Int,
+    val id: Int = DEFAULT_ID,
 
     @ColumnInfo(name = USER_ID)
     val userId: Int,
 
-    @ColumnInfo(name = ACCOUNT_KEY)
-    override val key: String = "",
-
     @ColumnInfo(name = IS_ACTIVE)
-    val isActive: Boolean = true,
+    val isActive: Boolean,
 
-    @ColumnInfo(name = IS_SYNC)
-    override val isSync: Boolean = false,
-    @ColumnInfo(name = IS_DELETE)
-    override val isDelete: Boolean = false,
+    @ColumnInfo(name = REMOTE_KEY)
+    override val remoteKey: String,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long = getEpochTime(),
 ) : SyncLocal {
@@ -38,7 +32,8 @@ data class LocalAccountEntity(
         const val ID = "id"
         const val USER_ID = "user_id"
 
-        const val ACCOUNT_KEY = "account_key"
         const val IS_ACTIVE = "is_active"
+
+        const val DEFAULT_ID = 0
     }
 }

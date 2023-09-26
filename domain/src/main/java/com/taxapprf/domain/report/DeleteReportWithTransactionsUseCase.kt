@@ -9,7 +9,7 @@ class DeleteReportWithTransactionsUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
     suspend fun execute(id: Int, accountKey: String, reportKey: String) {
-        reportRepository.delete(id)
-        transactionRepository.deleteAll(accountKey, reportKey)
+        //reportRepository.delete(id)
+        //transactionRepository.deleteAll(accountKey, reportKey)
     }
 }

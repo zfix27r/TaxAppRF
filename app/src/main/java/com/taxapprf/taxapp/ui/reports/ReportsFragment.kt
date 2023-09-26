@@ -74,7 +74,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun SavedStateHandle.observeDelete() {
-        getLiveData<Boolean>(DeleteDialogFragment.DELETE_ACCEPTED).observe(viewLifecycleOwner) {
+        getLiveData<Boolean>(DeleteDialogFragment.DELETE_TRANSACTION_ID).observe(viewLifecycleOwner) {
             if (it) viewModel.deleteReport()
             else {
                 viewModel.deleteReport = null

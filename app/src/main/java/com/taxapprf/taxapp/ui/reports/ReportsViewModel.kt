@@ -28,7 +28,7 @@ class ReportsViewModel @Inject constructor(
     var deleteReport: ReportModel? = null
 
     fun observeReports() =
-        getReportsUseCase.execute(account.name)
+        getReportsUseCase.execute(account.id)
             .onStart { start() }
             .catch { error(it) }
             .onEach { success() }

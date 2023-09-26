@@ -6,21 +6,25 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.taxapprf.data.local.room.entity.LocalCBRCurrencyEntity
 import com.taxapprf.data.local.room.entity.LocalCBRRateEntity
+import com.taxapprf.data.local.room.model.GetCachedLocalCBRCurrency
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalCBRDao {
-    @Query("SELECT char_code FROM cbr_currency")
-    fun getCurrencies(): List<String>
+    @Query("SELECT id, char_code FROM cbr_currency")
+    fun getCachedCurrencies(): List<GetCachedLocalCBRCurrency>
 
-    @Query(
-        "SELECT r.rate FROM cbr_currency c " +
-                "JOIN cbr_rate r ON r.date = :date " +
-                "WHERE c.char_code = :currencyCharCode"
-    )
-    fun getCurrencyRate(currencyCharCode: String, date: Long): Double?
+    @Query("SELECT rate FROM cbr_rate WHERE currency_id = :currencyId AND date = :date LIMIT 1")
+    fun getCurrencyRate(currencyId: Int, date: Long): Double?
+
+    @Query("SELECT * FROM cbr_currency")
+    fun getCurrencies(): Flow<List<LocalCBRCurrencyEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveCurrency(localCBRCurrencyEntity: LocalCBRCurrencyEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveRate(localCBRRateEntity: LocalCBRRateEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveRates(localCBRRateEntities: List<LocalCBRRateEntity>): List<Long>

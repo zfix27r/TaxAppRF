@@ -7,14 +7,20 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
 import com.taxapprf.taxapp.ui.formatDate
+import com.taxapprf.taxapp.ui.getTransactionName
 import com.taxapprf.taxapp.ui.getTransactionType
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 @AndroidEntryPoint
@@ -37,25 +43,31 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
 
     override fun onAuthReady() {
         super.onAuthReady()
-        viewModel.report = mainViewModel.report
-        viewModel.transaction = mainViewModel.transaction
-        viewModel.currency = resources.getString(R.string.transaction_currency_usd)
-
-        mainViewModel.report = null
-        mainViewModel.transaction = null
-
+        viewModel.setFromReportModel(mainViewModel.report)
+        viewModel.setFromTransactionModel(mainViewModel.transaction)
         updateUI()
     }
 
     private fun prepCurrencies() {
-        val currencies = resources.getStringArray(R.array.transaction_currencies)
-        currenciesAdapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencies)
-        currenciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerTransactionDetailCurrencies.adapter = currenciesAdapter
-        binding.spinnerTransactionDetailCurrencies.setSelection(
-            currencies.indexOf(resources.getString(R.string.transaction_currency_usd))
-        )
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currencies.collectLatest { currencies ->
+                    currencies?.let {
+                        val charCodes = it.map { it.charCode }
+
+                        currenciesAdapter =
+                            ArrayAdapter(
+                                requireContext(),
+                                android.R.layout.simple_spinner_item,
+                                charCodes
+                            )
+                        currenciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        binding.spinnerTransactionDetailCurrencies.adapter = currenciesAdapter
+                        binding.spinnerTransactionDetailCurrencies.setSelection(viewModel.currencyPosition)
+                    }
+                }
+            }
+        }
     }
 
     private fun prepTypes() {
@@ -63,9 +75,6 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
         typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, types)
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerTransactionDetailType.adapter = typeAdapter
-        binding.spinnerTransactionDetailType.setSelection(
-            types.indexOf(resources.getString(R.string.transaction_type_trade))
-        )
     }
 
     private fun prepListeners() {
@@ -91,7 +100,6 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
                     .updateEditError(editTextTransactionDetailSum)
 
                 if (updateNameResult && updateDateResult && updateSumResult) {
-                    // TODO переместить во вьюмодел фрагмента? Привязка к жизненному циклу. Запускать глобал флоу?
                     mainViewModel.saveTransaction(viewModel.getSaveTransactionModel())
                     findNavController().popBackStack()
                 }
@@ -123,9 +131,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
                     position: Int,
                     id: Long
                 ) {
-                    currenciesAdapter.getItem(position)?.let {
-                        viewModel.currency = it
-                    }
+                    viewModel.currencyId = position
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -142,7 +148,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
             binding.editTextTransactionDetailName.setText(name)
             updateDateText()
             updateSumText()
-            updateCurrency(currency)
+            updateCurrency()
             updateType(type)
         }
     }
@@ -156,14 +162,12 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
             binding.editTextTransactionDetailSum.setText(viewModel.sum.toString())
     }
 
-    private fun updateCurrency(currency: String) {
-        binding.spinnerTransactionDetailCurrencies.setSelection(
-            currenciesAdapter.getPosition(currency)
-        )
+    private fun updateCurrency() {
+        binding.spinnerTransactionDetailCurrencies.setSelection(viewModel.currencyPosition)
     }
 
-    private fun updateType(type: String) {
-        binding.spinnerTransactionDetailType.setSelection(typeAdapter.getPosition(type))
+    private fun updateType(type: Int) {
+        binding.spinnerTransactionDetailType.setSelection(typeAdapter.getPosition(getString(type.getTransactionName())))
     }
 
     private fun showDatePicker(listener: () -> DatePickerDialog.OnDateSetListener) {

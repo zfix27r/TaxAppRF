@@ -1,21 +1,15 @@
 package com.taxapprf.taxapp.ui.currency.converter
 
-import android.icu.util.LocaleData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.currency.CurrencyConverterModel
-import com.taxapprf.domain.currency.GetCBRRatesUseCase
+import com.taxapprf.domain.cbr.CurrencyConverterModel
+import com.taxapprf.domain.cbr.GetCBRRatesUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.taxapp.ui.format
+import com.taxapprf.taxapp.ui.round
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.Calendar
-import java.util.Locale
 import javax.inject.Inject
 
 
@@ -64,8 +58,8 @@ class CurrencyConverterViewModel @Inject constructor(
 
     private fun calculate() {
         with(converter) {
-            if (isModeSum) sumRub = (sum * rateCBR).format()
-            else sum = (sumRub / rateCBR).format()
+            if (isModeSum) sumRub = (sum * rateCBR).round()
+            else sum = (sumRub / rateCBR).round()
         }
     }
 }

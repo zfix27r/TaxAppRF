@@ -5,6 +5,7 @@ import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
 import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
 
+/*
 class SyncAccounts(
     private val localDao: LocalAccountDao,
     private val remoteDao: RemoteAccountDao,
@@ -25,7 +26,7 @@ class SyncAccounts(
         remoteDao.updateAll(remoteMap)
 
     override suspend fun LocalAccountEntity.updateRemoteKey() =
-        remoteDao.getKey()?.let { copy(key = it) }
+        remoteDao.getKey()?.let { copy(remoteKey = it) }
 
     override fun LocalAccountEntity.toRemote(remote: FirebaseAccountModel?) =
         FirebaseAccountModel(
@@ -41,11 +42,11 @@ class SyncAccounts(
         return LocalAccountEntity(
             id = 0,
             userId = 0,
-            key = key,
+            remoteKey = key,
             isActive = isActive,
             isSync = true,
             isDelete = false,
             syncAt = syncAt
         )
     }
-}
+}*/

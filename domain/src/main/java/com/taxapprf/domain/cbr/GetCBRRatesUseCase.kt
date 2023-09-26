@@ -1,4 +1,4 @@
-package com.taxapprf.domain.currency
+package com.taxapprf.domain.cbr
 
 import com.taxapprf.domain.CBRRepository
 import javax.inject.Inject

@@ -8,6 +8,7 @@ import androidx.room.Query
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.entity.LocalUserEntity
 import com.taxapprf.data.local.room.model.LocalUserWithAccounts
+import com.taxapprf.data.sync.REMOTE_KEY
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,7 +21,7 @@ interface LocalUserDao {
                 "u.phone ${LocalUserEntity.PHONE}, " +
                 "a.id ${LocalAccountEntity.ID}, " +
                 "a.user_id ${LocalAccountEntity.USER_ID}, " +
-                "a.account_key ${LocalAccountEntity.ACCOUNT_KEY}, " +
+                "a.remote_key $REMOTE_KEY, " +
                 "a.is_active ${LocalAccountEntity.IS_ACTIVE} " +
                 "FROM user u " +
                 "LEFT JOIN account a ON a.user_id = u.id " +

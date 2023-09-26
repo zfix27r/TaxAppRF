@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.taxapprf.domain.currency.CurrencyWithRateModel
+import com.taxapprf.domain.cbr.CurrencyWithRateModel
 import com.taxapprf.taxapp.databinding.FragmentRatesTodayAdapterItemBinding
 
 

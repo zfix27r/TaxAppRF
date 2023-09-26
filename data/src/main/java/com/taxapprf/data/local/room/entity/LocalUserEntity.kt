@@ -9,17 +9,17 @@ import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.TABLE_NAME
 data class LocalUserEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = ID)
-    val id: Int,
+    val id: Int = 0,
 
     @ColumnInfo(name = EMAIL)
-    val email: String?,
+    val email: String? = null,
 
     @ColumnInfo(name = AVATAR)
-    val avatar: String?,
+    val avatar: String? = null,
     @ColumnInfo(name = NAME)
-    val name: String?,
+    val name: String? = null,
     @ColumnInfo(name = PHONE)
-    val phone: String?,
+    val phone: String? = null,
 ) {
     companion object {
         const val TABLE_NAME = "user"

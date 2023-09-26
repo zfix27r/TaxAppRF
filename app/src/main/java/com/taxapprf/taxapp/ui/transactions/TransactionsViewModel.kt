@@ -13,7 +13,7 @@ import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.UpdateTaxTransactionUseCase
+import com.taxapprf.domain.tax.UpdateTaxUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,14 +33,14 @@ class TransactionsViewModel @Inject constructor(
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val getExcelToShareUseCase: GetExcelToShareUseCase,
     private val getExcelToStorageUseCase: GetExcelToStorageUseCase,
-    private val updateTaxTransactionUseCase: UpdateTaxTransactionUseCase,
+    private val updateTaxTransactionUseCase: UpdateTaxUseCase,
 ) : BaseViewModel() {
     lateinit var report: ReportModel
     private var transactions: List<TransactionModel>? = null
     private var isUpdateTaxRun = false
 
-    fun observeReport(reportKey: String) =
-        observeReportUseCase.execute(account.name, reportKey)
+    fun observeReport(reportId: Int) =
+        observeReportUseCase.execute(reportId)
             .onStart { start() }
             .catch { error(it) }
             .onEach { success() }
@@ -50,7 +50,7 @@ class TransactionsViewModel @Inject constructor(
     lateinit var excelUri: Uri
 
     fun observeTransactions() =
-        getTransactionsUseCase.execute(account.name, report.name)
+        getTransactionsUseCase.execute(account.id, report.id)
             .onStart { start() }
             .catch { error(it) }
             .onEach {
@@ -60,12 +60,9 @@ class TransactionsViewModel @Inject constructor(
             }
             .flowOn(Dispatchers.IO)
 
-    fun deleteTransaction() {
-        deleteTransactionModel?.let { deleteTransactionModel ->
-            viewModelScope.launch(Dispatchers.IO) {
-                deleteTransactionUseCase.execute(deleteTransactionModel)
-            }
-        }
+    fun deleteTransaction(transactionId: Int) = viewModelScope.launch(Dispatchers.IO) {
+        val deleteTransactionModel = DeleteTransactionModel(transactionId, report.id)
+        deleteTransactionUseCase.execute(deleteTransactionModel)
     }
 
     fun getExcelToStorage() = viewModelScope.launch(Dispatchers.IO) {
@@ -96,49 +93,33 @@ class TransactionsViewModel @Inject constructor(
         }
     }
 
-    private val deleteTransactionModel
-        get() = deleteTransaction?.let { transaction ->
-            val deleteModel = DeleteTransactionModel(
-                id = transaction.id,
-                accountKey = account.name,
-                reportKey = report.name,
-                transactionKey = transaction.transactionKey,
-                transactionTax = transaction.tax,
-                reportSize = report.size,
-                reportTax = report.tax
-            )
-
-            deleteTransaction = null
-            deleteModel
-        }
-
     private fun updateTax() {
-/*        if (!isUpdateTaxRun) {
-            isUpdateTaxRun = true
+        /*        if (!isUpdateTaxRun) {
+                    isUpdateTaxRun = true
 
-            viewModelScope.launch(Dispatchers.IO) {
-                transactions?.map { transaction ->
-                    if (transaction.rateCBRF == 0.0)
-                        updateTaxTransactionUseCase.execute(transaction.toSaveTransactionModel())
-                }
-                isUpdateTaxRun = false
-            }
-        }*/
+                    viewModelScope.launch(Dispatchers.IO) {
+                        transactions?.map { transaction ->
+                            if (transaction.rateCBRF == 0.0)
+                                updateTaxTransactionUseCase.execute(transaction.toSaveTransactionModel())
+                        }
+                        isUpdateTaxRun = false
+                    }
+                }*/
     }
 
-    private fun TransactionModel.toSaveTransactionModel() =
-        SaveTransactionModel(
-            id = id,
-            accountKey = account.name,
-            reportKey = report.name,
-            transactionKey = transactionKey,
-            newReportKey = report.name,
-            date = date,
-            name = name ?: "",
-            currencyCharCode = currency,
-            type = type,
-            sum = sum,
-            tax = tax,
-            rateCBRF = rateCBRF
-        )
+    /*    private fun TransactionModel.toSaveTransactionModel() =
+            SaveTransactionModel(
+                id = id,
+                accountKey = account.name,
+                reportKey = report.name,
+                transactionKey = transactionKey,
+                newReportKey = report.name,
+                date = date,
+                name = name ?: "",
+                currencyCharCode = currencyCharCode,
+                type = type,
+                sum = sum,
+                tax = tax,
+                rateCBRF = rateCBR
+            )*/
 }

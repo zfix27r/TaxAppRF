@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
@@ -23,6 +24,7 @@ import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
 import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
+import com.taxapprf.taxapp.ui.round
 import com.taxapprf.taxapp.ui.share
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -33,8 +35,42 @@ import kotlinx.coroutines.launch
 class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private val binding by viewBinding(FragmentTransactionsBinding::bind)
     private val viewModel by viewModels<TransactionsViewModel>()
-    private val adapter = TransactionsAdapter { transactionAdapterCallback }
-    lateinit var itemTouchHelper: ItemTouchHelper
+
+    private val transactionAdapterCallback = object : TransactionsAdapterCallback {
+        override fun onClick(transactionModel: TransactionModel) {
+            navToTransactionDetail(transactionModel)
+        }
+
+        override fun onClickMore(transactionModel: TransactionModel) {
+            showActionMode {
+                object : BaseActionModeCallback {
+                    override var menuInflater = requireActivity().menuInflater
+                    override var menuId = R.menu.transaction_action_menu
+
+                    override fun onActionItemClicked(
+                        mode: ActionMode?,
+                        item: MenuItem
+                    ) = when (item.itemId) {
+                        R.id.action_menu_delete -> {
+                            navToTransactionDelete(transactionModel)
+                            true
+                        }
+
+                        else -> false
+                    }
+                }
+            }
+        }
+
+        override fun onSwiped(transactionModel: TransactionModel) {
+            navToTransactionDelete(transactionModel)
+        }
+    }
+
+    private val adapter = TransactionsAdapter(transactionAdapterCallback)
+    private val transactionItemTouchHelper =
+        TransactionsAdapterTouchHelperCallback(transactionAdapterCallback)
+    private val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(transactionItemTouchHelper)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,10 +109,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun prepView() {
         binding.recyclerTransactions.adapter = adapter
-        itemTouchHelper =
-            ItemTouchHelper(TransactionsAdapterTouchHelperCallback(transactionAdapterCallback))
         itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
-
     }
 
     private fun prepListeners() {
@@ -87,9 +120,13 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun SavedStateHandle.observeDelete() {
-        getLiveData<Boolean>(DeleteDialogFragment.DELETE_ACCEPTED).observe(viewLifecycleOwner) {
-            if (it) viewModel.deleteTransaction()
-            else viewModel.deleteTransaction = null
+        getLiveData<Int?>(DeleteDialogFragment.DELETE_TRANSACTION_ID).observe(viewLifecycleOwner) { result ->
+            result?.let { viewModel.deleteTransaction(it) }
+                ?: run {
+                    transactionItemTouchHelper.cancelSwipe()
+                    itemTouchHelper.attachToRecyclerView(null)
+                    itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
+                }
         }
     }
 
@@ -102,7 +139,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(oldReportModel.name).collectLatest { report ->
+                    viewModel.observeReport(oldReportModel.id).collectLatest { report ->
                         report?.let {
                             viewModel.report = it
                             it.updateToolbar()
@@ -138,39 +175,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun ReportModel.updateToolbar() {
         val title = String.format(getString(R.string.transactions_title), name)
-        val subtitle = String.format(getString(R.string.transactions_subtitle), tax)
+        val subtitle = String.format(getString(R.string.transactions_subtitle), tax.round())
         toolbar.updateToolbar(title, subtitle)
-    }
-
-    private val transactionAdapterCallback = object : TransactionsAdapterCallback {
-        override fun onClick(transactionModel: TransactionModel) {
-            navToTransactionDetail(transactionModel)
-        }
-
-        override fun onClickMore(transactionModel: TransactionModel) {
-            showActionMode {
-                object : BaseActionModeCallback {
-                    override var menuInflater = requireActivity().menuInflater
-                    override var menuId = R.menu.transaction_action_menu
-
-                    override fun onActionItemClicked(
-                        mode: ActionMode?,
-                        item: MenuItem
-                    ) = when (item.itemId) {
-                        R.id.action_menu_delete -> {
-                            navToTransactionDelete(transactionModel)
-                            true
-                        }
-
-                        else -> false
-                    }
-                }
-            }
-        }
-
-        override fun onSwiped(transactionModel: TransactionModel) {
-            navToTransactionDelete(transactionModel)
-        }
     }
 
     private fun startIntentSendEmail() {
@@ -193,9 +199,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun navToTransactionDelete(transactionModel: TransactionModel) {
-        viewModel.deleteTransaction = transactionModel
         actionMode?.finish()
-        findNavController().navigate(R.id.action_transactions_to_delete_dialog)
+        val bundle = bundleOf(DeleteDialogFragment.DELETE_TRANSACTION_ID to transactionModel.id)
+        findNavController().navigate(R.id.action_transactions_to_delete_dialog, bundle)
     }
 
     private fun navToTransactionDetail(transactionModel: TransactionModel) {

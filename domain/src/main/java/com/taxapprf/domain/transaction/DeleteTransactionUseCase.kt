@@ -5,11 +5,11 @@ import com.taxapprf.domain.TransactionRepository
 import javax.inject.Inject
 
 class DeleteTransactionUseCase @Inject constructor(
+    private val transactionRepository: TransactionRepository,
     private val reportRepository: ReportRepository,
-    private val transactionRepository: TransactionRepository
 ) {
     suspend fun execute(deleteTransactionModel: DeleteTransactionModel) {
-        transactionRepository.delete(deleteTransactionModel)
-        reportRepository.updateAfterUpdateTransaction(deleteTransactionModel)
+        val step1result = transactionRepository.deleteTransactionStep1(deleteTransactionModel)
+        step1result?.let { reportRepository.delete(it) }
     }
 }

@@ -47,7 +47,7 @@ class ExcelParcel(private val saveExcelToFirebaseModel: SaveTransactionsFromExce
                 val date = row.getCell(2).parseDate()
 
 
-                val transaction = LocalTransactionEntity(
+/*                val transaction = LocalTransactionEntity(
                     id = 0,
                     accountKey = saveExcelToFirebaseModel.accountKey,
                     reportKey = date.split("/")[2],
@@ -63,7 +63,7 @@ class ExcelParcel(private val saveExcelToFirebaseModel: SaveTransactionsFromExce
                     isDelete = false,
                     syncAt = getEpochTime()
                 )
-                transactions.add(transaction)
+                transactions.add(transaction)*/
             }
 
         } catch (_: Exception) {

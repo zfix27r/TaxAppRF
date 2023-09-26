@@ -1,6 +1,10 @@
 package com.taxapprf.taxapp.ui.transactions.detail
 
 import android.text.Editable
+import androidx.lifecycle.viewModelScope
+import com.taxapprf.data.getEpochDate
+import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.DEFAULT_CURRENCY_ID
+import com.taxapprf.domain.cbr.GetCurrenciesUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
@@ -9,6 +13,10 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.PATTERN_DATE
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
@@ -16,35 +24,52 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
-    var report: ReportModel? = null
-    var transaction: TransactionModel? = null
+class TransactionDetailViewModel @Inject constructor(
+    getCurrenciesUseCase: GetCurrenciesUseCase
+) : BaseViewModel() {
+    private var transactionId: Int? = null
+    private var reportId: Int? = null
+    private var transactionTax: Double? = null
+
+    var name: String = ""
+    var date: Long = getEpochDate()
+    var type: Int = TransactionType.TRADE.k
+    var currencyId: Int = DEFAULT_CURRENCY_ID
         set(value) {
-            transactionKey = value?.transactionKey
-            name = value?.name ?: NAME_DEFAULT
-            date = value?.date ?: getCurrentDate()
-            type = value?.type ?: TransactionType.TRADE.name
-            currency = value?.currency ?: CURRENCY_DEFAULT
-            sum = value?.sum ?: SUM_DEFAULT
-            field = value
+            field = value + 1
         }
+    var sum: Double = 0.0
 
-    private var transactionKey: String? = null
-    var date: Long = getCurrentDate()
+    fun setFromReportModel(reportModel: ReportModel?) {
+        reportModel?.let {
+            reportId = it.id
+        }
+    }
 
-    var name: String = NAME_DEFAULT
+    fun setFromTransactionModel(transactionModel: TransactionModel?) {
+        transactionModel?.let { transaction ->
+            transactionId = transaction.id
+            transaction.tax?.let { transactionTax = it }
 
-    var currency: String = CURRENCY_DEFAULT
-    var type: String = TransactionType.TRADE.name
-    var sum: Double = SUM_DEFAULT
+            name = transaction.name ?: ""
+            date = transaction.date
+            type = transaction.type
+            currencyId = transaction.currencyId - 1
+            sum = transaction.sum
+        }
+    }
 
-    private val id
-        get() = transaction?.id
+    val currencies =
+        getCurrenciesUseCase.execute()
+            .flowOn(Dispatchers.IO)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                initialValue = null
+            )
 
-    private val tax
-        get() = transaction?.let { if (sum == it.sum) it.tax else null }
-    private val rateCBRF
-        get() = transaction?.let { if (sum == it.sum) it.rateCBRF else null }
+    val currencyPosition
+        get() = currencyId - 1
 
     fun checkName(cName: Editable?) = check {
         name = cName.toString()
@@ -78,22 +103,17 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
 
     fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
-            id = id,
-            accountKey = account.name,
-            reportKey = report?.name,
-            transactionKey = transaction?.transactionKey,
-            newReportKey = date.getYear(),
-            date = date,
+            transactionId = transactionId,
+            reportId = reportId,
+            accountId = account.id,
+            currencyId = currencyId,
             name = name,
-            currencyCharCode = currency,
+            date = date,
             type = type,
             sum = sum,
-            tax = tax,
-            rateCBRF = rateCBRF
+            tax = transactionTax,
         )
     }
-
-    private fun Long.getYear() = LocalDate.ofEpochDay(this).year.toString()
 
     private fun checkDate(cDate: String) =
         check {
@@ -107,14 +127,13 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
             }
         }
 
-    private fun getCurrentDate() = LocalDate.now().toEpochDay()
-
     private fun String.checkDateFormat() =
         try {
             LocalDate.parse(
                 this,
                 DateTimeFormatter
                     .ofPattern(PATTERN_DATE)
+                    .withLocale(Locale.ROOT)
                     .withResolverStyle(ResolverStyle.STRICT)
             ).toEpochDay()
         } catch (e: Exception) {
@@ -127,10 +146,6 @@ class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
     private fun String.isNameRangeIncorrect() = length > NAME_MAX_LENGTH
 
     companion object {
-        const val NAME_DEFAULT = ""
-        const val CURRENCY_DEFAULT = ""
-        const val SUM_DEFAULT = 0.0
-
         const val NAME_MAX_LENGTH = 16
         const val SUM_MAX_LENGTH = 999999999999
     }

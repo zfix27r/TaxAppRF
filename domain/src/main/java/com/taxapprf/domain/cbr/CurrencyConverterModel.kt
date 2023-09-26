@@ -1,4 +1,4 @@
-package com.taxapprf.domain.currency
+package com.taxapprf.domain.cbr
 
 data class CurrencyConverterModel(
     var sum: Double = DEFAULT_SUM,

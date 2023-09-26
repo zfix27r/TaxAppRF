@@ -5,10 +5,9 @@ import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
-import com.taxapprf.domain.NetworkManager
-import com.taxapprf.domain.currency.GetCBRRateUseCase
 import com.taxapprf.domain.user.SwitchAccountUseCase
-import com.taxapprf.domain.currency.GetCBRRatesUseCase
+import com.taxapprf.domain.cbr.GetCBRRatesUseCase
+import com.taxapprf.domain.cbr.GetCurrenciesUseCase
 import com.taxapprf.domain.report.DeleteReportWithTransactionsUseCase
 import com.taxapprf.domain.report.ObserveReportsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionsFromExcelUseCase
@@ -19,7 +18,7 @@ import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.transaction.GetExcelToShareUseCase
 import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
-import com.taxapprf.domain.transaction.UpdateTaxTransactionUseCase
+import com.taxapprf.domain.tax.UpdateTaxUseCase
 import com.taxapprf.domain.user.ObserveUserUseCase
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
@@ -32,6 +31,8 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 @InstallIn(ViewModelComponent::class)
 object DomainModule {
+
+
     @Provides
     fun provideSignInUseCase(userRepositoryImpl: UserRepositoryImpl) =
         SignInUseCase(userRepositoryImpl)
@@ -61,10 +62,6 @@ object DomainModule {
         GetCBRRatesUseCase(currencyRepositoryImpl)
 
     @Provides
-    fun provideGetCBRRateUseCase(currencyRepositoryImpl: CBRRepositoryImpl) =
-        GetCBRRateUseCase(currencyRepositoryImpl)
-
-    @Provides
     fun provideGetTransactionsUseCase(repositoryImpl: TransactionRepositoryImpl) =
         ObserveTransactionsUseCase(repositoryImpl)
 
@@ -72,21 +69,25 @@ object DomainModule {
     fun provideSaveTransactionUseCase(
         reportRepositoryImpl: ReportRepositoryImpl,
         transactionRepositoryImpl: TransactionRepositoryImpl,
+        updateTaxUseCase: UpdateTaxUseCase,
     ) =
         SaveTransactionUseCase(
             reportRepositoryImpl,
             transactionRepositoryImpl,
+            updateTaxUseCase
         )
 
     @Provides
+    fun provide(cbrRepositoryImpl: CBRRepositoryImpl) =
+        GetCurrenciesUseCase(cbrRepositoryImpl)
+
+    @Provides
     fun provideUpdateTaxTransactionUseCase(
-        networkManager: NetworkManager,
         reportRepositoryImpl: ReportRepositoryImpl,
         transactionRepositoryImpl: TransactionRepositoryImpl,
         currencyRepositoryImpl: CBRRepositoryImpl
     ) =
-        UpdateTaxTransactionUseCase(
-            networkManager,
+        UpdateTaxUseCase(
             reportRepositoryImpl,
             transactionRepositoryImpl,
             currencyRepositoryImpl
@@ -94,10 +95,10 @@ object DomainModule {
 
     @Provides
     fun provideDeleteTransactionUseCase(
+        transactionRepositoryImpl: TransactionRepositoryImpl,
         reportRepositoryImpl: ReportRepositoryImpl,
-        transactionRepositoryImpl: TransactionRepositoryImpl
     ) =
-        DeleteTransactionUseCase(reportRepositoryImpl, transactionRepositoryImpl)
+        DeleteTransactionUseCase(transactionRepositoryImpl, reportRepositoryImpl)
 
     @Provides
     fun provideObserveReportUseCase(repositoryImpl: ReportRepositoryImpl) =

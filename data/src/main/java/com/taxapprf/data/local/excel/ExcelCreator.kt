@@ -123,18 +123,18 @@ class ExcelCreator(
             row = sheet.createRow(rownum)
             cell = row.createCell(0, CellType.STRING)
             cell.setCellValue(transaction.name)
-            cell = row.createCell(1, CellType.STRING)
-            cell.setCellValue(transaction.type)
+            cell = row.createCell(1, CellType.NUMERIC)
+            //cell.setCellValue(transaction.type)
             cell = row.createCell(2, CellType.STRING)
             cell.setCellValue(transaction.date.toString())
             cell = row.createCell(3, CellType.NUMERIC)
             cell.setCellValue(transaction.sum)
             cell = row.createCell(4, CellType.STRING)
-            cell.setCellValue(transaction.currency)
+            cell.setCellValue(transaction.currencyCharCode)
             cell = row.createCell(5, CellType.NUMERIC)
-            cell.setCellValue(transaction.rateCBRF)
+            //cell.setCellValue(transaction.currencyRate)
             cell = row.createCell(6, CellType.NUMERIC)
-            cell.setCellValue(transaction.tax)
+            //cell.setCellValue(transaction.tax)
         }
     }
 }
