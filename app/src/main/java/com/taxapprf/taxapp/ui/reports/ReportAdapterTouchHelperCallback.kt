@@ -3,17 +3,19 @@ package com.taxapprf.taxapp.ui.reports
 import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import kotlin.math.abs
 
 class ReportAdapterTouchHelperCallback(private val callback: ReportsAdapterCallback) :
     ItemTouchHelper.Callback() {
+    private var viewHolder: ViewHolder? = null
     override fun isItemViewSwipeEnabled(): Boolean {
         return true
     }
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder
+        viewHolder: ViewHolder
     ): Int {
         val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
 
@@ -22,13 +24,14 @@ class ReportAdapterTouchHelperCallback(private val callback: ReportsAdapterCallb
 
     override fun onMove(
         recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
+        viewHolder: ViewHolder,
+        target: ViewHolder
     ): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+    override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
+        this.viewHolder = viewHolder
         val report = (viewHolder as ReportsAdapterViewHolder).report
         callback.onSwiped(report)
     }
@@ -36,7 +39,7 @@ class ReportAdapterTouchHelperCallback(private val callback: ReportsAdapterCallb
     override fun onChildDraw(
         c: Canvas,
         recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
+        viewHolder: ViewHolder,
         dX: Float,
         dY: Float,
         actionState: Int,
@@ -52,6 +55,16 @@ class ReportAdapterTouchHelperCallback(private val callback: ReportsAdapterCallb
                 c, recyclerView, viewHolder, dX, dY,
                 actionState, isCurrentlyActive
             )
+        }
+    }
+
+    fun cancelSwipe() {
+        viewHolder?.let {
+            it.itemView
+                .animate()
+                .translationX(0f)
+                .alpha(1.0f)
+                .start()
         }
     }
 }

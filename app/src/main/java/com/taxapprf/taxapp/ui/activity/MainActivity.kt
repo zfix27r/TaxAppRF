@@ -36,6 +36,7 @@ import com.taxapprf.taxapp.ui.SignOut
 import com.taxapprf.taxapp.ui.Success
 import com.taxapprf.taxapp.ui.drawer.DrawerCallback
 import com.taxapprf.taxapp.ui.showSnackBar
+import com.taxapprf.taxapp.ui.state
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         )
         setupWithNavController(binding.navView, navController)
 
-        viewModel.observeState()
+        observeState()
         viewModel.observeUser()
         navController.observeCurrentBackStack()
     }
@@ -112,11 +113,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun Int.showError() {
-        binding.appBarMain.content.loadingErrorGroup.isVisible = true
-        binding.appBarMain.content.loadingErrorMessage.text = getString(this)
-    }
-
     private fun Int.showErrorInShackBar() {
         binding.appBarMain.root.showSnackBar(this)
     }
@@ -141,7 +137,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         R.id.transactions,
     )
 
-    private fun MainViewModel.observeState() {
+    private fun observeState() {
         state.observe(this@MainActivity) {
             when (it) {
                 is Loading -> onLoadingStart()

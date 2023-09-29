@@ -7,7 +7,6 @@ import com.taxapprf.data.remote.cbr.RemoteCBRDao
 import com.taxapprf.data.remote.cbr.entity.RemoteValCursEntity
 import com.taxapprf.data.remote.cbr.entity.RemoteValuteEntity
 import com.taxapprf.domain.CBRRepository
-import com.taxapprf.domain.NetworkManager
 import com.taxapprf.domain.cbr.CurrencyModel
 import com.taxapprf.domain.cbr.CurrencyWithRateModel
 import kotlinx.coroutines.flow.map

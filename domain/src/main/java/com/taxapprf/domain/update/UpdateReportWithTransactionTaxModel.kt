@@ -1,6 +1,6 @@
-package com.taxapprf.domain.tax
+package com.taxapprf.domain.update
 
-data class UpdateTaxModel(
+data class UpdateReportWithTransactionTaxModel(
     val reportId: Int?,
     val transactionId: Int,
 

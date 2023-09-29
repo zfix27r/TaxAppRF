@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
@@ -24,7 +25,6 @@ import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
 import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
 import com.taxapprf.taxapp.ui.round
-import com.taxapprf.taxapp.ui.share
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -35,41 +35,25 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private val binding by viewBinding(FragmentTransactionsBinding::bind)
     private val viewModel by viewModels<TransactionsViewModel>()
 
-    private val transactionAdapterCallback = object : TransactionsAdapterCallback {
-        override fun onClick(transactionModel: TransactionModel) {
-            navToTransactionDetail(transactionModel)
-        }
+    private val transactionAdapterCallback =
+        object : TransactionsAdapterCallback {
+            override fun onItemClick(transactionModel: TransactionModel) {
+                navToTransactionDetail(transactionModel)
+            }
 
-        override fun onClickMore(transactionModel: TransactionModel) {
-            showActionMode {
-                object : BaseActionModeCallback {
-                    override var menuInflater = requireActivity().menuInflater
-                    override var menuId = R.menu.transaction_action_menu
+            override fun onMoreClick(transactionModel: TransactionModel) {
+                onShowMoreClick(transactionModel)
+            }
 
-                    override fun onActionItemClicked(
-                        mode: ActionMode?,
-                        item: MenuItem
-                    ) = when (item.itemId) {
-                        R.id.action_menu_delete -> {
-                            navToTransactionDelete(transactionModel)
-                            true
-                        }
-
-                        else -> false
-                    }
-                }
+            override fun onSwiped(transactionModel: TransactionModel) {
+                navToTransactionDelete(transactionModel)
             }
         }
 
-        override fun onSwiped(transactionModel: TransactionModel) {
-            navToTransactionDelete(transactionModel)
-        }
-    }
-
     private val adapter = TransactionsAdapter(transactionAdapterCallback)
-    private val transactionItemTouchHelper =
+    private val transactionTouchHelper =
         TransactionsAdapterTouchHelperCallback(transactionAdapterCallback)
-    private val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(transactionItemTouchHelper)
+    private val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(transactionTouchHelper)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -86,18 +70,12 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         toolbar.updateMenu(R.menu.transactions_toolbar) { menuItem ->
             when (menuItem.itemId) {
                 R.id.toolbar_share_excel -> {
-                    if (requireActivity().checkStoragePermission()) {
-                        viewModel.getExcelToShare()
-                    }
-
+                    shareExcel()
                     true
                 }
 
                 R.id.toolbar_export_excel -> {
-                    if (requireActivity().checkStoragePermission()) {
-                        viewModel.getExcelToStorage()
-                    }
-
+                    exportExcel()
                     true
                 }
 
@@ -112,17 +90,14 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun prepListeners() {
-        fab.setOnClickListener {
-            mainViewModel.report = viewModel.report
-            findNavController().navigate(R.id.action_transactions_to_transaction_detail)
-        }
+        fab.setOnClickListener { navToTransactionDetail() }
     }
 
     private fun SavedStateHandle.observeDelete() {
-        getLiveData<Int?>(DeleteDialogFragment.DELETE_TRANSACTION_ID).observe(viewLifecycleOwner) { result ->
+        getLiveData<Int?>(DeleteDialogFragment.DELETE_ID).observe(viewLifecycleOwner) { result ->
             result?.let { viewModel.deleteTransaction(it) }
                 ?: run {
-                    transactionItemTouchHelper.cancelSwipe()
+                    transactionTouchHelper.cancelSwipe()
                     itemTouchHelper.attachToRecyclerView(null)
                     itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
                 }
@@ -132,39 +107,33 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     override fun onAuthReady() {
         super.onAuthReady()
 
-        mainViewModel.report?.let { oldReportModel ->
-            viewModel.report = oldReportModel
-            mainViewModel.report = null
-
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(oldReportModel.id).collectLatest { report ->
-                        report?.let {
-                            viewModel.report = it
-                            it.updateToolbar()
-                        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.observeReport()?.let { flow ->
+                    flow.collectLatest { report ->
+                        report?.updateToolbar()
                     }
-                }
+                } ?: findNavController().popBackStack()
             }
+        }
 
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeTransactions().collectLatest { transactions ->
-                        adapter.submitList(transactions)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.observeTransactions()?.let { flow ->
+                    flow.collectLatest { transactions ->
+                        transactions?.let {
+                            if (transactions.isNotEmpty()) adapter.submitList(transactions)
+                            else findNavController().popBackStack()
+                        }
                     }
                 }
             }
         }
     }
 
-    override fun onSuccessShare() {
-        super.onSuccessShare()
-        startIntentSendEmail()
-    }
-
-    override fun onSuccessImport() {
-        super.onSuccessImport()
-        launchSaveExcelToStorageIntent(viewModel.excelUri)
+    override fun onSuccessImport(uri: Uri) {
+        super.onSuccessImport(uri)
+        launchImportExcelIntent(uri)
     }
 
     override fun onSuccessDelete() {
@@ -178,21 +147,58 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         toolbar.updateToolbar(title, subtitle)
     }
 
-    private fun startIntentSendEmail() {
-        requireActivity().share(viewModel.excelUri)
+    private val transactionTypes
+        get() = mapOf(
+            TransactionType.TRADE.k to getString(R.string.transaction_type_trade),
+            TransactionType.FUNDING_WITHDRAWAL.k to getString(R.string.transaction_type_funding_withdrawal),
+            TransactionType.COMMISSION.k to getString(R.string.transaction_type_commission),
+        )
+
+    private fun shareExcel() {
+        if (requireActivity().checkStoragePermission()) {
+            viewModel.shareReport(transactionTypes)
+        }
     }
 
-    private val importExcelToStorageIntent =
+    private fun exportExcel() {
+        if (requireActivity().checkStoragePermission()) {
+            viewModel.exportReport(transactionTypes)
+        }
+    }
+
+    private val importExcelIntent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
 
         }
 
-    private fun launchSaveExcelToStorageIntent(uri: Uri) {
-        with(requireActivity()) {
-            if (checkStoragePermission()) {
-                val intent = Intent(Intent.ACTION_VIEW, uri)
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                importExcelToStorageIntent.launch(intent)
+    private fun launchImportExcelIntent(uri: Uri) {
+        if (fragment.requireActivity().checkStoragePermission()) {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.action = Intent.ACTION_VIEW
+            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            intent.type = "application/vnd.ms-excel"
+            intent.setDataAndType(uri, "application/vnd.ms-excel")
+            importExcelIntent.launch(intent)
+        }
+    }
+
+    private fun onShowMoreClick(transactionModel: TransactionModel) {
+        showActionMode {
+            object : BaseActionModeCallback {
+                override var menuInflater = requireActivity().menuInflater
+                override var menuId = R.menu.transaction_action_menu
+
+                override fun onActionItemClicked(
+                    mode: ActionMode?,
+                    item: MenuItem
+                ) = when (item.itemId) {
+                    R.id.action_menu_delete -> {
+                        navToTransactionDelete(transactionModel)
+                        true
+                    }
+
+                    else -> false
+                }
             }
         }
     }
@@ -206,9 +212,14 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         )
     }
 
-    private fun navToTransactionDetail(transactionModel: TransactionModel) {
-        mainViewModel.report = viewModel.report
-        mainViewModel.transaction = transactionModel
-        findNavController().navigate(R.id.action_transactions_to_transaction_detail)
+    private fun navToTransactionDetail(transactionModel: TransactionModel? = null) {
+        viewModel.reportId?.let {
+            findNavController().navigate(
+                TransactionsFragmentDirections.actionTransactionsToTransactionDetail(
+                    reportId = it,
+                    transactionId = transactionModel?.id ?: 0
+                )
+            )
+        }
     }
 }

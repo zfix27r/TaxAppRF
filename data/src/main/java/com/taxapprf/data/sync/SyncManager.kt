@@ -13,6 +13,11 @@ const val SYNC_AT = "sync_at"
 const val DEFAULT_KEY = ""
 const val DEFAULT_IS_SYNC = false
 const val DEFAULT_IS_DELETE = false
+
+const val ACCOUNT_KEY = "account_key"
+const val REPORT_KEY = "report_key"
+const val TRANSACTION_KEY = "transaction_key"
+
 val DEFAULT_SYNC_AT
     get() = getEpochTime()
 

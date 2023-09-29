@@ -1,4 +1,4 @@
-package com.taxapprf.domain
+package com.taxapprf.data
 
 import android.net.ConnectivityManager
 import android.net.Network

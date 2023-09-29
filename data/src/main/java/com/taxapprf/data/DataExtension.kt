@@ -10,14 +10,15 @@ import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
-import com.taxapprf.domain.transaction.TransactionType
 import java.net.SocketTimeoutException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import kotlin.math.abs
-import kotlin.math.floor
+
+
+const val ACCOUNT_ID = "account_id"
+const val REPORT_ID = "report_id"
+const val TRANSACTION_ID = "transaction_id"
 
 inline fun <T> safeCall(call: () -> T): T {
     return try {

@@ -37,28 +37,28 @@ class SignUpViewModel @Inject constructor(
             }
         }
     }
-    fun checkEmail(cEmail: Editable?) = check {
+    fun checkEmail(cEmail: Editable?): Int? {
         email = cEmail.toString()
-        if (email.isEmpty()) R.string.error_email_empty
+        return if (email.isEmpty()) R.string.error_email_empty
         else if (email.isEmailIncorrect()) R.string.error_email_incorrect
         else null
     }
 
-    fun checkName(cName: Editable?) = check {
+    fun checkName(cName: Editable?): Int? {
         name = cName.toString()
-        if (name.isErrorNameRange()) R.string.error_name_range
+        return if (name.isErrorNameRange()) R.string.error_name_range
         else null
     }
 
-    fun checkPhone(cPhone: Editable?) = check {
+    fun checkPhone(cPhone: Editable?): Int? {
         phone = cPhone.toString()
-        if (phone.isEmpty()) R.string.error_phone_empty
+        return if (phone.isEmpty()) R.string.error_phone_empty
         else null
     }
 
-    fun checkPassword(cPassword: Editable?) = check {
+    fun checkPassword(cPassword: Editable?): Int? {
         password = cPassword.toString()
-        if (password.isErrorPasswordRange()) R.string.error_password_length
+        return if (password.isErrorPasswordRange()) R.string.error_password_length
         else null
     }
 

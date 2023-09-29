@@ -1,6 +1,5 @@
 package com.taxapprf.data
 
-import com.taxapprf.domain.NetworkManager
 import com.taxapprf.domain.SyncRepository
 import javax.inject.Inject
 

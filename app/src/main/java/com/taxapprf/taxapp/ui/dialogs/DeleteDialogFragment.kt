@@ -27,11 +27,11 @@ class DeleteDialogFragment : DialogFragment() {
             .create()
 
     private fun popBackStack(isPositive: Boolean = false) {
-        prevStackSavedState[DELETE_TRANSACTION_ID] = if (isPositive) args.transactionId else null
+        prevStackSavedState[DELETE_ID] = if (isPositive) args.deleteId else null
         findNavController().popBackStack()
     }
 
     companion object {
-        const val DELETE_TRANSACTION_ID = "delete_transaction_id"
+        const val DELETE_ID = "delete_id"
     }
 }

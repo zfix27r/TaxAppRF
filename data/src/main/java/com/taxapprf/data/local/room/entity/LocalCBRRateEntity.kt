@@ -23,7 +23,5 @@ data class LocalCBRRateEntity(
 
         const val DATE = "date"
         const val RATE = "rate"
-
-        const val DEFAULT_CURRENCY_ID = 14
     }
 }

@@ -1,5 +1,7 @@
 package com.taxapprf.taxapp.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -8,12 +10,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.textfield.TextInputEditText
+import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-interface BaseFragmentInterface {
+interface IBaseFragment {
     val mainActivity: MainActivity
     val mainViewModel: MainViewModel
     val fragment: Fragment
@@ -60,8 +63,8 @@ interface BaseFragmentInterface {
                 is Error -> onError(it.t)
                 is Success -> onSuccess()
                 is SignOut -> mainViewModel.signOut()
-                is SuccessShare -> onSuccessShare()
-                is SuccessImport -> onSuccessImport()
+                is SuccessShare -> onSuccessShare(it.uri)
+                is SuccessImport -> onSuccessImport(it.uri)
                 is SuccessDelete -> onSuccessDelete()
             }
         }
@@ -87,11 +90,22 @@ interface BaseFragmentInterface {
         mainActivity.onLoadingSuccess()
     }
 
-    fun onSuccessShare() {
+    fun onSuccessShare(uri: Uri) {
         mainActivity.onLoadingSuccess()
+
+        val emailIntent = Intent(Intent.ACTION_SEND)
+        emailIntent.type = "vnd.android.cursor.dir/email"
+        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, fragment.getString(R.string.share_message_name))
+        fragment.startActivity(
+            Intent.createChooser(
+                emailIntent,
+                fragment.getString(R.string.share_message_description)
+            )
+        )
     }
 
-    fun onSuccessImport() {
+    fun onSuccessImport(uri: Uri) {
         mainActivity.onLoadingSuccess()
     }
 

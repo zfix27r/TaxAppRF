@@ -15,11 +15,11 @@ class ReportsAdapterViewHolder(
 
     init {
         binding.root.setOnClickListener {
-            callback.onClick(_report)
+            callback.onItemClick(_report)
         }
 
         binding.buttonReportsAdapterItemMore.setOnClickListener {
-            callback.onClickMore(_report)
+            callback.onMoreClick(_report)
         }
     }
 

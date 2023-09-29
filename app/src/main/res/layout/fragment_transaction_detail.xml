@@ -99,7 +99,6 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/min_view_size"
         android:layout_marginEnd="@dimen/offset_16"
-        android:entries="@array/transaction_currencies"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_input_layout_email_sum"
         app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_email_sum"/>

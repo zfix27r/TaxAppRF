@@ -118,13 +118,16 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="report_id"
+            app:argType="integer" />
     </fragment>
 
     <dialog
         android:id="@+id/delete_dialog"
         android:name="com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment" >
         <argument
-            android:name="transaction_id"
+            android:name="delete_id"
             app:argType="integer" />
     </dialog>
 
@@ -132,7 +135,16 @@
         android:id="@+id/transaction_detail"
         android:name="com.taxapprf.taxapp.ui.transactions.detail.TransactionDetailFragment"
         android:label="@string/menuTransactionDetail"
-        tools:layout="@layout/fragment_transaction_detail" />
+        tools:layout="@layout/fragment_transaction_detail" >
+        <argument
+            android:name="report_id"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="transaction_id"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </dialog>
 
     <fragment
         android:id="@+id/currency_rates_today"

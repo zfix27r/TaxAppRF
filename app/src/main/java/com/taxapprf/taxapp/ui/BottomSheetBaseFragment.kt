@@ -7,7 +7,7 @@ import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
 
 open class BottomSheetBaseFragment(layoutId: Int) : BottomSheetDialogFragment(layoutId),
-    BaseFragmentInterface {
+    IBaseFragment {
     override val mainActivity
         get() = requireActivity() as MainActivity
     override val mainViewModel by activityViewModels<MainViewModel>()

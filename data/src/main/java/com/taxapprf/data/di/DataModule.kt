@@ -3,7 +3,7 @@ package com.taxapprf.data.di
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.room.Room
-import com.taxapprf.domain.NetworkManager
+import com.taxapprf.data.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.remote.cbr.RemoteCBRDao
 import com.taxapprf.data.remote.firebase.FirebaseAPI
@@ -64,25 +64,25 @@ object DataModule {
     fun provideDeletedKeyDao(db: LocalDatabase) =
         db.deletedKeyDao()
 
-    @Provides
     @Singleton
+    @Provides
     fun provideConnectivityManager(@ApplicationContext context: Context) =
         context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
 
-    @Provides
     @Singleton
+    @Provides
     fun provideNetworkManager(connectivityManager: ConnectivityManager) =
         NetworkManager(connectivityManager)
 
-    @Provides
     @Singleton
+    @Provides
     fun provideHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
             .retryOnConnectionFailure(false)
             .build()
 
-    @Provides
     @Singleton
+    @Provides
     fun provideRetrofit(httpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .baseUrl("https://www.cbr.ru/scripts/")
@@ -90,11 +90,10 @@ object DataModule {
             .addConverterFactory(SimpleXmlConverterFactory.create())
             .build()
 
-    @Provides
     @Singleton
-    fun provideCBRAPI(retrofit: Retrofit): RemoteCBRDao {
-        return retrofit.create(RemoteCBRDao::class.java)
-    }
+    @Provides
+    fun provideRemoteCBRDao(retrofit: Retrofit): RemoteCBRDao =
+        retrofit.create(RemoteCBRDao::class.java)
 
     @Singleton
     @Provides

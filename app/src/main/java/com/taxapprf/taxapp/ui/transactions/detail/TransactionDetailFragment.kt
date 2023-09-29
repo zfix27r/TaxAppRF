@@ -1,6 +1,7 @@
 package com.taxapprf.taxapp.ui.transactions.detail
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -12,12 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.taxapprf.domain.cbr.CurrencyModel
+import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
-import com.taxapprf.taxapp.ui.formatDate
-import com.taxapprf.taxapp.ui.getTransactionName
-import com.taxapprf.taxapp.ui.getTransactionType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -31,48 +32,81 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
     private lateinit var currenciesAdapter: ArrayAdapter<String>
     private lateinit var typeAdapter: ArrayAdapter<String>
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+
+        dialog.setOnShowListener {
+            dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+                ?.let {
+                    val behavior = BottomSheetBehavior.from(it)
+                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+        }
+
+        return dialog
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.attachWithAccount()
-
-        prepCurrencies()
         prepTypes()
         prepListeners()
     }
 
     override fun onAuthReady() {
         super.onAuthReady()
-        viewModel.setFromReportModel(mainViewModel.report)
-        viewModel.setFromTransactionModel(mainViewModel.transaction)
-        updateUI()
-    }
 
-    private fun prepCurrencies() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.currencies.collectLatest { currencies ->
-                    currencies?.let {
-                        val charCodes = it.map { it.charCode }
-
-                        currenciesAdapter =
-                            ArrayAdapter(
-                                requireContext(),
-                                android.R.layout.simple_spinner_item,
-                                charCodes
-                            )
-                        currenciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                        binding.spinnerTransactionDetailCurrencies.adapter = currenciesAdapter
-                        binding.spinnerTransactionDetailCurrencies.setSelection(viewModel.currencyPosition)
-                    }
+                    currencies?.prepCurrencies()
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.transaction?.collectLatest {
+                    updateUI()
+                } ?: updateUI()
+            }
+        }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.report?.collectLatest { updateUI() }
             }
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.name = binding.editTextTransactionDetailName.text.toString()
+        viewModel.date = binding.editTextTransactionDetailDate.text.toString()
+        viewModel.sum = binding.editTextTransactionDetailSum.text.toString()
+    }
+
+    private fun List<CurrencyModel>.prepCurrencies() {
+        val charCodes = map { it.charCode }
+
+        currenciesAdapter =
+            ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                charCodes
+            )
+        currenciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerTransactionDetailCurrencies.adapter = currenciesAdapter
+        binding.spinnerTransactionDetailCurrencies.setSelection(
+            currenciesAdapter.getPosition(viewModel.currency)
+        )
+    }
+
     private fun prepTypes() {
-        val types = resources.getStringArray(R.array.transaction_types)
-        typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, types)
+        val transactionTypes = resources.getStringArray(R.array.transaction_types)
+        typeAdapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, transactionTypes)
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerTransactionDetailType.adapter = typeAdapter
     }
@@ -89,19 +123,22 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
 
         binding.buttonTransactionDetailSave.setOnClickListener {
             with(binding) {
-                val updateNameResult = viewModel
-                    .checkName(editTextTransactionDetailName.text)
+                viewModel.name = binding.editTextTransactionDetailName.text.toString()
+                viewModel.date = binding.editTextTransactionDetailDate.text.toString()
+                viewModel.sum = binding.editTextTransactionDetailSum.text.toString()
+
+                val updateNameResult = viewModel.checkName()
                     .updateEditError(editTextTransactionDetailName)
-                val updateDateResult = viewModel
-                    .checkDate(editTextTransactionDetailDate.text)
+                val updateDateResult = viewModel.checkDate()
                     .updateEditError(editTextTransactionDetailDate)
-                val updateSumResult = viewModel
-                    .checkSum(editTextTransactionDetailSum.text)
+                val updateSumResult = viewModel.checkSum()
                     .updateEditError(editTextTransactionDetailSum)
 
                 if (updateNameResult && updateDateResult && updateSumResult) {
-                    mainViewModel.saveTransaction(viewModel.getSaveTransactionModel())
-                    findNavController().popBackStack()
+                    viewModel.getSaveTransactionModel()?.let {
+                        mainViewModel.saveTransaction(it)
+                        findNavController().popBackStack()
+                    }
                 }
             }
         }
@@ -114,14 +151,12 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
                     position: Int,
                     id: Long
                 ) {
-                    typeAdapter.getItem(position)?.let {
-                        viewModel.type = requireActivity().getTransactionType(it)
-                    }
+                    typeAdapter.getItem(position)
+                        ?.toTransactionTypeK()?.let { viewModel.typeK = it }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-
 
         binding.spinnerTransactionDetailCurrencies.onItemSelectedListener =
             object : OnItemSelectedListener {
@@ -131,7 +166,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
                     position: Int,
                     id: Long
                 ) {
-                    viewModel.currencyId = position
+                    currenciesAdapter.getItem(position)?.let { viewModel.currency = it }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -144,30 +179,16 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
     }
 
     private fun updateUI() {
-        with(viewModel) {
-            binding.editTextTransactionDetailName.setText(name)
-            updateDateText()
-            updateSumText()
-            updateCurrency()
-            updateType(type)
-        }
+        binding.editTextTransactionDetailName.setText(viewModel.name)
+        binding.editTextTransactionDetailSum.setText(viewModel.sum)
+        updateDateText()
+        binding.spinnerTransactionDetailType.setSelection(
+            typeAdapter.getPosition(viewModel.typeK.toTransactionTypeName())
+        )
     }
 
     private fun updateDateText() {
-        binding.editTextTransactionDetailDate.setText(viewModel.date.formatDate())
-    }
-
-    private fun updateSumText() {
-        if (viewModel.sum > 0)
-            binding.editTextTransactionDetailSum.setText(viewModel.sum.toString())
-    }
-
-    private fun updateCurrency() {
-        binding.spinnerTransactionDetailCurrencies.setSelection(viewModel.currencyPosition)
-    }
-
-    private fun updateType(type: Int) {
-        binding.spinnerTransactionDetailType.setSelection(typeAdapter.getPosition(getString(type.getTransactionName())))
+        binding.editTextTransactionDetailDate.setText(viewModel.date)
     }
 
     private fun showDatePicker(listener: () -> DatePickerDialog.OnDateSetListener) {
@@ -179,4 +200,20 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
             calendar[Calendar.DAY_OF_MONTH]
         ).show()
     }
+
+    private fun Int.toTransactionTypeName() =
+        when (this) {
+            TransactionType.TRADE.k -> getString(R.string.transaction_type_trade)
+            TransactionType.COMMISSION.k -> getString(R.string.transaction_type_commission)
+            TransactionType.FUNDING_WITHDRAWAL.k -> getString(R.string.transaction_type_funding_withdrawal)
+            else -> null
+        }
+
+    private fun String.toTransactionTypeK() =
+        when (this) {
+            getString(R.string.transaction_type_trade) -> TransactionType.TRADE.k
+            getString(R.string.transaction_type_commission) -> TransactionType.COMMISSION.k
+            getString(R.string.transaction_type_funding_withdrawal) -> TransactionType.FUNDING_WITHDRAWAL.k
+            else -> null
+        }
 }

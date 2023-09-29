@@ -7,7 +7,7 @@ import androidx.navigation.fragment.findNavController
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
 
-open class BaseFragment(layoutId: Int) : Fragment(layoutId), BaseFragmentInterface {
+open class BaseFragment(layoutId: Int) : Fragment(layoutId), IBaseFragment {
     override val mainActivity
         get() = requireActivity() as MainActivity
 

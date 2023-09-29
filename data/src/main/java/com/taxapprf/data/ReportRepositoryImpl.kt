@@ -5,9 +5,10 @@ import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX
 import com.taxapprf.data.sync.DEFAULT_SYNC_AT
 import com.taxapprf.domain.ReportRepository
+import com.taxapprf.domain.delete.DeleteReportWithTransactionsModel
+import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
 import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.tax.UpdateTaxModel
-import com.taxapprf.domain.transaction.DeleteTransactionModel
+import com.taxapprf.domain.update.UpdateReportWithTransactionTaxModel
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,55 +23,68 @@ class ReportRepositoryImpl @Inject constructor(
     override fun observeAll(accountId: Int) =
         localDao.observeAll(accountId).map { reports -> reports.map { it.toReportModel() } }
 
-    override suspend fun delete(deleteTransactionModel: DeleteTransactionModel) =
-        with(deleteTransactionModel) {
-            deleteTransactionInReport(reportId, transactionTax)
-        }
-
-    override suspend fun deleteAll(accountId: Int) = 1
-    //localDao.delete(accountId)
-
-    override suspend fun getReportId(
+    override suspend fun updateWithCUDTransaction(
         accountId: Int,
         reportId: Int?,
+        transactionId: Int?,
         date: Long,
         transactionTax: Double?
     ): Int {
-        val newReportKey = date.getYear()
-        var newReportId = reportId ?: 0
+        val newRemoteKey = date.getYear()
 
-        deleteTransactionInReport(reportId, transactionTax, newReportKey)
+        return reportId?.let {
+            localDao.get(reportId)?.let { report ->
+                if (report.isRemoveTransaction(newRemoteKey)) {
+                    if (report.size.isTransactionLast())
+                        report.delete()
+                    else
+                        report.updateWithDeleteTransaction(transactionTax)
 
-        localDao.get(accountId, newReportKey)?.let { report ->
-            newReportId = report.id
-
-            val newSize = report.size + 1
-            val updatedReportModel = report.getLocalReportEntity(accountId, newReportKey, newSize)
-            localDao.save(updatedReportModel)
-        } ?: run {
-            val updatedReportModel = null.getLocalReportEntity(accountId, newReportKey)
-            newReportId = localDao.save(updatedReportModel).toInt()
-        }
-
-        return newReportId
+                    addReport(accountId, newRemoteKey)
+                } else {
+                    if (transactionId.isUpdateTransaction())
+                        report.updateWithUpdateTransaction(transactionTax)
+                    else
+                        report.updateWithAddTransaction()
+                }
+            }
+        } ?: addReport(accountId, newRemoteKey)
     }
 
-    override suspend fun updateTax(updateTaxModel: UpdateTaxModel) {
-        updateTaxModel.reportId?.let { reportId ->
-            updateTaxModel.tax?.let { tax ->
+    override suspend fun getReport(reportId: Int) =
+        localDao.get(reportId)?.toReportModel()
+
+    override suspend fun updateTax(updateReportWithTransactionTaxModel: UpdateReportWithTransactionTaxModel) {
+        updateReportWithTransactionTaxModel.reportId?.let { reportId ->
+            updateReportWithTransactionTaxModel.tax?.let { tax ->
                 localDao.get(reportId)?.let {
-                    val newTax = it.tax + tax - (updateTaxModel.oldTax ?: 0.0)
+                    val newTax = it.tax + tax
                     localDao.updateTax(it.id, newTax)
                 }
             }
         }
     }
 
+    override suspend fun deleteReport(
+        deleteReportWithTransactionsModel: DeleteReportWithTransactionsModel
+    ) =
+        localDao.delete(deleteReportWithTransactionsModel.reportId)
+
+    override suspend fun deleteOrUpdateReport(deleteTransactionWithReportModel: DeleteTransactionWithReportModel) {
+        with(deleteTransactionWithReportModel) {
+            deleteTransactionInReport(reportId, transactionTax)
+        }
+    }
+
+    override suspend fun saveReport(reportModel: ReportModel) {
+        TODO("Not yet implemented")
+    }
+
     private fun deleteTransactionInReport(
         reportId: Int?,
         transactionTax: Double? = null,
         newReportKey: String? = null
-    ) {
+    ) =
         reportId?.let {
             localDao.get(reportId)?.let { report ->
                 if (report.remoteKey != newReportKey) {
@@ -89,12 +103,79 @@ class ReportRepositoryImpl @Inject constructor(
                         localDao.save(updatedReportModel)
                     }
                 }
+                report
             }
         }
-    }
 
     private fun LocalReportEntity.toReportModel() =
         ReportModel(id, remoteKey, tax, size)
+
+
+    private fun LocalReportEntity.isRemoveTransaction(newRemoteKey: String) =
+        remoteKey != newRemoteKey
+
+    private fun Int.isTransactionLast() =
+        this < 2
+
+    private fun LocalReportEntity.delete() =
+        localDao.delete(id)
+
+    private fun LocalReportEntity.updateWithDeleteTransaction(transactionTax: Double?) =
+        transactionTax?.let {
+            updateReport(
+                tax = tax - transactionTax,
+                size = size - 1
+            )
+        }
+
+    private fun LocalReportEntity.updateWithUpdateTransaction(transactionTax: Double?) =
+        transactionTax?.let {
+            updateReport(
+                tax = tax - transactionTax,
+                size = size
+            )
+        }
+
+    private fun LocalReportEntity.updateWithAddTransaction() =
+        updateReport(
+            tax = tax,
+            size = size + 1
+        )
+
+    private fun Int?.isUpdateTransaction() = this != null
+
+    private fun LocalReportEntity.updateReport(
+        tax: Double,
+        size: Int
+    ) =
+        let {
+            val updatedLocalReportEntity = LocalReportEntity(
+                id = id,
+                accountId = accountId,
+                tax = tax,
+                size = size,
+                remoteKey = remoteKey,
+                syncAt = syncAt
+            )
+            localDao.save(updatedLocalReportEntity)
+        }.toInt()
+
+    private fun addReport(
+        accountId: Int,
+        remoteKey: String
+    ) =
+        localDao.get(accountId, remoteKey)
+            ?.updateWithAddTransaction()
+            ?: run {
+                val newLocalReportEntity = LocalReportEntity(
+                    accountId = accountId,
+                    tax = DEFAULT_TAX,
+                    size = 1,
+                    remoteKey = remoteKey,
+                    syncAt = getEpochTime()
+                )
+                localDao.save(newLocalReportEntity)
+            }.toInt()
 
     private fun LocalReportEntity?.getLocalReportEntity(
         accountId: Int,

@@ -7,11 +7,6 @@ data class GetTransactionWithCurrency(
     @ColumnInfo(name = LocalTransactionEntity.ID)
     val id: Int,
 
-    @ColumnInfo(name = LocalTransactionEntity.ACCOUNT_ID)
-    val accountId: Int,
-    @ColumnInfo(name = LocalTransactionEntity.REPORT_ID)
-    val reportId: Int,
-
     @ColumnInfo(name = LocalTransactionEntity.NAME)
     val name: String?,
     @ColumnInfo(name = LocalTransactionEntity.DATE)

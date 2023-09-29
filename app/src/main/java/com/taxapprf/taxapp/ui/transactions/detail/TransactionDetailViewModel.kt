@@ -1,22 +1,26 @@
 package com.taxapprf.taxapp.ui.transactions.detail
 
-import android.text.Editable
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.data.REPORT_ID
+import com.taxapprf.data.TRANSACTION_ID
 import com.taxapprf.data.getEpochDate
-import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.DEFAULT_CURRENCY_ID
+import com.taxapprf.domain.PATTERN_DATE
 import com.taxapprf.domain.cbr.GetCurrenciesUseCase
+import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.toAppDate
+import com.taxapprf.domain.transaction.ObserveTransactionUseCase
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.taxapp.ui.PATTERN_DATE
+import com.taxapprf.taxapp.ui.makeHot
+import com.taxapprf.taxapp.ui.round
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
@@ -25,83 +29,100 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionDetailViewModel @Inject constructor(
-    getCurrenciesUseCase: GetCurrenciesUseCase
+    savedStateHandle: SavedStateHandle,
+    observeReportUseCase: ObserveReportUseCase,
+    observeTransactionUseCase: ObserveTransactionUseCase,
+    getCurrenciesUseCase: GetCurrenciesUseCase,
 ) : BaseViewModel() {
-    private var transactionId: Int? = null
-    private var reportId: Int? = null
+    private val reportId = savedStateHandle.get<Int>(REPORT_ID)
+        ?.let { if (it == 0) null else it }
+    private val transactionId = savedStateHandle.get<Int>(TRANSACTION_ID)
+        ?.let { if (it == 0) null else it }
+
     private var transactionTax: Double? = null
 
-    var name: String = ""
-    var date: Long = getEpochDate()
-    var type: Int = TransactionType.TRADE.k
-    var currencyId: Int = DEFAULT_CURRENCY_ID
-        set(value) {
-            field = value + 1
-        }
-    var sum: Double = 0.0
+    var name: String = DEFAULT_NAME
+    var date: String = getEpochDate().toAppDate()
+    var typeK: Int = DEFAULT_TRANSACTION_TYPE_K
+    var currency: String = DEFAULT_CURRENCY_NAME
+    var sum: String = DEFAULT_SUM
 
-    fun setFromReportModel(reportModel: ReportModel?) {
-        reportModel?.let {
-            reportId = it.id
+    val report =
+        if (transactionId == null) {
+            observeReportUseCase.execute(reportId)
+                ?.onEach { setFromReportModel(it) }
+                ?.flowOn(Dispatchers.IO)
+                ?.makeHot(viewModelScope)
+        } else null
+
+    val transaction =
+        observeTransactionUseCase.execute(transactionId)
+            ?.onEach { setFromTransactionModel(it) }
+            ?.flowOn(Dispatchers.IO)
+            ?.makeHot(viewModelScope)
+
+    private fun setFromReportModel(reportModel: ReportModel?) {
+        reportModel?.name?.let {
+            val shiftDate = LocalDate.now().withYear(it.toInt())
+            date = shiftDate.toEpochDay().toAppDate()
         }
     }
 
-    fun setFromTransactionModel(transactionModel: TransactionModel?) {
+    private fun setFromTransactionModel(transactionModel: TransactionModel?) {
         transactionModel?.let { transaction ->
-            transactionId = transaction.id
-            transaction.tax?.let { transactionTax = it }
+            date = transaction.date.toAppDate()
+            typeK = transaction.typeK
+            sum = transaction.sum.round().toString()
 
-            name = transaction.name ?: ""
-            date = transaction.date
-            type = transaction.type
-            currencyId = transaction.currencyId - 1
-            sum = transaction.sum
+            transaction.tax?.let { transactionTax = it }
+            transaction.name?.let { name = it }
+            currencies.value
+                ?.find { it.id == transaction.currencyId }
+                ?.charCode
+                ?.let { currency = it }
         }
     }
 
     val currencies =
         getCurrenciesUseCase.execute()
             .flowOn(Dispatchers.IO)
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000L),
-                initialValue = null
-            )
+            .makeHot(viewModelScope)
 
-    val currencyPosition
-        get() = currencyId - 1
-
-    fun checkName(cName: Editable?) = check {
-        name = cName.toString()
+    fun checkName() =
         if (name.isNameRangeIncorrect()) R.string.transaction_detail_error_name_too_long
         else null
-    }
 
-    fun checkDate(cDate: Editable?) = checkDate(cDate.toString())
+    fun checkDate() =
+        date.checkDateFormat().let { cDate ->
+            if (cDate == null) R.string.transaction_detail_error_date_format
+            else if (cDate.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
+            else null
+        }
+
     fun checkDate(year: Int, month: Int, dayOfMonth: Int): Int? {
         val dayFormatted = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
         val monthIncremented = month + 1
         val monthFormatted =
             if (monthIncremented < 10) "0$monthIncremented" else monthIncremented.toString()
 
-        return checkDate("$dayFormatted/$monthFormatted/$year")
+        date = "$dayFormatted/$monthFormatted/$year"
+        return checkDate()
     }
 
-    fun checkSum(cSum: Editable?) = check {
-        sum = 0.0
-
+    fun checkSum() =
         try {
-            sum = cSum.toString().toDouble()
+            val cSum = sum.toDouble()
+            if (cSum == SUM_EMPTY) R.string.transaction_detail_error_sum_empty
+            else if (cSum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
+            else null
         } catch (_: java.lang.Exception) {
-
+            null
         }
 
-        if (sum == 0.0) R.string.transaction_detail_error_sum_empty
-        else if (sum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
-        else null
-    }
+    fun getSaveTransactionModel(): SaveTransactionModel? {
+        val currencyId = currencies.value?.find { it.charCode == currency }?.id ?: return null
+        val date = date.checkDateFormat() ?: return null
 
-    fun getSaveTransactionModel(): SaveTransactionModel {
         return SaveTransactionModel(
             transactionId = transactionId,
             reportId = reportId,
@@ -109,23 +130,11 @@ class TransactionDetailViewModel @Inject constructor(
             currencyId = currencyId,
             name = name,
             date = date,
-            type = type,
-            sum = sum,
+            type = typeK,
+            sum = sum.toDouble(),
             tax = transactionTax,
         )
     }
-
-    private fun checkDate(cDate: String) =
-        check {
-            cDate.checkDateFormat().let { cDate ->
-                if (cDate == null) R.string.transaction_detail_error_date_format
-                else {
-                    date = cDate
-                    if (date.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
-                    else null
-                }
-            }
-        }
 
     private fun String.checkDateFormat() =
         try {
@@ -147,6 +156,12 @@ class TransactionDetailViewModel @Inject constructor(
 
     companion object {
         const val NAME_MAX_LENGTH = 16
+        const val SUM_EMPTY = 0.0
         const val SUM_MAX_LENGTH = 999999999999
+
+        const val DEFAULT_NAME = ""
+        const val DEFAULT_CURRENCY_NAME = "USD"
+        const val DEFAULT_TRANSACTION_TYPE_K = 1
+        const val DEFAULT_SUM = ""
     }
 }

@@ -14,23 +14,23 @@ class AccountAddViewModel @Inject constructor(
     private var accountName = ""
     fun switchAccount() {
         if (isUnlock) {
-/*            val switchAccountModel = SwitchAccountModel(
-                account.id, account.accountKey,
-                activeAccountKey = accountName
-            )
+            /*            val switchAccountModel = SwitchAccountModel(
+                            account.id, account.accountKey,
+                            activeAccountKey = accountName
+                        )
 
-            viewModelScope.launch(Dispatchers.IO) {
-                flow<Unit> { switchAccountUseCase.execute(switchAccountModel) }
-                    .onStart { startWithLock() }
-                    .catch { error(it) }
-                    .collectLatest { success() }
-            }*/
+                        viewModelScope.launch(Dispatchers.IO) {
+                            flow<Unit> { switchAccountUseCase.execute(switchAccountModel) }
+                                .onStart { startWithLock() }
+                                .catch { error(it) }
+                                .collectLatest { success() }
+                        }*/
         }
     }
 
-    fun checkName(cAccountName: Editable?) = check {
+    fun checkName(cAccountName: Editable?): Int? {
         accountName = cAccountName.toString()
-        if (accountName.isErrorNameRange()) R.string.error_input_account_incorrect
+        return if (accountName.isErrorNameRange()) R.string.error_input_account_incorrect
         else null
     }
 

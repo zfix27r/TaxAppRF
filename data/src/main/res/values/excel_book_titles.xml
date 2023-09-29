@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="excel_report_title">Расчет налога за %s год</string>
+    <string name="excel_report_info">Сумма налога составляет: %.2f руб.</string>
+    <string name="excel_transaction_name">Обозначение сделки</string>
+    <string name="excel_transaction_type">Тип операции</string>
+    <string name="excel_transaction_date">Дата</string>
+    <string name="excel_transaction_sum">Сумма</string>
+    <string name="excel_transaction_currency_char_code">Актив</string>
+    <string name="excel_transaction_currency_rate">Курс ЦБ РФ</string>
+    <string name="excel_transaction_tax">Налог, руб.</string>
+</resources>

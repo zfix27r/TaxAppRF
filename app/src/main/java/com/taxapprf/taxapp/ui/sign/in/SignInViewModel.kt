@@ -36,16 +36,16 @@ class SignInViewModel @Inject constructor(
         }
     }
 
-    fun checkEmail(cEmail: Editable?) = check {
+    fun checkEmail(cEmail: Editable?): Int? {
         email = cEmail.toString()
-        if (email.isEmpty()) R.string.error_email_empty
+        return if (email.isEmpty()) R.string.error_email_empty
         else if (email.isEmailIncorrect()) R.string.error_email_incorrect
         else null
     }
 
-    fun checkPassword(cPassword: Editable?) = check {
+    fun checkPassword(cPassword: Editable?): Int? {
         password = cPassword.toString()
-        if (password.isErrorPasswordRange()) R.string.error_password_length
+        return if (password.isErrorPasswordRange()) R.string.error_password_length
         else null
     }
 }

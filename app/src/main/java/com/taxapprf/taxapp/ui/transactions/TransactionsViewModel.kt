@@ -1,123 +1,95 @@
 package com.taxapprf.taxapp.ui.transactions
 
-import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.data.REPORT_ID
+import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
+import com.taxapprf.domain.delete.DeleteTransactionWithReportUseCase
+import com.taxapprf.domain.excel.ExportExcelModel
+import com.taxapprf.domain.excel.ExportExcelUseCase
 import com.taxapprf.domain.report.ObserveReportUseCase
-import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.tax.UpdateTaxUseCase
-import com.taxapprf.domain.transaction.DeleteTransactionModel
-import com.taxapprf.domain.transaction.DeleteTransactionUseCase
-import com.taxapprf.domain.transaction.GetExcelToShareModel
-import com.taxapprf.domain.transaction.GetExcelToShareUseCase
-import com.taxapprf.domain.transaction.GetExcelToStorageModel
-import com.taxapprf.domain.transaction.GetExcelToStorageUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.update.UpdateReportWithTransactionTaxModel
+import com.taxapprf.domain.update.UpdateReportWithTransactionTaxUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
+import com.taxapprf.taxapp.ui.makeHot
+import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val observeReportUseCase: ObserveReportUseCase,
     private val getTransactionsUseCase: ObserveTransactionsUseCase,
-    private val deleteTransactionUseCase: DeleteTransactionUseCase,
-    private val getExcelToShareUseCase: GetExcelToShareUseCase,
-    private val getExcelToStorageUseCase: GetExcelToStorageUseCase,
-    private val updateTaxTransactionUseCase: UpdateTaxUseCase,
+    private val deleteTransactionUseCase: DeleteTransactionWithReportUseCase,
+    private val exportExcelUseCase: ExportExcelUseCase,
+    private val updateTaxTransactionUseCase: UpdateReportWithTransactionTaxUseCase,
 ) : BaseViewModel() {
-    lateinit var report: ReportModel
-    private var transactions: List<TransactionModel>? = null
-    private var isUpdateTaxRun = false
+    val reportId = savedStateHandle.get<Int>(REPORT_ID)
 
-    fun observeReport(reportId: Int) =
-        observeReportUseCase.execute(reportId)
-            .onStart { start() }
-            .catch { error(it) }
-            .onEach { success() }
-            .flowOn(Dispatchers.IO)
-
-    lateinit var excelUri: Uri
+    fun observeReport() =
+        reportId?.let {
+            observeReportUseCase.execute(reportId)
+                ?.flowOn(Dispatchers.IO)
+                ?.makeHot(viewModelScope)
+        }
 
     fun observeTransactions() =
-        getTransactionsUseCase.execute(account.id, report.id)
-            .onStart { start() }
-            .catch { error(it) }
-            .onEach {
-                success()
-                transactions = it
-                updateTax()
+        reportId?.let {
+            getTransactionsUseCase.execute(reportId)
+                .flowOn(Dispatchers.IO)
+                .makeHot(viewModelScope)
+        }
+
+    fun deleteTransaction(transactionId: Int) =
+        viewModelScope.launch(Dispatchers.IO) {
+            val deleteTransactionModel = DeleteTransactionWithReportModel(transactionId)
+            deleteTransactionUseCase.execute(deleteTransactionModel)
+        }
+
+    fun exportReport(transactionTypes: Map<Int, String>) =
+        reportId?.let {
+            viewModelScope.launch(Dispatchers.IO) {
+                val getExcelReportModel = ExportExcelModel(reportId, transactionTypes)
+                exportExcelUseCase.execute(getExcelReportModel)?.let {
+                    successExport(it)
+                }
             }
-            .flowOn(Dispatchers.IO)
+        }
 
-    fun deleteTransaction(transactionId: Int) = viewModelScope.launch(Dispatchers.IO) {
-        val deleteTransactionModel = DeleteTransactionModel(transactionId, report.id)
-        deleteTransactionUseCase.execute(deleteTransactionModel)
-    }
-
-    fun getExcelToStorage() = viewModelScope.launch(Dispatchers.IO) {
-        transactions?.let { transactions ->
-            val getExcelToStorageModel = GetExcelToStorageModel(report, transactions)
-
-            getExcelToStorageUseCase.execute(getExcelToStorageModel)
-                .onStart { start() }
-                .catch { error(it) }
-                .collectLatest {
-                    excelUri = it
-                    successExport()
+    fun shareReport(transactionTypes: Map<Int, String>) {
+        reportId?.let {
+            viewModelScope.launch(Dispatchers.IO) {
+                val getExcelReportModel = ExportExcelModel(reportId, transactionTypes)
+                exportExcelUseCase.execute(getExcelReportModel)?.let {
+                    successShare(it)
                 }
+            }
         }
     }
 
-    fun getExcelToShare() = viewModelScope.launch(Dispatchers.IO) {
-        transactions?.let { transactions ->
-            val getExcelToShareModel = GetExcelToShareModel(report, transactions)
-
-            getExcelToShareUseCase.execute(getExcelToShareModel)
-                .onStart { start() }
-                .catch { error(it) }
-                .collectLatest {
-                    excelUri = it
-                    successShare()
+    private fun List<TransactionModel>.updateTax() {
+        map { transition ->
+            if (transition.currencyRate == null)
+                viewModelScope.launch(Dispatchers.IO) {
+                    val update = UpdateReportWithTransactionTaxModel(
+                        reportId = reportId,
+                        transactionId = transition.id,
+                        type = transition.typeK,
+                        currencyId = transition.currencyId,
+                        date = transition.date,
+                        sum = transition.sum,
+                        oldTax = transition.tax
+                    )
+                    updateTaxTransactionUseCase.execute(update)
                 }
         }
     }
-
-    private fun updateTax() {
-        /*        if (!isUpdateTaxRun) {
-                    isUpdateTaxRun = true
-
-                    viewModelScope.launch(Dispatchers.IO) {
-                        transactions?.map { transaction ->
-                            if (transaction.rateCBRF == 0.0)
-                                updateTaxTransactionUseCase.execute(transaction.toSaveTransactionModel())
-                        }
-                        isUpdateTaxRun = false
-                    }
-                }*/
-    }
-
-    /*    private fun TransactionModel.toSaveTransactionModel() =
-            SaveTransactionModel(
-                id = id,
-                accountKey = account.name,
-                reportKey = report.name,
-                transactionKey = transactionKey,
-                newReportKey = report.name,
-                date = date,
-                name = name ?: "",
-                currencyCharCode = currencyCharCode,
-                type = type,
-                sum = sum,
-                tax = tax,
-                rateCBRF = rateCBR
-            )*/
 }

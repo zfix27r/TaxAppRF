@@ -11,15 +11,43 @@ import android.view.inputmethod.InputMethodManager
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
+import com.taxapprf.taxapp.ui.activity.ActivityStateLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 import kotlin.math.floor
 
-const val PATTERN_DATE = "dd/MM/uuuu"
+private val _state = ActivityStateLiveData()
+val state: LiveData<BaseState> = _state
+
+fun <T> Flow<T>.showLoading() =
+    this
+        .onStart { _state.loading() }
+        .catch { _state.error(it) }
+        .onEach { _state.success() }
+
+fun <T> Flow<T>.makeHot(coroutineScope: CoroutineScope, initialValue: T? = null) =
+    this
+        .flowOn(Dispatchers.IO)
+        .stateIn(
+            coroutineScope,
+            SharingStarted.WhileSubscribed(5000L),
+            initialValue
+        )
 
 fun CoordinatorLayout.showSnackBar(msg: Int) {
     val snack = Snackbar.make(this, msg, Snackbar.LENGTH_SHORT)
@@ -50,29 +78,4 @@ fun Activity.checkStoragePermission(): Boolean {
     }
 }
 
-val formatter = DateTimeFormatter.ofPattern(PATTERN_DATE)
-
-fun Long.formatDate(): String =
-    LocalDate.ofEpochDay(this).format(formatter)
-
 fun Double.round() = floor(this * 100.0) / 100.0
-
-fun Activity.share(uri: Uri) {
-    val emailIntent = Intent(Intent.ACTION_SEND)
-    emailIntent.type = "vnd.android.cursor.dir/email"
-    emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
-    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Расчёт налога от TaxApp")
-    startActivity(Intent.createChooser(emailIntent, "Send email..."))
-}
-
-fun Int.getTransactionName() = when (this) {
-    TransactionType.COMMISSION.k -> R.string.transaction_type_commission
-    TransactionType.FUNDING_WITHDRAWAL.k -> R.string.transaction_type_funding_withdrawal
-    else -> R.string.transaction_type_trade
-}
-
-fun Activity.getTransactionType(typeName: String) = when (typeName) {
-    getString(R.string.transaction_type_commission) -> TransactionType.COMMISSION.k
-    getString(R.string.transaction_type_funding_withdrawal) -> TransactionType.FUNDING_WITHDRAWAL.k
-    else -> TransactionType.TRADE.k
-}

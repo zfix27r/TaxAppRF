@@ -29,8 +29,25 @@ import kotlinx.coroutines.launch
 class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     private val binding by viewBinding(FragmentReportsBinding::bind)
     private val viewModel by viewModels<ReportsViewModel>()
-    private val adapter = ReportsAdapter { reportsAdapterCallback }
-    lateinit var itemTouchHelper: ItemTouchHelper
+
+    private val reportsAdapterCallback =
+        object : ReportsAdapterCallback {
+            override fun onItemClick(reportModel: ReportModel) {
+                navToTransactions(reportModel)
+            }
+
+            override fun onMoreClick(reportModel: ReportModel) {
+                onShowMoreClick(reportModel)
+            }
+
+            override fun onSwiped(reportModel: ReportModel) {
+                navToDeleteDialog(reportModel)
+            }
+        }
+
+    private val adapter = ReportsAdapter(reportsAdapterCallback)
+    private val reportTouchHelper = ReportAdapterTouchHelperCallback(reportsAdapterCallback)
+    private val itemTouchHelper = ItemTouchHelper(reportTouchHelper)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,12 +56,8 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         currentStackSavedState.observeDelete()
 
         prepToolbar()
-
-        fab.setOnClickListener { navToTransactionDetail() }
-        binding.recyclerYearStatements.adapter = adapter
-
-        itemTouchHelper = ItemTouchHelper(ReportAdapterTouchHelperCallback(reportsAdapterCallback))
-        itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+        prepViews()
+        setListeners()
     }
 
     override fun onAuthReady() {
@@ -73,51 +86,45 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         }
     }
 
+    private fun prepViews() {
+        binding.recyclerYearStatements.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+    }
+
+    private fun setListeners() {
+        fab.setOnClickListener { navToTransactionDetail() }
+    }
+
     private fun SavedStateHandle.observeDelete() {
-        getLiveData<Boolean>(DeleteDialogFragment.DELETE_TRANSACTION_ID).observe(viewLifecycleOwner) {
-            if (it) viewModel.deleteReport()
-            else {
-                viewModel.deleteReport = null
-            }
+        getLiveData<Int?>(DeleteDialogFragment.DELETE_ID).observe(viewLifecycleOwner) { result ->
+            result?.let { viewModel.deleteReport(it) }
+                ?: run {
+                    reportTouchHelper.cancelSwipe()
+                    itemTouchHelper.attachToRecyclerView(null)
+                    itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+                }
         }
     }
 
-    private val reportsAdapterCallback =
-        object : ReportsAdapterCallback {
-            override fun onClick(reportModel: ReportModel) {
-                navToTransactions(reportModel)
-            }
+    private fun onShowMoreClick(reportModel: ReportModel) {
+        showActionMode {
+            object : BaseActionModeCallback {
+                override var menuInflater = requireActivity().menuInflater
+                override var menuId = R.menu.report_action_menu
 
-            override fun onClickMore(reportModel: ReportModel) {
-                showActionMode {
-                    object : BaseActionModeCallback {
-                        override var menuInflater = requireActivity().menuInflater
-                        override var menuId = R.menu.report_action_menu
-
-                        override fun onActionItemClicked(
-                            mode: ActionMode?,
-                            item: MenuItem
-                        ) = when (item.itemId) {
-                            R.id.action_menu_delete -> {
-                                navToDeleteDialog(reportModel)
-                                true
-                            }
-
-                            else -> false
-                        }
+                override fun onActionItemClicked(
+                    mode: ActionMode?,
+                    item: MenuItem
+                ) = when (item.itemId) {
+                    R.id.action_menu_delete -> {
+                        navToDeleteDialog(reportModel)
+                        true
                     }
+
+                    else -> false
                 }
             }
-
-            override fun onSwiped(reportModel: ReportModel) {
-                navToDeleteDialog(reportModel)
-            }
         }
-
-    private fun navToDeleteDialog(reportModel: ReportModel) {
-        viewModel.deleteReport = reportModel
-        actionMode?.finish()
-        findNavController().navigate(R.id.action_reports_to_delete_dialog)
     }
 
     private val exportExcelToFirebaseIntent =
@@ -136,11 +143,19 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun navToTransactions(reportModel: ReportModel) {
-        mainViewModel.report = reportModel
-        findNavController().navigate(R.id.action_reports_to_transactions)
+        findNavController().navigate(
+            ReportsFragmentDirections.actionReportsToTransactions(reportModel.id)
+        )
     }
 
     private fun navToTransactionDetail() {
-        findNavController().navigate(R.id.action_reports_to_transaction_detail)
+        findNavController().navigate(ReportsFragmentDirections.actionReportsToTransactionDetail())
+    }
+
+    private fun navToDeleteDialog(reportModel: ReportModel) {
+        actionMode?.finish()
+        findNavController().navigate(
+            ReportsFragmentDirections.actionReportsToDeleteDialog(reportModel.id)
+        )
     }
 }

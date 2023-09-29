@@ -39,4 +39,7 @@ interface LocalReportDao {
 
     @Query("UPDATE report SET tax = :tax WHERE id = :reportId")
     fun updateTax(reportId: Int, tax: Double): Int
+
+    @Query("UPDATE report SET tax = :tax, size = :size WHERE id = :reportId")
+    fun update(reportId: Int, tax: Double, size: Int): Int
 }

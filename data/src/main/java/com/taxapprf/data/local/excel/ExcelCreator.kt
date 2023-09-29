@@ -1,140 +1,154 @@
 package com.taxapprf.data.local.excel
 
-import android.content.Context
-import android.net.Uri
-import android.os.Environment
-import androidx.core.content.FileProvider
-import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.excel.ExportExcelModel
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.util.CellRangeAddress
-import java.io.File
-import java.io.FileOutputStream
+import kotlin.properties.Delegates
 
 
-class ExcelCreator(
-    private val context: Context,
-) {
-    private val workbook = HSSFWorkbook()
+class ExcelCreator() {
 
-    fun getExcelToStorage(
-        report: ReportModel,
-        transactions: List<TransactionModel>,
-        fileName: String,
-    ): Uri {
-        createWorkbook(report, transactions)
+    /*
+        fun getExcelToStorage(
+            report: ReportModel,
+            transactions: List<TransactionModel>,
+            fileName: String,
+        ): Uri {
+            createWorkbook(report, transactions)
 
-        val downloadFilePath = Environment
-            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            .path + "/" + fileName
+            val downloadFilePath = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .path + "/" + fileName
 
-        val file = File(downloadFilePath)
-        val outFile = FileOutputStream(file)
+            val file = File(downloadFilePath)
+            val outFile = FileOutputStream(file)
 
-        workbook.write(outFile)
-        outFile.close()
+            workbook.write(outFile)
+            outFile.close()
 
-        return FileProvider.getUriForFile(
-            context,
-            context.applicationContext.packageName + ".provider",
-            file
-        )
-    }
-
-    fun getExcelToShare(
-        report: ReportModel,
-        transactions: List<TransactionModel>,
-        fileName: String,
-    ): Uri {
-        createWorkbook(report, transactions)
-
-        val filePath = context.filesDir.toString() + "/" + fileName
-
-        val outFile = context.openFileOutput(fileName, Context.MODE_PRIVATE)
-
-        workbook.write(outFile)
-        outFile.close()
-
-        return FileProvider.getUriForFile(
-            context,
-            context.applicationContext.packageName + ".provider",
-            File(filePath)
-        )
-    }
-
-    private fun createWorkbook(
-        report: ReportModel,
-        transactions: List<TransactionModel>,
-    ) {
-        val sheet = workbook.createSheet(report.name)
-        var rownum = 0
-        var cell: Cell
-        var row: Row
-        row = sheet.createRow(rownum)
-
-        //1
-        cell = row.createCell(0, CellType.STRING)
-        val s = String.format("Расчет налога за %s год", report.name)
-        cell.setCellValue(s)
-        sheet.addMergedRegion(CellRangeAddress(0, 0, 0, 6))
-        rownum++
-        row = sheet.createRow(rownum)
-
-        //2
-        cell = row.createCell(0, CellType.STRING)
-        val ss = String.format("Сумма налога составляет: %.2f руб.", report.tax)
-        cell.setCellValue(ss)
-        sheet.addMergedRegion(CellRangeAddress(1, 1, 0, 6))
-        rownum++
-        row = sheet.createRow(rownum)
-
-        //3.1
-        cell = row.createCell(0, CellType.STRING)
-        cell.setCellValue("Обозначение сделки")
-
-        //3.2
-        cell = row.createCell(1, CellType.STRING)
-        cell.setCellValue("Тип операции")
-
-        //3.3
-        cell = row.createCell(2, CellType.STRING)
-        cell.setCellValue("Дата")
-
-        //3.4
-        cell = row.createCell(3, CellType.STRING)
-        cell.setCellValue("Сумма")
-
-        //3.5
-        cell = row.createCell(4, CellType.STRING)
-        cell.setCellValue("Актив")
-
-        //3.6
-        cell = row.createCell(5, CellType.STRING)
-        cell.setCellValue("Курс ЦБ РФ")
-
-        //3.7
-        cell = row.createCell(6, CellType.STRING)
-        cell.setCellValue("Налог, руб.")
-        for (transaction in transactions) {
-            rownum++
-            row = sheet.createRow(rownum)
-            cell = row.createCell(0, CellType.STRING)
-            cell.setCellValue(transaction.name)
-            cell = row.createCell(1, CellType.NUMERIC)
-            //cell.setCellValue(transaction.type)
-            cell = row.createCell(2, CellType.STRING)
-            cell.setCellValue(transaction.date.toString())
-            cell = row.createCell(3, CellType.NUMERIC)
-            cell.setCellValue(transaction.sum)
-            cell = row.createCell(4, CellType.STRING)
-            cell.setCellValue(transaction.currencyCharCode)
-            cell = row.createCell(5, CellType.NUMERIC)
-            //cell.setCellValue(transaction.currencyRate)
-            cell = row.createCell(6, CellType.NUMERIC)
-            //cell.setCellValue(transaction.tax)
+            return FileProvider.getUriForFile(
+                context,
+                context.applicationContext.packageName + ".provider",
+                file
+            )
         }
+
+        fun getExcelToShare(
+            report: ReportModel,
+            transactions: List<TransactionModel>,
+            fileName: String,
+        ): Uri {
+            createWorkbook(report, transactions)
+
+            val filePath = context.filesDir.toString() + "/" + fileName
+
+            val outFile = context.openFileOutput(fileName, Context.MODE_PRIVATE)
+
+            workbook.write(outFile)
+            outFile.close()
+
+            return FileProvider.getUriForFile(
+                context,
+                context.applicationContext.packageName + ".provider",
+                File(filePath)
+            )
+        }
+    */
+
+    private var rowN by Delegates.notNull<Int>()
+    private var cellN by Delegates.notNull<Int>()
+
+    private lateinit var book: HSSFWorkbook
+    private lateinit var sheet: Sheet
+    private lateinit var row: Row
+    private lateinit var cell: Cell
+
+    private fun initBook() {
+        rowN = START_ROW_NUM
+        cellN = START_ROW_NUM
+
+        book = HSSFWorkbook()
+    }
+
+    private fun nextSheet(title: String) {
+        sheet = book.createSheet(title)
+        row = sheet.createRow(rowN)
+    }
+
+    private fun nextRow() {
+        rowN++
+        cellN = START_COLUMN_NUM - 1
+
+        row = sheet.createRow(rowN)
+    }
+
+    private fun nextColumn(content: String) {
+        cellN++
+        cell = row.createCell(cellN, CellType.STRING)
+        cell.setCellValue(content)
+    }
+
+    private fun nextColumn(content: Double) {
+        cellN++
+        cell = row.createCell(cellN, CellType.NUMERIC)
+        cell.setCellValue(content)
+    }
+
+    private fun mergeAllColumnCurrentRow() {
+        sheet.addMergedRegion(CellRangeAddress(rowN, rowN, START_COLUMN_NUM, MAX_COLUMN))
+    }
+
+    fun createWorkbook(exportExcelModel: ExportExcelModel): HSSFWorkbook? {
+        val reportName = exportExcelModel.reportName ?: return null
+        val reportTax = exportExcelModel.reportTax ?: return null
+
+        val reportTitle = exportExcelModel.reportTitle ?: return null
+        val reportInfo = exportExcelModel.reportInfo ?: return null
+
+        initBook()
+
+        nextSheet(reportName)
+
+        /* 1 */
+        nextRow()
+        nextColumn(String.format(reportTitle, reportName))
+        mergeAllColumnCurrentRow()
+
+        /* 2 */
+        nextRow()
+        nextColumn(String.format(reportInfo, reportTax))
+        mergeAllColumnCurrentRow()
+
+        /* 3 */
+        nextRow()
+        exportExcelModel.transactionTitles.forEach {
+            nextColumn(it)
+        }
+
+        /* Transactions */
+        exportExcelModel.transactions.forEach {
+            nextRow()
+            nextColumn(it.name ?: EMPTY_STRING)
+            nextColumn(it.titleType ?: EMPTY_STRING)
+            nextColumn(it.appDate)
+            nextColumn(it.sum)
+            nextColumn(it.currencyCharCode)
+            nextColumn(it.currencyRate ?: EMPTY_DOUBLE)
+            nextColumn(it.tax ?: EMPTY_DOUBLE)
+        }
+
+        return book
+    }
+
+    companion object {
+        const val EMPTY_STRING = ""
+        const val EMPTY_DOUBLE = 0.0
+        const val MAX_COLUMN = 6
+        const val START_ROW_NUM = 0
+        const val START_COLUMN_NUM = 0
     }
 }
