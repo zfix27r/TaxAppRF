@@ -13,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.taxapprf.domain.cbr.CurrencyModel
 import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
@@ -162,6 +161,10 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
+
+        binding.buttonTransactionDetailDismiss.setOnClickListener {
+            dismiss()
+        }
     }
 
     override fun onSuccess() {

@@ -30,10 +30,11 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.ui.Error
 import com.taxapprf.taxapp.ui.Loading
-import com.taxapprf.taxapp.ui.drawer.Drawer
 import com.taxapprf.taxapp.ui.MainToolbar
 import com.taxapprf.taxapp.ui.SignOut
 import com.taxapprf.taxapp.ui.Success
+import com.taxapprf.taxapp.ui.account.add.AccountAddFragment
+import com.taxapprf.taxapp.ui.drawer.Drawer
 import com.taxapprf.taxapp.ui.drawer.DrawerCallback
 import com.taxapprf.taxapp.ui.showSnackBar
 import com.taxapprf.taxapp.ui.state
@@ -43,7 +44,8 @@ import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity(R.layout.activity_main),
+    AccountAddFragment.AccountAddDialogListener {
     private val binding by viewBinding(ActivityMainBinding::bind)
     private val viewModel by viewModels<MainViewModel>()
 
@@ -201,12 +203,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             override fun navToAccountAdd() {
-                if (navController.currentDestination?.id != R.id.account_add)
-                    navController.navigate(R.id.action_global_account_add)
+                navController.navigate(R.id.action_global_account_add)
             }
 
             override fun switchAccount(accountModel: AccountModel) {
-                viewModel.switchAccount(accountModel)
+                viewModel.switchAccount(accountModel.name)
             }
         }
+
+    override fun onAccountAddPositiveClick(dialog: AccountAddFragment) {
+        dialog.dismiss()
+        viewModel.switchAccount(dialog.getAccountName())
+    }
+
+    override fun onAccountAddNegativeClick(dialog: AccountAddFragment) {
+        dialog.dismiss()
+    }
 }

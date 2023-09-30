@@ -4,50 +4,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="@dimen/offset_32dp"
     tools:context=".ui.account.add.AccountAddFragment">
 
+    <Button
+        android:id="@+id/button_account_add_dismiss"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/offset_16"
+        android:layout_marginTop="@dimen/offset_16"
+        app:icon="@drawable/baseline_close_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_account_add_save"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/offset_16"
+        android:layout_marginEnd="@dimen/offset_16"
+        android:text="@string/save_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_layout_add_account_name"
+        android:id="@+id/layout_add_account_name"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/sign_field_horizontal_offset"
-        android:layout_marginEnd="@dimen/sign_field_horizontal_offset"
-        app:layout_constraintBottom_toTopOf="@+id/button_account_add_create"
+        android:layout_marginHorizontal="@dimen/offset_16"
+        android:layout_marginTop="@dimen/offset_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed">
+        app:layout_constraintTop_toBottomOf="@+id/button_account_add_dismiss">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_add_account_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/edit_new_account"
+            android:hint="@string/add_account_add_hint"
             android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_account_add_create"
-        android:layout_width="@dimen/zero"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/offset_24"
-        android:text="@string/buttonSelectCreate"
-        app:layout_constraintBottom_toTopOf="@+id/text_sign_in_under_bottom"
-        app:layout_constraintEnd_toEndOf="@+id/text_input_layout_add_account_name"
-        app:layout_constraintStart_toStartOf="@+id/text_input_layout_add_account_name"
-        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_add_account_name" />
-
-    <TextView
-        android:id="@+id/text_sign_in_under_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/offset_24"
-        android:gravity="center"
-        android:text="@string/text_new_account_under_bottom"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

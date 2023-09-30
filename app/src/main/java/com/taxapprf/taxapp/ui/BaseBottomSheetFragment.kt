@@ -1,7 +1,6 @@
 package com.taxapprf.taxapp.ui
 
 import android.app.Dialog
-import android.os.Bundle
 import android.view.View
 import androidx.appcompat.view.ActionMode
 import androidx.core.view.updateLayoutParams
@@ -10,7 +9,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
-import kotlin.math.floor
 
 open class BaseBottomSheetFragment(layoutId: Int) : BottomSheetDialogFragment(layoutId),
     IBaseFragment {
@@ -41,7 +39,7 @@ open class BaseBottomSheetFragment(layoutId: Int) : BottomSheetDialogFragment(la
                     val behavior = BottomSheetBehavior.from(it)
                     it.updateLayoutParams {
                         val displayHeight = requireActivity().resources.displayMetrics.heightPixels
-                        height = (displayHeight * 0.7).toInt()
+                        height = (displayHeight * 0.8).toInt()
                     }
                     behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                 }

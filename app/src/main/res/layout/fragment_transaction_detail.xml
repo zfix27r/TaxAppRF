@@ -4,31 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/offset_16"
     tools:context=".ui.transactions.detail.TransactionDetailFragment">
+
+    <Button
+        android:id="@+id/button_transaction_detail_dismiss"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/offset_16"
+        android:layout_marginTop="@dimen/offset_16"
+        app:icon="@drawable/baseline_close_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_transaction_detail_save"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/offset_16"
+        android:layout_marginEnd="@dimen/offset_16"
+        android:text="@string/save_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/spinner_transaction_detail_type"
         android:layout_width="@dimen/zero"
+        android:textAlignment="textEnd"
         android:layout_height="@dimen/min_view_size"
-        android:layout_marginStart="@dimen/offset_16"
-        android:layout_marginTop="@dimen/margin_vertical_20dp"
-        android:layout_marginEnd="@dimen/offset_16"
-        android:layout_marginBottom="@dimen/margin_vertical_20dp"
+        android:layout_marginTop="@dimen/offset_16"
         android:entries="@array/transaction_types"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/text_input_layout_name"/>
+        app:layout_constraintBottom_toTopOf="@+id/text_input_layout_name"
+        app:layout_constraintEnd_toEndOf="@+id/button_transaction_detail_save"
+        app:layout_constraintStart_toStartOf="@+id/button_transaction_detail_dismiss"
+        app:layout_constraintTop_toBottomOf="@+id/button_transaction_detail_dismiss" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_name"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/zero"
+        android:layout_marginTop="@dimen/offset_16"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/offset_16"
-        android:layout_marginEnd="@dimen/offset_16"
-        android:layout_marginTop="@dimen/margin_vertical_20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/button_transaction_detail_save"
+        app:layout_constraintStart_toStartOf="@+id/button_transaction_detail_dismiss"
         app:layout_constraintTop_toBottomOf="@+id/spinner_transaction_detail_type">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -36,31 +55,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/edit_detail_id"
-            android:inputType="text"
-            android:textSize="@dimen/text_size_16sp"
-            />
+            android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
-
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_email_date"
         android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/offset_16"
-        android:layout_marginTop="@dimen/margin_vertical_20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_name"
+        android:layout_marginTop="@dimen/offset_16"
+        android:layout_marginEnd="@dimen/offset_8"
         app:layout_constraintEnd_toStartOf="@+id/button_transaction_detail_date_picker"
-        >
+        app:layout_constraintStart_toStartOf="@+id/button_transaction_detail_dismiss"
+        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_name">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_transaction_detail_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/edit_detail_date"
-            android:inputType="date"
-            android:textSize="@dimen/text_size_16sp"
-            />
+            android:inputType="date" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -68,51 +81,35 @@
         style="@style/Widget.Material3.Button.IconButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/offset_16"
         app:icon="@drawable/ic_baseline_calendar_month_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_input_layout_email_date"
-        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_email_date" />
+        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_email_date"
+        app:layout_constraintEnd_toEndOf="@+id/button_transaction_detail_save"
+        app:layout_constraintTop_toTopOf="@+id/text_input_layout_email_date" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_email_sum"
         android:layout_width="@dimen/zero"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/offset_16"
+        android:layout_marginTop="@dimen/offset_16"
         android:layout_marginEnd="@dimen/offset_16"
-        android:layout_marginTop="@dimen/margin_vertical_20dp"
-        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_email_date"
         app:layout_constraintEnd_toStartOf="@+id/spinner_transaction_detail_currencies"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="@+id/button_transaction_detail_dismiss"
+        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_email_date">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_transaction_detail_sum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/edit_detail_sum"
-            android:inputType="numberDecimal"
-            android:textSize="@dimen/text_size_16sp" />
+            android:inputType="numberDecimal" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/spinner_transaction_detail_currencies"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/min_view_size"
-        android:layout_marginEnd="@dimen/offset_16"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_input_layout_email_sum"
-        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_email_sum"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_transaction_detail_save"
-        android:layout_width="@dimen/zero"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_vertical_20dp"
-        android:layout_marginStart="@dimen/offset_16"
-        android:layout_marginEnd="@dimen/offset_16"
-        android:text="@string/save_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_input_layout_email_sum" />
+        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_email_sum"
+        app:layout_constraintEnd_toEndOf="@+id/button_transaction_detail_save"
+        app:layout_constraintTop_toTopOf="@+id/text_input_layout_email_sum" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,9 +22,12 @@ interface LocalAccountDao {
     @Delete
     fun deleteAll(localAccountEntities: List<LocalAccountEntity>): Int
 
-    @Query("UPDATE account SET is_active = 0 WHERE is_active = 1")
-    fun resetActiveAccount()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun save(localAccountEntity: LocalAccountEntity): Long
 
-    @Query("UPDATE account SET is_active = 1 WHERE id = :accountId")
-    fun setActiveAccount(accountId: Int)
+    @Query("UPDATE account SET is_active = 0 WHERE is_active = 1")
+    fun resetActiveAccount(): Int
+
+    @Query("UPDATE account SET is_active = 1 WHERE remote_key = :accountName")
+    fun setActiveAccount(accountName: String): Int
 }

@@ -12,6 +12,7 @@ import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.update.UpdateReportWithTransactionTaxUseCase
 import com.taxapprf.domain.user.ObserveUserUseCase
 import com.taxapprf.domain.user.SignOutUseCase
+import com.taxapprf.domain.user.SwitchAccountModel
 import com.taxapprf.taxapp.ui.makeHot
 import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,15 +45,16 @@ class MainViewModel @Inject constructor(
 
     val sync = syncAllUseCase.execute()
 
-    fun switchAccount(accountModel: AccountModel) =
-        viewModelScope.launch(Dispatchers.IO) {
-/*            _account.value?.let { oldAccountModel ->
-                val switchAccountModel = SwitchAccountModel(
-                    oldAccountModel.id, oldAccountModel.accountKey,
-                    accountModel.id, accountModel.accountKey
-                )
+    fun switchAccount(accountName: String) =
+        userWithAccounts.value?.user?.id?.let { userId ->
+            viewModelScope.launch(Dispatchers.IO) {
+                val switchAccountModel =
+                    SwitchAccountModel(
+                        userId = userId,
+                        accountName = accountName
+                    )
                 switchAccountUseCase.execute(switchAccountModel)
-            }*/
+            }
         }
 
     private fun List<AccountModel>.updateAccounts() {

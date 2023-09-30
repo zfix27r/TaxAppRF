@@ -67,10 +67,7 @@
     <string name="account_select_accounts_loading">Идет загрузка доступных счетов. Пожалуйста, подождите.</string>
 
     <!--NewAccountFragment-->
-    <string name="edit_new_account">№ счета</string>
-    <string name="button_new_account_ok">Создать</string>
-    <string name="button_new_account_cancel">Отменить</string>
-    <string name="text_new_account_under_bottom">Введите имя нового счета</string>
+    <string name="add_account_add_hint">Имя счета</string>
 
     <!--Registration Fragment-->
     <string name="edit_sign_up_name">Имя</string>

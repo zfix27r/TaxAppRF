@@ -3,12 +3,14 @@ package com.taxapprf.data
 import android.net.Uri
 import com.taxapprf.data.local.room.LocalAccountDao
 import com.taxapprf.data.local.room.LocalUserDao
+import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.model.LocalUserWithAccounts
 import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.domain.UserRepository
 import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
+import com.taxapprf.domain.user.SwitchAccountModel
 import com.taxapprf.domain.user.UserModel
 import com.taxapprf.domain.user.UserWithAccountsModel
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +29,8 @@ class UserRepositoryImpl @Inject constructor(
             UserWithAccountsModel(
                 user = userWithAccounts.first().toUserModel(),
                 activeAccount = userWithAccounts.find { it.isAccountActive }?.toAccountModel(),
-                otherAccounts = userWithAccounts.filter { !it.isAccountActive }.map { it.toAccountModel() }
+                otherAccounts = userWithAccounts.filter { !it.isAccountActive }
+                    .map { it.toAccountModel() }
             )
         }
     }
@@ -45,16 +48,29 @@ class UserRepositoryImpl @Inject constructor(
         userRemoteDao.signOut()
     }
 
-    override suspend fun switchAccount(accountId: Int) {
+    override suspend fun switchAccount(switchAccountModel: SwitchAccountModel) {
         accountLocalDao.resetActiveAccount()
-        accountLocalDao.setActiveAccount(accountId)
+        if (accountLocalDao.setActiveAccount(switchAccountModel.accountName) == 0)
+            accountLocalDao.save(
+                newLocalAccountEntity(
+                    switchAccountModel.userId,
+                    switchAccountModel.accountName
+                )
+            )
     }
 
     private fun LocalUserWithAccounts.toUserModel() =
-        UserModel(email, avatar?.let { Uri.parse(it) }, name, phone)
+        UserModel(userId, email, avatar?.let { Uri.parse(it) }, name, phone)
 
     private fun LocalUserWithAccounts.toAccountModel() =
         AccountModel(accountId, accountName)
+
+    private fun newLocalAccountEntity(userId: Int, accountName: String) =
+        LocalAccountEntity(
+            userId = userId,
+            isActive = true,
+            remoteKey = accountName
+        )
 
     companion object {
         const val LOCAL_USER_EMAIL = "local"
