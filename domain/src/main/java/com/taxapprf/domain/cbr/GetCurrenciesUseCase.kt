@@ -6,6 +6,6 @@ import javax.inject.Inject
 class GetCurrenciesUseCase @Inject constructor(
     private val repository: CBRRepository
 ) {
-    fun execute() =
+    suspend fun execute() =
         repository.getCurrencies()
 }

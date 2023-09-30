@@ -32,6 +32,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -85,7 +86,7 @@ object DomainModule {
         )
 
     @Provides
-    fun provide(cbrRepositoryImpl: CBRRepositoryImpl) =
+    fun provideGetCurrenciesUseCase(cbrRepositoryImpl: CBRRepositoryImpl) =
         GetCurrenciesUseCase(cbrRepositoryImpl)
 
     @Provides

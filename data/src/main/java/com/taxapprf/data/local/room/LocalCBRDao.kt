@@ -18,7 +18,7 @@ interface LocalCBRDao {
     fun getCurrencyRate(currencyId: Int, date: Long): Double?
 
     @Query("SELECT * FROM cbr_currency")
-    fun getCurrencies(): Flow<List<LocalCBRCurrencyEntity>>
+    fun getCurrencies(): List<LocalCBRCurrencyEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveCurrency(localCBRCurrencyEntity: LocalCBRCurrencyEntity): Long

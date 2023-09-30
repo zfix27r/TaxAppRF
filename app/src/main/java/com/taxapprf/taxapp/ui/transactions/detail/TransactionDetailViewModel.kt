@@ -19,6 +19,7 @@ import com.taxapprf.taxapp.ui.makeHot
 import com.taxapprf.taxapp.ui.round
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
@@ -32,7 +33,7 @@ class TransactionDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeReportUseCase: ObserveReportUseCase,
     observeTransactionUseCase: ObserveTransactionUseCase,
-    getCurrenciesUseCase: GetCurrenciesUseCase,
+    private val getCurrenciesUseCase: GetCurrenciesUseCase,
 ) : BaseViewModel() {
     private val reportId = savedStateHandle.get<Int>(REPORT_ID)
         ?.let { if (it == 0) null else it }
@@ -76,15 +77,21 @@ class TransactionDetailViewModel @Inject constructor(
 
             transaction.tax?.let { transactionTax = it }
             transaction.name?.let { name = it }
+
+            println(transactionModel)
             currencies.value
                 ?.find { it.id == transaction.currencyId }
                 ?.charCode
-                ?.let { currency = it }
+                ?.let {
+                    println(it)
+                    currency = it
+                    println(currency)
+                }
         }
     }
 
     val currencies =
-        getCurrenciesUseCase.execute()
+        flow { emit(getCurrenciesUseCase.execute()) }
             .flowOn(Dispatchers.IO)
             .makeHot(viewModelScope)
 
@@ -112,11 +119,11 @@ class TransactionDetailViewModel @Inject constructor(
     fun checkSum() =
         try {
             val cSum = sum.toDouble()
-            if (cSum == SUM_EMPTY) R.string.transaction_detail_error_sum_empty
-            else if (cSum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
+
+            if (cSum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
             else null
         } catch (_: java.lang.Exception) {
-            null
+            R.string.transaction_detail_error_sum_empty
         }
 
     fun getSaveTransactionModel(): SaveTransactionModel? {
@@ -131,10 +138,17 @@ class TransactionDetailViewModel @Inject constructor(
             name = name,
             date = date,
             type = typeK,
-            sum = sum.toDouble(),
+            sum = sumToDouble(),
             tax = transactionTax,
         )
     }
+
+    private fun sumToDouble() =
+        try {
+            sum.toDouble()
+        } catch (_: Exception) {
+            0.0
+        }
 
     private fun String.checkDateFormat() =
         try {

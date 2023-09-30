@@ -26,8 +26,8 @@ class CBRRepositoryImpl @Inject constructor(
         localCBRDao.getCurrencyRate(currencyId, date)
             ?: tryGetRemoteRate(currencyId, date)
 
-    override fun getCurrencies() =
-        localCBRDao.getCurrencies().map { it.toListCurrencyModel() }
+    override suspend fun getCurrencies() =
+        localCBRDao.getCurrencies().toListCurrencyModel()
 
     override suspend fun getCurrenciesWithRate(date: Long): List<CurrencyWithRateModel> {
         TODO("Not yet implemented")
