@@ -172,5 +172,6 @@
     <!-- share -->
     <string name="share_message_name">Расчёт налога от TaxApp</string>
     <string name="share_message_description">Отправка…</string>
+    <string name="calendar_name">Календарь</string>
 
 </resources>

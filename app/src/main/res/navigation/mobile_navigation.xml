@@ -148,9 +148,9 @@
 
     <fragment
         android:id="@+id/currency_rates_today"
-        android:name="com.taxapprf.taxapp.ui.currency.today.CurrencyRatesTodayFragment"
+        android:name="com.taxapprf.taxapp.ui.currency.today.CurrencyRatesFragment"
         android:label="@string/menu_rates_today_name"
-        tools:layout="@layout/fragment_rates_today" />
+        tools:layout="@layout/fragment_currency_rates" />
 
     <fragment
         android:id="@+id/currency_converter"

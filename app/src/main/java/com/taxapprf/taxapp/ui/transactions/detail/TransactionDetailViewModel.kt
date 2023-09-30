@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.REPORT_ID
 import com.taxapprf.data.TRANSACTION_ID
 import com.taxapprf.data.getEpochDate
-import com.taxapprf.domain.PATTERN_DATE
 import com.taxapprf.domain.cbr.GetCurrenciesUseCase
 import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.report.ReportModel
@@ -17,15 +16,13 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.makeHot
 import com.taxapprf.taxapp.ui.round
+import com.taxapprf.taxapp.ui.toLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.ResolverStyle
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -100,21 +97,11 @@ class TransactionDetailViewModel @Inject constructor(
         else null
 
     fun checkDate() =
-        date.checkDateFormat().let { cDate ->
+        date.toLocalDate()?.toEpochDay().let { cDate ->
             if (cDate == null) R.string.transaction_detail_error_date_format
             else if (cDate.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
             else null
         }
-
-    fun checkDate(year: Int, month: Int, dayOfMonth: Int): Int? {
-        val dayFormatted = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
-        val monthIncremented = month + 1
-        val monthFormatted =
-            if (monthIncremented < 10) "0$monthIncremented" else monthIncremented.toString()
-
-        date = "$dayFormatted/$monthFormatted/$year"
-        return checkDate()
-    }
 
     fun checkSum() =
         try {
@@ -128,7 +115,7 @@ class TransactionDetailViewModel @Inject constructor(
 
     fun getSaveTransactionModel(): SaveTransactionModel? {
         val currencyId = currencies.value?.find { it.charCode == currency }?.id ?: return null
-        val date = date.checkDateFormat() ?: return null
+        val date = date.toLocalDate()?.toEpochDay() ?: return null
 
         return SaveTransactionModel(
             transactionId = transactionId,
@@ -150,19 +137,6 @@ class TransactionDetailViewModel @Inject constructor(
             0.0
         }
 
-    private fun String.checkDateFormat() =
-        try {
-            LocalDate.parse(
-                this,
-                DateTimeFormatter
-                    .ofPattern(PATTERN_DATE)
-                    .withLocale(Locale.ROOT)
-                    .withResolverStyle(ResolverStyle.STRICT)
-            ).toEpochDay()
-        } catch (e: Exception) {
-            null
-        }
-
     private fun Long.isDateRangeIncorrect() =
         this > LocalDate.now().toEpochDay()
 
@@ -170,7 +144,6 @@ class TransactionDetailViewModel @Inject constructor(
 
     companion object {
         const val NAME_MAX_LENGTH = 16
-        const val SUM_EMPTY = 0.0
         const val SUM_MAX_LENGTH = 999999999999
 
         const val DEFAULT_NAME = ""

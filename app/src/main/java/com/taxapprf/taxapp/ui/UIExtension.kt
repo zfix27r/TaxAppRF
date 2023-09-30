@@ -2,19 +2,17 @@ package com.taxapprf.taxapp.ui
 
 import android.Manifest
 import android.app.Activity
+import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
-import com.taxapprf.domain.transaction.TransactionType
+import com.taxapprf.domain.PATTERN_DATE
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.activity.ActivityStateLiveData
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +26,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.ResolverStyle
+import java.util.Calendar
+import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.floor
 
@@ -79,3 +80,50 @@ fun Activity.checkStoragePermission(): Boolean {
 }
 
 fun Double.round() = floor(this * 100.0) / 100.0
+
+fun String.toLocalDate() =
+    try {
+        LocalDate.parse(
+            this,
+            DateTimeFormatter
+                .ofPattern(PATTERN_DATE)
+                .withLocale(Locale.ROOT)
+                .withResolverStyle(ResolverStyle.STRICT)
+        )
+    } catch (e: Exception) {
+        null
+    }
+
+fun String.showDatePickerDialog(
+    context: Context,
+    listener: DatePickerDialog.OnDateSetListener
+) {
+    toLocalDate()
+        ?.let {
+            DatePickerDialog(
+                context, listener,
+                it.year,
+                it.monthValue,
+                it.dayOfMonth
+            ).show()
+        }
+        ?: run {
+            com.taxapprf.taxapp.ui.showDatePickerDialog(context, listener)
+        }
+}
+
+fun showDatePickerDialog(
+    context: Context,
+    listener: DatePickerDialog.OnDateSetListener
+) {
+    val calendar = Calendar.getInstance()
+    DatePickerDialog(
+        context, listener,
+        calendar[Calendar.YEAR],
+        calendar[Calendar.MONTH],
+        calendar[Calendar.DAY_OF_MONTH]
+    ).show()
+}
+
+fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
+    LocalDate.of(year, month, dayOfMonth).toEpochDay()

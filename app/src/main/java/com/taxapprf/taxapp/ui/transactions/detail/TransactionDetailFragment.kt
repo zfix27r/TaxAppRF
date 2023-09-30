@@ -18,10 +18,10 @@ import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BaseBottomSheetFragment
+import com.taxapprf.taxapp.ui.showDatePickerDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 @AndroidEntryPoint
 class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_transaction_detail) {
@@ -101,14 +101,15 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         binding.spinnerTransactionDetailType.adapter = typeAdapter
     }
 
+    private val datePickerListener =
+        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            viewModel.checkDate(year, month, dayOfMonth)
+            updateDateText()
+        }
+
     private fun prepListeners() {
         binding.buttonTransactionDetailDatePicker.setOnClickListener {
-            showDatePicker {
-                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    viewModel.checkDate(year, month, dayOfMonth)
-                    updateDateText()
-                }
-            }
+            viewModel.date.showDatePickerDialog(requireContext(), datePickerListener)
         }
 
         binding.buttonTransactionDetailSave.setOnClickListener {
@@ -183,16 +184,6 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
 
     private fun updateDateText() {
         binding.editTextTransactionDetailDate.setText(viewModel.date)
-    }
-
-    private fun showDatePicker(listener: () -> DatePickerDialog.OnDateSetListener) {
-        val calendar = Calendar.getInstance()
-        DatePickerDialog(
-            requireContext(), listener.invoke(),
-            calendar[Calendar.YEAR],
-            calendar[Calendar.MONTH],
-            calendar[Calendar.DAY_OF_MONTH]
-        ).show()
     }
 
     private fun Int.toTransactionTypeName() =

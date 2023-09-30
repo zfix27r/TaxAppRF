@@ -76,7 +76,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
     private fun prepToolbar() {
         toolbar.updateToolbar(getString(R.string.taxes_name))
-        toolbar.updateMenu(R.menu.reports_toolbar) {
+        toolbar.updateMenu(R.menu.toolbar_reports) {
             when (it.itemId) {
                 R.id.toolbar_import_excel -> {
                     launchExportExcelToFirebaseIntent()
@@ -101,7 +101,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         showActionMode {
             object : BaseActionModeCallback {
                 override var menuInflater = requireActivity().menuInflater
-                override var menuId = R.menu.report_action_menu
+                override var menuId = R.menu.action_menu_report
 
                 override fun onActionItemClicked(
                     mode: ActionMode?,

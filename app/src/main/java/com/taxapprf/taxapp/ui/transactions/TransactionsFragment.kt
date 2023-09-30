@@ -9,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -70,7 +69,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun prepToolbar() {
-        toolbar.updateMenu(R.menu.transactions_toolbar) { menuItem ->
+        toolbar.updateMenu(R.menu.toolbar_transactions) { menuItem ->
             when (menuItem.itemId) {
                 R.id.toolbar_share_excel -> {
                     shareExcel()
@@ -178,7 +177,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         showActionMode {
             object : BaseActionModeCallback {
                 override var menuInflater = requireActivity().menuInflater
-                override var menuId = R.menu.transaction_action_menu
+                override var menuId = R.menu.action_menu_transaction
 
                 override fun onActionItemClicked(
                     mode: ActionMode?,

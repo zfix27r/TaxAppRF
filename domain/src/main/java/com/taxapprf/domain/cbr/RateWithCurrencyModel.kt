@@ -1,8 +1,8 @@
 package com.taxapprf.domain.cbr
 
-data class CurrencyWithRateModel(
+data class RateWithCurrencyModel(
     val name: String,
-    val numCode: Int,
     val charCode: String,
-    val rate: Double,
+    val numCode: Int,
+    val rate: Double?,
 )
