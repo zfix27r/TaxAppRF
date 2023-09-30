@@ -48,9 +48,9 @@ class TransactionsViewModel @Inject constructor(
                 .makeHot(viewModelScope)
         }
 
-    fun deleteTransaction(transactionId: Int) =
+    fun deleteTransaction(transactionModel: TransactionModel) =
         viewModelScope.launch(Dispatchers.IO) {
-            val deleteTransactionModel = DeleteTransactionWithReportModel(transactionId)
+            val deleteTransactionModel = DeleteTransactionWithReportModel(transactionModel.id)
             deleteTransactionUseCase.execute(deleteTransactionModel)
         }
 

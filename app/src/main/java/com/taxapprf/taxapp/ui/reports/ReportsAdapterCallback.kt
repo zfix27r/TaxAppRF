@@ -5,5 +5,4 @@ import com.taxapprf.domain.report.ReportModel
 interface ReportsAdapterCallback {
     fun onItemClick(reportModel: ReportModel)
     fun onMoreClick(reportModel: ReportModel)
-    fun onSwiped(reportModel: ReportModel)
 }

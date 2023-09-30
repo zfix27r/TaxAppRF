@@ -7,6 +7,7 @@ import com.taxapprf.domain.delete.DeleteReportWithTransactionsUseCase
 import com.taxapprf.domain.report.ObserveReportsUseCase
 import com.taxapprf.domain.excel.ImportExcelModel
 import com.taxapprf.domain.excel.ImportExcelUseCase
+import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.makeHot
 import com.taxapprf.taxapp.ui.showLoading
@@ -26,9 +27,10 @@ class ReportsViewModel @Inject constructor(
             .showLoading()
             .makeHot(viewModelScope)
 
-    fun deleteReport(reportId: Int) =
+    fun deleteReport(reportModel: ReportModel) =
         viewModelScope.launch(Dispatchers.IO) {
-            val deleteReportWithTransactionsModel = DeleteReportWithTransactionsModel(reportId)
+            val deleteReportWithTransactionsModel =
+                DeleteReportWithTransactionsModel(reportModel.id)
             deleteReportWithTransactionsUseCase.execute(deleteReportWithTransactionsModel)
         }
 

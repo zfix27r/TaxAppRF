@@ -18,32 +18,23 @@ import com.taxapprf.domain.cbr.CurrencyModel
 import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
-import com.taxapprf.taxapp.ui.BottomSheetBaseFragment
+import com.taxapprf.taxapp.ui.BaseBottomSheetFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
 @AndroidEntryPoint
-class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_transaction_detail) {
+class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_transaction_detail) {
     private val binding by viewBinding(FragmentTransactionDetailBinding::bind)
     private val viewModel by viewModels<TransactionDetailViewModel>()
 
     private lateinit var currenciesAdapter: ArrayAdapter<String>
     private lateinit var typeAdapter: ArrayAdapter<String>
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
 
-        dialog.setOnShowListener {
-            dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-                ?.let {
-                    val behavior = BottomSheetBehavior.from(it)
-                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
-        }
-
-        return dialog
+        return dialog.wrapHeight()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -8,19 +8,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
-import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,23 +36,26 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
             }
 
             override fun onMoreClick(reportModel: ReportModel) {
-                onShowMoreClick(reportModel)
-            }
-
-            override fun onSwiped(reportModel: ReportModel) {
-                navToDeleteDialog(reportModel)
+                showMoreClick(reportModel)
             }
         }
 
     private val adapter = ReportsAdapter(reportsAdapterCallback)
-    private val reportTouchHelper = ReportAdapterTouchHelperCallback(reportsAdapterCallback)
+
+    private val reportsAdapterTouchHelperCallback =
+        object : ReportsAdapterTouchHelperCallback {
+            override fun onSwiped(reportModel: ReportModel) {
+                showDeleteDialog(reportModel)
+            }
+        }
+
+    private val reportTouchHelper = ReportAdapterTouchHelper(reportsAdapterTouchHelperCallback)
     private val itemTouchHelper = ItemTouchHelper(reportTouchHelper)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.attachWithAccount()
-        currentStackSavedState.observeDelete()
 
         prepToolbar()
         prepViews()
@@ -95,18 +97,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         fab.setOnClickListener { navToTransactionDetail() }
     }
 
-    private fun SavedStateHandle.observeDelete() {
-        getLiveData<Int?>(DeleteDialogFragment.DELETE_ID).observe(viewLifecycleOwner) { result ->
-            result?.let { viewModel.deleteReport(it) }
-                ?: run {
-                    reportTouchHelper.cancelSwipe()
-                    itemTouchHelper.attachToRecyclerView(null)
-                    itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
-                }
-        }
-    }
-
-    private fun onShowMoreClick(reportModel: ReportModel) {
+    private fun showMoreClick(reportModel: ReportModel) {
         showActionMode {
             object : BaseActionModeCallback {
                 override var menuInflater = requireActivity().menuInflater
@@ -117,7 +108,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                     item: MenuItem
                 ) = when (item.itemId) {
                     R.id.action_menu_delete -> {
-                        navToDeleteDialog(reportModel)
+                        showDeleteDialog(reportModel)
                         true
                     }
 
@@ -125,6 +116,23 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                 }
             }
         }
+    }
+
+    private fun showDeleteDialog(reportModel: ReportModel) {
+        actionMode?.finish()
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.delete_dialog_title)
+            .setMessage(R.string.delete_dialog_message)
+            .setPositiveButton(R.string.delete_dialog_ok) { _, _ ->
+                viewModel.deleteReport(reportModel)
+            }
+            .setNegativeButton(R.string.delete_dialog_cancel) { _, _ ->
+                reportTouchHelper.cancelSwipe()
+                itemTouchHelper.attachToRecyclerView(null)
+                itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+            }
+            .show()
     }
 
     private val exportExcelToFirebaseIntent =
@@ -150,12 +158,5 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
     private fun navToTransactionDetail() {
         findNavController().navigate(ReportsFragmentDirections.actionReportsToTransactionDetail())
-    }
-
-    private fun navToDeleteDialog(reportModel: ReportModel) {
-        actionMode?.finish()
-        findNavController().navigate(
-            ReportsFragmentDirections.actionReportsToDeleteDialog(reportModel.id)
-        )
     }
 }

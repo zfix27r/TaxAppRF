@@ -1,21 +1,21 @@
-package com.taxapprf.taxapp.ui.reports
+package com.taxapprf.taxapp.ui.transactions
 
 import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import kotlin.math.abs
 
-class ReportAdapterTouchHelperCallback(private val callback: ReportsAdapterCallback) :
-    ItemTouchHelper.Callback() {
-    private var viewHolder: ViewHolder? = null
+class TransactionsAdapterTouchHelper(
+    private val callback: TransactionsAdapterTouchHelperCallback
+) : ItemTouchHelper.Callback() {
+    private var viewHolder: RecyclerView.ViewHolder? = null
     override fun isItemViewSwipeEnabled(): Boolean {
         return true
     }
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
-        viewHolder: ViewHolder
+        viewHolder: RecyclerView.ViewHolder
     ): Int {
         val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
 
@@ -24,22 +24,22 @@ class ReportAdapterTouchHelperCallback(private val callback: ReportsAdapterCallb
 
     override fun onMove(
         recyclerView: RecyclerView,
-        viewHolder: ViewHolder,
-        target: ViewHolder
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
     ): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         this.viewHolder = viewHolder
-        val report = (viewHolder as ReportsAdapterViewHolder).report
-        callback.onSwiped(report)
+        val transaction = (viewHolder as TransactionAdapterViewHolder).transaction
+        callback.onSwiped(transaction)
     }
 
     override fun onChildDraw(
         c: Canvas,
         recyclerView: RecyclerView,
-        viewHolder: ViewHolder,
+        viewHolder: RecyclerView.ViewHolder,
         dX: Float,
         dY: Float,
         actionState: Int,

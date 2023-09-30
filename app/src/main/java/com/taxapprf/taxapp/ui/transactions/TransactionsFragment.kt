@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.transaction.TransactionType
@@ -23,7 +24,6 @@ import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
-import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
 import com.taxapprf.taxapp.ui.round
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -44,22 +44,25 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
             override fun onMoreClick(transactionModel: TransactionModel) {
                 onShowMoreClick(transactionModel)
             }
-
-            override fun onSwiped(transactionModel: TransactionModel) {
-                navToTransactionDelete(transactionModel)
-            }
         }
 
     private val adapter = TransactionsAdapter(transactionAdapterCallback)
+
+    private val transactionAdapterTouchHelperCallback =
+        object : TransactionsAdapterTouchHelperCallback {
+            override fun onSwiped(transactionModel: TransactionModel) {
+                showDeleteDialog(transactionModel)
+            }
+        }
+
     private val transactionTouchHelper =
-        TransactionsAdapterTouchHelperCallback(transactionAdapterCallback)
+        TransactionsAdapterTouchHelper(transactionAdapterTouchHelperCallback)
     private val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(transactionTouchHelper)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.attachWithAccount()
-        currentStackSavedState.observeDelete()
 
         prepToolbar()
         prepView()
@@ -91,17 +94,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun prepListeners() {
         fab.setOnClickListener { navToTransactionDetail() }
-    }
-
-    private fun SavedStateHandle.observeDelete() {
-        getLiveData<Int?>(DeleteDialogFragment.DELETE_ID).observe(viewLifecycleOwner) { result ->
-            result?.let { viewModel.deleteTransaction(it) }
-                ?: run {
-                    transactionTouchHelper.cancelSwipe()
-                    itemTouchHelper.attachToRecyclerView(null)
-                    itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
-                }
-        }
     }
 
     override fun onAuthReady() {
@@ -193,7 +185,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                     item: MenuItem
                 ) = when (item.itemId) {
                     R.id.action_menu_delete -> {
-                        navToTransactionDelete(transactionModel)
+                        showDeleteDialog(transactionModel)
                         true
                     }
 
@@ -203,13 +195,21 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         }
     }
 
-    private fun navToTransactionDelete(transactionModel: TransactionModel) {
+    private fun showDeleteDialog(transactionModel: TransactionModel) {
         actionMode?.finish()
-        findNavController().navigate(
-            TransactionsFragmentDirections.actionTransactionsToDeleteDialog(
-                transactionModel.id
-            )
-        )
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.delete_dialog_title)
+            .setMessage(R.string.delete_dialog_message)
+            .setPositiveButton(R.string.delete_dialog_ok) { _, _ ->
+                viewModel.deleteTransaction(transactionModel)
+            }
+            .setNegativeButton(R.string.delete_dialog_cancel) { _, _ ->
+                transactionTouchHelper.cancelSwipe()
+                itemTouchHelper.attachToRecyclerView(null)
+                itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
+            }
+            .show()
     }
 
     private fun navToTransactionDetail(transactionModel: TransactionModel? = null) {
