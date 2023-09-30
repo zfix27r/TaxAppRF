@@ -79,7 +79,10 @@ fun Activity.checkStoragePermission(): Boolean {
     }
 }
 
-fun Double.round() = floor(this * 100.0) / 100.0
+const val ROUND_TWO = 100.0
+const val ROUND_SIX = 1_000_000.0
+
+fun Double.round(k: Double = ROUND_TWO) = floor(this * k) / k
 
 fun String.toLocalDate() =
     try {
@@ -126,4 +129,4 @@ fun showDatePickerDialog(
 }
 
 fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
-    LocalDate.of(year, month, dayOfMonth).toEpochDay()
+    LocalDate.of(year, month + 1, dayOfMonth).toEpochDay()

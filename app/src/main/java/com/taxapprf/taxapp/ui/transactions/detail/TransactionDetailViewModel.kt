@@ -92,6 +92,16 @@ class TransactionDetailViewModel @Inject constructor(
             .flowOn(Dispatchers.IO)
             .makeHot(viewModelScope)
 
+    fun checkDate(year: Int, month: Int, dayOfMonth: Int): Int? {
+        val dayFormatted = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
+        val monthIncremented = month + 1
+        val monthFormatted =
+            if (monthIncremented < 10) "0$monthIncremented" else monthIncremented.toString()
+
+        date = "$dayFormatted/$monthFormatted/$year"
+        return checkDate()
+    }
+
     fun checkName() =
         if (name.isNameRangeIncorrect()) R.string.transaction_detail_error_name_too_long
         else null

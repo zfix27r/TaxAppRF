@@ -66,8 +66,11 @@
     <string name="textSelectUnderBottom">Выберете существующий или создайте новый счет</string>
     <string name="account_select_accounts_loading">Идет загрузка доступных счетов. Пожалуйста, подождите.</string>
 
-    <!--NewAccountFragment-->
-    <string name="add_account_add_hint">Имя счета</string>
+    <!--AccountAddFragment-->
+    <string name="account_add_name_hint">Имя счета</string>
+
+    <!--CurrencyRateFragment-->
+    <string name="currency_rate_toolbar">Курс %s</string>
 
     <!--Registration Fragment-->
     <string name="edit_sign_up_name">Имя</string>

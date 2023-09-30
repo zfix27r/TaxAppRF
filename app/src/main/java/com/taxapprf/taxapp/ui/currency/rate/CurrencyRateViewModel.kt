@@ -1,4 +1,4 @@
-package com.taxapprf.taxapp.ui.currency.today
+package com.taxapprf.taxapp.ui.currency.rate
 
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.cbr.GetCBRRatesUseCase
@@ -13,10 +13,16 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class CurrencyRatesViewModel @Inject constructor(
+class CurrencyRateViewModel @Inject constructor(
     private val getCBRRatesUseCase: GetCBRRatesUseCase,
 ) : BaseViewModel() {
-    var date = LocalDate.now().toEpochDay()
+    private val now = LocalDate.now().toEpochDay()
+
+    var date = now
+        set(value) {
+            field = if (value.isDateRangeIncorrect()) now else value
+        }
+
     fun ratesWithCurrency() =
         flow {
             val result = getCBRRatesUseCase.execute(date)
@@ -25,4 +31,7 @@ class CurrencyRatesViewModel @Inject constructor(
             .showLoading()
             .flowOn(Dispatchers.IO)
             .makeHot(viewModelScope)
+
+    private fun Long.isDateRangeIncorrect() =
+        this > now
 }
