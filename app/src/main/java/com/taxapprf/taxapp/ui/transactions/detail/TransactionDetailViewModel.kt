@@ -2,6 +2,7 @@ package com.taxapprf.taxapp.ui.transactions.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.data.ACCOUNT_ID
 import com.taxapprf.data.REPORT_ID
 import com.taxapprf.data.TRANSACTION_ID
 import com.taxapprf.data.getEpochDate
@@ -32,6 +33,7 @@ class TransactionDetailViewModel @Inject constructor(
     observeTransactionUseCase: ObserveTransactionUseCase,
     private val getCurrenciesUseCase: GetCurrenciesUseCase,
 ) : BaseViewModel() {
+    private val accountId = savedStateHandle.get<Int>(ACCOUNT_ID)
     private val reportId = savedStateHandle.get<Int>(REPORT_ID)
         ?.let { if (it == 0) null else it }
     private val transactionId = savedStateHandle.get<Int>(TRANSACTION_ID)
@@ -124,13 +126,14 @@ class TransactionDetailViewModel @Inject constructor(
         }
 
     fun getSaveTransactionModel(): SaveTransactionModel? {
+        val accountId = accountId ?: return null
         val currencyId = currencies.value?.find { it.charCode == currency }?.id ?: return null
         val date = date.toLocalDate()?.toEpochDay() ?: return null
 
         return SaveTransactionModel(
             transactionId = transactionId,
             reportId = reportId,
-            accountId = account.id,
+            accountId = accountId,
             currencyId = currencyId,
             name = name,
             date = date,

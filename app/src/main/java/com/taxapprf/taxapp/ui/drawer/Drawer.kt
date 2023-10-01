@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Layer
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.taxapprf.data.UserRepositoryImpl
@@ -16,6 +17,7 @@ import com.taxapprf.taxapp.R
 class Drawer(
     private val drawerLayout: DrawerLayout,
     private val navigationView: NavigationView,
+    private val navController: NavController,
     private val callback: DrawerCallback,
 ) {
     private val header = navigationView.getHeaderView(HEADER_POSITION)
@@ -40,7 +42,8 @@ class Drawer(
 
             override fun navToAddAccount() {
                 closeDrawer()
-                callback.navToAccountAdd()
+                if (navController.currentDestination?.id != R.id.account_add)
+                    navController.navigate(R.id.action_global_account_add)
             }
         }
 
@@ -101,27 +104,31 @@ class Drawer(
     private fun MenuItem.onNavigationItemClick() =
         when (itemId) {
             R.id.reports -> {
-                callback.navToReports()
+                if (navController.currentDestination?.id != R.id.reports)
+                    navController.navigate(R.id.action_global_reports)
                 true
             }
 
-            R.id.currency_rates_today -> {
-                callback.navToCurrencyRatesToday()
+            R.id.currency_rate -> {
+                if (navController.currentDestination?.id != R.id.currency_rate)
+                    navController.navigate(R.id.action_global_currency_rate)
                 true
             }
 
             R.id.currency_converter -> {
-                callback.navToCurrencyConverter()
+                if (navController.currentDestination?.id != R.id.currency_converter)
+                    navController.navigate(R.id.action_global_currency_converter)
                 true
             }
 
             R.id.sign -> {
-                callback.navToSign()
+                if (navController.currentDestination?.id != R.id.sign)
+                    navController.navigate(R.id.action_global_sign)
                 true
             }
 
             R.id.sign_out -> {
-                callback.navToSignOut()
+                callback.signOut()
                 true
             }
 

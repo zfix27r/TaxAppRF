@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
@@ -52,26 +53,34 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     private val reportTouchHelper = ReportAdapterTouchHelper(reportsAdapterTouchHelperCallback)
     private val itemTouchHelper = ItemTouchHelper(reportTouchHelper)
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        mainViewModel.observeAccount()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.attachWithAccount()
+        viewModel.attach()
 
         prepToolbar()
         prepViews()
         setListeners()
 
-    }
-
-    override fun onAuthReady() {
-        super.onAuthReady()
-
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.observeReports().collectLatest { reports ->
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.reports.collectLatest { reports ->
                     adapter.submitList(reports)
                 }
             }
+        }
+    }
+
+    override fun onAuthReady(userWithAccountsModel: UserWithAccountsModel) {
+        super.onAuthReady(userWithAccountsModel)
+        userWithAccountsModel.activeAccount?.let {
+            viewModel.updateReports(it.id)
         }
     }
 

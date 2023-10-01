@@ -1,7 +1,6 @@
 package com.taxapprf.data.local.room
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -29,9 +28,12 @@ interface LocalUserDao {
     )
     fun observe(email: String): Flow<List<LocalUserWithAccounts>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveAll(localAccountEntity: LocalAccountEntity): Long
+    @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
+    fun getByEmail(email: String): LocalUserEntity?
 
-    @Delete
-    fun deleteAll(localAccountEntity: LocalAccountEntity): Int
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun save(localUserEntity: LocalUserEntity): Long
+
+    @Query("DELETE FROM user")
+    fun deleteAll()
 }

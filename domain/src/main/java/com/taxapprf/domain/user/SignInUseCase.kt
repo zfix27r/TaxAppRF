@@ -4,8 +4,13 @@ import com.taxapprf.domain.UserRepository
 import javax.inject.Inject
 
 class SignInUseCase @Inject constructor(
-    private val repository: UserRepository
+    private val userRepository: UserRepository
 ) {
-    suspend fun execute(userLogInModel: SignInModel) =
-        repository.signIn(userLogInModel)
+    suspend fun execute(signInModel: SignInModel) {
+        userRepository.signIn(signInModel)
+        /*
+        * TODO объемная задача по объеденению локальных данных и удаленных
+        *  необходимо выработать стратегию объединения
+        * */
+    }
 }

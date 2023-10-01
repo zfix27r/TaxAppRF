@@ -1,38 +1,33 @@
 package com.taxapprf.taxapp.di
 
-import android.content.Context
 import com.taxapprf.data.CBRRepositoryImpl
 import com.taxapprf.data.ExcelRepositoryImpl
-import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
-import com.taxapprf.domain.user.SwitchAccountUseCase
+import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.domain.cbr.GetCBRRatesUseCase
 import com.taxapprf.domain.cbr.GetCurrenciesUseCase
 import com.taxapprf.domain.delete.DeleteReportWithTransactionsUseCase
-import com.taxapprf.domain.report.ObserveReportsUseCase
-import com.taxapprf.domain.excel.ImportExcelUseCase
 import com.taxapprf.domain.delete.DeleteTransactionWithReportUseCase
+import com.taxapprf.domain.excel.ExportExcelUseCase
+import com.taxapprf.domain.excel.ImportExcelUseCase
+import com.taxapprf.domain.report.ObserveReportUseCase
+import com.taxapprf.domain.report.ObserveReportsUseCase
+import com.taxapprf.domain.sync.SyncAllUseCase
+import com.taxapprf.domain.transaction.ObserveTransactionUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
-import com.taxapprf.domain.report.ObserveReportUseCase
-import com.taxapprf.domain.sync.SyncAllUseCase
-import com.taxapprf.domain.excel.ExportExcelUseCase
-import com.taxapprf.domain.transaction.ObserveTransactionUseCase
-import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.domain.update.UpdateReportWithTransactionTaxUseCase
-import com.taxapprf.domain.user.ObserveUserUseCase
+import com.taxapprf.domain.user.ObserveUserWithAccountsUseCase
 import com.taxapprf.domain.user.SignInUseCase
 import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SignUpUseCase
-import com.taxapprf.taxapp.R
+import com.taxapprf.domain.user.SwitchAccountUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -46,12 +41,16 @@ object DomainModule {
         SignUpUseCase(userRepositoryImpl)
 
     @Provides
-    fun provideSignOutUseCase(userRepositoryImpl: UserRepositoryImpl) =
-        SignOutUseCase(userRepositoryImpl)
+    fun provideSignOutUseCase(
+        userRepositoryImpl: UserRepositoryImpl,
+        reportRepositoryImpl: ReportRepositoryImpl,
+        transactionRepositoryImpl: TransactionRepositoryImpl
+    ) =
+        SignOutUseCase(userRepositoryImpl, reportRepositoryImpl, transactionRepositoryImpl)
 
     @Provides
     fun provideGetUserUseCase(userRepositoryImpl: UserRepositoryImpl) =
-        ObserveUserUseCase(userRepositoryImpl)
+        ObserveUserWithAccountsUseCase(userRepositoryImpl)
 
     @Provides
     fun provideSwitchAccountUseCase(userRepositoryImpl: UserRepositoryImpl) =

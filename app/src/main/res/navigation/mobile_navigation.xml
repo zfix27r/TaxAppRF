@@ -34,8 +34,8 @@
         app:popUpToInclusive="true" />
 
     <action
-        android:id="@+id/action_global_currency_rates_today"
-        app:destination="@id/currency_rates_today"
+        android:id="@+id/action_global_currency_rate"
+        app:destination="@id/currency_rate"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
@@ -147,15 +147,13 @@
     </dialog>
 
     <fragment
-        android:id="@+id/currency_rates_today"
+        android:id="@+id/currency_rate"
         android:name="com.taxapprf.taxapp.ui.currency.rate.CurrencyRateFragment"
-        android:label="@string/menu_rates_today_name"
         tools:layout="@layout/fragment_currency_rate" />
 
     <fragment
         android:id="@+id/currency_converter"
         android:name="com.taxapprf.taxapp.ui.currency.converter.CurrencyConverterFragment"
-        android:label="@string/menu_converter_name"
         tools:layout="@layout/fragment_currency_converter" />
 
     <dialog

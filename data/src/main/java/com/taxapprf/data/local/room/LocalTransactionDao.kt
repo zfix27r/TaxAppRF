@@ -102,20 +102,23 @@ interface LocalTransactionDao {
     fun getTransactionsKeys(reportId: Int): List<GetTransactionKeys>
 
     @Query("SELECT * FROM `transaction` WHERE account_id = :accountId AND report_id = :reportId")
-    fun getAll(accountId: Int, reportId: Int): List<LocalTransactionEntity?>
+    fun getTransactions(accountId: Int, reportId: Int): List<LocalTransactionEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(localTransactionEntity: LocalTransactionEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveAll(transactionEntities: List<LocalTransactionEntity>): List<Long>
+    fun saveTransactions(transactionEntities: List<LocalTransactionEntity>): List<Long>
 
     @Query("DELETE FROM `transaction` WHERE account_id = :accountId AND report_id = :reportId")
-    fun deleteAll(accountId: Int, reportId: Int): Int
+    fun deleteTransactions(accountId: Int, reportId: Int): Int
 
     @Query("DELETE FROM `transaction` WHERE id = :transactionId")
     fun delete(transactionId: Int): Int
 
     @Query("UPDATE `transaction` SET tax = :tax WHERE id = :transactionId")
     fun updateTax(transactionId: Int, tax: Double)
+
+    @Query("DELETE FROM `transaction`")
+    fun deleteAll()
 }

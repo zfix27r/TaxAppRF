@@ -15,7 +15,7 @@
     <string name="auth_error_session_expire">Сессия истекла</string>
     <string name="auth_error">Ошибка авторизации</string>
     <string name="default_user_name_name">Локальная запись</string>
-    <string name="default_account_name">По умолчанию</string>
+    <string name="default_account_name">Основной аккаунт</string>
     <string name="response_error_data_is_empty"></string>
 
 
@@ -56,7 +56,6 @@
     <string name="text_sign_in_under_bottom">Войдите в свою учетную запись</string>
     <string name="authSuccess">Пользователь авторизован</string>
     <string name="authFailure">Ошибка авторизации. %s</string>
-    <string name="authAccountDefault">Основной аккаунт</string>
     <string name="error_sign_in">Неверные параметры входа! Повторите попытку.</string>
 
     <!--SelectAccountFragment-->

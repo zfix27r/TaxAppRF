@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.user.AccountModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,8 +17,6 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
 
     private val _state = MutableLiveData<BaseState>()
     val state: LiveData<BaseState> = _state
-
-    lateinit var account: AccountModel
 
     protected fun startWithLock() {
         isLock = true

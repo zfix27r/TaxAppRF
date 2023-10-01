@@ -10,6 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.textfield.TextInputEditText
+import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
@@ -42,14 +43,11 @@ interface IBaseFragment {
     }
 
     fun MainViewModel.observeAccount() {
-        fragment.lifecycleScope.launch {
-            fragment.viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userWithAccounts.collectLatest { userWithAccountsNullable ->
-                    userWithAccountsNullable?.let { userWithAccounts ->
-                        userWithAccounts.activeAccount?.let {
-                            baseViewModel.account = it
-                            onAuthReady()
-                        }
+        mainActivity.lifecycleScope.launch {
+            mainActivity.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                userWithAccounts.collectLatest { userWithAccountsModel ->
+                    userWithAccountsModel?.let {
+                        onAuthReady(userWithAccountsModel)
                     }
                 }
             }
@@ -62,7 +60,7 @@ interface IBaseFragment {
                 is Loading -> onLoading()
                 is Error -> onError(it.t)
                 is Success -> onSuccess()
-                is SignOut -> mainViewModel.signOut()
+                is SignOut -> mainActivity.onSignOut()
                 is SuccessShare -> onSuccessShare(it.uri)
                 is SuccessImport -> onSuccessImport(it.uri)
                 is SuccessDelete -> onSuccessDelete()
@@ -70,7 +68,7 @@ interface IBaseFragment {
         }
     }
 
-    fun onAuthReady() {
+    fun onAuthReady(userWithAccountsModel: UserWithAccountsModel) {
 
     }
 

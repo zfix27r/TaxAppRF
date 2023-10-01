@@ -26,4 +26,5 @@ interface TransactionRepository {
     )
 
     suspend fun inflateExcelTransactions(exportExcelModel: ExportExcelModel): List<ExcelTransactionModel>
+    suspend fun deleteAll()
 }

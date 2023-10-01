@@ -14,10 +14,8 @@ import com.taxapprf.domain.excel.ExportExcelModel
 import com.taxapprf.domain.toAppDate
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.domain.transaction.TransactionTypeModel
 import com.taxapprf.domain.update.UpdateReportWithTransactionTaxModel
-import com.taxapprf.taxapp.R
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -46,11 +44,14 @@ class TransactionRepositoryImpl @Inject constructor(
         localDao.getExcelTransactionsWithCurrency(exportExcelModel.reportId)
             .map { it.toExcelTransactionModel(exportExcelModel) }
 
+    override suspend fun deleteAll() =
+        localDao.deleteAll()
+
     override suspend fun save(saveTransactionModel: SaveTransactionModel) =
         saveTransactionModel.toLocalTransactionEntity()?.let { localDao.save(it) }
 
-    override suspend fun updateTax(updateTaxModel: UpdateReportWithTransactionTaxModel) {
-        with(updateTaxModel) {
+    override suspend fun updateTax(updateReportWithTransactionTaxModel: UpdateReportWithTransactionTaxModel) {
+        with(updateReportWithTransactionTaxModel) {
             tax?.let {
                 localDao.updateTax(transactionId, it)
             }

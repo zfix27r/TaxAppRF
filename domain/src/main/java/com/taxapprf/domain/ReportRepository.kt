@@ -23,4 +23,5 @@ interface ReportRepository {
     suspend fun deleteOrUpdateReport(deleteTransactionWithReportModel: DeleteTransactionWithReportModel)
 
     suspend fun saveReport(reportModel: ReportModel)
+    suspend fun deleteAll()
 }

@@ -17,10 +17,10 @@ interface LocalAccountDao {
     fun getAll(): List<LocalAccountEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveAll(localAccountEntities: List<LocalAccountEntity>): List<Long>
+    fun saveAccounts(localAccountEntities: List<LocalAccountEntity>): List<Long>
 
     @Delete
-    fun deleteAll(localAccountEntities: List<LocalAccountEntity>): Int
+    fun deleteAccounts(localAccountEntities: List<LocalAccountEntity>): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(localAccountEntity: LocalAccountEntity): Long
@@ -30,4 +30,7 @@ interface LocalAccountDao {
 
     @Query("UPDATE account SET is_active = 1 WHERE remote_key = :accountName")
     fun setActiveAccount(accountName: String): Int
+
+    @Query("DELETE FROM account")
+    fun deleteAll()
 }

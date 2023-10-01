@@ -39,6 +39,7 @@ import com.taxapprf.taxapp.ui.drawer.DrawerCallback
 import com.taxapprf.taxapp.ui.showSnackBar
 import com.taxapprf.taxapp.ui.state
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
@@ -53,13 +54,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         AppBarConfiguration(topLevelDestinations, binding.drawerLayout)
     }
 
-    val navController by lazy {
+    private val navController by lazy {
         val navHost =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         navHost.navController
     }
 
-    val drawer by lazy { Drawer(binding.drawerLayout, binding.navView, drawerCallback) }
+    val drawer by lazy {
+        Drawer(
+            binding.drawerLayout,
+            binding.navView,
+            navController,
+            drawerCallback
+        )
+    }
     val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
     val fab by lazy { binding.appBarMain.fab }
 
@@ -73,8 +81,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         setupWithNavController(binding.navView, navController)
 
         observeState()
-        viewModel.observeUser()
+        observeUser()
         navController.observeCurrentBackStack()
+
+        viewModel.updateUserWithAccounts(getString(R.string.default_account_name))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -122,13 +132,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         onLoadingStop()
     }
 
-    private fun onSignOut() {
-        viewModel.signOut()
+    fun onSignOut() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.signOut()
+            observeUser()
+        }
     }
 
     private val topLevelDestinations = setOf(
         R.id.sign,
-        R.id.currency_rates_today,
+        R.id.currency_rate,
         R.id.reports,
         R.id.currency_converter,
     )
@@ -150,10 +163,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         }
     }
 
-    private fun MainViewModel.observeUser() {
+    fun observeUser() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userWithAccounts.collectLatest { userWithAccounts ->
+                viewModel.userWithAccounts.collectLatest { userWithAccounts ->
                     drawer.updateUser(
                         userWithAccounts?.user,
                         getString(R.string.default_user_name_name)
@@ -181,28 +194,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     private val drawerCallback =
         object : DrawerCallback {
-            override fun navToReports() {
-                navController.navigate(R.id.action_global_reports)
-            }
-
-            override fun navToCurrencyConverter() {
-                navController.navigate(R.id.action_global_currency_converter)
-            }
-
-            override fun navToCurrencyRatesToday() {
-                navController.navigate(R.id.action_global_currency_rates_today)
-            }
-
-            override fun navToSign() {
-                navController.navigate(R.id.action_global_sign)
-            }
-
-            override fun navToSignOut() {
-                viewModel.signOut()
-            }
-
-            override fun navToAccountAdd() {
-                navController.navigate(R.id.action_global_account_add)
+            override fun signOut() {
+                onSignOut()
             }
 
             override fun switchAccount(accountModel: AccountModel) {

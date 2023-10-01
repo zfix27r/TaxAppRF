@@ -80,6 +80,9 @@ class ReportRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun deleteAll() =
+        localDao.deleteAll()
+
     private fun deleteTransactionInReport(
         reportId: Int?,
         transactionTax: Double? = null,

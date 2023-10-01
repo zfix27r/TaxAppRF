@@ -14,8 +14,6 @@ class UpdateReportWithTransactionTaxUseCase @Inject constructor(
         with(updateReportWithTransactionTaxModel) {
             cbrRepository.getCurrencyRate(currencyId, date)?.let {
                 rate = it
-                println(updateReportWithTransactionTaxModel)
-                println(tax)
                 reportRepository.updateTax(updateReportWithTransactionTaxModel)
                 transactionRepository.updateTax(updateReportWithTransactionTaxModel)
             }

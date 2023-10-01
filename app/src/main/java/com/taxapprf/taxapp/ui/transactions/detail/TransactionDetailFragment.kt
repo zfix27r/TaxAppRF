@@ -42,10 +42,7 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         viewModel.attachWithAccount()
         prepTypes()
         prepListeners()
-    }
 
-    override fun onAuthReady() {
-        super.onAuthReady()
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
