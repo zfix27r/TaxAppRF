@@ -60,6 +60,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         prepToolbar()
         prepViews()
         setListeners()
+
     }
 
     override fun onAuthReady() {

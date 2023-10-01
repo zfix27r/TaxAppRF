@@ -8,7 +8,7 @@ import com.taxapprf.taxapp.R
 class MainToolbar(
     private val toolbar: Toolbar,
 ) {
-    fun updateMenu(menuId: Int = R.menu.toolbar_main, menuListener: ((MenuItem) -> Boolean)? = null) {
+    fun updateMenu(menuId: Int = R.menu.toolbar_empty, menuListener: ((MenuItem) -> Boolean)? = null) {
         toolbar.menu.clear()
         toolbar.inflateMenu(menuId)
         toolbar.setOnMenuItemClickListener(menuListener)

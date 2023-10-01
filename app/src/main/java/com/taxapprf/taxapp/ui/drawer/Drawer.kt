@@ -59,14 +59,12 @@ class Drawer(
         user: UserModel?,
         defaultUserName: String,
     ) {
-        user?.let {
-            if (user.email != UserRepositoryImpl.LOCAL_USER_EMAIL) {
-                showWithAuth()
-                userAvatar.setImageURI(user.avatar)
-                userName.text = user.name
-                userEmail.text = user.email
-            }
-        } ?: run {
+        if (user?.email != UserRepositoryImpl.LOCAL_USER_EMAIL) {
+            showWithAuth()
+            userAvatar.setImageURI(user?.avatar)
+            userName.text = user?.name
+            userEmail.text = user?.email
+        } else {
             hideWithoutAuth()
             userAvatar.setImageResource(R.drawable.ic_tax_app_logo)
             userName.text = defaultUserName
@@ -88,8 +86,8 @@ class Drawer(
     }
 
     private fun hideWithoutAuth() {
-        navigationView.menu.findItem(R.id.sign_out).isVisible = false
         navigationView.menu.findItem(R.id.sign).isVisible = true
+        navigationView.menu.findItem(R.id.sign_out).isVisible = false
     }
 
     private fun expandAccounts() {

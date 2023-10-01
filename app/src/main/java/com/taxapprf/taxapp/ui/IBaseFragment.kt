@@ -41,7 +41,7 @@ interface IBaseFragment {
         mainViewModel.observeAccount()
     }
 
-    private fun MainViewModel.observeAccount() {
+    fun MainViewModel.observeAccount() {
         fragment.lifecycleScope.launch {
             fragment.viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userWithAccounts.collectLatest { userWithAccountsNullable ->

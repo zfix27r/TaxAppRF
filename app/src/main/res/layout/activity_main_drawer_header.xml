@@ -90,6 +90,8 @@
         android:id="@+id/recycler_drawer_header_accounts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/activity_main_drawer_header_item" />
+        tools:listitem="@layout/activity_main_drawer_header_item"
+        tools:visibility="visible" />
 </LinearLayout>

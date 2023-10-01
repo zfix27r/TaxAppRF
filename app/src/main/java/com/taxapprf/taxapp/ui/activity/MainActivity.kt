@@ -78,8 +78,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        /*        if (viewModel.isSignIn) menuInflater.inflate(R.menu.reports_toolbar, menu)
-                else menuInflater.inflate(R.menu.main_toolbar, menu)*/
+        menuInflater.inflate(R.menu.toolbar_reports, menu)
         return true
     }
 

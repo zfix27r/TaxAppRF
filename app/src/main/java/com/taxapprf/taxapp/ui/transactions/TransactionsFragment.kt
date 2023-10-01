@@ -62,6 +62,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.attachWithAccount()
+        observeReport()
+        observeTransactions()
 
         prepToolbar()
         prepView()
@@ -95,9 +97,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         fab.setOnClickListener { navToTransactionDetail() }
     }
 
-    override fun onAuthReady() {
-        super.onAuthReady()
-
+    private fun observeReport() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.observeReport()?.let { flow ->
@@ -107,7 +107,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                 } ?: findNavController().popBackStack()
             }
         }
+    }
 
+    private fun observeTransactions() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.observeTransactions()?.let { flow ->

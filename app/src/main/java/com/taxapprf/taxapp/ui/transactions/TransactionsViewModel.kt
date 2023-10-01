@@ -14,11 +14,9 @@ import com.taxapprf.domain.update.UpdateReportWithTransactionTaxModel
 import com.taxapprf.domain.update.UpdateReportWithTransactionTaxUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.makeHot
-import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,18 +33,14 @@ class TransactionsViewModel @Inject constructor(
     val reportId = savedStateHandle.get<Int>(REPORT_ID)
 
     fun observeReport() =
-        reportId?.let {
-            observeReportUseCase.execute(reportId)
-                ?.flowOn(Dispatchers.IO)
-                ?.makeHot(viewModelScope)
-        }
+        observeReportUseCase.execute(reportId)
+            ?.flowOn(Dispatchers.IO)
+            ?.makeHot(viewModelScope)
 
     fun observeTransactions() =
-        reportId?.let {
-            getTransactionsUseCase.execute(reportId)
-                .flowOn(Dispatchers.IO)
-                .makeHot(viewModelScope)
-        }
+        getTransactionsUseCase.execute(reportId)
+            ?.flowOn(Dispatchers.IO)
+            ?.makeHot(viewModelScope)
 
     fun deleteTransaction(transactionModel: TransactionModel) =
         viewModelScope.launch(Dispatchers.IO) {
