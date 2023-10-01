@@ -11,7 +11,6 @@ import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SwitchAccountModel
 import com.taxapprf.domain.user.SwitchAccountUseCase
 import com.taxapprf.domain.user.UserWithAccountsModel
-import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,16 +44,15 @@ class MainViewModel @Inject constructor(
     private val _userWithAccounts: MutableStateFlow<UserWithAccountsModel?> = MutableStateFlow(null)
     val userWithAccounts = _userWithAccounts.asStateFlow()
 
+    var accountId: Int? = null
+
     fun updateUserWithAccounts(defaultAccountName: String) =
         viewModelScope.launch(Dispatchers.IO) {
             val observeUserWithAccountsModel =
                 ObserveUserWithAccountsModel(defaultAccountName)
 
             observeUserWithAccountsUseCase.execute(observeUserWithAccountsModel)
-                .showLoading()
-                .collectLatest {
-                    _userWithAccounts.value = it
-                }
+                .collectLatest { _userWithAccounts.value = it }
         }
 
     fun switchAccount(accountName: String) =

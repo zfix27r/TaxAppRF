@@ -61,7 +61,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.attachWithAccount()
+        viewModel.attach()
         observeReport()
         observeTransactions()
 
@@ -214,13 +214,15 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun navToTransactionDetail(transactionModel: TransactionModel? = null) {
-        viewModel.reportId?.let {
-            findNavController().navigate(
-                TransactionsFragmentDirections.actionTransactionsToTransactionDetail(
-                    reportId = it,
-                    transactionId = transactionModel?.id ?: 0
-                )
+        val accountId = mainViewModel.accountId ?: return
+        val reportId = viewModel.reportId ?: return
+
+        findNavController().navigate(
+            TransactionsFragmentDirections.actionTransactionsToTransactionDetail(
+                accountId = accountId,
+                reportId = reportId,
+                transactionId = transactionModel?.id ?: 0
             )
-        }
+        )
     }
 }

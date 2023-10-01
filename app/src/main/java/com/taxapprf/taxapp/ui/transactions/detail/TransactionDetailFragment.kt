@@ -39,7 +39,8 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.attachWithAccount()
+        viewModel.attach()
+
         prepTypes()
         prepListeners()
 

@@ -125,7 +125,7 @@
 
     <dialog
         android:id="@+id/delete_dialog"
-        android:name="com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment" >
+        android:name="com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment">
         <argument
             android:name="delete_id"
             app:argType="integer" />
@@ -135,15 +135,18 @@
         android:id="@+id/transaction_detail"
         android:name="com.taxapprf.taxapp.ui.transactions.detail.TransactionDetailFragment"
         android:label="@string/menuTransactionDetail"
-        tools:layout="@layout/fragment_transaction_detail" >
+        tools:layout="@layout/fragment_transaction_detail">
+        <argument
+            android:name="account_id"
+            app:argType="integer" />
         <argument
             android:name="report_id"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
         <argument
             android:name="transaction_id"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
     </dialog>
 
     <fragment

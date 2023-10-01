@@ -7,15 +7,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.textfield.TextInputEditText
-import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 interface IBaseFragment {
     val mainActivity: MainActivity
@@ -37,23 +32,6 @@ interface IBaseFragment {
         })
     }
 
-    fun BaseViewModel.attachWithAccount() {
-        attach()
-        mainViewModel.observeAccount()
-    }
-
-    fun MainViewModel.observeAccount() {
-        mainActivity.lifecycleScope.launch {
-            mainActivity.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                userWithAccounts.collectLatest { userWithAccountsModel ->
-                    userWithAccountsModel?.let {
-                        onAuthReady(userWithAccountsModel)
-                    }
-                }
-            }
-        }
-    }
-
     private fun BaseViewModel.observeState() {
         state.observe(fragment.viewLifecycleOwner) {
             when (it) {
@@ -66,10 +44,6 @@ interface IBaseFragment {
                 is SuccessDelete -> onSuccessDelete()
             }
         }
-    }
-
-    fun onAuthReady(userWithAccountsModel: UserWithAccountsModel) {
-
     }
 
     fun onLoading() {

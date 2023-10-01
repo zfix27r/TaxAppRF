@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
@@ -56,7 +55,9 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mainViewModel.observeAccount()
+        mainViewModel.userWithAccounts.value?.activeAccount?.let {
+            viewModel.updateReports(it.id)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,13 +75,6 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                     adapter.submitList(reports)
                 }
             }
-        }
-    }
-
-    override fun onAuthReady(userWithAccountsModel: UserWithAccountsModel) {
-        super.onAuthReady(userWithAccountsModel)
-        userWithAccountsModel.activeAccount?.let {
-            viewModel.updateReports(it.id)
         }
     }
 
@@ -167,6 +161,10 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun navToTransactionDetail() {
-        findNavController().navigate(ReportsFragmentDirections.actionReportsToTransactionDetail())
+        mainViewModel.accountId?.let { accountId ->
+            val directions =
+                ReportsFragmentDirections.actionReportsToTransactionDetail(accountId)
+            findNavController().navigate(directions)
+        }
     }
 }

@@ -26,6 +26,7 @@ import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
 import com.taxapprf.domain.user.AccountModel
+import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.ui.Error
@@ -82,7 +83,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
         observeState()
         observeUser()
-        navController.observeCurrentBackStack()
 
         viewModel.updateUserWithAccounts(getString(R.string.default_account_name))
     }
@@ -95,6 +95,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(this, R.id.nav_host_fragment_content_main)
         return (navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp())
+    }
+
+    private fun onAccountLoaded(userWithAccountsModel: UserWithAccountsModel?) {
+        userWithAccountsModel?.let {
+            userWithAccountsModel.activeAccount?.let {
+                viewModel.accountId = it.id
+
+                navController.setGraph(R.navigation.mobile_navigation)
+                navController.observeCurrentBackStack()
+            }
+        }
     }
 
     fun onLoadingStart() {
@@ -173,6 +184,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
                     )
                     drawer.updateActiveAccount(userWithAccounts?.activeAccount)
                     drawer.updateOtherAccounts(userWithAccounts?.otherAccounts)
+
+                    onAccountLoaded(userWithAccounts)
                 }
             }
         }
