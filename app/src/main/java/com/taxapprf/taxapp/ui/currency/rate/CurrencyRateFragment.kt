@@ -35,8 +35,13 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
                 )
             )
 
-//            observeRateWithCurrencies()
+            viewModel.updateRatesWithCurrency()
         }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.updateRatesWithCurrency()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,7 +80,7 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
     private fun observeRateWithCurrencies() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.ratesWithCurrency().collectLatest { rateWithCurrencies ->
+                viewModel.ratesWithCurrency.collectLatest { rateWithCurrencies ->
                     rateWithCurrencies?.let {
                         adapter.submitList(it)
                     }

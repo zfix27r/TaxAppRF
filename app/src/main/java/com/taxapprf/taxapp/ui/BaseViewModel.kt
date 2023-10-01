@@ -1,11 +1,10 @@
 package com.taxapprf.taxapp.ui
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,8 +14,7 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     val isUnlock
         get() = !isLock
 
-    private val _state = MutableLiveData<BaseState>()
-    val state: LiveData<BaseState> = _state
+    val state: MutableStateFlow<BaseState> = MutableStateFlow(Loading)
 
     protected fun startWithLock() {
         isLock = true
@@ -28,32 +26,32 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             delay(LOADING_DELAY)
-            if (isLoadingDelayTimeout) _state.postValue(Loading)
+            if (isLoadingDelayTimeout) state.value = Loading
         }
     }
 
     protected fun error(t: Throwable) {
         loaded()
-        _state.postValue(Error(t))
+        state.value = Error(t)
     }
 
     protected fun success() {
         loaded()
-        _state.postValue(Success)
+        state.value = Success
     }
 
     protected fun successShare(uri: Uri) {
         loaded()
-        _state.postValue(SuccessShare(uri))
+        state.value = SuccessShare(uri)
     }
 
     protected fun successExport(uri: Uri) {
         loaded()
-        _state.postValue(SuccessImport(uri))
+        state.value = SuccessImport(uri)
     }
 
     protected fun successDelete() {
-        _state.postValue(SuccessDelete)
+        state.value = SuccessDelete
     }
 
     private fun loaded() {
