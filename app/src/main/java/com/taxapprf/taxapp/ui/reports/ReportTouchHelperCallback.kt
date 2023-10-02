@@ -25,7 +25,7 @@ class ReportTouchHelperCallback (private val callback: ReportsAdapterCallback) :
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        TODO("Not yet implemented")
+        TODO("Сейчас перемещение запрещено. Имплементации нет.")
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
