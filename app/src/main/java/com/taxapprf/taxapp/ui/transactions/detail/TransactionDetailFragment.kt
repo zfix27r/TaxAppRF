@@ -2,7 +2,6 @@ package com.taxapprf.taxapp.ui.transactions.detail
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -40,7 +39,8 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
         super.onAuthReady()
         viewModel.report = mainViewModel.report
         viewModel.transaction = mainViewModel.transaction
-        viewModel.currency = resources.getString(R.string.transaction_currency_usd)
+        val usd = resources.getString(R.string.transaction_currency_usd)
+        viewModel.currency = mainViewModel.transaction?.currency ?: usd
 
         mainViewModel.report = null
         mainViewModel.transaction = null
@@ -138,10 +138,7 @@ class TransactionDetailFragment : BottomSheetBaseFragment(R.layout.fragment_tran
     }
 
     private fun updateCurrency(currency: String) {
-        Log.d("OLGA", "currency: String: $currency")
         val positionCurrency = currenciesAdapter.getPosition(currency)
-        Log.d("OLGA", "positionCurrency: $positionCurrency")
-        Log.d("OLGA", "currenciesAdapter.getItem: ${currenciesAdapter.getItem(positionCurrency)}")
         binding.spinnerTransactionDetailCurrencies.setText(currenciesAdapter.getItem(positionCurrency), false)
     }
 
