@@ -209,13 +209,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun navToTransactionDetail(transactionModel: TransactionModel? = null) {
-        println(transactionModel)
-        println(viewModel.reportId)
-        println(mainViewModel.accountId)
         val accountId = mainViewModel.accountId ?: return
         val reportId = viewModel.reportId ?: return
 
-        println("@@@")
         findNavController().navigate(
             TransactionsFragmentDirections.actionTransactionsToTransactionDetail(
                 accountId = accountId,

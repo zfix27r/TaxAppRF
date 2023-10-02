@@ -30,6 +30,7 @@ class ExcelRepositoryImpl @Inject constructor(
             transactionTitles = listOf(
                 context.getString(R.string.excel_transaction_name),
                 context.getString(R.string.excel_transaction_type),
+                context.getString(R.string.excel_transaction_date),
                 context.getString(R.string.excel_transaction_sum),
                 context.getString(R.string.excel_transaction_currency_char_code),
                 context.getString(R.string.excel_transaction_currency_rate),

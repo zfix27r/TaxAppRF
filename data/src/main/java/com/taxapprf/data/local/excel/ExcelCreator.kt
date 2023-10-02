@@ -10,55 +10,7 @@ import org.apache.poi.ss.util.CellRangeAddress
 import kotlin.properties.Delegates
 
 
-class ExcelCreator() {
-
-    /*
-        fun getExcelToStorage(
-            report: ReportModel,
-            transactions: List<TransactionModel>,
-            fileName: String,
-        ): Uri {
-            createWorkbook(report, transactions)
-
-            val downloadFilePath = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                .path + "/" + fileName
-
-            val file = File(downloadFilePath)
-            val outFile = FileOutputStream(file)
-
-            workbook.write(outFile)
-            outFile.close()
-
-            return FileProvider.getUriForFile(
-                context,
-                context.applicationContext.packageName + ".provider",
-                file
-            )
-        }
-
-        fun getExcelToShare(
-            report: ReportModel,
-            transactions: List<TransactionModel>,
-            fileName: String,
-        ): Uri {
-            createWorkbook(report, transactions)
-
-            val filePath = context.filesDir.toString() + "/" + fileName
-
-            val outFile = context.openFileOutput(fileName, Context.MODE_PRIVATE)
-
-            workbook.write(outFile)
-            outFile.close()
-
-            return FileProvider.getUriForFile(
-                context,
-                context.applicationContext.packageName + ".provider",
-                File(filePath)
-            )
-        }
-    */
-
+class ExcelCreator {
     private var rowN by Delegates.notNull<Int>()
     private var cellN by Delegates.notNull<Int>()
 
