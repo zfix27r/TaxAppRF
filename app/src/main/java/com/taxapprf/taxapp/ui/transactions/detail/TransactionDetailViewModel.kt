@@ -19,9 +19,7 @@ import com.taxapprf.taxapp.ui.makeHot
 import com.taxapprf.taxapp.ui.round
 import com.taxapprf.taxapp.ui.toLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
 import javax.inject.Inject
@@ -51,15 +49,17 @@ class TransactionDetailViewModel @Inject constructor(
         if (transactionId == null) {
             observeReportUseCase.execute(reportId)
                 ?.onEach { setFromReportModel(it) }
-                ?.flowOn(Dispatchers.IO)
                 ?.makeHot(viewModelScope)
         } else null
 
     val transaction =
         observeTransactionUseCase.execute(transactionId)
             ?.onEach { setFromTransactionModel(it) }
-            ?.flowOn(Dispatchers.IO)
             ?.makeHot(viewModelScope)
+
+    val currencies =
+        flow { emit(getCurrenciesUseCase.execute()) }
+            .makeHot(viewModelScope)
 
     private fun setFromReportModel(reportModel: ReportModel?) {
         reportModel?.name?.let {
@@ -77,22 +77,12 @@ class TransactionDetailViewModel @Inject constructor(
             transaction.tax?.let { transactionTax = it }
             transaction.name?.let { name = it }
 
-            println(transactionModel)
             currencies.value
                 ?.find { it.id == transaction.currencyId }
                 ?.charCode
-                ?.let {
-                    println(it)
-                    currency = it
-                    println(currency)
-                }
+                ?.let { currency = it }
         }
     }
-
-    val currencies =
-        flow { emit(getCurrenciesUseCase.execute()) }
-            .flowOn(Dispatchers.IO)
-            .makeHot(viewModelScope)
 
     fun checkDate(year: Int, month: Int, dayOfMonth: Int): Int? {
         val dayFormatted = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()

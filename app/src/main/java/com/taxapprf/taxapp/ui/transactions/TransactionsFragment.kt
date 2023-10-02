@@ -129,11 +129,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         launchImportExcelIntent(uri)
     }
 
-    override fun onSuccessDelete() {
-        super.onSuccessDelete()
-        findNavController().popBackStack()
-    }
-
     private fun ReportModel.updateToolbar() {
         val title = String.format(getString(R.string.transactions_title), name)
         val subtitle = String.format(getString(R.string.transactions_subtitle), tax.round())
@@ -214,9 +209,13 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     }
 
     private fun navToTransactionDetail(transactionModel: TransactionModel? = null) {
+        println(transactionModel)
+        println(viewModel.reportId)
+        println(mainViewModel.accountId)
         val accountId = mainViewModel.accountId ?: return
         val reportId = viewModel.reportId ?: return
 
+        println("@@@")
         findNavController().navigate(
             TransactionsFragmentDirections.actionTransactionsToTransactionDetail(
                 accountId = accountId,

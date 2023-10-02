@@ -10,14 +10,13 @@ import android.view.inputmethod.InputMethodManager
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LiveData
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.domain.PATTERN_DATE
 import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.ui.activity.ActivityStateLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
@@ -32,14 +31,13 @@ import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.floor
 
-private val _state = ActivityStateLiveData()
-val state: LiveData<BaseState> = _state
+val state: MutableSharedFlow<BaseState> = MutableSharedFlow()
 
 fun <T> Flow<T>.showLoading() =
     this
-        .onStart { _state.loading() }
-        .catch { _state.error(it) }
-        .onEach { _state.success() }
+        .onStart { state.emit(Loading)  }
+        .catch { state.emit(Error(it)) }
+        .onEach { state.emit(Success) }
 
 fun <T> Flow<T>.makeHot(coroutineScope: CoroutineScope, initialValue: T? = null) =
     this

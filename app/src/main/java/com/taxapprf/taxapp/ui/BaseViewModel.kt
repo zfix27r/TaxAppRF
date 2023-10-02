@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,8 +12,6 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     private var isLock = false
     val isUnlock
         get() = !isLock
-
-    val state: MutableStateFlow<BaseState> = MutableStateFlow(Loading)
 
     protected fun startWithLock() {
         isLock = true
@@ -26,32 +23,36 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
 
         viewModelScope.launch {
             delay(LOADING_DELAY)
-            if (isLoadingDelayTimeout) state.value = Loading
+            if (isLoadingDelayTimeout) state.emit(Loading)
         }
     }
 
     protected fun error(t: Throwable) {
         loaded()
-        state.value = Error(t)
+        viewModelScope.launch {
+            state.emit(Error(t))
+        }
     }
 
     protected fun success() {
         loaded()
-        state.value = Success
+        viewModelScope.launch {
+            state.emit(Success)
+        }
     }
 
     protected fun successShare(uri: Uri) {
         loaded()
-        state.value = SuccessShare(uri)
+        viewModelScope.launch {
+            state.emit(SuccessShare(uri))
+        }
     }
 
     protected fun successExport(uri: Uri) {
         loaded()
-        state.value = SuccessImport(uri)
-    }
-
-    protected fun successDelete() {
-        state.value = SuccessDelete
+        viewModelScope.launch {
+            state.emit(SuccessImport(uri))
+        }
     }
 
     private fun loaded() {

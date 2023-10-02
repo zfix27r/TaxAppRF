@@ -29,16 +29,11 @@ import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
-import com.taxapprf.taxapp.ui.Error
-import com.taxapprf.taxapp.ui.Loading
 import com.taxapprf.taxapp.ui.MainToolbar
-import com.taxapprf.taxapp.ui.SignOut
-import com.taxapprf.taxapp.ui.Success
 import com.taxapprf.taxapp.ui.account.add.AccountAddFragment
 import com.taxapprf.taxapp.ui.drawer.Drawer
 import com.taxapprf.taxapp.ui.drawer.DrawerCallback
 import com.taxapprf.taxapp.ui.showSnackBar
-import com.taxapprf.taxapp.ui.state
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -81,7 +76,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         )
         setupWithNavController(binding.navView, navController)
 
-        observeState()
         observeUser()
 
         viewModel.updateUserWithAccounts(getString(R.string.default_account_name))
@@ -161,18 +155,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         R.id.reports,
         R.id.transactions,
     )
-
-    private fun observeState() {
-        state.observe(this@MainActivity) {
-            when (it) {
-                is Loading -> onLoadingStart()
-                is Error -> onLoadingError(it.t)
-                is Success -> onLoadingSuccess()
-                is SignOut -> onSignOut()
-                else -> {}
-            }
-        }
-    }
 
     fun observeUser() {
         lifecycleScope.launch {

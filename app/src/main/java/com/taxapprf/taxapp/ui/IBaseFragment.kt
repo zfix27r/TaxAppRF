@@ -25,7 +25,9 @@ interface IBaseFragment {
 
     fun BaseViewModel.attach() {
         baseViewModel = this
-        baseViewModel.observeState()
+
+        observeState()
+
         fragment.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 if (event == Lifecycle.Event.ON_PAUSE) {
@@ -36,7 +38,7 @@ interface IBaseFragment {
         })
     }
 
-    private fun BaseViewModel.observeState() {
+    private fun observeState() {
         fragment.lifecycleScope.launch {
             fragment.viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 state.collectLatest {
@@ -47,7 +49,6 @@ interface IBaseFragment {
                         is SignOut -> mainActivity.onSignOut()
                         is SuccessShare -> onSuccessShare(it.uri)
                         is SuccessImport -> onSuccessImport(it.uri)
-                        is SuccessDelete -> onSuccessDelete()
                     }
                 }
             }
@@ -86,10 +87,6 @@ interface IBaseFragment {
     }
 
     fun onSuccessImport(uri: Uri) {
-        mainActivity.onLoadingSuccess()
-    }
-
-    fun onSuccessDelete() {
         mainActivity.onLoadingSuccess()
     }
 

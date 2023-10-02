@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.cbr.CurrencyModel
 import com.taxapprf.domain.transaction.TransactionType
@@ -30,11 +29,6 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
 
     private lateinit var currenciesAdapter: ArrayAdapter<String>
     private lateinit var typeAdapter: ArrayAdapter<String>
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
-
-        return dialog.wrapHeight()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,7 +37,6 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
 
         prepTypes()
         prepListeners()
-
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -73,6 +66,12 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         viewModel.name = binding.editTextTransactionDetailName.text.toString()
         viewModel.date = binding.editTextTransactionDetailDate.text.toString()
         viewModel.sum = binding.editTextTransactionDetailSum.text.toString()
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+
+        return dialog.wrapHeight()
     }
 
     private fun List<CurrencyModel>.prepCurrencies() {
@@ -126,7 +125,7 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
                 if (updateNameResult && updateDateResult && updateSumResult) {
                     viewModel.getSaveTransactionModel()?.let {
                         mainViewModel.saveTransaction(it)
-                        findNavController().popBackStack()
+                        dismiss()
                     }
                 }
             }
@@ -164,11 +163,6 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         binding.buttonTransactionDetailDismiss.setOnClickListener {
             dismiss()
         }
-    }
-
-    override fun onSuccess() {
-        super.onSuccess()
-        findNavController().popBackStack()
     }
 
     private fun updateUI() {
