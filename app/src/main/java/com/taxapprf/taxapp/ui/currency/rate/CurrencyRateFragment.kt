@@ -28,7 +28,7 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             viewModel.date = getEpochDay(year, month, dayOfMonth)
 
-            toolbar.updateToolbar(
+            toolbar.updateTitles(
                 title = String.format(
                     getString(R.string.currency_rate_toolbar),
                     viewModel.date.toAppDate()
@@ -54,7 +54,7 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
     }
 
     private fun prepToolbar() {
-        toolbar.updateToolbar(
+        toolbar.updateTitles(
             title = String.format(
                 getString(R.string.currency_rate_toolbar),
                 viewModel.date.toAppDate()

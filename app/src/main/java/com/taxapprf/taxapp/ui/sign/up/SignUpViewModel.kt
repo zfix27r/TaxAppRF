@@ -1,6 +1,5 @@
 package com.taxapprf.taxapp.ui.sign.up
 
-import android.text.Editable
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.SignUpUseCase
@@ -8,11 +7,10 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.isEmailIncorrect
 import com.taxapprf.taxapp.ui.isErrorPasswordRange
+import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,44 +18,40 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
 ) : BaseViewModel() {
-    private var email = ""
-    private var name = ""
-    private var phone = ""
-    private var password = ""
+    var email = ""
+    var name = ""
+    var phone = ""
+    var password = ""
 
     fun signUp() {
         if (isUnlock) {
             val signUpModel = SignUpModel(name, email, password, phone)
 
             viewModelScope.launch(Dispatchers.IO) {
-/*                signUpUseCase.execute(signUpModel)
-                    .onStart { start() }
-                    .catch { error(it) }
-                    .collectLatest { success() }*/
+                signUpUseCase.execute(signUpModel)
+                    .showLoading()
+                    .collect()
             }
         }
     }
-    fun checkEmail(cEmail: Editable?): Int? {
-        email = cEmail.toString()
+
+    fun checkEmail(): Int? {
         return if (email.isEmpty()) R.string.error_email_empty
         else if (email.isEmailIncorrect()) R.string.error_email_incorrect
         else null
     }
 
-    fun checkName(cName: Editable?): Int? {
-        name = cName.toString()
+    fun checkName(): Int? {
         return if (name.isErrorNameRange()) R.string.error_name_range
         else null
     }
 
-    fun checkPhone(cPhone: Editable?): Int? {
-        phone = cPhone.toString()
+    fun checkPhone(): Int? {
         return if (phone.isEmpty()) R.string.error_phone_empty
         else null
     }
 
-    fun checkPassword(cPassword: Editable?): Int? {
-        password = cPassword.toString()
+    fun checkPassword(): Int? {
         return if (password.isErrorPasswordRange()) R.string.error_password_length
         else null
     }

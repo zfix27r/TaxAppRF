@@ -35,7 +35,6 @@ import com.taxapprf.taxapp.ui.drawer.Drawer
 import com.taxapprf.taxapp.ui.drawer.DrawerCallback
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
@@ -137,13 +136,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         onLoadingStop()
     }
 
-    fun onSignOut() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.signOut()
-            observeUser()
-        }
-    }
-
     private val topLevelDestinations = setOf(
         R.id.sign,
         R.id.currency_rate,
@@ -190,7 +182,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     private val drawerCallback =
         object : DrawerCallback {
             override fun signOut() {
-                onSignOut()
+                viewModel.signOut(getString(R.string.default_account_name))
             }
 
             override fun switchAccount(accountModel: AccountModel) {

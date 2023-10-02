@@ -11,10 +11,12 @@ import com.taxapprf.domain.user.SignOutUseCase
 import com.taxapprf.domain.user.SwitchAccountModel
 import com.taxapprf.domain.user.SwitchAccountUseCase
 import com.taxapprf.domain.user.UserWithAccountsModel
+import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -69,9 +71,11 @@ class MainViewModel @Inject constructor(
             }
         }
 
-    suspend fun signOut() {
-        syncAllUseCase.execute()
+    fun signOut(defaultAccountName: String) = viewModelScope.launch(Dispatchers.IO) {
         signOutUseCase.execute()
+            .showLoading()
+            .collect()
+        updateUserWithAccounts(defaultAccountName)
     }
 
     fun saveTransaction(saveTransactionModel: SaveTransactionModel) =

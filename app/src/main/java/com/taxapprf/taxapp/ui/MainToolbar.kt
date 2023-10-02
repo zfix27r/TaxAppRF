@@ -14,7 +14,7 @@ class MainToolbar(
         toolbar.setOnMenuItemClickListener(menuListener)
     }
 
-    fun updateToolbar(title: String? = null, subtitle: String? = null) {
+    fun updateTitles(title: String? = null, subtitle: String? = null) {
         toolbar.title = title
         toolbar.subtitle = subtitle
     }

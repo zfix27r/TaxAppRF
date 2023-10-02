@@ -16,32 +16,43 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     private val viewModel by viewModels<SignUpViewModel>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.attach()
+
+        toolbar.updateTitles()
+        toolbar.updateMenu()
+        updateUI()
 
         binding.buttonSignUpCreate.setOnClickListener { checkSignUp() }
-        viewModel.attach()
     }
 
     override fun onSuccess() {
         super.onSuccess()
-
-/*        mainViewModel.showLoading()
-        drawer.showWithAuth()*/
         navToReports()
     }
 
+    private fun updateUI() {
+        binding.editSignUpEmail.setText(viewModel.email)
+        binding.editSignUpName.setText(viewModel.name)
+        binding.editSignUpPhone.setText(viewModel.phone)
+        binding.editSignUpPassword.setText(viewModel.password)
+    }
+
     private fun checkSignUp() {
-        val updateEmailResult = viewModel
-            .checkEmail(binding.editSignUpEmail.text)
+        viewModel.email = binding.editSignUpEmail.text.toString()
+        viewModel.password = binding.editSignUpPassword.text.toString()
+
+        viewModel.name = binding.editSignUpName.text.toString()
+        viewModel.phone = binding.editSignUpPhone.text.toString()
+
+        val updateEmailResult = viewModel.checkEmail()
             .updateEditError(binding.editSignUpEmail)
-        val updateNameResult = viewModel
-            .checkName(binding.editSignUpName.text)
-            .updateEditError(binding.editSignUpName)
-        val updatePhoneResult = viewModel
-            .checkPhone(binding.editSignUpPhone.text)
-            .updateEditError(binding.editSignUpPhone)
-        val updatePasswordResult = viewModel
-            .checkPassword(binding.editSignUpPassword.text)
+        val updatePasswordResult = viewModel.checkPassword()
             .updateEditError(binding.editSignUpPassword)
+
+        val updateNameResult = viewModel.checkName()
+            .updateEditError(binding.editSignUpName)
+        val updatePhoneResult = viewModel.checkPhone()
+            .updateEditError(binding.editSignUpPhone)
 
         if (updateEmailResult && updateNameResult && updatePhoneResult && updatePasswordResult)
             viewModel.signUp()

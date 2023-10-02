@@ -1,16 +1,15 @@
 package com.taxapprf.domain.user
 
 import com.taxapprf.domain.UserRepository
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class SignInUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
-    suspend fun execute(signInModel: SignInModel) {
+    fun execute(signInModel: SignInModel) = flow {
         userRepository.signIn(signInModel)
-        /*
-        * TODO объемная задача по объеденению локальных данных и удаленных
-        *  необходимо выработать стратегию объединения
-        * */
+
+        emit(Unit)
     }
 }

@@ -7,8 +7,10 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.isEmailIncorrect
 import com.taxapprf.taxapp.ui.isErrorPasswordRange
+import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,9 +26,9 @@ class SignInViewModel @Inject constructor(
             val signInModel = SignInModel(email, password)
 
             viewModelScope.launch(Dispatchers.IO) {
-                startWithLock()
                 singInUseCase.execute(signInModel)
-                success()
+                    .showLoading()
+                    .collect()
             }
         }
     }

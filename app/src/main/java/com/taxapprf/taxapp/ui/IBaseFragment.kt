@@ -46,7 +46,7 @@ interface IBaseFragment {
                         is Loading -> onLoading()
                         is Error -> onError(it.t)
                         is Success -> onSuccess()
-                        is SignOut -> mainActivity.onSignOut()
+                        is SignOut -> mainViewModel.signOut(mainActivity.getString(R.string.default_account_name))
                         is SuccessShare -> onSuccessShare(it.uri)
                         is SuccessImport -> onSuccessImport(it.uri)
                     }

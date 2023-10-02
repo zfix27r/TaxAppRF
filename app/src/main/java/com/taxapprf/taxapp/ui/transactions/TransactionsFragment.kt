@@ -132,7 +132,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private fun ReportModel.updateToolbar() {
         val title = String.format(getString(R.string.transactions_title), name)
         val subtitle = String.format(getString(R.string.transactions_subtitle), tax.round())
-        toolbar.updateToolbar(title, subtitle)
+        toolbar.updateTitles(title, subtitle)
     }
 
     private val transactionTypes
