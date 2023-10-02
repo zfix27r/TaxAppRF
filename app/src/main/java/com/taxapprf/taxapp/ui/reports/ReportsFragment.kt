@@ -7,60 +7,80 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
-import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     private val binding by viewBinding(FragmentReportsBinding::bind)
     private val viewModel by viewModels<ReportsViewModel>()
-    private val adapter = ReportsAdapter { reportsAdapterCallback }
-    lateinit var itemTouchHelper: ItemTouchHelper
+
+    private val reportsAdapterCallback =
+        object : ReportsAdapterCallback {
+            override fun onItemClick(reportModel: ReportModel) {
+                navToTransactions(reportModel)
+            }
+
+            override fun onMoreClick(reportModel: ReportModel) {
+                showMoreClick(reportModel)
+            }
+        }
+
+    private val adapter = ReportsAdapter(reportsAdapterCallback)
+
+    private val reportsAdapterTouchHelperCallback =
+        object : ReportsAdapterTouchHelperCallback {
+            override fun onSwiped(reportModel: ReportModel) {
+                showDeleteDialog(reportModel)
+            }
+        }
+
+    private val reportTouchHelper = ReportAdapterTouchHelper(reportsAdapterTouchHelperCallback)
+    private val itemTouchHelper = ItemTouchHelper(reportTouchHelper)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        mainViewModel.userWithAccounts.value?.activeAccount?.let {
+            viewModel.updateReports(it.id)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.attachWithAccount()
-        currentStackSavedState.observeDelete()
+        viewModel.attach()
 
         prepToolbar()
+        prepViews()
+        setListeners()
 
-        fab.setOnClickListener { navToTransactionDetail() }
-        binding.recyclerYearStatements.adapter = adapter
-
-        itemTouchHelper = ItemTouchHelper(ReportTouchHelperCallback(reportsAdapterCallback))
-        itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
-
-        viewModel.observerReports()
-    }
-
-    private fun ReportsViewModel.observerReports() {
-        reports.observe(viewLifecycleOwner) { adapter.submitList(it) }
-    }
-
-    override fun onAuthReady() {
-        super.onAuthReady()
-        viewModel.loadReports()
-    }
-
-    override fun onLoadingRetry() {
-        super.onLoadingRetry()
-        viewModel.loadReports()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.reports.collectLatest { reports ->
+                    adapter.submitList(reports)
+                }
+            }
+        }
     }
 
     private fun prepToolbar() {
-        toolbar.updateToolbar(getString(R.string.taxes_name))
-        toolbar.updateMenu(R.menu.reports_toolbar) {
+        toolbar.updateTitles(getString(R.string.taxes_name))
+        toolbar.updateMenu(R.menu.toolbar_reports) {
             when (it.itemId) {
                 R.id.toolbar_import_excel -> {
                     launchExportExcelToFirebaseIntent()
@@ -72,52 +92,51 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         }
     }
 
-    private fun SavedStateHandle.observeDelete() {
-        getLiveData<Boolean>(DeleteDialogFragment.DELETE_ACCEPTED).observe(viewLifecycleOwner) {
-            if (it) viewModel.deleteReport()
-            else {
-                viewModel.deleteReport = null
+    private fun prepViews() {
+        binding.recyclerYearStatements.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+    }
+
+    private fun setListeners() {
+        fab.setOnClickListener { navToTransactionDetail() }
+    }
+
+    private fun showMoreClick(reportModel: ReportModel) {
+        showActionMode {
+            object : BaseActionModeCallback {
+                override var menuInflater = requireActivity().menuInflater
+                override var menuId = R.menu.action_menu_report
+
+                override fun onActionItemClicked(
+                    mode: ActionMode?,
+                    item: MenuItem
+                ) = when (item.itemId) {
+                    R.id.action_menu_delete -> {
+                        showDeleteDialog(reportModel)
+                        true
+                    }
+
+                    else -> false
+                }
             }
         }
     }
 
-    private val reportsAdapterCallback =
-        object : ReportsAdapterCallback {
-            override fun onClick(reportModel: ReportModel) {
-                navToTransactions(reportModel)
+    private fun showDeleteDialog(reportModel: ReportModel) {
+        actionMode?.finish()
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.delete_dialog_title)
+            .setMessage(R.string.delete_dialog_message)
+            .setPositiveButton(R.string.delete_dialog_ok) { _, _ ->
+                viewModel.deleteReport(reportModel)
             }
-
-            override fun onClickMore(reportModel: ReportModel) {
-                showActionMode {
-                    object : BaseActionModeCallback {
-                        override var menuInflater = requireActivity().menuInflater
-                        override var menuId = R.menu.report_action_menu
-
-                        override fun onActionItemClicked(
-                            mode: ActionMode?,
-                            item: MenuItem
-                        ) = when (item.itemId) {
-                            R.id.action_menu_delete -> {
-                                viewModel.deleteReport = reportModel
-                                actionMode?.finish()
-                                navToDeleteDialog()
-                                true
-                            }
-
-                            else -> false
-                        }
-                    }
-                }
+            .setNegativeButton(R.string.delete_dialog_cancel) { _, _ ->
+                reportTouchHelper.cancelSwipe()
+                itemTouchHelper.attachToRecyclerView(null)
+                itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
             }
-
-            override fun onSwiped(position: Int) {
-                viewModel.onSwipedReport(position)
-                viewModel.deleteReport()
-            }
-        }
-
-    private fun navToDeleteDialog() {
-        findNavController().navigate(R.id.action_reports_to_delete_dialog)
+            .show()
     }
 
     private val exportExcelToFirebaseIntent =
@@ -136,11 +155,16 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun navToTransactions(reportModel: ReportModel) {
-        mainViewModel.report = reportModel
-        findNavController().navigate(R.id.action_reports_to_transactions)
+        findNavController().navigate(
+            ReportsFragmentDirections.actionReportsToTransactions(reportModel.id)
+        )
     }
 
     private fun navToTransactionDetail() {
-        findNavController().navigate(R.id.action_reports_to_transaction_detail)
+        mainViewModel.accountId?.let { accountId ->
+            val directions =
+                ReportsFragmentDirections.actionReportsToTransactionDetail(accountId)
+            findNavController().navigate(directions)
+        }
     }
 }

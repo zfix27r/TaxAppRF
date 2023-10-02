@@ -8,12 +8,12 @@ import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.databinding.FragmentReportsAdapterItemBinding
 
 class ReportsAdapter(
-    private val callback: () -> ReportsAdapterCallback,
+    private val callback: ReportsAdapterCallback,
 ) : ListAdapter<ReportModel, ReportsAdapterViewHolder>(DiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportsAdapterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = FragmentReportsAdapterItemBinding.inflate(inflater, parent, false)
-        return ReportsAdapterViewHolder(binding, callback.invoke())
+        return ReportsAdapterViewHolder(binding, callback)
     }
 
     override fun onBindViewHolder(holder: ReportsAdapterViewHolder, position: Int) {
@@ -24,7 +24,7 @@ class ReportsAdapter(
         override fun areItemsTheSame(
             oldItem: ReportModel,
             newItem: ReportModel
-        ) = oldItem.key == newItem.key
+        ) = oldItem.name == newItem.name
 
         override fun areContentsTheSame(
             oldItem: ReportModel,

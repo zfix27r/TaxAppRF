@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/sign">
+    app:startDestination="@id/reports">
 
     <action
         android:id="@+id/action_global_account_add"
@@ -12,9 +12,30 @@
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right" />
+
     <action
         android:id="@+id/action_global_reports"
         app:destination="@id/reports"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"
+        app:popUpTo="@id/mobile_navigation"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_currency_converter"
+        app:destination="@id/currency_converter"
+        app:enterAnim="@anim/slide_in_right"
+        app:exitAnim="@anim/slide_out_left"
+        app:popEnterAnim="@anim/slide_in_left"
+        app:popExitAnim="@anim/slide_out_right"
+        app:popUpTo="@id/mobile_navigation"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_currency_rate"
+        app:destination="@id/currency_rate"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
@@ -97,34 +118,52 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="report_id"
+            app:argType="integer" />
     </fragment>
 
     <dialog
         android:id="@+id/delete_dialog"
-        android:name="com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment" />
+        android:name="com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment">
+        <argument
+            android:name="delete_id"
+            app:argType="integer" />
+    </dialog>
 
     <dialog
         android:id="@+id/transaction_detail"
         android:name="com.taxapprf.taxapp.ui.transactions.detail.TransactionDetailFragment"
         android:label="@string/menuTransactionDetail"
-        tools:layout="@layout/fragment_transaction_detail" />
+        tools:layout="@layout/fragment_transaction_detail">
+        <argument
+            android:name="account_id"
+            app:argType="integer" />
+        <argument
+            android:name="report_id"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <argument
+            android:name="transaction_id"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </dialog>
 
     <fragment
-        android:id="@+id/currency_rates_today"
-        android:name="com.taxapprf.taxapp.ui.currency.today.CurrencyRatesTodayFragment"
-        android:label="@string/menuRatesToday"
-        tools:layout="@layout/fragment_rates_today" />
+        android:id="@+id/currency_rate"
+        android:name="com.taxapprf.taxapp.ui.currency.rate.CurrencyRateFragment"
+        tools:layout="@layout/fragment_currency_rate" />
 
     <fragment
         android:id="@+id/currency_converter"
         android:name="com.taxapprf.taxapp.ui.currency.converter.CurrencyConverterFragment"
-        android:label="@string/menuConverter"
         tools:layout="@layout/fragment_currency_converter" />
 
-    <fragment
+    <dialog
         android:id="@+id/account_add"
         android:name="com.taxapprf.taxapp.ui.account.add.AccountAddFragment"
         tools:layout="@layout/fragment_account_add" />
+
     <action
         android:id="@+id/action_global_sign"
         app:destination="@id/sign"

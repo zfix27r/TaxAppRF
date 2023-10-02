@@ -1,75 +1,63 @@
 package com.taxapprf.taxapp.ui.reports
 
 import android.content.Intent
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.report.DeleteReportModel
-import com.taxapprf.domain.report.DeleteReportUseCase
-import com.taxapprf.domain.report.ObserveReportsModel
+import com.taxapprf.data.ACCOUNT_ID
+import com.taxapprf.domain.delete.DeleteReportWithTransactionsModel
+import com.taxapprf.domain.delete.DeleteReportWithTransactionsUseCase
+import com.taxapprf.domain.excel.ImportExcelModel
+import com.taxapprf.domain.excel.ImportExcelUseCase
 import com.taxapprf.domain.report.ObserveReportsUseCase
 import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
-import com.taxapprf.domain.transaction.SaveTransactionsFromExcelUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
+import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ReportsViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getReportsUseCase: ObserveReportsUseCase,
-    private val saveReportsFromUriUseCase: SaveTransactionsFromExcelUseCase,
-    private val deleteReportUseCase: DeleteReportUseCase,
+    private val saveReportsFromUriUseCase: ImportExcelUseCase,
+    private val deleteReportWithTransactionsUseCase: DeleteReportWithTransactionsUseCase,
 ) : BaseViewModel() {
-    private val _reports = MutableLiveData<List<ReportModel>>()
-    val reports: LiveData<List<ReportModel>> = _reports
+    private val accountId = savedStateHandle.get<Int>(ACCOUNT_ID)
 
-    var deleteReport: ReportModel? = null
+    private val _reports: MutableStateFlow<List<ReportModel>?> = MutableStateFlow(null)
+    val reports = _reports.asStateFlow()
 
-    fun loadReports() = viewModelScope.launch(Dispatchers.IO) {
-        val getReportsModel = ObserveReportsModel(account.key)
-        getReportsUseCase.execute(getReportsModel)
-            .onStart { start() }
-            .catch { error(it) }
-            .collectLatest {
-                _reports.postValue(it)
-                success()
+    fun updateReports(iAccountId: Int?) =
+        let {
+            val id = iAccountId ?: accountId
+            id?.let { accountId ->
+                viewModelScope.launch(Dispatchers.IO) {
+                    getReportsUseCase.execute(accountId)
+                        .showLoading()
+                        .collectLatest { _reports.value = it }
+                }
             }
-    }
-
-    fun deleteReport() = viewModelScope.launch(Dispatchers.IO) {
-        deleteReport?.let { report ->
-            val deleteReportModel =
-                DeleteReportModel(
-                    accountKey = account.key,
-                    reportKey = report.key,
-                )
-
-            deleteReport = null
-
-            deleteReportUseCase.execute(deleteReportModel)
-                .onStart { start() }
-                .catch { error(it) }
-                .collectLatest { success() }
         }
-    }
 
-    fun onSwipedReport(position: Int) {
-        deleteReport = _reports.value?.get(position)
-    }
-
-    fun saveReportsFromExcel(intent: Intent?) = viewModelScope.launch(Dispatchers.IO) {
-        intent?.data?.path?.let { uri ->
-            val saveReportsFromUriModel = SaveTransactionsFromExcelModel(account.key, uri)
-            saveReportsFromUriUseCase.execute(saveReportsFromUriModel)
-                .onStart { start() }
-                .catch { error(it) }
-                .collectLatest { success() }
+    fun deleteReport(reportModel: ReportModel) =
+        viewModelScope.launch(Dispatchers.IO) {
+            val deleteReportWithTransactionsModel =
+                DeleteReportWithTransactionsModel(reportModel.id)
+            deleteReportWithTransactionsUseCase.execute(deleteReportWithTransactionsModel)
         }
-    }
+
+    fun saveReportsFromExcel(intent: Intent?) =
+        accountId?.let {
+            intent?.data?.path?.let { uri ->
+                viewModelScope.launch(Dispatchers.IO) {
+                    val saveReportsFromUriModel = ImportExcelModel(accountId, uri)
+                    saveReportsFromUriUseCase.execute(saveReportsFromUriModel)
+                }
+            }
+        }
 }

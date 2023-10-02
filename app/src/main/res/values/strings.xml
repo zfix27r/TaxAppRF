@@ -4,7 +4,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="drawer_header_user_avatar_content_description">Navigation header</string>
     <string name="action_settings">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->
@@ -14,12 +14,14 @@
     <string name="sign_up_error_email_already_use">The email address is already in use by another account.</string>
     <string name="auth_error_session_expire">Сессия истекла</string>
     <string name="auth_error">Ошибка авторизации</string>
-    <string name="default_account_name">По умолчанию</string>
+    <string name="default_user_name_name">Локальная запись</string>
+    <string name="default_account_name">Основной аккаунт</string>
     <string name="response_error_data_is_empty"></string>
 
 
     <string name="data_error_connection">Проверьте соединение с интернетом и попробуйте еще раз</string>
 
+    <string name="transaction_tax_is_empty">ожидание интернета</string>
 
     <string-array name="symbols">
         <item name="rub">@string/symbol_rub</item>
@@ -33,8 +35,8 @@
     <string name="menu_home">Home</string>
     <string name="menuExit">Выйти</string>
     <string name="menuChangeAccount">Другой счёт</string>
-    <string name="menuRatesToday">Курсы сегодня</string>
-    <string name="menuConverter">Конвертер валют</string>
+    <string name="menu_rates_today_name">Курсы сегодня</string>
+    <string name="menu_converter_name">Конвертер валют</string>
     <string name="menuNewTransaction">Новая сделка</string>
     <string name="menuTransactionDetail">Редактирование сделки</string>
     <string name="menuTransactions">Годовой отчет</string>
@@ -54,7 +56,6 @@
     <string name="text_sign_in_under_bottom">Войдите в свою учетную запись</string>
     <string name="authSuccess">Пользователь авторизован</string>
     <string name="authFailure">Ошибка авторизации. %s</string>
-    <string name="authAccountDefault">Основной аккаунт</string>
     <string name="error_sign_in">Неверные параметры входа! Повторите попытку.</string>
 
     <!--SelectAccountFragment-->
@@ -64,11 +65,11 @@
     <string name="textSelectUnderBottom">Выберете существующий или создайте новый счет</string>
     <string name="account_select_accounts_loading">Идет загрузка доступных счетов. Пожалуйста, подождите.</string>
 
-    <!--NewAccountFragment-->
-    <string name="edit_new_account">№ счета</string>
-    <string name="button_new_account_ok">Создать</string>
-    <string name="button_new_account_cancel">Отменить</string>
-    <string name="text_new_account_under_bottom">Введите имя нового счета</string>
+    <!--AccountAddFragment-->
+    <string name="account_add_name_hint">Имя счета</string>
+
+    <!--CurrencyRateFragment-->
+    <string name="currency_rate_toolbar">Курс %s</string>
 
     <!--Registration Fragment-->
     <string name="edit_sign_up_name">Имя</string>
@@ -129,6 +130,7 @@
 
 
     <!-- TransactionDetailFragment-->
+
     <string name="edit_detail_id">Наименование операции</string>
     <string name="edit_detail_date">Дата сделки ДД/ММ/ГГГГ</string>
     <string name="edit_detail_sum">Сумма</string>
@@ -167,5 +169,12 @@
     <string name="currency_converter_sum_hint">0.00</string>
     <string name="currency_converter_sum_default">1</string>
     <string name="sign_title_name">Вход</string>
+    <string name="sign_out_name">Выход</string>
+    <string name="drawer_header_user_account_expand_content_description">expand</string>
+
+    <!-- share -->
+    <string name="share_message_name">Расчёт налога от TaxApp</string>
+    <string name="share_message_description">Отправка…</string>
+    <string name="calendar_name">Календарь</string>
 
 </resources>

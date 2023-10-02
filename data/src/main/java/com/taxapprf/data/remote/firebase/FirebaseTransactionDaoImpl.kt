@@ -1,95 +1,40 @@
 package com.taxapprf.data.remote.firebase
 
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.taxapprf.data.error.external.DataErrorExternalEmpty
-import com.taxapprf.data.error.external.DataErrorExternalGetReport
-import com.taxapprf.data.remote.firebase.dao.FirebaseTransactionDao
+import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
 import com.taxapprf.data.safeCall
-import com.taxapprf.domain.transaction.DeleteTransactionModel
-import com.taxapprf.domain.transaction.SaveTransactionModel
-import com.taxapprf.domain.transaction.TransactionModel
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
 class FirebaseTransactionDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
-) : FirebaseTransactionDao {
-    override fun observeTransactions(
-        accountKey: String,
-        reportKey: String
-    ) =
-        callbackFlow<Result<List<TransactionModel>>> {
-            safeCall {
-                val reference = fb.getTransactionsPath(accountKey, reportKey)
+) : RemoteTransactionDao {
+    override suspend fun getKey(accountKey: String, reportKey: String) =
+        fb.getTransactionsPath(accountKey, reportKey).push().key
 
-                val callback = object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val transactions = snapshot.children.mapNotNull {
-                            it.getValue(FirebaseTransactionModel::class.java)
-                                ?.toTransactionModel(it.key)
-                        }
-
-                        trySendBlocking(Result.success(transactions))
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        trySendBlocking(Result.failure(DataErrorExternalGetReport(error.message)))
-                    }
-                }
-
-                reference.addValueEventListener(callback)
-
-                awaitClose {
-                    reference.removeEventListener(callback)
-                }
-            }
-        }
-
-    override suspend fun saveTransaction(saveTransactionModel: SaveTransactionModel) {
+    override suspend fun getAll(accountKey: String, reportKey: String) =
         safeCall {
-            with(saveTransactionModel) {
-                val key = transactionKey
-                    ?: fb.getTransactionsPath(accountKey, yearKey).push().key
-                    ?: throw DataErrorExternalEmpty()
-
-                fb.getTransactionsPath(accountKey, yearKey)
-                    .child(key)
-                    .setValue(saveTransactionModel.toFirebaseTransactionModel())
-                    .await()
-            }
+            fb.getTransactionsPath(accountKey, reportKey)
+                .get()
+                .await()
+                .children.mapNotNull {
+                    it.getValue(FirebaseTransactionModel::class.java)
+                        ?.apply {
+                            key = it.key
+                        }
+                }
         }
-    }
 
-    override suspend fun saveTransactions(
+    override suspend fun updateAll(
         accountKey: String,
-        yearKey: String,
-        transactionModels: Map<String, FirebaseTransactionModel>
+        reportKey: String,
+        transactionsModels: Map<String, FirebaseTransactionModel?>
     ) {
         safeCall {
-            fb.getTransactionsPath(accountKey, yearKey)
-                .updateChildren(transactionModels)
+            fb.getTransactionsPath(accountKey, reportKey)
+                .updateChildren(transactionsModels)
                 .await()
         }
     }
-
-    override suspend fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) {
-        safeCall {
-            with(deleteTransactionModel) {
-                fb.getTransactionsPath(accountKey, reportKey)
-                    .child(transactionKey)
-                    .setValue(null)
-                    .await()
-            }
-        }
-    }
-
-    private fun SaveTransactionModel.toFirebaseTransactionModel() =
-        FirebaseTransactionModel(name, date, type, currency, rateCBR, sum, tax)
 }

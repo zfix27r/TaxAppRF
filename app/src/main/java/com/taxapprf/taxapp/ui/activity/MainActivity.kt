@@ -5,9 +5,13 @@ import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.navigateUp
 import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
@@ -21,14 +25,14 @@ import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
+import com.taxapprf.domain.user.AccountModel
+import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
-import com.taxapprf.taxapp.ui.Error
-import com.taxapprf.taxapp.ui.Loading
-import com.taxapprf.taxapp.ui.MainDrawer
 import com.taxapprf.taxapp.ui.MainToolbar
-import com.taxapprf.taxapp.ui.SignOut
-import com.taxapprf.taxapp.ui.Success
+import com.taxapprf.taxapp.ui.account.add.AccountAddFragment
+import com.taxapprf.taxapp.ui.drawer.Drawer
+import com.taxapprf.taxapp.ui.drawer.DrawerCallback
 import com.taxapprf.taxapp.ui.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -36,46 +40,34 @@ import kotlinx.coroutines.launch
 import java.net.SocketTimeoutException
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
-    val binding by viewBinding(ActivityMainBinding::bind)
+class MainActivity : AppCompatActivity(R.layout.activity_main),
+    AccountAddFragment.AccountAddDialogListener {
+    private val binding by viewBinding(ActivityMainBinding::bind)
     private val viewModel by viewModels<MainViewModel>()
 
     private val mAppBarConfiguration by lazy {
         AppBarConfiguration(topLevelDestinations, binding.drawerLayout)
     }
 
-    val navController by lazy {
-        findNavController(this, R.id.nav_host_fragment_content_main)
+    private val navController by lazy {
+        val navHost =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
+        navHost.navController
     }
 
     val drawer by lazy {
-        MainDrawer(binding.navView) {
-            binding.drawerLayout.close()
-            viewModel.signOut()
-        }
+        Drawer(
+            binding.drawerLayout,
+            binding.navView,
+            navController,
+            drawerCallback
+        )
     }
     val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
-
-    private val accountsAdapter = MainAccountsAdapter {
-        object : MainAccountsAdapterCallback {
-            override fun onClick(accountName: String) {
-                binding.drawerLayout.close()
-                viewModel.switchAccount(accountName)
-            }
-
-            override fun onClickAdd() {
-                if (navController.currentDestination?.id != R.id.account_add) {
-                    binding.drawerLayout.close()
-                    navToAccountAdd()
-                }
-            }
-        }
-    }
+    val fab by lazy { binding.appBarMain.fab }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        navController.setGraph(R.navigation.mobile_navigation)
 
         setSupportActionBar(binding.appBarMain.toolbar)
         setupActionBarWithNavController(
@@ -83,24 +75,30 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         )
         setupWithNavController(binding.navView, navController)
 
-        drawer.recycler.adapter = accountsAdapter
+        observeUser()
 
-        viewModel.observeState()
-        viewModel.observeUser()
-        viewModel.observeAccounts()
-        viewModel.observeAccount()
-        navController.observeCurrentBackStack()
+        viewModel.updateUserWithAccounts(getString(R.string.default_account_name))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        if (viewModel.isSignIn) menuInflater.inflate(R.menu.reports_toolbar, menu)
-        else menuInflater.inflate(R.menu.main_toolbar, menu)
+        menuInflater.inflate(R.menu.toolbar_reports, menu)
         return true
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(this, R.id.nav_host_fragment_content_main)
         return (navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp())
+    }
+
+    private fun onAccountLoaded(userWithAccountsModel: UserWithAccountsModel?) {
+        userWithAccountsModel?.let {
+            userWithAccountsModel.activeAccount?.let {
+                viewModel.accountId = it.id
+
+                navController.setGraph(R.navigation.mobile_navigation)
+                navController.observeCurrentBackStack()
+            }
+        }
     }
 
     fun onLoadingStart() {
@@ -130,11 +128,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun Int.showError() {
-        binding.appBarMain.content.loadingErrorGroup.isVisible = true
-        binding.appBarMain.content.loadingErrorMessage.text = getString(this)
-    }
-
     private fun Int.showErrorInShackBar() {
         binding.appBarMain.root.showSnackBar(this)
     }
@@ -143,14 +136,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         onLoadingStop()
     }
 
-    private fun onSignOut() {
-        drawer.hideWithoutAuth()
-        navToSign()
-    }
-
     private val topLevelDestinations = setOf(
         R.id.sign,
-        R.id.currency_rates_today,
+        R.id.currency_rate,
         R.id.reports,
         R.id.currency_converter,
     )
@@ -160,41 +148,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         R.id.transactions,
     )
 
-    private fun MainViewModel.observeState() {
-        state.observe(this@MainActivity) {
-            when (it) {
-                is Loading -> onLoadingStart()
-                is Error -> onLoadingError(it.t)
-                is Success -> onLoadingSuccess()
-                is SignOut -> onSignOut()
-                else -> {}
-            }
-        }
-    }
+    fun observeUser() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.userWithAccounts.collectLatest { userWithAccounts ->
+                    drawer.updateUser(
+                        userWithAccounts?.user,
+                        getString(R.string.default_user_name_name)
+                    )
+                    drawer.updateActiveAccount(userWithAccounts?.activeAccount)
+                    drawer.updateOtherAccounts(userWithAccounts?.otherAccounts)
 
-    private fun MainViewModel.observeAccount() {
-        account.observe(this@MainActivity) { _account ->
-            _account?.let {
-                drawer.account.text = it.key
-                fabVisibilityManager()
+                    onAccountLoaded(userWithAccounts)
+                }
             }
-        }
-    }
-
-    private fun MainViewModel.observeAccounts() {
-        accounts.observe(this@MainActivity) { accounts ->
-            if (accounts.isNotEmpty()) {
-                accountsAdapter.submitList(accounts.filter { !it.isActive })
-                fabVisibilityManager()
-            } else {
-                onLoadingError(DataErrorUser())
-            }
-        }
-    }
-
-    private fun MainViewModel.observeUser() {
-        user.observe(this@MainActivity) { user ->
-            drawer.updateUserProfile(user)
         }
     }
 
@@ -212,11 +179,23 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         else binding.appBarMain.fab.hide()
     }
 
-    private fun navToAccountAdd() {
-        navController.navigate(R.id.action_global_account_add)
+    private val drawerCallback =
+        object : DrawerCallback {
+            override fun signOut() {
+                viewModel.signOut(getString(R.string.default_account_name))
+            }
+
+            override fun switchAccount(accountModel: AccountModel) {
+                viewModel.switchAccount(accountModel.name)
+            }
+        }
+
+    override fun onAccountAddPositiveClick(dialog: AccountAddFragment) {
+        dialog.dismiss()
+        viewModel.switchAccount(dialog.getAccountName())
     }
 
-    private fun navToSign() {
-        navController.navigate(R.id.action_global_sign)
+    override fun onAccountAddNegativeClick(dialog: AccountAddFragment) {
+        dialog.dismiss()
     }
 }

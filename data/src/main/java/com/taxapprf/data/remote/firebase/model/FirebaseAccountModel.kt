@@ -1,17 +1,10 @@
 package com.taxapprf.data.remote.firebase.model
 
-import com.taxapprf.domain.account.AccountModel
+import com.taxapprf.data.sync.SyncRemote
 
 data class FirebaseAccountModel(
-    val name: String? = null,
-    val active: Boolean? = null,
-    val syncAt: Long? = null,
-) {
-    fun toAccountModel(key: String?): AccountModel? {
-        val accountKey = key ?: return null
-        val active = active ?: return null
-        val syncAt = syncAt ?: 0L
-
-        return AccountModel(accountKey, active, true, syncAt)
-    }
+    val isActive: Boolean? = null,
+    override val syncAt: Long? = null,
+) : SyncRemote {
+    override var key: String? = null
 }

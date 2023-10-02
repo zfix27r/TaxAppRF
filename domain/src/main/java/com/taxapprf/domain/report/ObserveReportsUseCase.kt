@@ -6,6 +6,6 @@ import javax.inject.Inject
 class ObserveReportsUseCase @Inject constructor(
     private val repository: ReportRepository
 ) {
-    fun execute(observeReportsModel: ObserveReportsModel) =
-        repository.observeReports(observeReportsModel)
+    fun execute(accountId: Int) =
+        repository.observeAll(accountId)
 }

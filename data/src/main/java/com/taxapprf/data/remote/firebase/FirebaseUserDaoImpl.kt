@@ -2,7 +2,7 @@ package com.taxapprf.data.remote.firebase
 
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.taxapprf.data.error.DataErrorUser
-import com.taxapprf.data.remote.firebase.dao.FirebaseUserDao
+import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
@@ -13,13 +13,7 @@ import javax.inject.Inject
 
 class FirebaseUserDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
-) : FirebaseUserDao {
-    override suspend fun signInAnonymously() {
-        safeCall {
-            fb.auth.signInAnonymously().await()
-        }
-    }
-
+) : RemoteUserDao {
     override suspend fun signInWithEmailAndPassword(signInModel: SignInModel) {
         safeCall {
             with(signInModel) {
@@ -50,21 +44,12 @@ class FirebaseUserDaoImpl @Inject constructor(
         }
     }
 
-    override fun isSignIn() = fb.auth.currentUser != null
-
-    override suspend fun getProfile() =
+    override fun getUser() =
         safeCall {
-            fb.auth.currentUser?.let {
-                UserModel(
-                    avatar = it.photoUrl,
-                    name = it.displayName,
-                    email = it.email,
-                    phone = it.phoneNumber,
-                )
-            }
+            fb.auth.currentUser
         }
 
-    override suspend fun saveProfile(userModel: UserModel) {
+    override suspend fun updateUser(userModel: UserModel) {
         safeCall {
             val profile = userProfileChangeRequest {
                 displayName = userModel.name

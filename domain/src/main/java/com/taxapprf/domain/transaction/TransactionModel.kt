@@ -1,16 +1,15 @@
 package com.taxapprf.domain.transaction
 
-import com.taxapprf.domain.Sync
 
 data class TransactionModel(
-    override val key: String,
+    val id: Int,
     val name: String?,
-    val date: String,
-    val type: String,
-    val currency: String,
-    val rateCBR: Double?,
+    val date: Long,
+    val typeK: Int,
     val sum: Double,
     val tax: Double?,
-    override val isSync: Boolean,
-    override val syncAt: Long,
-) : Sync
+
+    val currencyId: Int,
+    val currencyCharCode: String,
+    val currencyRate: Double?,
+)

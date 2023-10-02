@@ -1,10 +1,8 @@
 package com.taxapprf.taxapp.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.account.AccountModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,51 +13,52 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     val isUnlock
         get() = !isLock
 
-    private val _state = MutableLiveData<BaseState>()
-    val state: LiveData<BaseState> = _state
-
-    lateinit var account: AccountModel
-
     protected fun startWithLock() {
         isLock = true
         start()
     }
 
-    protected fun start() {
+    private fun start() {
         isLoadingDelayTimeout = true
 
         viewModelScope.launch {
             delay(LOADING_DELAY)
-            if (isLoadingDelayTimeout) _state.postValue(Loading)
+            if (isLoadingDelayTimeout) state.emit(Loading)
         }
     }
 
     protected fun error(t: Throwable) {
         loaded()
-        _state.postValue(Error(t))
+        viewModelScope.launch {
+            state.emit(Error(t))
+        }
     }
 
     protected fun success() {
         loaded()
-        _state.postValue(Success)
+        viewModelScope.launch {
+            state.emit(Success)
+        }
     }
 
-    protected fun successShare() {
+    protected fun successShare(uri: Uri) {
         loaded()
-        _state.postValue(SuccessShare)
+        viewModelScope.launch {
+            state.emit(SuccessShare(uri))
+        }
     }
 
-    protected fun successExport() {
+    protected fun successExport(uri: Uri) {
         loaded()
-        _state.postValue(SuccessImport)
+        viewModelScope.launch {
+            state.emit(SuccessImport(uri))
+        }
     }
 
     private fun loaded() {
         isLock = false
         if (isLoadingDelayTimeout) isLoadingDelayTimeout = false
     }
-
-    fun check(function: () -> Int?) = function()
 
     companion object {
         private const val LOADING_DELAY = 300L

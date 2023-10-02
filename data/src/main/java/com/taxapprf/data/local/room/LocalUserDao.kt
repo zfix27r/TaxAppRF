@@ -1,0 +1,39 @@
+package com.taxapprf.data.local.room
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.taxapprf.data.local.room.entity.LocalAccountEntity
+import com.taxapprf.data.local.room.entity.LocalUserEntity
+import com.taxapprf.data.local.room.model.LocalUserWithAccounts
+import com.taxapprf.data.sync.REMOTE_KEY
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface LocalUserDao {
+    @Query(
+        "SELECT " +
+                "u.email ${LocalUserEntity.EMAIL}, " +
+                "u.avatar ${LocalUserEntity.AVATAR}, " +
+                "u.name ${LocalUserEntity.NAME}, " +
+                "u.phone ${LocalUserEntity.PHONE}, " +
+                "a.id ${LocalAccountEntity.ID}, " +
+                "a.user_id ${LocalAccountEntity.USER_ID}, " +
+                "a.remote_key $REMOTE_KEY, " +
+                "a.is_active ${LocalAccountEntity.IS_ACTIVE} " +
+                "FROM user u " +
+                "LEFT JOIN account a ON a.user_id = u.id " +
+                "WHERE email = :email"
+    )
+    fun observe(email: String): Flow<List<LocalUserWithAccounts>>
+
+    @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
+    fun getByEmail(email: String): LocalUserEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun save(localUserEntity: LocalUserEntity): Long
+
+    @Query("DELETE FROM user")
+    fun deleteAll()
+}

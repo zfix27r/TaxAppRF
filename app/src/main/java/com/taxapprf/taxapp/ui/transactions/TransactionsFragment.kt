@@ -9,21 +9,21 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
-import com.taxapprf.taxapp.ui.dialogs.DeleteDialogFragment
-import com.taxapprf.taxapp.ui.share
+import com.taxapprf.taxapp.ui.round
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -33,42 +33,53 @@ import kotlinx.coroutines.launch
 class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private val binding by viewBinding(FragmentTransactionsBinding::bind)
     private val viewModel by viewModels<TransactionsViewModel>()
-    private val adapter = TransactionsAdapter { transactionAdapterCallback }
-    lateinit var itemTouchHelper: ItemTouchHelper
+
+    private val transactionAdapterCallback =
+        object : TransactionsAdapterCallback {
+            override fun onItemClick(transactionModel: TransactionModel) {
+                navToTransactionDetail(transactionModel)
+            }
+
+            override fun onMoreClick(transactionModel: TransactionModel) {
+                onShowMoreClick(transactionModel)
+            }
+        }
+
+    private val adapter = TransactionsAdapter(transactionAdapterCallback)
+
+    private val transactionAdapterTouchHelperCallback =
+        object : TransactionsAdapterTouchHelperCallback {
+            override fun onSwiped(transactionModel: TransactionModel) {
+                showDeleteDialog(transactionModel)
+            }
+        }
+
+    private val transactionTouchHelper =
+        TransactionsAdapterTouchHelper(transactionAdapterTouchHelperCallback)
+    private val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(transactionTouchHelper)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.attachWithAccount()
-        currentStackSavedState.observeDelete()
+        viewModel.attach()
+        observeReport()
+        observeTransactions()
 
         prepToolbar()
         prepView()
         prepListeners()
-
-        itemTouchHelper =
-            ItemTouchHelper(TransactionTouchHelperCallback(transactionAdapterCallback))
-        itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
-
-        viewModel.observeTransactions()
     }
 
     private fun prepToolbar() {
-        toolbar.updateMenu(R.menu.transactions_toolbar) { menuItem ->
+        toolbar.updateMenu(R.menu.toolbar_transactions) { menuItem ->
             when (menuItem.itemId) {
                 R.id.toolbar_share_excel -> {
-                    if (requireActivity().checkStoragePermission()) {
-                        viewModel.getExcelToShare()
-                    }
-
+                    shareExcel()
                     true
                 }
 
                 R.id.toolbar_export_excel -> {
-                    if (requireActivity().checkStoragePermission()) {
-                        viewModel.getExcelToStorage()
-                    }
-
+                    exportExcel()
                     true
                 }
 
@@ -79,131 +90,134 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun prepView() {
         binding.recyclerTransactions.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
     }
 
     private fun prepListeners() {
-        fab.setOnClickListener {
-            mainViewModel.report = viewModel.report
-            findNavController().navigate(R.id.action_transactions_to_transaction_detail)
+        fab.setOnClickListener { navToTransactionDetail() }
+    }
+
+    private fun observeReport() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.observeReport()?.let { flow ->
+                    flow.collectLatest { report ->
+                        report?.updateToolbar()
+                    }
+                } ?: findNavController().popBackStack()
+            }
         }
     }
 
-    private fun SavedStateHandle.observeDelete() {
-        getLiveData<Boolean>(DeleteDialogFragment.DELETE_ACCEPTED).observe(viewLifecycleOwner) {
-            if (it) viewModel.deleteTransaction()
-            else viewModel.deleteTransaction = null
-        }
-    }
-
-    override fun onAuthReady() {
-        super.onAuthReady()
-
-        mainViewModel.report?.let { oldReportModel ->
-            viewModel.report = oldReportModel
-            mainViewModel.report = null
-
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.observeReport(oldReportModel.key).collectLatest { reports ->
-                        reports.firstOrNull()?.let {
-                            viewModel.report = it
-                            it.updateToolbar()
-                        } ?: findNavController().popBackStack()
+    private fun observeTransactions() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.observeTransactions()?.let { flow ->
+                    flow.collectLatest { transactions ->
+                        transactions?.let {
+                            if (transactions.isNotEmpty()) adapter.submitList(transactions)
+                            else findNavController().popBackStack()
+                        }
                     }
                 }
             }
-
-            viewModel.loadTransactions()
         }
     }
 
-    private fun TransactionsViewModel.observeTransactions() =
-        transactions.observe(viewLifecycleOwner) { transaction ->
-            if (transaction.isNotEmpty()) adapter.submitList(transaction)
-            else findNavController().popBackStack()
-        }
-
-    override fun onSuccessShare() {
-        super.onSuccessShare()
-        startIntentSendEmail()
-    }
-
-    override fun onSuccessImport() {
-        super.onSuccessImport()
-        launchSaveExcelToStorageIntent(viewModel.excelUri)
-    }
-
-    override fun onSuccessDelete() {
-        super.onSuccessDelete()
-        findNavController().popBackStack()
+    override fun onSuccessImport(uri: Uri) {
+        super.onSuccessImport(uri)
+        launchImportExcelIntent(uri)
     }
 
     private fun ReportModel.updateToolbar() {
-        val title = String.format(getString(R.string.transactions_title), key)
-        val subtitle = String.format(getString(R.string.transactions_subtitle), tax)
-        toolbar.updateToolbar(title, subtitle)
+        val title = String.format(getString(R.string.transactions_title), name)
+        val subtitle = String.format(getString(R.string.transactions_subtitle), tax.round())
+        toolbar.updateTitles(title, subtitle)
     }
 
-    private val transactionAdapterCallback = object : TransactionsAdapterCallback {
-        override fun onClick(transactionModel: TransactionModel) {
-            navToTransactionDetail(transactionModel)
-        }
+    private val transactionTypes
+        get() = mapOf(
+            TransactionType.TRADE.k to getString(R.string.transaction_type_trade),
+            TransactionType.FUNDING_WITHDRAWAL.k to getString(R.string.transaction_type_funding_withdrawal),
+            TransactionType.COMMISSION.k to getString(R.string.transaction_type_commission),
+        )
 
-        override fun onClickMore(transactionModel: TransactionModel) {
-            showActionMode {
-                object : BaseActionModeCallback {
-                    override var menuInflater = requireActivity().menuInflater
-                    override var menuId = R.menu.transaction_action_menu
-
-                    override fun onActionItemClicked(
-                        mode: ActionMode?,
-                        item: MenuItem
-                    ) = when (item.itemId) {
-                        R.id.action_menu_delete -> {
-                            viewModel.deleteTransaction = transactionModel
-                            actionMode?.finish()
-                            navToTransactionDelete()
-                            true
-                        }
-
-                        else -> false
-                    }
-                }
-            }
-        }
-
-        override fun onSwiped(position: Int) {
-            viewModel.onSwipedTransaction(position)
-            viewModel.deleteTransaction()
+    private fun shareExcel() {
+        if (requireActivity().checkStoragePermission()) {
+            viewModel.shareReport(transactionTypes)
         }
     }
 
-    private fun startIntentSendEmail() {
-        requireActivity().share(viewModel.excelUri)
+    private fun exportExcel() {
+        if (requireActivity().checkStoragePermission()) {
+            viewModel.exportReport(transactionTypes)
+        }
     }
 
-    private val importExcelToStorageIntent =
+    private val importExcelIntent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
 
         }
 
-    private fun launchSaveExcelToStorageIntent(uri: Uri) {
-        with(requireActivity()) {
-            if (checkStoragePermission()) {
-                val intent = Intent(Intent.ACTION_VIEW, uri)
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                importExcelToStorageIntent.launch(intent)
+    private fun launchImportExcelIntent(uri: Uri) {
+        if (fragment.requireActivity().checkStoragePermission()) {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.action = Intent.ACTION_VIEW
+            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            intent.type = "application/vnd.ms-excel"
+            intent.setDataAndType(uri, "application/vnd.ms-excel")
+            importExcelIntent.launch(intent)
+        }
+    }
+
+    private fun onShowMoreClick(transactionModel: TransactionModel) {
+        showActionMode {
+            object : BaseActionModeCallback {
+                override var menuInflater = requireActivity().menuInflater
+                override var menuId = R.menu.action_menu_transaction
+
+                override fun onActionItemClicked(
+                    mode: ActionMode?,
+                    item: MenuItem
+                ) = when (item.itemId) {
+                    R.id.action_menu_delete -> {
+                        showDeleteDialog(transactionModel)
+                        true
+                    }
+
+                    else -> false
+                }
             }
         }
     }
 
-    private fun navToTransactionDelete() {
-        findNavController().navigate(R.id.action_transactions_to_delete_dialog)
+    private fun showDeleteDialog(transactionModel: TransactionModel) {
+        actionMode?.finish()
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.delete_dialog_title)
+            .setMessage(R.string.delete_dialog_message)
+            .setPositiveButton(R.string.delete_dialog_ok) { _, _ ->
+                viewModel.deleteTransaction(transactionModel)
+            }
+            .setNegativeButton(R.string.delete_dialog_cancel) { _, _ ->
+                transactionTouchHelper.cancelSwipe()
+                itemTouchHelper.attachToRecyclerView(null)
+                itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
+            }
+            .show()
     }
 
-    private fun navToTransactionDetail(transactionModel: TransactionModel) {
-        mainViewModel.report = viewModel.report
-        mainViewModel.transaction = transactionModel
-        findNavController().navigate(R.id.action_transactions_to_transaction_detail)
+    private fun navToTransactionDetail(transactionModel: TransactionModel? = null) {
+        val accountId = mainViewModel.accountId ?: return
+        val reportId = viewModel.reportId ?: return
+
+        findNavController().navigate(
+            TransactionsFragmentDirections.actionTransactionsToTransactionDetail(
+                accountId = accountId,
+                reportId = reportId,
+                transactionId = transactionModel?.id ?: 0
+            )
+        )
     }
 }

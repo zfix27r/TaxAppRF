@@ -1,35 +1,19 @@
 package com.taxapprf.domain.transaction
 
-import kotlin.properties.Delegates
-
 data class SaveTransactionModel(
-    val accountKey: String,
-    val yearKey: String,
-    val transactionKey: String? = null,
+    val transactionId: Int? = null,
+    val reportId: Int? = null,
 
-    val date: String,
+    val accountId: Int,
+    val currencyId: Int,
+
     val name: String,
-    val currency: String,
-    val type: String,
+    val date: Long,
+    val type: Int,
     val sum: Double,
+
+    val tax: Double? = null,
 ) {
-    lateinit var reportYear: String
-    var reportSize by Delegates.notNull<Int>()
-    var reportTax by Delegates.notNull<Double>()
-
-    var rateCBR by Delegates.notNull<Double>()
-    var tax by Delegates.notNull<Double>()
-
-    fun isReportYearChanged() = reportYear != yearKey
-    fun asDeleteTransactionModel() =
-        transactionKey?.let {
-            DeleteTransactionModel(
-                accountKey,
-                reportYear,
-                transactionKey,
-                tax,
-                reportSize,
-                reportTax
-            )
-        }
+    var newTransactionId: Int? = null
+    var newReportId: Int? = null
 }

@@ -1,39 +1,16 @@
 package com.taxapprf.data.remote.firebase.model
 
-import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.data.sync.SyncRemote
 
 data class FirebaseTransactionModel(
     val name: String? = null,
-    val date: String? = null,
+    val date: Long? = null,
     val type: String? = null,
     val currency: String? = null,
     val rateCBR: Double? = null,
     val sum: Double? = null,
     val tax: Double? = null,
-    val syncAt: Long? = null,
-) {
-    fun toTransactionModel(key: String?): TransactionModel? {
-        val transactionKey = key ?: return null
-        val name = name
-        val date = date ?: return null
-        val type = type ?: return null
-        val currency = currency ?: return null
-        val rateCBR = rateCBR
-        val sum = sum ?: return null
-        val tax = tax
-        val syncAt = syncAt ?: 0
-
-        return TransactionModel(
-            transactionKey,
-            name,
-            date,
-            type,
-            currency,
-            rateCBR,
-            sum,
-            tax,
-            true,
-            syncAt
-        )
-    }
+    override val syncAt: Long? = null,
+) : SyncRemote {
+    override var key: String? = null
 }

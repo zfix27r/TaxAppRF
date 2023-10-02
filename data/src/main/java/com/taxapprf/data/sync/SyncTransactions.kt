@@ -1,72 +1,68 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.data.local.room.dao.LocalTransactionDao
+import com.taxapprf.data.local.room.LocalTransactionDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
-import com.taxapprf.data.remote.firebase.dao.FirebaseTransactionDao
+import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
-import com.taxapprf.domain.transaction.TransactionModel
 
+/*
 class SyncTransactions(
     private val localDao: LocalTransactionDao,
-    private val remoteDao: FirebaseTransactionDao,
+    private val remoteDao: RemoteTransactionDao,
     private val accountKey: String,
     private val reportKey: String,
-) : SyncManager<LocalTransactionEntity, TransactionModel, FirebaseTransactionModel>() {
-    override fun observeLocal() = localDao.observeAll(accountKey, reportKey)
-
-    override fun getLocal() = localDao.getAll(accountKey, reportKey)
-
-    override fun observeRemote() = remoteDao.observeTransactions(accountKey, reportKey)
-
-    override suspend fun saveRemote(models: Map<String, FirebaseTransactionModel>) {
-        remoteDao.saveTransactions(accountKey, reportKey, models)
+) : SyncManager<LocalTransactionEntity, FirebaseTransactionModel>() {
+    override fun LocalTransactionEntity.toRemote(remote: FirebaseTransactionModel?): FirebaseTransactionModel {
+        val firebaseTransactionModel =
+            FirebaseTransactionModel(name, date, type, currency, rateCBRF, sum, tax, syncAt)
+        firebaseTransactionModel.key = key
+        return firebaseTransactionModel
     }
 
-    override fun deleteLocal(models: List<LocalTransactionEntity>) {
-        localDao.delete(models)
+    override fun FirebaseTransactionModel.toLocal(local: LocalTransactionEntity?): LocalTransactionEntity? {
+        val transactionKey = key ?: return null
+        val name = name
+        val date = date ?: return null
+        val type = type ?: return null
+        val currency = currency ?: return null
+        val rateCBR = rateCBR ?: 0.0
+        val sum = sum ?: return null
+        val tax = tax ?: 0.0
+        val syncAt = syncAt ?: 0
+
+        return LocalTransactionEntity(
+            id = local?.id ?: 0,
+            accountKey = accountKey,
+            reportKey = reportKey,
+            key = transactionKey,
+            name,
+            date,
+            type,
+            currency,
+            rateCBR,
+            sum,
+            tax,
+            isSync = true,
+            isDelete = false,
+            syncAt = syncAt
+        )
     }
 
-    override fun saveLocal(models: List<LocalTransactionEntity>) {
-        localDao.save(models)
-    }
+    override fun getLocalList() =
+        localDao.getAll(accountKey, reportKey)
 
-    override fun List<TransactionModel>.mapAppToRemote(): Map<String, FirebaseTransactionModel> {
-        val map = mutableMapOf<String, FirebaseTransactionModel>()
-        map {
-            map.put(
-                it.key, FirebaseTransactionModel(
-                    name = it.name,
-                    date = it.date,
-                    type = it.type,
-                    currency = it.currency,
-                    rateCBR = it.rateCBR,
-                    sum = it.sum,
-                    tax = it.tax,
-                    syncAt = it.syncAt
-                )
-            )
-        }
-        return map
-    }
+    override fun deleteLocalList(locals: List<LocalTransactionEntity>) =
+        localDao.deleteAll(locals)
 
-    override fun List<TransactionModel>.mapAppToLocal() =
-        map {
-            LocalTransactionEntity(
-                key = it.key,
-                accountKey = accountKey,
-                reportKey = reportKey,
-                name = it.name,
-                date = it.date,
-                type = it.type,
-                currency = it.currency,
-                rateCBR = it.rateCBR,
-                sum = it.sum,
-                tax = it.tax,
-                isSync = it.isSync,
-                syncAt = it.syncAt
-            )
-        }
+    override fun saveLocalList(locals: List<LocalTransactionEntity>) =
+        localDao.saveAll(locals)
 
-    override fun LocalTransactionEntity.mapLocalToApp() =
-        TransactionModel(key, name, date, type, currency, rateCBR, sum, tax, isSync, syncAt)
-}
+    override suspend fun getRemoteList() =
+        remoteDao.getAll(accountKey, reportKey)
+
+    override suspend fun LocalTransactionEntity.updateRemoteKey() =
+        remoteDao.getKey(accountKey, reportKey)?.let { copy(key = it) }
+
+    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseTransactionModel?>) =
+        remoteDao.updateAll(accountKey, reportKey, remoteMap)
+}*/

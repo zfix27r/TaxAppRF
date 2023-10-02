@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        gradleVersion = '8.0.2'
+        gradleVersion = '8.1.1'
 
         kotlinVersion = '1.8.20'
         kotlinCoroutinesVersion = '1.7.2'
@@ -42,6 +42,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "com.google.gms:google-services:$googleServicesVersion"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$androidxNavigationVersion"
     }
 }
 

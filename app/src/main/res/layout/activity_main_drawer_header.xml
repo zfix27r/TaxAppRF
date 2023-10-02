@@ -4,104 +4,90 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    android:theme="@style/ThemeOverlay.Material3.Dark">
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/margin_vertical_20dp"
         android:background="@drawable/side_nav_bar">
 
         <ImageView
-            android:id="@+id/imageNavHeaderUserAvatar"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_marginEnd="10dp"
-            android:contentDescription="@string/nav_header_desc"
-            app:layout_constraintEnd_toStartOf="@+id/textNavHeaderUserName"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:srcCompat="@drawable/free_icon_tax_10994810"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/textNavHeaderUserName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="90dp"
-            android:layout_marginEnd="@dimen/offset_8"
-            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/textNavHeaderUserEmail"
+            android:id="@+id/image_drawer_header_user_avatar"
+            android:layout_width="@dimen/drawer_avatar_size"
+            android:layout_height="@dimen/drawer_avatar_size"
+            android:layout_marginStart="@dimen/offset_8"
+            android:layout_marginTop="@dimen/offset_16"
+            android:contentDescription="@string/drawer_header_user_avatar_content_description"
             app:layout_constraintStart_toStartOf="parent"
-            tools:text="Name"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_tax_app_logo" />
 
         <TextView
-            android:id="@+id/textNavHeaderUserEmail"
-            android:layout_width="wrap_content"
+            android:id="@+id/text_drawer_header_user_name"
+            android:layout_width="@dimen/zero"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/offset_16"
+            android:layout_marginTop="@dimen/offset_16"
+            android:ellipsize="end"
+            android:lines="1"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@+id/textNavHeaderUserName"
-            app:layout_constraintTop_toBottomOf="@+id/textNavHeaderUserName"
-            app:layout_constraintBottom_toTopOf="@+id/textNavHeaderUserAccount"
-            tools:text="email"
-            tools:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/imageNavHeaderUserLogOut"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
-            android:padding="@dimen/offset_8"
-            android:layout_marginEnd="20dp"
-            android:visibility="gone"
+            android:textColor="@color/md_theme_light_onPrimary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textNavHeaderUserName"
-            app:layout_constraintBottom_toBottomOf="@+id/textNavHeaderUserEmail"
-            app:srcCompat="@drawable/ic_baseline_logout_24"
-            tools:visibility="visible" />
+            app:layout_constraintStart_toEndOf="@+id/image_drawer_header_user_avatar"
+            app:layout_constraintTop_toTopOf="@+id/image_drawer_header_user_avatar"
+            tools:text="Name" />
+
+        <TextView
+            android:id="@+id/text_drawer_header_user_email"
+            android:layout_width="@dimen/zero"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/offset_4"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textColor="@color/md_theme_light_onPrimary"
+            app:layout_constraintEnd_toEndOf="@+id/text_drawer_header_user_name"
+            app:layout_constraintStart_toStartOf="@+id/text_drawer_header_user_name"
+            app:layout_constraintTop_toBottomOf="@+id/text_drawer_header_user_name"
+            tools:text="email" />
 
         <androidx.constraintlayout.helper.widget.Layer
-            android:id="@+id/layerNavHeaderAccounts"
+            android:id="@+id/layer_drawer_header_active_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:foreground="?attr/selectableItemBackground"
-            android:visibility="gone"
-            app:constraint_referenced_ids="textNavHeaderUserAccount,imageNavHeaderUserAccountExpand"
-            app:layout_constraintTop_toBottomOf="@+id/textNavHeaderUserEmail"
+            app:constraint_referenced_ids="text_drawer_header_user_active_account,image_drawer_header_user_account_expand"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textNavHeaderUserAccount"
-            tools:visibility="visible" />
+            app:layout_constraintStart_toStartOf="@+id/text_drawer_header_user_active_account" />
 
         <TextView
-            android:id="@+id/textNavHeaderUserAccount"
+            android:id="@+id/text_drawer_header_user_active_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="8dp"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            app:layout_constraintTop_toBottomOf="@+id/textNavHeaderUserEmail"
+            android:textColor="@color/md_theme_light_onPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textNavHeaderUserName"
-            tools:text="account" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image_drawer_header_user_avatar"
+            tools:text="Account" />
 
         <ImageView
-            android:id="@+id/imageNavHeaderUserAccountExpand"
+            android:id="@+id/image_drawer_header_user_account_expand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/drawer_header_user_account_expand_content_description"
             android:padding="@dimen/offset_8"
-            app:layout_constraintBottom_toBottomOf="@+id/textNavHeaderUserAccount"
-            app:layout_constraintTop_toTopOf="@+id/textNavHeaderUserAccount"
-            app:layout_constraintEnd_toEndOf="@+id/imageNavHeaderUserLogOut"
-            app:layout_constraintStart_toStartOf="@+id/imageNavHeaderUserLogOut"
-            app:srcCompat="@drawable/ic_baseline_expand_more_24" />
+            app:layout_constraintBottom_toBottomOf="@+id/text_drawer_header_user_active_account"
+            app:layout_constraintEnd_toEndOf="@+id/text_drawer_header_user_name"
+            app:layout_constraintTop_toTopOf="@+id/text_drawer_header_user_active_account"
+            app:srcCompat="@drawable/ic_baseline_expand_more_24"
+            app:tint="@color/md_theme_light_onPrimary" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerNavHeaderAccounts"
+        android:id="@+id/recycler_drawer_header_accounts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"

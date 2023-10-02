@@ -1,148 +1,147 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.error.DataErrorCBR
-import com.taxapprf.data.error.DataErrorConnection
-import com.taxapprf.data.local.excel.ExcelDaoImpl
-import com.taxapprf.data.local.room.dao.LocalTransactionDao
-import com.taxapprf.data.remote.cbrapi.CBRAPI
-import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
-import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
-import com.taxapprf.data.remote.firebase.model.GetReportModel
-import com.taxapprf.data.sync.SyncTransactions
+import com.taxapprf.data.local.room.LocalDeletedKeyDao
+import com.taxapprf.data.local.room.LocalTransactionDao
+import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity
+import com.taxapprf.data.local.room.model.GetExcelTransactionWithCurrency
+import com.taxapprf.data.local.room.model.GetTransactionWithCurrency
 import com.taxapprf.domain.TransactionRepository
-import com.taxapprf.domain.report.SaveReportModel
-import com.taxapprf.domain.transaction.DeleteTransactionModel
-import com.taxapprf.domain.transaction.GetExcelToShareModel
-import com.taxapprf.domain.transaction.GetExcelToStorageModel
-import com.taxapprf.domain.transaction.ObserveTransactionsModel
+import com.taxapprf.domain.delete.DeleteReportWithTransactionsModel
+import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
+import com.taxapprf.domain.excel.ExcelTransactionModel
+import com.taxapprf.domain.excel.ExportExcelModel
+import com.taxapprf.domain.toAppDate
 import com.taxapprf.domain.transaction.SaveTransactionModel
-import com.taxapprf.domain.transaction.SaveTransactionsFromExcelModel
-import kotlinx.coroutines.flow.flow
+import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.transaction.TransactionTypeModel
+import com.taxapprf.domain.update.UpdateReportWithTransactionTaxModel
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class TransactionRepositoryImpl @Inject constructor(
-    private val localTransactionDao: LocalTransactionDao,
-    private val firebaseTransactionDao: FirebaseTransactionDaoImpl,
-    private val firebaseReportDao: FirebaseReportDaoImpl,
-    private val cbrapi: CBRAPI,
-    private val excelDao: ExcelDaoImpl,
+    private val localDao: LocalTransactionDao,
+    private val localDeletedKeyDao: LocalDeletedKeyDao,
 ) : TransactionRepository {
-    override fun observeTransactions(observeTransactionsModel: ObserveTransactionsModel) =
-        SyncTransactions(
-            localTransactionDao,
-            firebaseTransactionDao,
-            observeTransactionsModel.accountKey,
-            observeTransactionsModel.reportKey
-        ).observe()
+    override fun observeReport(reportId: Int) =
+        localDao.observeReport(reportId)
+            .map { transitions -> transitions.map { it.toTransactionModel() } }
 
-    override fun saveTransaction(saveTransactionModel: SaveTransactionModel) = flow {
-        saveTransactionModel.saveAndUpdatePath()
-        firebaseTransactionDao.saveTransaction(saveTransactionModel)
-        emit(Unit)
-    }
+    override fun observe(transactionId: Int) =
+        localDao.observe(transactionId)
+            .map { it?.toTransactionModel() }
 
-    private suspend fun SaveTransactionModel.saveAndUpdatePath() {
-        updateOldPathTransaction()
+    override fun getTransactionTypes() =
+        listOf(
+            TransactionTypeModel(id = 1, k = 1),
+            TransactionTypeModel(id = 2, k = 0),
+            TransactionTypeModel(id = 3, k = -1),
+        )
 
-        updateCBRRate()
-        tax = updateTax(sum, type, rateCBR)
+    override suspend fun inflateExcelTransactions(exportExcelModel: ExportExcelModel) =
+        localDao.getExcelTransactionsWithCurrency(exportExcelModel.reportId)
+            .map { it.toExcelTransactionModel(exportExcelModel) }
 
-        updatePathTransaction()
-    }
+    override suspend fun deleteAll() =
+        localDao.deleteAll()
 
-    private suspend fun SaveTransactionModel.updateOldPathTransaction() {
-        asDeleteTransactionModel()?.let {
-            if (isReportYearChanged()) {
-                firebaseTransactionDao.deleteTransaction(it)
-                if (reportSize < 2)
-                    firebaseReportDao.delete(accountKey, reportYear)
-                else
-                    decrementAndSave(accountKey, reportYear)
+    override suspend fun save(saveTransactionModel: SaveTransactionModel) =
+        saveTransactionModel.toLocalTransactionEntity()?.let { localDao.save(it) }
+
+    override suspend fun updateTax(updateReportWithTransactionTaxModel: UpdateReportWithTransactionTaxModel) {
+        with(updateReportWithTransactionTaxModel) {
+            tax?.let {
+                localDao.updateTax(transactionId, it)
             }
         }
     }
 
-    private suspend fun SaveTransactionModel.updatePathTransaction() {
-        incrementAndSave(accountKey, yearKey)
-    }
+    override suspend fun deleteTransaction(
+        deleteTransactionWithUpdateReportModel: DeleteTransactionWithReportModel
+    ) =
+        with(deleteTransactionWithUpdateReportModel) {
+            localDao.getTransactionKeys(transactionId)?.let { transactionKeys ->
+                transactionKeys.transactionKey?.let { transactionKey ->
+                    val deletedKey = LocalDeletedKeyEntity(
+                        accountKey = transactionKeys.accountKey,
+                        reportKey = transactionKeys.reportKey,
+                        transactionKey = transactionKey,
+                        syncAt = transactionKeys.syncAt
+                    )
+                    localDeletedKeyDao.save(deletedKey)
+                }
 
-    private suspend fun SaveTransactionModel.decrementAndSave(
-        accountKey: String,
-        reportKey: String
+                localDao.delete(transactionId)
+                this.apply {
+                    reportId = transactionKeys.reportId
+                    transactionTax = transactionKeys.tax
+                }
+            } ?: run {
+                null
+            }
+        }
+
+    override suspend fun deleteReportTransactions(
+        deleteReportWithTransactionsModel: DeleteReportWithTransactionsModel
     ) {
-        val getReportModel = GetReportModel(accountKey, reportKey)
+        localDao.getTransactionsKeys(deleteReportWithTransactionsModel.reportId)
+            .map { transactionKeys ->
 
-        firebaseReportDao.get(getReportModel).let {
-            val newTax = (it.tax - tax).roundUpToTwo()
-            val newSize = it.size - 1
-            val saveReportModel = SaveReportModel(accountKey, reportKey, newTax, newSize)
-            firebaseReportDao.save(saveReportModel)
-        }
-    }
+                transactionKeys.transactionKey?.let { transactionKey ->
+                    val deletedKey = LocalDeletedKeyEntity(
+                        accountKey = transactionKeys.accountKey,
+                        reportKey = transactionKeys.reportKey,
+                        transactionKey = transactionKey,
+                        syncAt = transactionKeys.syncAt
+                    )
+                    localDeletedKeyDao.save(deletedKey)
+                }
 
-    private suspend fun SaveTransactionModel.incrementAndSave(
-        accountKey: String,
-        yearKey: String
-    ) {
-        val getReportModel = GetReportModel(accountKey, yearKey)
-
-        firebaseReportDao.get(getReportModel).let {
-            val newTax = (it.tax + tax).roundUpToTwo()
-            val newSize = it.size + 1
-            val saveReportModel = SaveReportModel(accountKey, yearKey, newTax, newSize)
-            firebaseReportDao.save(saveReportModel)
-        }
-    }
-
-    override fun deleteTransaction(deleteTransactionModel: DeleteTransactionModel) = flow {
-        with(deleteTransactionModel) {
-            val newSize = reportSize - 1
-
-            if (newSize == 0) {
-                firebaseReportDao.delete(accountKey, reportKey)
-            } else {
-                val transactionTax = transactionTax ?: 0.0
-
-                val newTax = (reportTax - transactionTax).roundUpToTwo()
-                val saveReportModel = SaveReportModel(accountKey, reportKey, newTax, newSize)
-                firebaseReportDao.save(saveReportModel)
-
-                firebaseTransactionDao.deleteTransaction(deleteTransactionModel)
+                localDao.delete(transactionKeys.id)
             }
-
-            emit(Unit)
-        }
     }
 
-    override fun getExcelToShare(getExcelToShareModel: GetExcelToShareModel) = flow {
-        emit(excelDao.getExcelToShare(getExcelToShareModel))
+    private fun SaveTransactionModel.toLocalTransactionEntity(): LocalTransactionEntity? {
+        val transactionId = transactionId ?: LocalTransactionEntity.DEFAULT_ID
+        val reportId = newReportId ?: return null
+
+        return LocalTransactionEntity(
+            id = transactionId,
+            accountId = accountId,
+            reportId = reportId,
+            currencyId = currencyId,
+            name = name,
+            date = date,
+            type = type,
+            sum = sum
+        )
     }
 
-    override fun getExcelToStorage(getExcelToStorageModel: GetExcelToStorageModel) = flow {
-        emit(excelDao.getExcelToStorage(getExcelToStorageModel))
-    }
+    private fun GetTransactionWithCurrency.toTransactionModel() =
+        TransactionModel(
+            id,
+            name,
+            date,
+            type,
+            sum,
+            tax,
+            currencyId,
+            currencyCharCode,
+            currencyRate
+        )
 
-    override fun saveTransactionsFromExcel(saveTransactionsFromExcelModel: SaveTransactionsFromExcelModel) =
-        flow {
-            excelDao.saveExcel(saveTransactionsFromExcelModel)
-                .map { it.saveAndUpdatePath() }
-
-            emit(Unit)
-        }
-
-    private fun SaveTransactionModel.updateCBRRate() {
-        try {
-            val request = cbrapi.getCurrency(date).execute()
-
-            try {
-                rateCBR = request.body()!!
-                    .getCurrencyRate(currency)!!
-                    .roundUpToTwo()
-            } catch (_: Exception) {
-                throw DataErrorCBR()
-            }
-        } catch (_: Exception) {
-            throw DataErrorConnection()
-        }
-    }
+    private fun GetExcelTransactionWithCurrency.toExcelTransactionModel(
+        exportExcelModel: ExportExcelModel
+    ) =
+        ExcelTransactionModel(
+            name = name,
+            appDate = date.toAppDate(),
+            titleType = exportExcelModel.transactionTypes[type],
+            sum = sum,
+            currencyCharCode = currencyCharCode,
+            currencyRate = currencyRate,
+            tax = tax
+        )
 }

@@ -77,6 +77,16 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
 }
 
     private fun prepCurrencies() {
+
+//        val currencies = resources.getStringArray(R.array.transaction_currencies)
+/*        currenciesAdapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencies)
+        currenciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerCurrencyConverterSum.adapter = currenciesAdapter*/
+/*        binding.spinnerCurrencyConverterSum.setSelection(
+            currencies.indexOf(resources.getString(R.string.transaction_currency_usd))
+        )*/
+
         val currencies = resources.getStringArray(R.array.transaction_currencies)
 
         currenciesAdapter = ArrayAdapter(requireContext(), R.layout.list_item, currencies)

@@ -1,146 +1,157 @@
 package com.taxapprf.taxapp.ui.transactions.detail
 
-import android.text.Editable
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import com.taxapprf.data.ACCOUNT_ID
+import com.taxapprf.data.REPORT_ID
+import com.taxapprf.data.TRANSACTION_ID
+import com.taxapprf.data.getEpochDate
+import com.taxapprf.domain.cbr.GetCurrenciesUseCase
+import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.toAppDate
+import com.taxapprf.domain.transaction.ObserveTransactionUseCase
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
+import com.taxapprf.taxapp.ui.makeHot
+import com.taxapprf.taxapp.ui.round
+import com.taxapprf.taxapp.ui.toLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
-import java.time.Year
-import java.time.format.DateTimeFormatter
-import java.time.format.ResolverStyle
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class TransactionDetailViewModel @Inject constructor() : BaseViewModel() {
-    private val dateFormat = DateTimeFormatter.ofPattern(DATE_PATTERN)
+class TransactionDetailViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    observeReportUseCase: ObserveReportUseCase,
+    observeTransactionUseCase: ObserveTransactionUseCase,
+    private val getCurrenciesUseCase: GetCurrenciesUseCase,
+) : BaseViewModel() {
+    private val accountId = savedStateHandle.get<Int>(ACCOUNT_ID)
+    private val reportId = savedStateHandle.get<Int>(REPORT_ID)
+        ?.let { if (it == 0) null else it }
+    private val transactionId = savedStateHandle.get<Int>(TRANSACTION_ID)
+        ?.let { if (it == 0) null else it }
 
-    var report: ReportModel? = null
-    var transaction: TransactionModel? = null
-        set(value) {
-            transactionKey = value?.key
-            name = value?.name ?: NAME_DEFAULT
-            date = value?.date ?: getCurrentDate()
-            type = value?.type ?: TransactionType.TRADE.name
-            currency = value?.currency ?: CURRENCY_DEFAULT
-            sum = value?.sum ?: SUM_DEFAULT
-            rateCBR = value?.rateCBR ?: 0.0
-            tax = value?.tax ?: 0.0
-            field = value
+    private var transactionTax: Double? = null
+
+    var name: String = DEFAULT_NAME
+    var date: String = getEpochDate().toAppDate()
+    var typeK: Int = DEFAULT_TRANSACTION_TYPE_K
+    var currency: String = DEFAULT_CURRENCY_NAME
+    var sum: String = DEFAULT_SUM
+
+    val report =
+        if (transactionId == null) {
+            observeReportUseCase.execute(reportId)
+                ?.onEach { setFromReportModel(it) }
+                ?.makeHot(viewModelScope)
+        } else null
+
+    val transaction =
+        observeTransactionUseCase.execute(transactionId)
+            ?.onEach { setFromTransactionModel(it) }
+            ?.makeHot(viewModelScope)
+
+    val currencies =
+        flow { emit(getCurrenciesUseCase.execute()) }
+            .makeHot(viewModelScope)
+
+    private fun setFromReportModel(reportModel: ReportModel?) {
+        reportModel?.name?.let {
+            val shiftDate = LocalDate.now().withYear(it.toInt())
+            date = shiftDate.toEpochDay().toAppDate()
         }
-
-    private var transactionKey: String? = null
-    var date: String = getCurrentDate()
-
-    var name: String = NAME_DEFAULT
-
-    var currency: String = CURRENCY_DEFAULT
-    var type: String = TransactionType.TRADE.name
-    var sum: Double = SUM_DEFAULT
-
-    private var rateCBR = 0.0
-    private var tax = 0.0
-
-    fun checkName(cName: Editable?) = check {
-        name = cName.toString()
-        if (name.isNameRangeIncorrect()) R.string.transaction_detail_error_name_too_long
-        else null
     }
 
-    fun checkDate(cDate: Editable?) = checkDate(cDate.toString())
+    private fun setFromTransactionModel(transactionModel: TransactionModel?) {
+        transactionModel?.let { transaction ->
+            date = transaction.date.toAppDate()
+            typeK = transaction.typeK
+            sum = transaction.sum.round().toString()
+
+            transaction.tax?.let { transactionTax = it }
+            transaction.name?.let { name = it }
+
+            currencies.value
+                ?.find { it.id == transaction.currencyId }
+                ?.charCode
+                ?.let { currency = it }
+        }
+    }
+
     fun checkDate(year: Int, month: Int, dayOfMonth: Int): Int? {
         val dayFormatted = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
         val monthIncremented = month + 1
         val monthFormatted =
             if (monthIncremented < 10) "0$monthIncremented" else monthIncremented.toString()
 
-        return checkDate("$dayFormatted/$monthFormatted/$year")
+        date = "$dayFormatted/$monthFormatted/$year"
+        return checkDate()
     }
 
-    fun checkSum(cSum: Editable?) = check {
-        sum = 0.0
+    fun checkName() =
+        if (name.isNameRangeIncorrect()) R.string.transaction_detail_error_name_too_long
+        else null
 
+    fun checkDate() =
+        date.toLocalDate()?.toEpochDay().let { cDate ->
+            if (cDate == null) R.string.transaction_detail_error_date_format
+            else if (cDate.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
+            else null
+        }
+
+    fun checkSum() =
         try {
-            sum = cSum.toString().toDouble()
+            val cSum = sum.toDouble()
+
+            if (cSum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
+            else null
         } catch (_: java.lang.Exception) {
-
+            R.string.transaction_detail_error_sum_empty
         }
 
-        if (sum == 0.0) R.string.transaction_detail_error_sum_empty
-        else if (sum > SUM_MAX_LENGTH) R.string.transaction_detail_error_sum_too_long
-        else null
-    }
+    fun getSaveTransactionModel(): SaveTransactionModel? {
+        val accountId = accountId ?: return null
+        val currencyId = currencies.value?.find { it.charCode == currency }?.id ?: return null
+        val date = date.toLocalDate()?.toEpochDay() ?: return null
 
-    fun getSaveTransactionModel(): SaveTransactionModel {
-        val saveTransactionModel = SaveTransactionModel(
-            accountKey = account.key,
-            yearKey = date.getYear().toString(),
-            transactionKey = transaction?.key,
-            date = date,
+        return SaveTransactionModel(
+            transactionId = transactionId,
+            reportId = reportId,
+            accountId = accountId,
+            currencyId = currencyId,
             name = name,
-            currency = currency,
-            type = type,
-            sum = sum
-        ).apply {
-            report?.let {
-                reportYear = it.key
-                reportTax = it.tax
-                reportSize = it.size
-            }
-        }
-        saveTransactionModel.rateCBR = rateCBR
-        saveTransactionModel.tax = tax
-
-        return saveTransactionModel
+            date = date,
+            type = typeK,
+            sum = sumToDouble(),
+            tax = transactionTax,
+        )
     }
 
-    private fun String.getYear() = split("/")[2].toInt()
-
-    private fun checkDate(cDate: String) = check {
-        date = cDate
-        if (date.isDateFormatIncorrect()) R.string.transaction_detail_error_date_format
-        else if (date.isDateRangeIncorrect()) R.string.transaction_detail_error_date_range
-        else null
-    }
-
-    private fun getCurrentDate() = dateFormat.format(LocalDate.now())
-
-    private fun String.isDateFormatIncorrect(): Boolean {
-        var hasError = false
+    private fun sumToDouble() =
         try {
-            LocalDate.parse(
-                this,
-                DateTimeFormatter
-                    .ofPattern(DATE_PATTERN)
-                    .withLocale(Locale.ROOT)
-                    .withResolverStyle(ResolverStyle.STRICT)
-            )
-        } catch (e: Exception) {
-            hasError = true
+            sum.toDouble()
+        } catch (_: Exception) {
+            0.0
         }
-        return hasError
-    }
 
-    private fun String.isDateRangeIncorrect(): Boolean {
-        val checkYear = getYear()
-        return checkYear < DATE_YEAR_MIN || checkYear > Year.now().value
-    }
+    private fun Long.isDateRangeIncorrect() =
+        this > LocalDate.now().toEpochDay()
 
     private fun String.isNameRangeIncorrect() = length > NAME_MAX_LENGTH
 
     companion object {
-        const val NAME_DEFAULT = ""
-        const val CURRENCY_DEFAULT = ""
-        const val SUM_DEFAULT = 0.0
-
-        const val DATE_YEAR_MIN = 1992
-        const val DATE_PATTERN = "dd/MM/uuuu"
-
-        const val NAME_MAX_LENGTH = 30
+        const val NAME_MAX_LENGTH = 16
         const val SUM_MAX_LENGTH = 999999999999
+
+        const val DEFAULT_NAME = ""
+        const val DEFAULT_CURRENCY_NAME = "USD"
+        const val DEFAULT_TRANSACTION_TYPE_K = 1
+        const val DEFAULT_SUM = ""
     }
 }

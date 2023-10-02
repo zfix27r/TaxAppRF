@@ -2,61 +2,56 @@ package com.taxapprf.data.local.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.ACCOUNT_KEY
+import androidx.room.PrimaryKey
+import com.taxapprf.data.getEpochTime
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TABLE_NAME
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TRANSACTION_KEY
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.REPORT_KEY
-import com.taxapprf.domain.Sync
+import com.taxapprf.data.sync.REMOTE_KEY
+import com.taxapprf.data.sync.SYNC_AT
+import com.taxapprf.data.sync.SyncLocal
 
-@Entity(
-    tableName = TABLE_NAME,
-    primaryKeys = [TRANSACTION_KEY, ACCOUNT_KEY, REPORT_KEY]
-)
+@Entity(tableName = TABLE_NAME)
 data class LocalTransactionEntity(
-    @ColumnInfo(name = TRANSACTION_KEY)
-    override val key: String,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = ID)
+    val id: Int = DEFAULT_ID,
 
-    @ColumnInfo(name = ACCOUNT_KEY)
-    val accountKey: String,
-    @ColumnInfo(name = REPORT_KEY)
-    val reportKey: String,
+    @ColumnInfo(name = ACCOUNT_ID)
+    val accountId: Int,
+    @ColumnInfo(name = REPORT_ID)
+    val reportId: Int,
+    @ColumnInfo(name = CURRENCY_ID)
+    val currencyId: Int,
 
     @ColumnInfo(name = NAME)
-    val name: String?,
+    val name: String? = null,
     @ColumnInfo(name = DATE)
-    val date: String,
+    val date: Long,
     @ColumnInfo(name = TYPE)
-    val type: String,
-    @ColumnInfo(name = CURRENCY)
-    val currency: String,
-    @ColumnInfo(name = RATE_CBR)
-    val rateCBR: Double?,
+    val type: Int,
     @ColumnInfo(name = SUM)
     val sum: Double,
     @ColumnInfo(name = TAX)
-    val tax: Double?,
+    val tax: Double? = null,
 
-    @ColumnInfo(name = IS_SYNC)
-    override val isSync: Boolean,
+    @ColumnInfo(name = REMOTE_KEY)
+    override val remoteKey: String? = null,
     @ColumnInfo(name = SYNC_AT)
-    override val syncAt: Long,
-) : Sync {
+    override val syncAt: Long = getEpochTime(),
+) : SyncLocal {
     companion object {
         const val TABLE_NAME = "transaction"
 
-        const val TRANSACTION_KEY = "transaction_key"
-        const val ACCOUNT_KEY = "account_key"
-        const val REPORT_KEY = "report_key"
+        const val ID = "id"
+        const val ACCOUNT_ID = "account_id"
+        const val REPORT_ID = "report_id"
+        const val CURRENCY_ID = "currency_id"
 
         const val NAME = "name"
         const val DATE = "date"
         const val TYPE = "type"
-        const val CURRENCY = "currency"
-        const val RATE_CBR = "rate_cbr"
         const val SUM = "sum"
         const val TAX = "tax"
 
-        const val IS_SYNC = "is_sync"
-        const val SYNC_AT = "sync_at"
+        const val DEFAULT_ID = 0
     }
 }

@@ -1,19 +1,11 @@
 package com.taxapprf.data.remote.firebase.model
 
-import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.data.sync.SyncRemote
 
 data class FirebaseReportModel(
-    var key: String? = null,
     val tax: Double? = null,
     val size: Int? = null,
-    val syncAt: Long? = null
-) {
-    fun toReportModel(): ReportModel? {
-        val key = this.key ?: return null
-        val tax = this.tax ?: return null
-        val size = this.size ?: return null
-        val syncAt = this.syncAt ?: 0L
-
-        return ReportModel(key, tax, size, true, syncAt)
-    }
+    override val syncAt: Long? = null,
+) : SyncRemote {
+    override var key: String? = null
 }
