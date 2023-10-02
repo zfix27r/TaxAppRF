@@ -44,8 +44,9 @@ class UserRepositoryImpl @Inject constructor(
             }
     }
 
-    override suspend fun saveUser(userModel: UserModel) =
-        userRemoteDao.updateUser(userModel)
+    override suspend fun saveUser(userModel: UserModel) {
+        userModel.name?.let { userRemoteDao.updateUser(it) }
+    }
 
     override suspend fun signIn(signInModel: SignInModel) {
         userRemoteDao.signInWithEmailAndPassword(signInModel)
