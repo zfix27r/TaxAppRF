@@ -68,12 +68,16 @@ fun View.hideKeyboard() {
 }
 
 fun Activity.checkStoragePermission(): Boolean {
-    val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-    return if (ContextCompat.checkSelfPermission(this, permission)
-        == PackageManager.PERMISSION_GRANTED
+    val permissionWrite = Manifest.permission.WRITE_EXTERNAL_STORAGE
+    val permissionRead = Manifest.permission.READ_EXTERNAL_STORAGE
+    return if (
+        ContextCompat.checkSelfPermission(
+            this,
+            permissionWrite
+        ) == PackageManager.PERMISSION_GRANTED
     ) true
     else {
-        ActivityCompat.requestPermissions(this, arrayOf(permission), 1)
+        ActivityCompat.requestPermissions(this, arrayOf(permissionRead, permissionWrite), 1)
         false
     }
 }

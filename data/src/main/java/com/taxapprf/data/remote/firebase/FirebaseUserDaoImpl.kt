@@ -26,6 +26,14 @@ class FirebaseUserDaoImpl @Inject constructor(
         safeCall {
             with(signUpModel) {
                 fb.auth.createUserWithEmailAndPassword(email, password).await()
+                saveProfile(
+                    UserModel(
+                        avatar = null,
+                        name = signUpModel.name,
+                        email = signUpModel.email,
+                        phone = signUpModel.phone
+                    )
+                )
             }
         }
     }
