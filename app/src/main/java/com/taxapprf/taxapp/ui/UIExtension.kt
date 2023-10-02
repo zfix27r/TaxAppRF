@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.domain.PATTERN_DATE
+import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,7 @@ val state: MutableSharedFlow<BaseState> = MutableSharedFlow()
 
 fun <T> Flow<T>.showLoading() =
     this
-        .onStart { state.emit(Loading)  }
+        .onStart { state.emit(Loading) }
         .catch { state.emit(Error(it)) }
         .onEach { state.emit(Success) }
 
@@ -128,3 +129,19 @@ fun showDatePickerDialog(
 
 fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
     LocalDate.of(year, month + 1, dayOfMonth).toEpochDay()
+
+fun Context.convertToTransactionTypeName(typeK: Int) =
+    when (typeK) {
+        TransactionType.TRADE.k -> getString(R.string.transaction_type_trade)
+        TransactionType.COMMISSION.k -> getString(R.string.transaction_type_commission)
+        TransactionType.FUNDING_WITHDRAWAL.k -> getString(R.string.transaction_type_funding_withdrawal)
+        else -> null
+    }
+
+fun Context.convertToTransactionTypeK(typeName: String) =
+    when (typeName) {
+        getString(R.string.transaction_type_trade) -> TransactionType.TRADE.k
+        getString(R.string.transaction_type_commission) -> TransactionType.COMMISSION.k
+        getString(R.string.transaction_type_funding_withdrawal) -> TransactionType.FUNDING_WITHDRAWAL.k
+        else -> null
+    }

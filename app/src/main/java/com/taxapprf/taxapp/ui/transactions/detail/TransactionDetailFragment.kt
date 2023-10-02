@@ -13,10 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.cbr.CurrencyModel
-import com.taxapprf.domain.transaction.TransactionType
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BaseBottomSheetFragment
+import com.taxapprf.taxapp.ui.convertToTransactionTypeK
+import com.taxapprf.taxapp.ui.convertToTransactionTypeName
 import com.taxapprf.taxapp.ui.showDatePickerDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -140,7 +141,8 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
                     id: Long
                 ) {
                     typeAdapter.getItem(position)
-                        ?.toTransactionTypeK()?.let { viewModel.typeK = it }
+                        ?.let { requireContext().convertToTransactionTypeK(it) }
+                        ?.let { viewModel.typeK = it }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -170,27 +172,11 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         binding.editTextTransactionDetailSum.setText(viewModel.sum)
         updateDateText()
         binding.spinnerTransactionDetailType.setSelection(
-            typeAdapter.getPosition(viewModel.typeK.toTransactionTypeName())
+            typeAdapter.getPosition(requireContext().convertToTransactionTypeName(viewModel.typeK))
         )
     }
 
     private fun updateDateText() {
         binding.editTextTransactionDetailDate.setText(viewModel.date)
     }
-
-    private fun Int.toTransactionTypeName() =
-        when (this) {
-            TransactionType.TRADE.k -> getString(R.string.transaction_type_trade)
-            TransactionType.COMMISSION.k -> getString(R.string.transaction_type_commission)
-            TransactionType.FUNDING_WITHDRAWAL.k -> getString(R.string.transaction_type_funding_withdrawal)
-            else -> null
-        }
-
-    private fun String.toTransactionTypeK() =
-        when (this) {
-            getString(R.string.transaction_type_trade) -> TransactionType.TRADE.k
-            getString(R.string.transaction_type_commission) -> TransactionType.COMMISSION.k
-            getString(R.string.transaction_type_funding_withdrawal) -> TransactionType.FUNDING_WITHDRAWAL.k
-            else -> null
-        }
 }
