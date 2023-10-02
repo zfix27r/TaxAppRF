@@ -6,7 +6,6 @@ import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.data.safeCall
 import com.taxapprf.domain.user.SignInModel
 import com.taxapprf.domain.user.SignUpModel
-import com.taxapprf.domain.user.UserModel
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -26,14 +25,7 @@ class FirebaseUserDaoImpl @Inject constructor(
         safeCall {
             with(signUpModel) {
                 fb.auth.createUserWithEmailAndPassword(email, password).await()
-                saveProfile(
-                    UserModel(
-                        avatar = null,
-                        name = signUpModel.name,
-                        email = signUpModel.email,
-                        phone = signUpModel.phone
-                    )
-                )
+                updateUser(name)
             }
         }
     }
@@ -49,10 +41,10 @@ class FirebaseUserDaoImpl @Inject constructor(
             fb.auth.currentUser
         }
 
-    override suspend fun updateUser(userModel: UserModel) {
+    override suspend fun updateUser(name: String) {
         safeCall {
             val profile = userProfileChangeRequest {
-                displayName = userModel.name
+                displayName = name
             }
 
             fb.auth.currentUser?.updateProfile(profile) ?: throw DataErrorUser()

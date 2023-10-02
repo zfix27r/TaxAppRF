@@ -5,7 +5,6 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.taxapp.R
@@ -87,10 +86,10 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
             currencies.indexOf(resources.getString(R.string.transaction_currency_usd))
         )*/
 
-        val currencies = resources.getStringArray(R.array.transaction_currencies)
+/*        val currencies = resources.getStringArray(R.array.transaction_currencies)
 
         currenciesAdapter = ArrayAdapter(requireContext(), R.layout.list_item, currencies)
-        (binding.spinnerCurrencyConverterSum as? AutoCompleteTextView)?.setAdapter(currenciesAdapter)
+        (binding.spinnerCurrencyConverterSum as? AutoCompleteTextView)?.setAdapter(currenciesAdapter)*/
     }
 
     override fun onLoadingRetry() {
