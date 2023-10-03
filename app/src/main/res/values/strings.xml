@@ -71,6 +71,9 @@
     <!--CurrencyRateFragment-->
     <string name="currency_rate_toolbar">Курс %s</string>
 
+    <!--ConverterFragment-->
+    <string name="currency">Валюта</string>
+
     <!--Registration Fragment-->
     <string name="edit_sign_up_name">Имя</string>
     <string name="edit_sign_up_tel">Телефон</string>
