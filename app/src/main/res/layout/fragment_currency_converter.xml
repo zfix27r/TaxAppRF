@@ -50,6 +50,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textAlignment="center"
+            android:hint="@string/currency"
+            android:text="@string/transaction_currency_usd"
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
