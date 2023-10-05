@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.taxapprf.domain.cbr.RateWithCurrencyModel
+import com.taxapprf.domain.cbr.CurrencyRateModel
 import com.taxapprf.taxapp.databinding.FragmentCurrencyRateAdapterItemBinding
 
 class CurrencyRateAdapter
-    : ListAdapter<RateWithCurrencyModel, CurrencyRateAdapterViewHolder>(DiffCallback()) {
+    : ListAdapter<CurrencyRateModel, CurrencyRateAdapterViewHolder>(DiffCallback()) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -22,15 +22,15 @@ class CurrencyRateAdapter
         holder.bind(getItem(position))
     }
 
-    private class DiffCallback : DiffUtil.ItemCallback<RateWithCurrencyModel>() {
+    private class DiffCallback : DiffUtil.ItemCallback<CurrencyRateModel>() {
         override fun areItemsTheSame(
-            oldItem: RateWithCurrencyModel,
-            newItem: RateWithCurrencyModel
-        ) = oldItem.name == newItem.name
+            oldItem: CurrencyRateModel,
+            newItem: CurrencyRateModel
+        ) = oldItem.currency.ordinal == newItem.currency.ordinal
 
         override fun areContentsTheSame(
-            oldItem: RateWithCurrencyModel,
-            newItem: RateWithCurrencyModel
+            oldItem: CurrencyRateModel,
+            newItem: CurrencyRateModel
         ) = oldItem == newItem
     }
 }

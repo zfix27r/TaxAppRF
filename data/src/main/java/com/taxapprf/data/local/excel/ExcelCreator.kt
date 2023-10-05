@@ -85,7 +85,7 @@ class ExcelCreator {
         exportExcelModel.transactions.forEach {
             nextRow()
             nextColumn(it.name ?: EMPTY_STRING)
-            nextColumn(it.titleType ?: EMPTY_STRING)
+            nextColumn(it.typeName ?: EMPTY_STRING)
             nextColumn(it.appDate)
             nextColumn(it.sum)
             nextColumn(it.currencyCharCode)

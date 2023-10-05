@@ -1,15 +1,13 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.local.room.LocalCBRDao
-import com.taxapprf.data.local.room.entity.LocalCBRCurrencyEntity
 import com.taxapprf.data.local.room.entity.LocalCBRRateEntity
-import com.taxapprf.data.local.room.model.GetRatesWithCurrency
 import com.taxapprf.data.remote.cbr.RemoteCBRDao
 import com.taxapprf.data.remote.cbr.entity.RemoteValCursEntity
 import com.taxapprf.data.remote.cbr.entity.RemoteValuteEntity
-import com.taxapprf.domain.CBRRepository
-import com.taxapprf.domain.cbr.CurrencyModel
-import com.taxapprf.domain.cbr.RateWithCurrencyModel
+import com.taxapprf.domain.CurrencyRepository
+import com.taxapprf.domain.cbr.Currencies
+import com.taxapprf.domain.cbr.CurrencyRateModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -21,22 +19,19 @@ class CBRRepositoryImpl @Inject constructor(
     private val networkManager: NetworkManager,
     private val localCBRDao: LocalCBRDao,
     private val remoteCBRDao: RemoteCBRDao,
-) : CBRRepository {
-    override suspend fun getCurrencyRate(currencyRateId: Int, date: Long) =
-        localCBRDao.getCurrencyRate(currencyRateId, date)
+) : CurrencyRepository {
+    override suspend fun getCurrencyRate(currencyOrdinal: Int, date: Long) =
+        localCBRDao.getCurrencyRate(currencyOrdinal, date)?.rate
             ?: tryGetRemote(date)
-                ?.getCurrencyRate(currencyRateId)
+                ?.getCurrencyRate(currencyOrdinal)?.rate
 
-    override suspend fun getCurrencies() =
-        localCBRDao.getCurrencies().toListCurrencyModel()
-
-    override suspend fun getCurrenciesWithRate(date: Long) =
-        localCBRDao.getRatesWithCurrency(date).let { ratesWithCurrency ->
+    override suspend fun getCurrencyRateModels(date: Long) =
+        localCBRDao.getCurrenciesRate(date).let { ratesWithCurrency ->
             ratesWithCurrency.ifEmpty {
                 tryGetRemote(date)
-                localCBRDao.getRatesWithCurrency(date)
+                localCBRDao.getCurrenciesRate(date)
             }
-        }.toListRateWithCurrencyModel()
+        }.map { it.toCurrencyRateModel() }
 
     private fun tryGetRemote(date: Long) =
         try {
@@ -55,21 +50,16 @@ class CBRRepositoryImpl @Inject constructor(
     private fun RemoteValCursEntity.cacheResult(
         date: Long
     ): List<LocalCBRRateEntity> {
-        val localCurrencies = mutableMapOf<String, Int>()
         val localRates = mutableListOf<LocalCBRRateEntity>()
-
-        localCBRDao.getCachedCurrencies().forEach { currency ->
-            localCurrencies[currency.charCode] = currency.id
-        }
 
         currencies?.forEach { valute ->
             valute.charCode?.let { charCode ->
-                if (!localCurrencies.contains(charCode))
-                    valute.toLocalCBRCurrencyEntity(charCode)?.let { localCBRDao.saveCurrency(it) }
-
-                localCurrencies[charCode]?.let { cbrCurrencyId ->
-                    valute.toLocalCBRRateEntity(date, cbrCurrencyId)
+                try {
+                    val currencyOrdinal = Currencies.valueOf(charCode).ordinal
+                    valute.toLocalCBRRateEntity(currencyOrdinal, date)
                         ?.let { localRates.add(it) }
+                } catch (_: Exception) {
+
                 }
             }
         }
@@ -79,12 +69,12 @@ class CBRRepositoryImpl @Inject constructor(
         return localRates
     }
 
-    private fun List<LocalCBRRateEntity>.getCurrencyRate(currencyRateId: Int) =
-        find { it.currencyId == currencyRateId }?.rate
+    private fun List<LocalCBRRateEntity>.getCurrencyRate(currencyOrdinal: Int) =
+        find { it.currencyOrdinal == currencyOrdinal }
 
     private fun RemoteValuteEntity.toLocalCBRRateEntity(
+        cbrCurrencyId: Int,
         date: Long,
-        cbrCurrencyId: Int
     ): LocalCBRRateEntity? {
         try {
             val nominal = nominal ?: return null
@@ -99,29 +89,18 @@ class CBRRepositoryImpl @Inject constructor(
 
     private fun getLocalCBRRateEntity(cbrCurrencyId: Int, date: Long, rate: Double? = null) =
         LocalCBRRateEntity(
-            currencyId = cbrCurrencyId,
+            currencyOrdinal = cbrCurrencyId,
             date = date,
             rate = rate
         )
 
-    private fun RemoteValuteEntity.toLocalCBRCurrencyEntity(charCode: String): LocalCBRCurrencyEntity? {
-        val name = name ?: return null
-        val numCode = numCode ?: return null
-
-        return LocalCBRCurrencyEntity(
-            charCode = charCode,
-            name = name,
-            numCode = numCode,
-        )
-    }
-
     private fun String.formatValueDot() = replace(',', '.')
 
-    private fun List<LocalCBRCurrencyEntity>.toListCurrencyModel() =
-        map { with(it) { CurrencyModel(id, name, charCode, numCode) } }
-
-    private fun List<GetRatesWithCurrency>.toListRateWithCurrencyModel() =
-        map { with(it) { RateWithCurrencyModel(name, charCode, numCode, rate) } }
+    private fun LocalCBRRateEntity.toCurrencyRateModel() =
+        CurrencyRateModel(
+            currency = Currencies.values()[currencyOrdinal],
+            rate = rate?.round(ROUND_SIX)
+        )
 
     companion object {
         private const val PATTERN_CBR_DATE = "dd/MM/uuuu"

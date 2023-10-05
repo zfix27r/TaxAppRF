@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,8 +41,10 @@ class MainViewModel @Inject constructor(
             }
             */
 
-    val sync = syncAllUseCase.execute()
-
+    val sync =
+        flow {
+            emit(syncAllUseCase.execute())
+        }
 
     private val _userWithAccounts: MutableStateFlow<UserWithAccountsModel?> = MutableStateFlow(null)
     val userWithAccounts = _userWithAccounts.asStateFlow()

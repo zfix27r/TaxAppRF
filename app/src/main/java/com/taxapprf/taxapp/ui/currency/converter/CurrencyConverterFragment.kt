@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.taxapprf.domain.cbr.Currencies
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentCurrencyConverterBinding
 import com.taxapprf.taxapp.ui.BaseFragment
@@ -67,7 +68,7 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
             AdapterView.OnItemClickListener { adapterView, view, position, id ->
 
                 adapterView.getItemAtPosition(position)?.let {
-                    viewModel.currency = adapterView.getItemAtPosition(position).toString()
+                    viewModel.currencyOrdinal = position
                     val newSum = binding.editCurrencyConverterSum.text.toString()
                     if (newSum != "") viewModel.setSum(newSum.toDouble())
                 }
@@ -75,9 +76,9 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
     }
 
     private fun prepCurrencies() {
-        val currencies = resources.getStringArray(R.array.transaction_currencies)
+        val currencies = Currencies.values().map { it.name }
 
-        currenciesAdapter = ArrayAdapter(requireContext(), R.layout.list_item, currencies)
+        currenciesAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, currencies)
         (binding.spinnerCurrencyConverterSum as? AutoCompleteTextView)?.setAdapter(currenciesAdapter)
     }
 

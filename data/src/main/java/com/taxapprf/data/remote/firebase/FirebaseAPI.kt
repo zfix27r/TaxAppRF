@@ -5,7 +5,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.taxapprf.data.error.DataErrorUser
 import javax.inject.Inject
 
-
 class FirebaseAPI @Inject constructor() {
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.reference
@@ -46,5 +45,10 @@ class FirebaseAPI @Inject constructor() {
         const val ACCOUNTS = "accounts"
         const val REPORTS = "reports"
         const val TRANSACTIONS = "transactions"
+
+        const val EMPTY_KEY = ""
+        const val ACCOUNT_KEY = "account_key"
+        const val REPORT_KEY = "report_key"
+        const val TRANSACTION_KEY = "transaction_key"
     }
 }

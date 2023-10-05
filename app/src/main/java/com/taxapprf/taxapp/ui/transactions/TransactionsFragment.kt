@@ -15,15 +15,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.taxapprf.data.round
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.TransactionType
+import com.taxapprf.domain.transaction.TransactionTypes
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
-import com.taxapprf.taxapp.ui.round
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -90,6 +90,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun prepView() {
         binding.recyclerTransactions.adapter = adapter
+        adapter.localTransactionTypes = resources.getStringArray(R.array.transaction_types).toList()
         itemTouchHelper.attachToRecyclerView(binding.recyclerTransactions)
     }
 
@@ -137,9 +138,9 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private val transactionTypes
         get() = mapOf(
-            TransactionType.TRADE.k to getString(R.string.transaction_type_trade),
-            TransactionType.FUNDING_WITHDRAWAL.k to getString(R.string.transaction_type_funding_withdrawal),
-            TransactionType.COMMISSION.k to getString(R.string.transaction_type_commission),
+            TransactionTypes.TRADE.k to getString(R.string.transaction_type_trade),
+            TransactionTypes.FUNDING_WITHDRAWAL.k to getString(R.string.transaction_type_funding_withdrawal),
+            TransactionTypes.COMMISSION.k to getString(R.string.transaction_type_commission),
         )
 
     private fun shareExcel() {

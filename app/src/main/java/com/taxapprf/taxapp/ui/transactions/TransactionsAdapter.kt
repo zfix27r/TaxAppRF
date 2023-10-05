@@ -10,13 +10,15 @@ import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
 class TransactionsAdapter(
     private val callback: TransactionsAdapterCallback,
 ) : ListAdapter<TransactionModel, TransactionAdapterViewHolder>(DiffCallback()) {
+    var localTransactionTypes: List<String> = emptyList()
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): TransactionAdapterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = FragmentTransactionsAdapterItemBinding.inflate(inflater, parent, false)
-        return TransactionAdapterViewHolder(binding, callback)
+        return TransactionAdapterViewHolder(binding, callback, localTransactionTypes)
     }
 
     override fun onBindViewHolder(holder: TransactionAdapterViewHolder, position: Int) {
@@ -26,6 +28,7 @@ class TransactionsAdapter(
     override fun submitList(list: List<TransactionModel>?) {
         super.submitList(sortListByData(list))
     }
+
     private class DiffCallback : DiffUtil.ItemCallback<TransactionModel>() {
         override fun areItemsTheSame(
             oldItem: TransactionModel,
@@ -38,7 +41,7 @@ class TransactionsAdapter(
         ) = oldItem == newItem
     }
 
-    private fun sortListByData(list: List<TransactionModel>?):  List<TransactionModel>? {
+    private fun sortListByData(list: List<TransactionModel>?): List<TransactionModel>? {
         list?.toMutableList()?.let {
             it.sortWith { item1, item2 ->
                 val dateItem1 = item1.date

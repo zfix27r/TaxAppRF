@@ -37,8 +37,8 @@ class SaveTransactionUseCase @Inject constructor(
         return UpdateReportWithTransactionTaxModel(
             reportId = reportId,
             transactionId = transactionId,
-            type = type,
-            currencyId = currencyId,
+            typeK = type.k,
+            currencyOrdinal = currencyOrdinal,
             date = date,
             sum = sum,
             oldTax = tax

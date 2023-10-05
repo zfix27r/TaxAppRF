@@ -4,10 +4,10 @@ data class UpdateReportWithTransactionTaxModel(
     val reportId: Int?,
     val transactionId: Int,
 
-    val currencyId: Int,
+    val currencyOrdinal: Int,
 
     val date: Long,
-    val type: Int,
+    val typeK: Int,
     val sum: Double,
     val oldTax: Double?
 ) {
@@ -20,7 +20,7 @@ data class UpdateReportWithTransactionTaxModel(
 
     private fun calculate() {
         rate?.let { rate ->
-            tax = (sum * rate * RF_TAX * type)
+            tax = (sum * rate * RF_TAX * typeK)
         }
     }
 

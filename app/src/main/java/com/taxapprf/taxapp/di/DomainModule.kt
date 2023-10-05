@@ -6,8 +6,7 @@ import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
-import com.taxapprf.domain.cbr.GetCBRRatesUseCase
-import com.taxapprf.domain.cbr.GetCurrenciesUseCase
+import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
 import com.taxapprf.domain.delete.DeleteReportWithTransactionsUseCase
 import com.taxapprf.domain.delete.DeleteTransactionWithReportUseCase
 import com.taxapprf.domain.excel.ExportExcelUseCase
@@ -33,8 +32,11 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 object DomainModule {
     @Provides
-    fun provideSignInUseCase(userRepositoryImpl: UserRepositoryImpl) =
-        SignInUseCase(userRepositoryImpl)
+    fun provideSignInUseCase(
+        userRepositoryImpl: UserRepositoryImpl,
+        syncAllUseCase: SyncAllUseCase
+    ) =
+        SignInUseCase(userRepositoryImpl, syncAllUseCase)
 
     @Provides
     fun provideSignUpUseCase(userRepositoryImpl: UserRepositoryImpl) =
@@ -62,7 +64,7 @@ object DomainModule {
 
     @Provides
     fun provideGetCurrencyRateTodayFromCBRUseCase(currencyRepositoryImpl: CBRRepositoryImpl) =
-        GetCBRRatesUseCase(currencyRepositoryImpl)
+        GetCurrencyRateModelsUseCase(currencyRepositoryImpl)
 
     @Provides
     fun provideObserveTransactionsUseCase(transactionRepositoryImpl: TransactionRepositoryImpl) =
@@ -83,10 +85,6 @@ object DomainModule {
             transactionRepositoryImpl,
             updateTaxUseCase
         )
-
-    @Provides
-    fun provideGetCurrenciesUseCase(cbrRepositoryImpl: CBRRepositoryImpl) =
-        GetCurrenciesUseCase(cbrRepositoryImpl)
 
     @Provides
     fun provideUpdateTaxTransactionUseCase(

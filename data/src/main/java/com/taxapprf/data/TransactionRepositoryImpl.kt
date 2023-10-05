@@ -1,12 +1,14 @@
 package com.taxapprf.data
 
+import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalDeletedKeyDao
 import com.taxapprf.data.local.room.LocalTransactionDao
 import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
-import com.taxapprf.data.local.room.model.GetExcelTransactionWithCurrency
-import com.taxapprf.data.local.room.model.GetTransactionWithCurrency
+import com.taxapprf.data.local.room.model.GetExcelTransaction
+import com.taxapprf.data.local.room.model.GetTransaction
 import com.taxapprf.domain.TransactionRepository
+import com.taxapprf.domain.cbr.Currencies
 import com.taxapprf.domain.delete.DeleteReportWithTransactionsModel
 import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
 import com.taxapprf.domain.excel.ExcelTransactionModel
@@ -14,7 +16,7 @@ import com.taxapprf.domain.excel.ExportExcelModel
 import com.taxapprf.domain.toAppDate
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.TransactionTypeModel
+import com.taxapprf.domain.transaction.TransactionTypes
 import com.taxapprf.domain.update.UpdateReportWithTransactionTaxModel
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -33,16 +35,9 @@ class TransactionRepositoryImpl @Inject constructor(
         localDao.observe(transactionId)
             .map { it?.toTransactionModel() }
 
-    override fun getTransactionTypes() =
-        listOf(
-            TransactionTypeModel(id = 1, k = 1),
-            TransactionTypeModel(id = 2, k = 0),
-            TransactionTypeModel(id = 3, k = -1),
-        )
-
     override suspend fun inflateExcelTransactions(exportExcelModel: ExportExcelModel) =
         localDao.getExcelTransactionsWithCurrency(exportExcelModel.reportId)
-            .map { it.toExcelTransactionModel(exportExcelModel) }
+            .map { it.toExcelTransactionModel() }
 
     override suspend fun deleteAll() =
         localDao.deleteAll()
@@ -62,7 +57,7 @@ class TransactionRepositoryImpl @Inject constructor(
         deleteTransactionWithUpdateReportModel: DeleteTransactionWithReportModel
     ) =
         with(deleteTransactionWithUpdateReportModel) {
-            localDao.getTransactionKeys(transactionId)?.let { transactionKeys ->
+            localDao.getKeysTransaction(transactionId)?.let { transactionKeys ->
                 transactionKeys.transactionKey?.let { transactionKey ->
                     val deletedKey = LocalDeletedKeyEntity(
                         accountKey = transactionKeys.accountKey,
@@ -86,7 +81,7 @@ class TransactionRepositoryImpl @Inject constructor(
     override suspend fun deleteReportTransactions(
         deleteReportWithTransactionsModel: DeleteReportWithTransactionsModel
     ) {
-        localDao.getTransactionsKeys(deleteReportWithTransactionsModel.reportId)
+        localDao.getKeysTransactions(deleteReportWithTransactionsModel.reportId)
             .map { transactionKeys ->
 
                 transactionKeys.transactionKey?.let { transactionKey ->
@@ -104,43 +99,39 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     private fun SaveTransactionModel.toLocalTransactionEntity(): LocalTransactionEntity? {
-        val transactionId = transactionId ?: LocalTransactionEntity.DEFAULT_ID
+        val transactionId = transactionId ?: DEFAULT_ID
         val reportId = newReportId ?: return null
 
         return LocalTransactionEntity(
             id = transactionId,
-            accountId = accountId,
             reportId = reportId,
-            currencyId = currencyId,
+            typeOrdinal = type.ordinal,
+            currencyOrdinal = currencyOrdinal,
             name = name,
             date = date,
-            type = type,
             sum = sum
         )
     }
 
-    private fun GetTransactionWithCurrency.toTransactionModel() =
+    private fun GetTransaction.toTransactionModel() =
         TransactionModel(
             id,
             name,
             date,
-            type,
             sum,
             tax,
-            currencyId,
-            currencyCharCode,
+            TransactionTypes.values()[typeOrdinal],
+            Currencies.values()[currencyOrdinal],
             currencyRate
         )
 
-    private fun GetExcelTransactionWithCurrency.toExcelTransactionModel(
-        exportExcelModel: ExportExcelModel
-    ) =
+    private fun GetExcelTransaction.toExcelTransactionModel() =
         ExcelTransactionModel(
             name = name,
             appDate = date.toAppDate(),
-            titleType = exportExcelModel.transactionTypes[type],
+            typeName = TransactionTypes.values()[typeOrdinal].name,
             sum = sum,
-            currencyCharCode = currencyCharCode,
+            currencyCharCode = Currencies.values()[currencyOrdinal].name,
             currencyRate = currencyRate,
             tax = tax
         )

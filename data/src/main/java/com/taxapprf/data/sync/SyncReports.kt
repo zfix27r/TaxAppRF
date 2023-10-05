@@ -5,23 +5,33 @@ import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 
-/*
 class SyncReports(
     private val localDao: LocalReportDao,
     private val remoteDao: RemoteReportDao,
+    private val accountId: Int,
     private val accountKey: String,
-) : SyncManager<LocalReportEntity, FirebaseReportModel>() {
+) : SyncManager<LocalReportEntity, LocalReportEntity, FirebaseReportModel>() {
     override fun getLocalList() =
-        localDao.getAll(accountKey)
+        localDao.getAll(accountId)
 
     override fun deleteLocalList(locals: List<LocalReportEntity>) =
-        localDao.deleteAll(locals)
+        localDao.deleteReports(locals)
 
     override fun saveLocalList(locals: List<LocalReportEntity>) =
-        localDao.saveAll(locals)
+        localDao.saveReports(locals)
 
     override suspend fun getRemoteList() =
         remoteDao.getAll(accountKey)
+
+    override fun LocalReportEntity.toLocalOut() =
+        LocalReportEntity(
+            id = id,
+            accountId = accountId,
+            tax = tax,
+            size = size,
+            remoteKey = remoteKey,
+            syncAt = syncAt
+        )
 
     override fun LocalReportEntity.toRemote(remote: FirebaseReportModel?) =
         FirebaseReportModel(tax, size, syncAt)
@@ -34,19 +44,17 @@ class SyncReports(
 
         return LocalReportEntity(
             id = local?.id ?: 0,
-            key = key,
-            accountKey = accountKey,
+            accountId = accountId,
             tax = tax,
             size = size,
-            isSync = true,
-            isDelete = local?.isDelete ?: false,
+            remoteKey = key,
             syncAt = syncAt
         )
     }
 
     override suspend fun LocalReportEntity.updateRemoteKey() =
-        remoteDao.getKey(accountKey)?.let { copy(key = it) }
+        remoteDao.getKey(accountKey)?.let { copy(remoteKey = it) }
 
     override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseReportModel?>) =
         remoteDao.updateAll(accountKey, remoteMap)
-}*/
+}

@@ -29,7 +29,7 @@ interface LocalReportDao {
     fun save(reportEntity: LocalReportEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveAll(reportEntities: List<LocalReportEntity>): List<Long>
+    fun saveReports(reportEntities: List<LocalReportEntity>): List<Long>
 
     @Query("DELETE FROM report WHERE id = :reportId")
     fun delete(reportId: Int): Int

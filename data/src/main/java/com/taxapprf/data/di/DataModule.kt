@@ -25,13 +25,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataModule {
     private const val DB_NAME = "tax_app"
-    private const val DB_FILE_NAME = "$DB_NAME.db"
+    //private const val DB_FILE_NAME = "$DB_NAME.db"
 
     @Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, LocalDatabase::class.java, DB_NAME)
-            .createFromAsset(DB_FILE_NAME)
+            //.createFromAsset(DB_FILE_NAME)
             .fallbackToDestructiveMigration()
             .build()
 

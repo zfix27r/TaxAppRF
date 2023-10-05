@@ -1,22 +1,20 @@
 package com.taxapprf.taxapp.ui.currency.rate
 
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.domain.cbr.RateWithCurrencyModel
+import com.taxapprf.domain.cbr.CurrencyRateModel
 import com.taxapprf.taxapp.databinding.FragmentCurrencyRateAdapterItemBinding
-import com.taxapprf.taxapp.ui.ROUND_SIX
-import com.taxapprf.taxapp.ui.round
 
 class CurrencyRateAdapterViewHolder(
     private val binding: FragmentCurrencyRateAdapterItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    private lateinit var currency: RateWithCurrencyModel
+    private lateinit var currencyRate: CurrencyRateModel
 
-    fun bind(currencyRateModel: RateWithCurrencyModel) {
-        currency = currencyRateModel
+    fun bind(currencyRateModel: CurrencyRateModel) {
+        currencyRate = currencyRateModel
 
-        binding.textCurrencyRateName.text = currency.name
-        binding.textCurrencyRateNumCode.text = currency.numCode.toString()
-        binding.textCurrencyRateCharCode.text = currency.charCode
-        binding.textCurrencyRateRate.text = currency.rate?.round(ROUND_SIX).toString()
+        currencyRate.localCurrencyName?.let { binding.textCurrencyRateName.text = it }
+        binding.textCurrencyRateNumCode.text = currencyRate.currency.numCode
+        binding.textCurrencyRateCharCode.text = currencyRate.currency.name
+        binding.textCurrencyRateRate.text = currencyRate.rate.toString()
     }
 }

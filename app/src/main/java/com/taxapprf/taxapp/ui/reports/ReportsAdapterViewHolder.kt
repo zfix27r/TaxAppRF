@@ -1,9 +1,9 @@
 package com.taxapprf.taxapp.ui.reports
 
 import androidx.recyclerview.widget.RecyclerView
+import com.taxapprf.data.round
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.taxapp.databinding.FragmentReportsAdapterItemBinding
-import com.taxapprf.taxapp.ui.round
 
 class ReportsAdapterViewHolder(
     private val binding: FragmentReportsAdapterItemBinding,

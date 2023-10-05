@@ -1,10 +1,7 @@
 package com.taxapprf.domain.transaction
 
 
-fun Map<Int, String>.find(title: String): Int? =
-    entries.find { it.value == title }?.key
-
-enum class TransactionType(
+enum class TransactionTypes(
     val k: Int
 ) {
     TRADE(

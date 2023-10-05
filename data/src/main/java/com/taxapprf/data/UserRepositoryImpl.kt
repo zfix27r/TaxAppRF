@@ -5,7 +5,7 @@ import com.taxapprf.data.local.room.LocalAccountDao
 import com.taxapprf.data.local.room.LocalUserDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.entity.LocalUserEntity
-import com.taxapprf.data.local.room.model.LocalUserWithAccounts
+import com.taxapprf.data.local.room.model.GetUser
 import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.domain.UserRepository
 import com.taxapprf.domain.user.AccountModel
@@ -33,7 +33,7 @@ class UserRepositoryImpl @Inject constructor(
             LOCAL_USER_EMAIL
         }
 
-        return userLocalDao.observe(email)
+        return userLocalDao.observeUsers(email)
             .map { userWithAccounts ->
                 UserWithAccountsModel(
                     user = userWithAccounts.firstOrNull()?.toUserModel(),
@@ -109,10 +109,10 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun LocalUserWithAccounts.toUserModel() =
+    private fun GetUser.toUserModel() =
         UserModel(userId, email, avatar?.let { Uri.parse(it) }, name, phone)
 
-    private fun LocalUserWithAccounts.toAccountModel() =
+    private fun GetUser.toAccountModel() =
         AccountModel(accountId, accountName)
 
     private fun newLocalAccountEntity(userId: Int, accountName: String) =

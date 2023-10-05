@@ -4,9 +4,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.taxapprf.data.local.room.entity.LocalAccountEntity
+import com.taxapprf.data.local.room.LocalDatabase.Companion.ACCOUNT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.USER_ID
+import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.IS_ACTIVE
 import com.taxapprf.data.local.room.entity.LocalUserEntity
-import com.taxapprf.data.local.room.model.LocalUserWithAccounts
+import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.AVATAR
+import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.EMAIL
+import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.NAME
+import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.PHONE
+import com.taxapprf.data.local.room.model.GetUser
 import com.taxapprf.data.sync.REMOTE_KEY
 import kotlinx.coroutines.flow.Flow
 
@@ -14,19 +20,19 @@ import kotlinx.coroutines.flow.Flow
 interface LocalUserDao {
     @Query(
         "SELECT " +
-                "u.email ${LocalUserEntity.EMAIL}, " +
-                "u.avatar ${LocalUserEntity.AVATAR}, " +
-                "u.name ${LocalUserEntity.NAME}, " +
-                "u.phone ${LocalUserEntity.PHONE}, " +
-                "a.id ${LocalAccountEntity.ID}, " +
-                "a.user_id ${LocalAccountEntity.USER_ID}, " +
+                "u.email $EMAIL, " +
+                "u.avatar $AVATAR, " +
+                "u.name $NAME, " +
+                "u.phone $PHONE, " +
+                "a.id $ACCOUNT_ID, " +
+                "a.user_id $USER_ID, " +
                 "a.remote_key $REMOTE_KEY, " +
-                "a.is_active ${LocalAccountEntity.IS_ACTIVE} " +
+                "a.is_active $IS_ACTIVE " +
                 "FROM user u " +
                 "LEFT JOIN account a ON a.user_id = u.id " +
                 "WHERE email = :email"
     )
-    fun observe(email: String): Flow<List<LocalUserWithAccounts>>
+    fun observeUsers(email: String): Flow<List<GetUser>>
 
     @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
     fun getByEmail(email: String): LocalUserEntity?

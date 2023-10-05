@@ -4,6 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.taxapprf.data.getEpochTime
+import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.USER_ID
 import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.TABLE_NAME
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
@@ -29,11 +32,6 @@ data class LocalAccountEntity(
     companion object {
         const val TABLE_NAME = "account"
 
-        const val ID = "id"
-        const val USER_ID = "user_id"
-
         const val IS_ACTIVE = "is_active"
-
-        const val DEFAULT_ID = 0
     }
 }

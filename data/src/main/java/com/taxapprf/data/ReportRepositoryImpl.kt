@@ -1,9 +1,9 @@
 package com.taxapprf.data
 
+import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalReportDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX
-import com.taxapprf.data.sync.DEFAULT_SYNC_AT
 import com.taxapprf.domain.ReportRepository
 import com.taxapprf.domain.delete.DeleteReportWithTransactionsModel
 import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
@@ -187,12 +187,12 @@ class ReportRepositoryImpl @Inject constructor(
         tax: Double? = null,
     ): LocalReportEntity {
         return LocalReportEntity(
-            id = this?.id ?: LocalReportEntity.DEFAULT_ID,
+            id = this?.id ?: DEFAULT_ID,
             accountId = accountId,
             tax = tax ?: this?.tax ?: DEFAULT_TAX,
             size = size ?: LocalReportEntity.DEFAULT_SIZE,
             remoteKey = remoteKey,
-            syncAt = this?.syncAt ?: DEFAULT_SYNC_AT
+            syncAt = this?.syncAt ?: getEpochTime()
         )
     }
 }
