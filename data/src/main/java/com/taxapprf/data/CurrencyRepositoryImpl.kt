@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-class CBRRepositoryImpl @Inject constructor(
+class CurrencyRepositoryImpl @Inject constructor(
     private val networkManager: NetworkManager,
     private val localCBRDao: LocalCBRDao,
     private val remoteCBRDao: RemoteCBRDao,

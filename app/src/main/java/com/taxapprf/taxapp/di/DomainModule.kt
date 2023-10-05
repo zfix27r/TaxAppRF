@@ -1,6 +1,6 @@
 package com.taxapprf.taxapp.di
 
-import com.taxapprf.data.CBRRepositoryImpl
+import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.ExcelRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
@@ -63,7 +63,7 @@ object DomainModule {
         SyncAllUseCase(syncRepositoryImpl)
 
     @Provides
-    fun provideGetCurrencyRateTodayFromCBRUseCase(currencyRepositoryImpl: CBRRepositoryImpl) =
+    fun provideGetCurrencyRateTodayFromCBRUseCase(currencyRepositoryImpl: CurrencyRepositoryImpl) =
         GetCurrencyRateModelsUseCase(currencyRepositoryImpl)
 
     @Provides
@@ -90,7 +90,7 @@ object DomainModule {
     fun provideUpdateTaxTransactionUseCase(
         reportRepositoryImpl: ReportRepositoryImpl,
         transactionRepositoryImpl: TransactionRepositoryImpl,
-        currencyRepositoryImpl: CBRRepositoryImpl
+        currencyRepositoryImpl: CurrencyRepositoryImpl
     ) =
         UpdateReportWithTransactionTaxUseCase(
             reportRepositoryImpl,
