@@ -23,6 +23,9 @@ class TransactionsAdapter(
         holder.bind(getItem(position))
     }
 
+    override fun submitList(list: List<TransactionModel>?) {
+        super.submitList(sortListByData(list))
+    }
     private class DiffCallback : DiffUtil.ItemCallback<TransactionModel>() {
         override fun areItemsTheSame(
             oldItem: TransactionModel,
@@ -33,5 +36,17 @@ class TransactionsAdapter(
             oldItem: TransactionModel,
             newItem: TransactionModel
         ) = oldItem == newItem
+    }
+
+    private fun sortListByData(list: List<TransactionModel>?):  List<TransactionModel>? {
+        list?.toMutableList()?.let {
+            it.sortWith { item1, item2 ->
+                val dateItem1 = item1.date
+                val dateItem2 = item2.date
+                dateItem1.compareTo(dateItem2)
+            }
+            return it
+        }
+        return list
     }
 }
