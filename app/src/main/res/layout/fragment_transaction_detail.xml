@@ -29,18 +29,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/spinner_transaction_detail_type"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_spinner_transaction_detail_type"
         android:layout_width="@dimen/zero"
-        android:layout_height="@dimen/min_view_size"
-        android:layout_marginTop="@dimen/offset_16"
-        android:dropDownWidth="match_parent"
-        android:entries="@array/transaction_types"
-        android:textAlignment="textStart"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_vertical_20dp"
+        android:layout_marginBottom="@dimen/margin_vertical_20dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         app:layout_constraintBottom_toTopOf="@+id/text_input_layout_name"
         app:layout_constraintEnd_toEndOf="@+id/button_transaction_detail_save"
         app:layout_constraintStart_toStartOf="@+id/button_transaction_detail_dismiss"
-        app:layout_constraintTop_toBottomOf="@+id/button_transaction_detail_dismiss" />
+        app:layout_constraintTop_toBottomOf="@+id/button_transaction_detail_dismiss">
+
+        <AutoCompleteTextView
+            android:id="@+id/spinner_transaction_detail_type"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/edit_detail_type"
+            android:inputType="none"
+            android:textAlignment="textStart" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_layout_name"
@@ -49,7 +58,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@+id/button_transaction_detail_save"
         app:layout_constraintStart_toStartOf="@+id/button_transaction_detail_dismiss"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_transaction_detail_type">
+        app:layout_constraintTop_toBottomOf="@+id/layout_spinner_transaction_detail_type">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_transaction_detail_name"
@@ -93,7 +102,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/offset_16"
         android:layout_marginEnd="@dimen/offset_16"
-        app:layout_constraintEnd_toStartOf="@+id/spinner_transaction_detail_currencies"
+        app:layout_constraintEnd_toStartOf="@+id/layout_spinner_transaction_detail_currencies"
         app:layout_constraintStart_toStartOf="@+id/button_transaction_detail_dismiss"
         app:layout_constraintTop_toBottomOf="@+id/text_input_layout_email_date">
 
@@ -106,12 +115,24 @@
             android:textSize="@dimen/text_size_16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/spinner_transaction_detail_currencies"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/min_view_size"
-        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_email_sum"
-        app:layout_constraintEnd_toEndOf="@+id/button_transaction_detail_save"
-        app:layout_constraintTop_toTopOf="@+id/text_input_layout_email_sum" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_spinner_transaction_detail_currencies"
+        android:layout_width="@dimen/zero"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/offset_16"
+        android:gravity="center_horizontal"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_input_layout_email_sum"
+        app:layout_constraintBottom_toBottomOf="@+id/text_input_layout_email_sum">
+
+        <AutoCompleteTextView
+            android:id="@+id/spinner_transaction_detail_currencies"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:inputType="none"
+            android:text="@string/transaction_currency_usd"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

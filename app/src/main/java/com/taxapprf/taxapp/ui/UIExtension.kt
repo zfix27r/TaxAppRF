@@ -109,7 +109,7 @@ fun String.showDatePickerDialog(
             DatePickerDialog(
                 context, listener,
                 it.year,
-                it.monthValue,
+                it.monthValue - 1 ,
                 it.dayOfMonth
             ).show()
         }
@@ -126,7 +126,7 @@ fun showDatePickerDialog(
     DatePickerDialog(
         context, listener,
         calendar[Calendar.YEAR],
-        calendar[Calendar.MONTH],
+        calendar[Calendar.MONTH] - 1,
         calendar[Calendar.DAY_OF_MONTH]
     ).show()
 }

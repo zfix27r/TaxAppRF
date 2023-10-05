@@ -5,8 +5,8 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -81,22 +81,19 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         currenciesAdapter =
             ArrayAdapter(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
+                R.layout.list_item,
                 charCodes
             )
-        currenciesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerTransactionDetailCurrencies.adapter = currenciesAdapter
-        binding.spinnerTransactionDetailCurrencies.setSelection(
-            currenciesAdapter.getPosition(viewModel.currency)
-        )
+        (binding.spinnerTransactionDetailCurrencies as? AutoCompleteTextView)?.setAdapter(currenciesAdapter)
+        binding.spinnerTransactionDetailCurrencies.setText(viewModel.currency, false)
     }
 
     private fun prepTypes() {
         val transactionTypes = resources.getStringArray(R.array.transaction_types)
         typeAdapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, transactionTypes)
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerTransactionDetailType.adapter = typeAdapter
+            ArrayAdapter(requireContext(), R.layout.list_item, transactionTypes)
+        (binding.spinnerTransactionDetailType as? AutoCompleteTextView)?.setAdapter(typeAdapter)
+        binding.spinnerTransactionDetailType.setText(resources.getString(R.string.transaction_type_trade), false)
     }
 
     private val datePickerListener =
@@ -132,34 +129,24 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
             }
         }
 
-        binding.spinnerTransactionDetailType.onItemSelectedListener =
-            object : OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    typeAdapter.getItem(position)
-                        ?.let { requireContext().convertToTransactionTypeK(it) }
-                        ?.let { viewModel.typeK = it }
+        binding.spinnerTransactionDetailType.onItemClickListener =
+            AdapterView.OnItemClickListener {
+                    adapterView, view, position, id ->
+
+                typeAdapter.getItem(position)
+                    ?.let { requireContext().convertToTransactionTypeK(it) }
+                    ?.let { viewModel.typeK = it }
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
+        binding.spinnerTransactionDetailCurrencies.onItemClickListener =
+            AdapterView.OnItemClickListener {
+                    adapterView, view, position, id ->
 
-        binding.spinnerTransactionDetailCurrencies.onItemSelectedListener =
-            object : OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    currenciesAdapter.getItem(position)?.let { viewModel.currency = it }
+                adapterView.getItemAtPosition(position)?.let {
+                    currenciesAdapter.getItem(position)?.let {
+                        viewModel.currency = it
+                    }
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
 
         binding.buttonTransactionDetailDismiss.setOnClickListener {
@@ -171,9 +158,12 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         binding.editTextTransactionDetailName.setText(viewModel.name)
         binding.editTextTransactionDetailSum.setText(viewModel.sum)
         updateDateText()
-        binding.spinnerTransactionDetailType.setSelection(
-            typeAdapter.getPosition(requireContext().convertToTransactionTypeName(viewModel.typeK))
-        )
+
+        binding.spinnerTransactionDetailCurrencies.setText(viewModel.currency, false)
+
+        val typeRus = requireContext().convertToTransactionTypeName(viewModel.typeK)
+        val positionType = typeAdapter.getPosition(typeRus)
+        binding.spinnerTransactionDetailType.setText(typeAdapter.getItem(positionType), false)
     }
 
     private fun updateDateText() {
