@@ -146,7 +146,7 @@ class TransactionDetailViewModel @Inject constructor(
     private fun String.isNameRangeIncorrect() = length > NAME_MAX_LENGTH
 
     companion object {
-        const val NAME_MAX_LENGTH = 16
+        const val NAME_MAX_LENGTH = 30
         const val SUM_MAX_LENGTH = 999999999999
 
         const val DEFAULT_NAME = ""
