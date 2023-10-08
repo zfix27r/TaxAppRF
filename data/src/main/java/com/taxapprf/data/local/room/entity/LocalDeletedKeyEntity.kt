@@ -3,7 +3,6 @@ package com.taxapprf.data.local.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.taxapprf.data.getEpochTime
 import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity.Companion.TABLE_NAME
@@ -27,7 +26,7 @@ data class LocalDeletedKeyEntity(
     val transactionKey: String? = EMPTY_KEY,
 
     @ColumnInfo(name = SYNC_AT)
-    val syncAt: Long = getEpochTime(),
+    val syncAt: Long,
 ) {
     companion object {
         const val TABLE_NAME = "deleted_key"

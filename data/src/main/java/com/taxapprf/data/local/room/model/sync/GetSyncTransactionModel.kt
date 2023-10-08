@@ -9,6 +9,7 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
+import com.taxapprf.data.sync.IS_SYNC
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
 import com.taxapprf.data.sync.SyncLocal
@@ -33,6 +34,8 @@ data class GetSyncTransactionModel(
     val tax: Double?,
     @ColumnInfo(name = REMOTE_KEY)
     override val remoteKey: String?,
+    @ColumnInfo(name = IS_SYNC)
+    override val isSync: Boolean,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long,
 ) : SyncLocal

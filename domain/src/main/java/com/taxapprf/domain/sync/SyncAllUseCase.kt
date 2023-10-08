@@ -6,5 +6,6 @@ import javax.inject.Inject
 class SyncAllUseCase @Inject constructor(
     private val syncRepository: SyncRepository
 ) {
-    suspend fun execute() = syncRepository.syncAll()
+    suspend fun execute(userId: Int) =
+        syncRepository.syncAll(userId)
 }

@@ -6,20 +6,69 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.taxapprf.data.local.room.LocalDatabase.Companion.CURRENCY_ORDINAL
+import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
+import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.CURRENCY_RATE
+import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
+import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
+import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.local.room.model.sync.GetSyncTransactionModel
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.TRANSACTION_KEY
+import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.REPORT_KEY
+import com.taxapprf.data.sync.IS_SYNC
+import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
 
 @Dao
 interface LocalSyncDao {
+    /* ACCOUNT */
+    @Query("SELECT * FROM account WHERE user_id = :userId")
+    fun getUserAccounts(userId: Int): List<LocalAccountEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveUserAccounts(localAccountEntities: List<LocalAccountEntity>): List<Long>
+
+    @Delete
+    fun deleteUserAccounts(localAccountEntities: List<LocalAccountEntity>): Int
+
+    @Query(
+        "SELECT " +
+                "id $ID, " +
+                "remote_key $ACCOUNT_KEY " +
+                "FROM account WHERE user_id = :userId"
+    )
+    fun getSyncResultUserAccounts(userId: Int): List<GetSyncResultAccountModel>
+
+    /* REPORT */
+
+    @Query("SELECT * FROM report WHERE account_id = :accountId")
+    fun getAccountReports(accountId: Int): List<LocalReportEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveAccountReports(reportEntities: List<LocalReportEntity>): List<Long>
+
+    @Delete
+    fun deleteAccountReports(reportEntities: List<LocalReportEntity>): Int
+
+    @Query(
+        "SELECT " +
+                "r.id $ID, " +
+                "a.remote_key $ACCOUNT_KEY, " +
+                "r.remote_key $REPORT_KEY " +
+                "FROM report r " +
+                "LEFT JOIN account a ON a.id = r.account_id " +
+                "WHERE r.account_id = :accountId"
+    )
+    fun getSyncResultAccountReports(accountId: Int): List<GetSyncResultReportModel>
+
+    /* TRANSACTION */
     @Query(
         "SELECT " +
                 "t.id ${TRANSACTION_ID}, " +
@@ -30,7 +79,8 @@ interface LocalSyncDao {
                 "r.currency_rate $CURRENCY_RATE, " +
                 "t.sum $SUM, " +
                 "t.tax $TAX, " +
-                "t.remote_key $TRANSACTION_KEY, " +
+                "t.remote_key $REMOTE_KEY, " +
+                "t.is_sync $IS_SYNC, " +
                 "t.sync_at $SYNC_AT " +
                 "FROM `transaction` t " +
                 "LEFT JOIN cbr_rate r ON r.currency_ordinal = t.currency_ordinal AND r.date = t.date " +

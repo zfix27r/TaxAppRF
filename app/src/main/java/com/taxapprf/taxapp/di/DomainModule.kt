@@ -2,21 +2,25 @@ package com.taxapprf.taxapp.di
 
 import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.ExcelRepositoryImpl
+import com.taxapprf.data.MainRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
+import com.taxapprf.data.TransactionsRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
 import com.taxapprf.domain.delete.DeleteReportWithTransactionsUseCase
 import com.taxapprf.domain.delete.DeleteTransactionWithReportUseCase
 import com.taxapprf.domain.excel.ExportExcelUseCase
 import com.taxapprf.domain.excel.ImportExcelUseCase
+import com.taxapprf.domain.main.SaveTransaction1UseCase
 import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.report.ObserveReportsUseCase
 import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.transactions.DeleteTransactionsUseCase
 import com.taxapprf.domain.update.UpdateReportWithTransactionTaxUseCase
 import com.taxapprf.domain.user.ObserveUserWithAccountsUseCase
 import com.taxapprf.domain.user.SignInUseCase
@@ -32,11 +36,8 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 object DomainModule {
     @Provides
-    fun provideSignInUseCase(
-        userRepositoryImpl: UserRepositoryImpl,
-        syncAllUseCase: SyncAllUseCase
-    ) =
-        SignInUseCase(userRepositoryImpl, syncAllUseCase)
+    fun provideSignInUseCase(userRepositoryImpl: UserRepositoryImpl) =
+        SignInUseCase(userRepositoryImpl)
 
     @Provides
     fun provideSignUpUseCase(userRepositoryImpl: UserRepositoryImpl) =
@@ -139,4 +140,17 @@ object DomainModule {
             excelRepositoryImpl
         )
 
+    @Provides
+    fun provideDeleteTransactionsUseCase(transactionsRepositoryImpl: TransactionsRepositoryImpl) =
+        DeleteTransactionsUseCase(transactionsRepositoryImpl)
+
+    @Provides
+    fun provideSaveTransaction1UseCase(
+        mainRepositoryImpl: MainRepositoryImpl,
+        currencyRepositoryImpl: CurrencyRepositoryImpl
+    ) =
+        SaveTransaction1UseCase(
+            mainRepositoryImpl,
+            currencyRepositoryImpl
+        )
 }

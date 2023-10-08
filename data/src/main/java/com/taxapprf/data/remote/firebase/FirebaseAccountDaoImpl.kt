@@ -10,13 +10,6 @@ import javax.inject.Inject
 class FirebaseAccountDaoImpl @Inject constructor(
     private val fb: FirebaseAPI,
 ) : RemoteAccountDao {
-    override suspend fun getKey() =
-        safeCall {
-            fb.getAccountsPath()
-                .push()
-                .key
-        }
-
     override suspend fun getAll() =
         safeCall {
             fb.getAccountsPath()

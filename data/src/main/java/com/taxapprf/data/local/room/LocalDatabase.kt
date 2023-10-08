@@ -26,9 +26,11 @@ abstract class LocalDatabase : RoomDatabase() {
     abstract fun accountDao(): LocalAccountDao
     abstract fun reportDao(): LocalReportDao
     abstract fun transactionDao(): LocalTransactionDao
+    abstract fun transactionsDao(): LocalTransactionsDao
     abstract fun cbrDao(): LocalCBRDao
     abstract fun deletedKeyDao(): LocalDeletedKeyDao
     abstract fun syncDao(): LocalSyncDao
+    abstract fun mainDao(): LocalMainDao
 
     companion object {
         const val ID = "id"
@@ -37,6 +39,7 @@ abstract class LocalDatabase : RoomDatabase() {
         const val REPORT_ID = "report_id"
         const val TRANSACTION_ID = "transaction_id"
 
+        const val NAME = "name"
         const val TYPE_ORDINAL = "type_ordinal"
         const val CURRENCY_ORDINAL = "currency_ordinal"
 

@@ -5,15 +5,15 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ACCOUNT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.NAME
 import com.taxapprf.data.local.room.LocalDatabase.Companion.USER_ID
 import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.IS_ACTIVE
 import com.taxapprf.data.local.room.entity.LocalUserEntity
 import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.AVATAR
 import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.EMAIL
-import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.PHONE
 import com.taxapprf.data.local.room.model.GetUser
-import com.taxapprf.data.sync.REMOTE_KEY
+import com.taxapprf.data.local.room.model.GetUser.Companion.ACCOUNT_NAME
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -26,7 +26,7 @@ interface LocalUserDao {
                 "u.phone $PHONE, " +
                 "a.id $ACCOUNT_ID, " +
                 "a.user_id $USER_ID, " +
-                "a.remote_key $REMOTE_KEY, " +
+                "a.remote_key $ACCOUNT_NAME, " +
                 "a.is_active $IS_ACTIVE " +
                 "FROM user u " +
                 "LEFT JOIN account a ON a.user_id = u.id " +

@@ -2,13 +2,12 @@ package com.taxapprf.data.local.room.model
 
 import androidx.room.ColumnInfo
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ACCOUNT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.NAME
 import com.taxapprf.data.local.room.LocalDatabase.Companion.USER_ID
 import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.IS_ACTIVE
 import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.AVATAR
 import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.EMAIL
-import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.PHONE
-import com.taxapprf.data.sync.REMOTE_KEY
 
 data class GetUser(
     @ColumnInfo(name = USER_ID)
@@ -24,8 +23,12 @@ data class GetUser(
 
     @ColumnInfo(name = ACCOUNT_ID)
     val accountId: Int,
-    @ColumnInfo(name = REMOTE_KEY)
+    @ColumnInfo(name = ACCOUNT_NAME)
     val accountName: String,
     @ColumnInfo(name = IS_ACTIVE)
     val isAccountActive: Boolean,
-)
+) {
+    companion object {
+        const val ACCOUNT_NAME = "account_name"
+    }
+}

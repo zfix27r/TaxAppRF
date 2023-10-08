@@ -8,6 +8,7 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.ACCOUNT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.TABLE_NAME
+import com.taxapprf.data.sync.IS_SYNC
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
 import com.taxapprf.data.sync.SyncLocal
@@ -22,12 +23,14 @@ data class LocalReportEntity(
     val accountId: Int,
 
     @ColumnInfo(name = TAX)
-    val tax: Double,
+    val tax: Double = DEFAULT_TAX,
     @ColumnInfo(name = SIZE)
-    val size: Int,
+    val size: Int = DEFAULT_SIZE,
 
     @ColumnInfo(name = REMOTE_KEY)
     override val remoteKey: String,
+    @ColumnInfo(name = IS_SYNC)
+    override val isSync: Boolean = false,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long = getEpochTime(),
 ) : SyncLocal {

@@ -15,6 +15,10 @@ class FirebaseTransactionDaoImpl @Inject constructor(
 
     override suspend fun getAll(accountKey: String, reportKey: String) =
         safeCall {
+/*            fb.getTransactionsPath(accountKey, reportKey)
+                .setValue(null)
+                .await()*/
+
             fb.getTransactionsPath(accountKey, reportKey)
                 .get()
                 .await()

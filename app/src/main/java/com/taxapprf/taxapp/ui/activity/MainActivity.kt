@@ -75,9 +75,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         )
         setupWithNavController(binding.navView, navController)
 
+        viewModel.defaultAccountName = getString(R.string.default_account_name)
+
         observeUser()
 
-        viewModel.updateUserWithAccounts(getString(R.string.default_account_name))
+        viewModel.updateUserWithAccounts()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -182,7 +184,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     private val drawerCallback =
         object : DrawerCallback {
             override fun signOut() {
-                viewModel.signOut(getString(R.string.default_account_name))
+                viewModel.signOut()
             }
 
             override fun switchAccount(accountModel: AccountModel) {

@@ -1,27 +1,60 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.data.local.room.LocalReportDao
+import com.taxapprf.data.getEpochTime
+import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
+import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
+import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
+import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
 
 class SyncReports(
-    private val localDao: LocalReportDao,
+    private val localDao: LocalSyncDao,
     private val remoteDao: RemoteReportDao,
-    private val accountId: Int,
-    private val accountKey: String,
 ) : SyncManager<LocalReportEntity, LocalReportEntity, FirebaseReportModel>() {
-    override fun getLocalList() =
-        localDao.getAll(accountId)
+    private var currentAccountId: Int = 0
+    private var currentAccountKey: String = ""
 
-    override fun deleteLocalList(locals: List<LocalReportEntity>) =
-        localDao.deleteReports(locals)
+    suspend fun sync(getSyncResultAccountModel: GetSyncResultAccountModel): List<GetSyncResultReportModel> {
+        getSyncResultAccountModel.accountKey?.let {
+            currentAccountId = getSyncResultAccountModel.accountId
+            currentAccountKey = getSyncResultAccountModel.accountKey
 
-    override fun saveLocalList(locals: List<LocalReportEntity>) =
-        localDao.saveReports(locals)
+            startSync()
+        }
+
+        return localDao.getSyncResultAccountReports(currentAccountId)
+    }
+
+    override fun getLocalInList() =
+        localDao.getAccountReports(currentAccountId)
+
+    override fun deleteLocalOutList(locals: List<LocalReportEntity>) =
+        localDao.deleteAccountReports(locals)
+
+    override fun saveLocalOutList(locals: List<LocalReportEntity>) =
+        localDao.saveAccountReports(locals)
 
     override suspend fun getRemoteList() =
-        remoteDao.getAll(accountKey)
+        remoteDao.getAll(currentAccountKey)
+
+    override fun FirebaseReportModel.toLocalOut(localIn: LocalReportEntity?): LocalReportEntity? {
+        val key = key ?: return null
+        val tax = this.tax ?: return null
+        val size = this.size ?: return null
+        val syncAt = this.syncAt ?: getEpochTime()
+
+        return LocalReportEntity(
+            id = localIn?.id ?: DEFAULT_ID,
+            accountId = currentAccountId,
+            tax = tax,
+            size = size,
+            remoteKey = key,
+            isSync = true,
+            syncAt = syncAt
+        )
+    }
 
     override fun LocalReportEntity.toLocalOut() =
         LocalReportEntity(
@@ -30,31 +63,16 @@ class SyncReports(
             tax = tax,
             size = size,
             remoteKey = remoteKey,
+            isSync = isSync,
             syncAt = syncAt
         )
 
-    override fun LocalReportEntity.toRemote(remote: FirebaseReportModel?) =
+    override fun LocalReportEntity.toRemote(): FirebaseReportModel =
         FirebaseReportModel(tax, size, syncAt)
 
-    override fun FirebaseReportModel.toLocal(local: LocalReportEntity?): LocalReportEntity? {
-        val key = key ?: return null
-        val tax = this.tax ?: return null
-        val size = this.size ?: return null
-        val syncAt = this.syncAt ?: 0L
-
-        return LocalReportEntity(
-            id = local?.id ?: 0,
-            accountId = accountId,
-            tax = tax,
-            size = size,
-            remoteKey = key,
-            syncAt = syncAt
-        )
-    }
-
     override suspend fun LocalReportEntity.updateRemoteKey() =
-        remoteDao.getKey(accountKey)?.let { copy(remoteKey = it) }
+        this
 
     override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseReportModel?>) =
-        remoteDao.updateAll(accountKey, remoteMap)
+        remoteDao.updateAll(currentAccountKey, remoteMap)
 }

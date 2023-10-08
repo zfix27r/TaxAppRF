@@ -7,8 +7,7 @@ import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity
 
 @Dao
 interface LocalDeletedKeyDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveAll(localDeletedKeyEntities: List<LocalDeletedKeyEntity>): List<Long>
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(localDeletedKeyEntity: LocalDeletedKeyEntity): Long

@@ -10,6 +10,7 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TABLE_NAME
+import com.taxapprf.data.sync.IS_SYNC
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
 import com.taxapprf.data.sync.SyncLocal
@@ -39,6 +40,8 @@ data class LocalTransactionEntity(
 
     @ColumnInfo(name = REMOTE_KEY)
     override val remoteKey: String? = null,
+    @ColumnInfo(name = IS_SYNC)
+    override val isSync: Boolean = false,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long = getEpochTime(),
 ) : SyncLocal {

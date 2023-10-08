@@ -18,7 +18,6 @@ data class LocalUserEntity(
 
     @ColumnInfo(name = AVATAR)
     val avatar: String? = null,
-    @ColumnInfo(name = NAME)
     val name: String? = null,
     @ColumnInfo(name = PHONE)
     val phone: String? = null,
@@ -28,7 +27,6 @@ data class LocalUserEntity(
 
         const val EMAIL = "email"
         const val AVATAR = "avatar"
-        const val NAME = "name"
         const val PHONE = "phone"
     }
 }
