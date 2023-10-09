@@ -2,24 +2,24 @@ package com.taxapprf.taxapp.ui.transactions.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.data.ACCOUNT_ID
-import com.taxapprf.data.REPORT_ID
-import com.taxapprf.data.TRANSACTION_ID
 import com.taxapprf.data.getEpochDate
-import com.taxapprf.domain.cbr.GetCurrenciesUseCase
+import com.taxapprf.data.local.room.LocalDatabase.Companion.ACCOUNT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
+import com.taxapprf.data.round
+import com.taxapprf.domain.cbr.Currencies
 import com.taxapprf.domain.report.ObserveReportUseCase
 import com.taxapprf.domain.report.ReportModel
 import com.taxapprf.domain.toAppDate
 import com.taxapprf.domain.transaction.ObserveTransactionUseCase
 import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.transaction.TransactionTypes
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.makeHot
-import com.taxapprf.taxapp.ui.round
 import com.taxapprf.taxapp.ui.toLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
 import javax.inject.Inject
@@ -29,7 +29,6 @@ class TransactionDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeReportUseCase: ObserveReportUseCase,
     observeTransactionUseCase: ObserveTransactionUseCase,
-    private val getCurrenciesUseCase: GetCurrenciesUseCase,
 ) : BaseViewModel() {
     private val accountId = savedStateHandle.get<Int>(ACCOUNT_ID)
     private val reportId = savedStateHandle.get<Int>(REPORT_ID)
@@ -39,11 +38,14 @@ class TransactionDetailViewModel @Inject constructor(
 
     private var transactionTax: Double? = null
 
-    var name: String = DEFAULT_NAME
+    var name: String = EMPTY_STRING
     var date: String = getEpochDate().toAppDate()
-    var typeK: Int = DEFAULT_TRANSACTION_TYPE_K
-    var currency: String = DEFAULT_CURRENCY_NAME
-    var sum: String = DEFAULT_SUM
+    var typeOrdinal: Int = TransactionTypes.TRADE.ordinal
+    var currencyOrdinal: Int = Currencies.USD.ordinal
+    var sum: String = EMPTY_STRING
+
+    val currencyCharCode: String
+        get() = Currencies.values()[currencyOrdinal].name
 
     val report =
         if (transactionId == null) {
@@ -57,10 +59,6 @@ class TransactionDetailViewModel @Inject constructor(
             ?.onEach { setFromTransactionModel(it) }
             ?.makeHot(viewModelScope)
 
-    val currencies =
-        flow { emit(getCurrenciesUseCase.execute()) }
-            .makeHot(viewModelScope)
-
     private fun setFromReportModel(reportModel: ReportModel?) {
         reportModel?.name?.let {
             val shiftDate = LocalDate.now().withYear(it.toInt())
@@ -71,16 +69,12 @@ class TransactionDetailViewModel @Inject constructor(
     private fun setFromTransactionModel(transactionModel: TransactionModel?) {
         transactionModel?.let { transaction ->
             date = transaction.date.toAppDate()
-            typeK = transaction.typeK
+            typeOrdinal = transaction.type.ordinal
+            currencyOrdinal = transaction.currency.ordinal
             sum = transaction.sum.round().toString()
 
             transaction.tax?.let { transactionTax = it }
             transaction.name?.let { name = it }
-
-            currencies.value
-                ?.find { it.id == transaction.currencyId }
-                ?.charCode
-                ?.let { currency = it }
         }
     }
 
@@ -117,19 +111,18 @@ class TransactionDetailViewModel @Inject constructor(
 
     fun getSaveTransactionModel(): SaveTransactionModel? {
         val accountId = accountId ?: return null
-        val currencyId = currencies.value?.find { it.charCode == currency }?.id ?: return null
         val date = date.toLocalDate()?.toEpochDay() ?: return null
 
         return SaveTransactionModel(
             transactionId = transactionId,
             reportId = reportId,
             accountId = accountId,
-            currencyId = currencyId,
+            type = TransactionTypes.values()[typeOrdinal],
+            currencyOrdinal = currencyOrdinal,
             name = name,
             date = date,
-            type = typeK,
             sum = sumToDouble(),
-            tax = transactionTax,
+            tax = transactionTax
         )
     }
 
@@ -149,9 +142,6 @@ class TransactionDetailViewModel @Inject constructor(
         const val NAME_MAX_LENGTH = 30
         const val SUM_MAX_LENGTH = 999999999999
 
-        const val DEFAULT_NAME = ""
-        const val DEFAULT_CURRENCY_NAME = "USD"
-        const val DEFAULT_TRANSACTION_TYPE_K = 1
-        const val DEFAULT_SUM = ""
+        const val EMPTY_STRING = ""
     }
 }

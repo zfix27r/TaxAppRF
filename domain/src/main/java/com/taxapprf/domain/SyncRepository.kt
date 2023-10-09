@@ -1,5 +1,8 @@
 package com.taxapprf.domain
 
+import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
+
 interface SyncRepository {
-     fun syncAll()
+    suspend fun syncAll()
+    suspend fun syncDeleteTransaction(deleteTransactionWithReportModel: DeleteTransactionWithReportModel)
 }

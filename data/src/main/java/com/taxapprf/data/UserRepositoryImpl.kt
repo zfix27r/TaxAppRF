@@ -2,10 +2,10 @@ package com.taxapprf.data
 
 import android.net.Uri
 import com.taxapprf.data.local.room.LocalAccountDao
+import com.taxapprf.data.local.room.LocalMainDao
 import com.taxapprf.data.local.room.LocalUserDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
-import com.taxapprf.data.local.room.entity.LocalUserEntity
-import com.taxapprf.data.local.room.model.LocalUserWithAccounts
+import com.taxapprf.data.local.room.model.GetUser
 import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.domain.UserRepository
 import com.taxapprf.domain.user.AccountModel
@@ -15,34 +15,30 @@ import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.SwitchAccountModel
 import com.taxapprf.domain.user.UserModel
 import com.taxapprf.domain.user.UserWithAccountsModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
+    private val localMainDao: LocalMainDao,
     private val userLocalDao: LocalUserDao,
     private val userRemoteDao: RemoteUserDao,
     private val accountLocalDao: LocalAccountDao,
 ) : UserRepository {
     override fun observeUserWithAccounts(
         observeUserWithAccountsModel: ObserveUserWithAccountsModel
-    ): Flow<UserWithAccountsModel> {
-        val email = userRemoteDao.getUser()?.email ?: run {
-            val userId = saveDefaultLocalUser()
-            saveDefaultLocalAccount(userId, observeUserWithAccountsModel.defaultAccountName)
-            LOCAL_USER_EMAIL
+    ) =
+        findUserEmail(observeUserWithAccountsModel.defaultAccountName).let { email ->
+            userLocalDao.observeUsers(email)
+                .map { userWithAccounts ->
+                    UserWithAccountsModel(
+                        user = userWithAccounts.firstOrNull()?.toUserModel(),
+                        activeAccount = userWithAccounts.find { it.isAccountActive }
+                            ?.toAccountModel(),
+                        otherAccounts = userWithAccounts.filter { !it.isAccountActive }
+                            .map { it.toAccountModel() }
+                    )
+                }
         }
-
-        return userLocalDao.observe(email)
-            .map { userWithAccounts ->
-                UserWithAccountsModel(
-                    user = userWithAccounts.firstOrNull()?.toUserModel(),
-                    activeAccount = userWithAccounts.find { it.isAccountActive }?.toAccountModel(),
-                    otherAccounts = userWithAccounts.filter { !it.isAccountActive }
-                        .map { it.toAccountModel() }
-                )
-            }
-    }
 
     override suspend fun saveUser(userModel: UserModel) {
         userModel.name?.let { userRemoteDao.updateUser(it) }
@@ -65,7 +61,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun switchAccount(switchAccountModel: SwitchAccountModel) {
         accountLocalDao.resetActiveAccount()
         if (accountLocalDao.setActiveAccount(switchAccountModel.accountName) == 0)
-            accountLocalDao.save(
+            localMainDao.saveAccountEntity(
                 newLocalAccountEntity(
                     switchAccountModel.userId,
                     switchAccountModel.accountName
@@ -78,21 +74,22 @@ class UserRepositoryImpl @Inject constructor(
         userLocalDao.deleteAll()
     }
 
-    private fun saveDefaultLocalUser(): Int {
-        val defaultLocalUserEntity = LocalUserEntity(
-            email = LOCAL_USER_EMAIL
-        )
-        return userLocalDao.save(defaultLocalUserEntity).toInt()
-    }
+    private fun findUserEmail(defaultAccountName: String) =
+        userRemoteDao.getUser()?.email?.let { remoteUserEmail ->
+            localMainDao.getUserByEmail(remoteUserEmail)?.email
+                ?: run {
+                    userRemoteDao.signOut()
+                    getLocalUserEmail(defaultAccountName)
+                }
+        } ?: getLocalUserEmail(defaultAccountName)
 
-    private fun saveDefaultLocalAccount(userId: Int, accountName: String): Int {
-        val defaultLocalAccountEntity = LocalAccountEntity(
-            userId = userId,
-            isActive = true,
-            remoteKey = accountName
-        )
-        return accountLocalDao.save(defaultLocalAccountEntity).toInt()
-    }
+    private fun getLocalUserEmail(defaultAccountName: String) =
+        localMainDao.getUserByEmail(LOCAL_USER_EMAIL)?.let {
+            LOCAL_USER_EMAIL
+        } ?: run {
+            localMainDao.saveDefaultUser(defaultAccountName)
+            LOCAL_USER_EMAIL
+        }
 
     private fun updateLocalUser() {
         userLocalDao.getByEmail(LOCAL_USER_EMAIL)?.let { localUser ->
@@ -104,15 +101,15 @@ class UserRepositoryImpl @Inject constructor(
                         name = firebaseUser.displayName,
                         phone = firebaseUser.phoneNumber
                     )
-                userLocalDao.save(updatedLocalUserEntity)
+                localMainDao.saveUserEntity(updatedLocalUserEntity)
             }
         }
     }
 
-    private fun LocalUserWithAccounts.toUserModel() =
+    private fun GetUser.toUserModel() =
         UserModel(userId, email, avatar?.let { Uri.parse(it) }, name, phone)
 
-    private fun LocalUserWithAccounts.toAccountModel() =
+    private fun GetUser.toAccountModel() =
         AccountModel(accountId, accountName)
 
     private fun newLocalAccountEntity(userId: Int, accountName: String) =

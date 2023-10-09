@@ -5,11 +5,11 @@ data class SaveTransactionModel(
     val reportId: Int? = null,
 
     val accountId: Int,
-    val currencyId: Int,
+    val type: TransactionTypes,
+    val currencyOrdinal: Int,
 
     val name: String,
     val date: Long,
-    val type: Int,
     val sum: Double,
 
     val tax: Double? = null,

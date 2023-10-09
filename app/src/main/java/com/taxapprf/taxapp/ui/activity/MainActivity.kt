@@ -75,9 +75,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         )
         setupWithNavController(binding.navView, navController)
 
-        observeUser()
+        viewModel.defaultAccountName = getString(R.string.default_account_name)
 
-        viewModel.updateUserWithAccounts(getString(R.string.default_account_name))
+        observeUser()
+        startSync()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -148,17 +149,24 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         R.id.transactions,
     )
 
-    fun observeUser() {
+    private fun startSync() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.syncAll().collectLatest {
+                    viewModel.updateUserWithAccounts()
+                }
+            }
+        }
+    }
+
+    private fun observeUser() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userWithAccounts.collectLatest { userWithAccounts ->
-                    drawer.updateUser(
-                        userWithAccounts?.user,
-                        getString(R.string.default_user_name_name)
+                    drawer.update(
+                        userWithAccountsModel = userWithAccounts,
+                        defaultUserName = getString(R.string.default_account_name)
                     )
-                    drawer.updateActiveAccount(userWithAccounts?.activeAccount)
-                    drawer.updateOtherAccounts(userWithAccounts?.otherAccounts)
-
                     onAccountLoaded(userWithAccounts)
                 }
             }
@@ -182,7 +190,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     private val drawerCallback =
         object : DrawerCallback {
             override fun signOut() {
-                viewModel.signOut(getString(R.string.default_account_name))
+                viewModel.signOut()
             }
 
             override fun switchAccount(accountModel: AccountModel) {

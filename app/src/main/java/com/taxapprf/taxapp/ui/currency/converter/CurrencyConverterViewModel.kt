@@ -2,20 +2,20 @@ package com.taxapprf.taxapp.ui.currency.converter
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.data.getEpochDate
+import com.taxapprf.data.round
 import com.taxapprf.domain.cbr.CurrencyConverterModel
-import com.taxapprf.domain.cbr.GetCBRRatesUseCase
+import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.taxapp.ui.round
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 
 @HiltViewModel
 class CurrencyConverterViewModel @Inject constructor(
-    private val getTodayCBRRateUseCase: GetCBRRatesUseCase,
+    private val getCurrencyRateModelsUseCase: GetCurrencyRateModelsUseCase,
 ) : BaseViewModel() {
     val converter = CurrencyConverterModel()
 
@@ -23,7 +23,7 @@ class CurrencyConverterViewModel @Inject constructor(
     val sumRub = MutableLiveData<Double>()
 
     fun loading() = viewModelScope.launch(Dispatchers.IO) {
-        converter.currencies = getTodayCBRRateUseCase.execute(LocalDate.now().toEpochDay())
+        converter.currencies = getCurrencyRateModelsUseCase.execute(getEpochDate())
 
         updateRate()
         setSum(converter.sum)
@@ -44,22 +44,23 @@ class CurrencyConverterViewModel @Inject constructor(
         sum.postValue(converter.sum)
     }
 
-    var currency: String
-        get() = converter.currency
+    var currencyOrdinal: Int
+        get() = converter.currencyOrdinal
         set(value) {
-            converter.currency = value
+            converter.currencyOrdinal = value
             updateRate()
         }
 
     private fun updateRate() {
-        converter.rateCBR = converter.currencies.find { it.charCode == currency }?.rate
-            ?: CurrencyConverterModel.DEFAULT_RATE_CBR
+        converter.currencyRate =
+            converter.currencies.find { it.currency.ordinal == currencyOrdinal }?.rate
+                ?: CurrencyConverterModel.DEFAULT_CURRENCY_RATE
     }
 
     private fun calculate() {
         with(converter) {
-            if (isModeSum) sumRub = (sum * rateCBR).round()
-            else sum = (sumRub / rateCBR).round()
+            if (isModeSum) sumRub = (sum * currencyRate).round()
+            else sum = (sumRub / currencyRate).round()
         }
     }
 }

@@ -1,22 +1,22 @@
 package com.taxapprf.data.local.room.model
 
 import androidx.room.ColumnInfo
-import com.taxapprf.data.REPORT_ID
-import com.taxapprf.data.TRANSACTION_ID
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity
-import com.taxapprf.data.sync.ACCOUNT_KEY
-import com.taxapprf.data.sync.REPORT_KEY
+import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
+import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.TRANSACTION_KEY
 import com.taxapprf.data.sync.SYNC_AT
-import com.taxapprf.data.sync.TRANSACTION_KEY
 
-data class GetTransactionKeys(
+data class GetKeysTransaction(
     @ColumnInfo(name = TRANSACTION_ID)
     val id: Int,
 
     @ColumnInfo(name = REPORT_ID)
     val reportId: Int?,
 
-    @ColumnInfo(name = LocalTransactionEntity.TAX)
+    @ColumnInfo(name = TAX)
     val tax: Double?,
 
     @ColumnInfo(name = ACCOUNT_KEY)

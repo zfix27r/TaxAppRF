@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="currency_usd">Доллар США</string>
+
+    <string-array name="currencies">
+        <item>Австралийский доллар</item>
+        <item>Азербайджанский манат</item>
+        <item>Фунт стерлингов Соединенного королевства</item>
+        <item>Армянский драм</item>
+        <item>Белорусский рубль</item>
+        <item>Болгарский лев</item>
+        <item>Бразильский реал</item>
+        <item>Венгерский форинт</item>
+        <item>Вьетнамский донг</item>
+        <item>Гонконгский доллар</item>
+        <item>Грузинский лари</item>
+        <item>Датская крона</item>
+        <item>Дирхам ОАЭ</item>
+        <item>@string/currency_usd</item>
+        <item>Евро</item>
+        <item>Египетский фунт</item>
+        <item>Индийский рупий</item>
+        <item>Индонезийский рупий</item>
+        <item>Казахстанский тенге</item>
+        <item>Канадский доллар</item>
+        <item>Катарский риал</item>
+        <item>Киргизский сом</item>
+        <item>Китайский юань</item>
+        <item>Молдавский лей</item>
+        <item>Новозеландский доллар</item>
+        <item>Норвежских крон</item>
+        <item>Польский злотой</item>
+        <item>Румынский лей</item>
+        <item>СДР (специальные права заимствования)</item>
+        <item>Сингапурский доллар</item>
+        <item>Таджикский сомони</item>
+        <item>Таиландский бат</item>
+        <item>Турецкий лир</item>
+        <item>Новый туркменский манат</item>
+        <item>Узбекский сум</item>
+        <item>Украинская гривна</item>
+        <item>Чешская крона</item>
+        <item>Шведская крона</item>
+        <item>Швейцарский франк</item>
+        <item>Сербский динар</item>
+        <item>Южноафриканский рэнд</item>
+        <item>Вон Республики Корея</item>
+        <item>Японская иена</item>
+    </string-array>
+</resources>

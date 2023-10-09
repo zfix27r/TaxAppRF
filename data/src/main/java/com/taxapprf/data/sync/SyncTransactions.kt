@@ -1,68 +1,118 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.data.local.room.LocalTransactionDao
+import com.taxapprf.data.calculateTax
+import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
+import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
+import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
+import com.taxapprf.data.local.room.model.sync.GetSyncTransactionModel
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
-import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseTransactionEntity
+import com.taxapprf.domain.CurrencyRepository
+import com.taxapprf.domain.cbr.Currencies
+import com.taxapprf.domain.transaction.TransactionTypes
+import kotlinx.coroutines.runBlocking
 
-/*
 class SyncTransactions(
-    private val localDao: LocalTransactionDao,
+    private val localDao: LocalSyncDao,
     private val remoteDao: RemoteTransactionDao,
-    private val accountKey: String,
-    private val reportKey: String,
-) : SyncManager<LocalTransactionEntity, FirebaseTransactionModel>() {
-    override fun LocalTransactionEntity.toRemote(remote: FirebaseTransactionModel?): FirebaseTransactionModel {
+    private val currencyRepository: CurrencyRepository,
+) : SyncManager<GetSyncTransactionModel, LocalTransactionEntity, FirebaseTransactionEntity>() {
+    private var currentReportId: Int = 0
+
+    private var currentAccountKey: String = ""
+    private var currentReportKey: String = ""
+
+    suspend fun sync(getSyncResultReportModel: GetSyncResultReportModel) {
+        currentReportId = getSyncResultReportModel.reportId
+        currentAccountKey = getSyncResultReportModel.accountKey
+        currentReportKey = getSyncResultReportModel.reportKey
+
+        startSync()
+    }
+
+    override fun GetSyncTransactionModel.toRemote(): FirebaseTransactionEntity {
         val firebaseTransactionModel =
-            FirebaseTransactionModel(name, date, type, currency, rateCBRF, sum, tax, syncAt)
-        firebaseTransactionModel.key = key
+            FirebaseTransactionEntity(
+                name = name,
+                date = date,
+                type = TransactionTypes.values()[typeOrdinal].name,
+                currency = Currencies.values()[currencyOrdinal].name,
+                rateCBR = currencyRate,
+                sum = sum,
+                tax = tax,
+                syncAt = syncAt
+            )
+        firebaseTransactionModel.key = remoteKey
         return firebaseTransactionModel
     }
 
-    override fun FirebaseTransactionModel.toLocal(local: LocalTransactionEntity?): LocalTransactionEntity? {
+    override fun FirebaseTransactionEntity.toLocalOut(localIn: GetSyncTransactionModel?): LocalTransactionEntity? {
         val transactionKey = key ?: return null
-        val name = name
         val date = date ?: return null
-        val type = type ?: return null
-        val currency = currency ?: return null
-        val rateCBR = rateCBR ?: 0.0
+        val transactionTypeOrdinal = type?.findTransactionType()?.ordinal ?: return null
+        val currencyOrdinal = currency?.findCurrency()?.ordinal ?: return null
         val sum = sum ?: return null
-        val tax = tax ?: 0.0
         val syncAt = syncAt ?: 0
 
+        val tax =
+            runBlocking {
+                currencyRepository.getCurrencyRate(currencyOrdinal, date)?.let { rate ->
+                    calculateTax(sum, rate, transactionTypeOrdinal)
+                }
+            }
+
         return LocalTransactionEntity(
-            id = local?.id ?: 0,
-            accountKey = accountKey,
-            reportKey = reportKey,
-            key = transactionKey,
-            name,
-            date,
-            type,
-            currency,
-            rateCBR,
-            sum,
-            tax,
+            id = localIn?.transactionId ?: DEFAULT_ID,
+            reportId = currentReportId,
+            typeOrdinal = transactionTypeOrdinal,
+            currencyOrdinal = currencyOrdinal,
+            name = name,
+            date = date,
+            sum = sum,
+            tax = tax,
+            remoteKey = transactionKey,
             isSync = true,
-            isDelete = false,
             syncAt = syncAt
         )
     }
 
-    override fun getLocalList() =
-        localDao.getAll(accountKey, reportKey)
+    override fun getLocalInList() =
+        localDao.getTransactions(currentReportId)
 
-    override fun deleteLocalList(locals: List<LocalTransactionEntity>) =
-        localDao.deleteAll(locals)
+    override fun deleteLocalOutList(locals: List<LocalTransactionEntity>) =
+        localDao.deleteTransactionsWithUpdateReport(currentReportId, locals)
 
-    override fun saveLocalList(locals: List<LocalTransactionEntity>) =
-        localDao.saveAll(locals)
+    override fun saveLocalOutList(locals: List<LocalTransactionEntity>) =
+        localDao.saveTransactionsWithUpdateReport(currentReportId, locals)
 
     override suspend fun getRemoteList() =
-        remoteDao.getAll(accountKey, reportKey)
+        remoteDao.getAll(currentAccountKey, currentReportKey)
 
-    override suspend fun LocalTransactionEntity.updateRemoteKey() =
-        remoteDao.getKey(accountKey, reportKey)?.let { copy(key = it) }
+    override fun GetSyncTransactionModel.toLocalOut() =
+        LocalTransactionEntity(
+            id = transactionId,
+            reportId = currentReportId,
+            typeOrdinal = typeOrdinal,
+            currencyOrdinal = currencyOrdinal,
+            name = name,
+            date = date,
+            sum = sum,
+            tax = tax,
+            remoteKey = remoteKey,
+            isSync = isSync,
+            syncAt = syncAt
+        )
 
-    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseTransactionModel?>) =
-        remoteDao.updateAll(accountKey, reportKey, remoteMap)
-}*/
+    override suspend fun GetSyncTransactionModel.updateRemoteKey() =
+        remoteDao.getKey(currentAccountKey, currentReportKey)?.let { copy(remoteKey = it) }
+
+    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseTransactionEntity?>) =
+        remoteDao.updateAll(currentAccountKey, currentReportKey, remoteMap)
+
+    private fun String.findTransactionType() =
+        TransactionTypes.values().find { it.name == this }
+
+    private fun String?.findCurrency() =
+        Currencies.values().find { it.name == this }
+}

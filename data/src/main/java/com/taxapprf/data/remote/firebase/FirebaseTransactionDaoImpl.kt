@@ -1,17 +1,19 @@
 package com.taxapprf.data.remote.firebase
 
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
-import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseTransactionEntity
 import com.taxapprf.data.safeCall
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
 class FirebaseTransactionDaoImpl @Inject constructor(
-    private val fb: FirebaseAPI,
+    private val fb: Firebase,
 ) : RemoteTransactionDao {
     override suspend fun getKey(accountKey: String, reportKey: String) =
-        fb.getTransactionsPath(accountKey, reportKey).push().key
+        safeCall {
+            fb.getTransactionsPath(accountKey, reportKey).push().key
+        }
 
     override suspend fun getAll(accountKey: String, reportKey: String) =
         safeCall {
@@ -19,7 +21,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
                 .get()
                 .await()
                 .children.mapNotNull {
-                    it.getValue(FirebaseTransactionModel::class.java)
+                    it.getValue(FirebaseTransactionEntity::class.java)
                         ?.apply {
                             key = it.key
                         }
@@ -29,7 +31,7 @@ class FirebaseTransactionDaoImpl @Inject constructor(
     override suspend fun updateAll(
         accountKey: String,
         reportKey: String,
-        transactionsModels: Map<String, FirebaseTransactionModel?>
+        transactionsModels: Map<String, FirebaseTransactionEntity?>
     ) {
         safeCall {
             fb.getTransactionsPath(accountKey, reportKey)

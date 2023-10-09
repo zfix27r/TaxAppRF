@@ -1,8 +1,8 @@
-package com.taxapprf.data.remote.firebase.model
+package com.taxapprf.data.remote.firebase.entity
 
 import com.taxapprf.data.sync.SyncRemote
 
-data class FirebaseTransactionModel(
+data class FirebaseTransactionEntity(
     val name: String? = null,
     val date: Long? = null,
     val type: String? = null,

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="transaction_type_trade">Сделка</string>
+    <string name="transaction_type_commission">Комиссия</string>
+    <string name="transaction_type_funding_withdrawal">Ввод/вывод средств</string>
+
+    <string-array name="transaction_types">
+        <item>@string/transaction_type_trade</item>
+        <item>@string/transaction_type_funding_withdrawal</item>
+        <item>@string/transaction_type_commission</item>
+    </string-array>
+</resources>

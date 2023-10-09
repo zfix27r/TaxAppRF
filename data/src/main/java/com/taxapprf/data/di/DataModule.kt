@@ -3,14 +3,23 @@ package com.taxapprf.data.di
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.room.Room
+import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
+import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.remote.cbr.RemoteCBRDao
-import com.taxapprf.data.remote.firebase.FirebaseAPI
+import com.taxapprf.data.remote.firebase.Firebase
 import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
+import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseUserDaoImpl
+import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
+import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
+import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
+import com.taxapprf.data.sync.SyncAccounts
+import com.taxapprf.data.sync.SyncReports
+import com.taxapprf.data.sync.SyncTransactions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,15 +34,20 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataModule {
     private const val DB_NAME = "tax_app"
-    private const val DB_FILE_NAME = "$DB_NAME.db"
+    //private const val DB_FILE_NAME = "$DB_NAME.db"
 
     @Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, LocalDatabase::class.java, DB_NAME)
-            .createFromAsset(DB_FILE_NAME)
+            //.createFromAsset(DB_FILE_NAME)
             .fallbackToDestructiveMigration()
             .build()
+
+    @Singleton
+    @Provides
+    fun provideSyncDao(db: LocalDatabase) =
+        db.syncDao()
 
     @Singleton
     @Provides
@@ -57,6 +71,16 @@ object DataModule {
 
     @Singleton
     @Provides
+    fun provideTransactionsDao(db: LocalDatabase) =
+        db.transactionsDao()
+
+    @Singleton
+    @Provides
+    fun provideMainDao(db: LocalDatabase) =
+        db.mainDao()
+
+    @Singleton
+    @Provides
     fun provideCBRDao(db: LocalDatabase) =
         db.cbrDao()
 
@@ -74,6 +98,31 @@ object DataModule {
     @Provides
     fun provideNetworkManager(connectivityManager: ConnectivityManager) =
         NetworkManager(connectivityManager)
+
+    @Singleton
+    @Provides
+    fun provideSyncAccount(
+        localSyncDao: LocalSyncDao,
+        remoteAccountDao: RemoteAccountDao
+    ) =
+        SyncAccounts(localSyncDao, remoteAccountDao)
+
+    @Singleton
+    @Provides
+    fun provideSyncReport(
+        localSyncDao: LocalSyncDao,
+        remoteReportDao: RemoteReportDao
+    ) =
+        SyncReports(localSyncDao, remoteReportDao)
+
+    @Singleton
+    @Provides
+    fun provideSyncTransaction(
+        localSyncDao: LocalSyncDao,
+        remoteTransactionDao: RemoteTransactionDao,
+        currencyRepositoryImpl: CurrencyRepositoryImpl
+    ) =
+        SyncTransactions(localSyncDao, remoteTransactionDao, currencyRepositoryImpl)
 
     @Singleton
     @Provides
@@ -98,18 +147,25 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseAPI() = FirebaseAPI()
+    fun provideFirebaseAPI() = Firebase()
 
     @Singleton
     @Provides
-    fun provideFirebaseUserDao(firebaseAPI: FirebaseAPI): RemoteUserDao =
+    fun provideFirebaseUserDao(firebaseAPI: Firebase): RemoteUserDao =
         FirebaseUserDaoImpl(firebaseAPI)
 
     @Singleton
     @Provides
-    fun provideFirebaseAccountDao(firebaseAPI: FirebaseAPI) = FirebaseAccountDaoImpl(firebaseAPI)
+    fun provideFirebaseAccountDao(firebaseAPI: Firebase): RemoteAccountDao =
+        FirebaseAccountDaoImpl(firebaseAPI)
 
     @Singleton
     @Provides
-    fun provideFirebaseReportDao(firebaseAPI: FirebaseAPI) = FirebaseReportDaoImpl(firebaseAPI)
+    fun provideFirebaseReportDao(firebaseAPI: Firebase): RemoteReportDao =
+        FirebaseReportDaoImpl(firebaseAPI)
+
+    @Singleton
+    @Provides
+    fun provideFirebaseTransactionDao(firebaseAPI: Firebase): RemoteTransactionDao =
+        FirebaseTransactionDaoImpl(firebaseAPI)
 }

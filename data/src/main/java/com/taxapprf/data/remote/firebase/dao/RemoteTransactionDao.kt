@@ -1,6 +1,6 @@
 package com.taxapprf.data.remote.firebase.dao
 
-import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseTransactionEntity
 
 interface RemoteTransactionDao {
     suspend fun getKey(
@@ -11,11 +11,11 @@ interface RemoteTransactionDao {
     suspend fun getAll(
         accountKey: String,
         reportKey: String
-    ): List<FirebaseTransactionModel>
+    ): List<FirebaseTransactionEntity>
 
     suspend fun updateAll(
         accountKey: String,
         reportKey: String,
-        transactionsModels: Map<String, FirebaseTransactionModel?>
+        transactionsModels: Map<String, FirebaseTransactionEntity?>
     )
 }

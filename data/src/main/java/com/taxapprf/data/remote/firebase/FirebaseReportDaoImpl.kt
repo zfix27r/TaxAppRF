@@ -1,36 +1,30 @@
 package com.taxapprf.data.remote.firebase
 
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
-import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
-import com.taxapprf.data.safeCall
+import com.taxapprf.data.remote.firebase.entity.FirebaseReportEntity
 import kotlinx.coroutines.tasks.await
 
 
 class FirebaseReportDaoImpl(
-    private val fb: FirebaseAPI,
+    private val fb: Firebase,
 ) : RemoteReportDao {
-    override suspend fun getKey(accountKey: String): String? =
-        safeCall {
-            fb.getReportsPath(accountKey)
-                .push()
-                .key
-        }
-
     override suspend fun getAll(accountKey: String) =
-        fb.getReportsPath(accountKey)
-            .get()
-            .await()
-            .children
-            .mapNotNull {
-                it.getValue(FirebaseReportModel::class.java)
-                    ?.apply {
-                        key = it.key
-                    }
-            }
+        let {
+            fb.getReportsPath(accountKey)
+                .get()
+                .await()
+                .children
+                .mapNotNull {
+                    it.getValue(FirebaseReportEntity::class.java)
+                        ?.apply {
+                            key = it.key
+                        }
+                }
+        }
 
     override suspend fun updateAll(
         accountKey: String,
-        reportModels: Map<String, FirebaseReportModel?>
+        reportModels: Map<String, FirebaseReportEntity?>
     ) {
         fb.getReportsPath(accountKey)
             .updateChildren(reportModels)

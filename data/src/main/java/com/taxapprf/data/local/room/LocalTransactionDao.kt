@@ -4,114 +4,108 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.taxapprf.data.REPORT_ID
-import com.taxapprf.data.TRANSACTION_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.CURRENCY_ORDINAL
+import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
+import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.CURRENCY_RATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
-import com.taxapprf.data.local.room.model.GetExcelTransactionWithCurrency
-import com.taxapprf.data.local.room.model.GetTransactionKeys
-import com.taxapprf.data.local.room.model.GetTransactionWithCurrency
-import com.taxapprf.data.sync.ACCOUNT_KEY
-import com.taxapprf.data.sync.REPORT_KEY
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
+import com.taxapprf.data.local.room.model.GetExcelTransaction
+import com.taxapprf.data.local.room.model.GetKeysTransaction
+import com.taxapprf.data.local.room.model.GetTransaction
+import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.TRANSACTION_KEY
 import com.taxapprf.data.sync.SYNC_AT
-import com.taxapprf.data.sync.TRANSACTION_KEY
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalTransactionDao {
     @Query(
         "SELECT " +
-                "t.id ${LocalTransactionEntity.ID}, " +
-                "t.name ${LocalTransactionEntity.NAME}, " +
-                "t.date ${LocalTransactionEntity.DATE}, " +
-                "t.type ${LocalTransactionEntity.TYPE}, " +
-                "t.sum ${LocalTransactionEntity.SUM}, " +
-                "t.tax ${LocalTransactionEntity.TAX}, " +
-                "c.id ${GetTransactionWithCurrency.CURRENCY_ID}, " +
-                "c.char_code ${GetTransactionWithCurrency.CURRENCY_CHAR_CODE}, " +
-                "r.rate ${GetTransactionWithCurrency.CURRENCY_RATE} " +
+                "t.id $TRANSACTION_ID, " +
+                "t.name $NAME, " +
+                "t.date $DATE, " +
+                "t.type_ordinal $TYPE_ORDINAL, " +
+                "t.sum $SUM, " +
+                "t.tax $TAX, " +
+                "t.currency_ordinal $CURRENCY_ORDINAL, " +
+                "r.currency_rate $CURRENCY_RATE " +
                 "FROM `transaction` t " +
-                "LEFT JOIN cbr_currency c ON c.id = t.currency_id " +
-                "LEFT JOIN cbr_rate r ON r.currency_id = t.currency_id AND r.date = t.date " +
+                "LEFT JOIN cbr_rate r ON r.currency_ordinal = t.currency_ordinal AND r.date = t.date " +
                 "WHERE report_id = :reportId"
     )
-    fun observeReport(reportId: Int): Flow<List<GetTransactionWithCurrency>>
+    fun observeReport(reportId: Int): Flow<List<GetTransaction>>
 
     @Query(
         "SELECT " +
-                "t.id ${LocalTransactionEntity.ID}, " +
-                "t.name ${LocalTransactionEntity.NAME}, " +
-                "t.date ${LocalTransactionEntity.DATE}, " +
-                "t.type ${LocalTransactionEntity.TYPE}, " +
-                "t.sum ${LocalTransactionEntity.SUM}, " +
-                "t.tax ${LocalTransactionEntity.TAX}, " +
-                "c.id ${GetTransactionWithCurrency.CURRENCY_ID}, " +
-                "c.char_code ${GetTransactionWithCurrency.CURRENCY_CHAR_CODE}, " +
-                "r.rate ${GetTransactionWithCurrency.CURRENCY_RATE} " +
+                "t.id $TRANSACTION_ID, " +
+                "t.name $NAME, " +
+                "t.date $DATE, " +
+                "t.type_ordinal $TYPE_ORDINAL, " +
+                "t.sum $SUM, " +
+                "t.tax $TAX, " +
+                "t.currency_ordinal $CURRENCY_ORDINAL, " +
+                "r.currency_rate $CURRENCY_RATE " +
                 "FROM `transaction` t " +
-                "LEFT JOIN cbr_currency c ON c.id = t.currency_id " +
-                "LEFT JOIN cbr_rate r ON r.currency_id = t.currency_id AND r.date = t.date " +
+                "LEFT JOIN cbr_rate r ON r.currency_ordinal = t.currency_ordinal AND r.date = t.date " +
                 "WHERE t.id = :transactionId LIMIT 1"
     )
-    fun observe(transactionId: Int): Flow<GetTransactionWithCurrency?>
+    fun observe(transactionId: Int): Flow<GetTransaction?>
 
     @Query(
         "SELECT " +
-                "t.name ${LocalTransactionEntity.NAME}, " +
-                "t.date ${LocalTransactionEntity.DATE}, " +
-                "t.type ${LocalTransactionEntity.TYPE}, " +
-                "t.sum ${LocalTransactionEntity.SUM}, " +
-                "t.tax ${LocalTransactionEntity.TAX}, " +
-                "c.char_code ${GetTransactionWithCurrency.CURRENCY_CHAR_CODE}, " +
-                "r.rate ${GetTransactionWithCurrency.CURRENCY_RATE} " +
+                "t.name $NAME, " +
+                "t.date $DATE, " +
+                "t.type_ordinal $TYPE_ORDINAL, " +
+                "t.currency_ordinal $CURRENCY_ORDINAL, " +
+                "t.sum $SUM, " +
+                "t.tax $TAX, " +
+                "r.currency_rate $CURRENCY_RATE " +
                 "FROM `transaction` t " +
-                "LEFT JOIN cbr_currency c ON c.id = t.currency_id " +
-                "LEFT JOIN cbr_rate r ON r.currency_id = t.currency_id AND r.date = t.date " +
+                "LEFT JOIN cbr_rate r ON r.currency_ordinal = t.currency_ordinal AND r.date = t.date " +
                 "WHERE report_id = :reportId"
     )
-    fun getExcelTransactionsWithCurrency(reportId: Int): List<GetExcelTransactionWithCurrency>
+    fun getExcelTransactionsWithCurrency(reportId: Int): List<GetExcelTransaction>
 
     @Query(
         "SELECT " +
-                "t.id ${TRANSACTION_ID}, " +
-                "r.id ${REPORT_ID}, " +
-                "t.tax ${LocalTransactionEntity.TAX}, " +
-                "a.remote_key ${ACCOUNT_KEY}, " +
-                "r.remote_key ${REPORT_KEY}, " +
-                "t.remote_key ${TRANSACTION_KEY}, " +
+                "t.id $TRANSACTION_ID, " +
+                "r.id $REPORT_ID, " +
+                "t.tax $TAX, " +
+                "a.remote_key $ACCOUNT_KEY, " +
+                "r.remote_key $REPORT_KEY, " +
+                "t.remote_key $TRANSACTION_KEY, " +
                 "t.sync_at $SYNC_AT " +
                 "FROM `transaction` t " +
-                "LEFT JOIN account a ON a.id = t.account_id " +
                 "LEFT JOIN report r ON r.id = t.report_id " +
+                "LEFT JOIN account a ON a.id = r.account_id " +
                 "WHERE t.id = :transactionId LIMIT 1"
     )
-    fun getTransactionKeys(transactionId: Int): GetTransactionKeys?
+    fun getKeysTransaction(transactionId: Int): GetKeysTransaction?
 
     @Query(
         "SELECT " +
-                "t.id ${TRANSACTION_ID}, " +
-                "t.tax ${LocalTransactionEntity.TAX}, " +
-                "a.remote_key ${ACCOUNT_KEY}, " +
-                "r.remote_key ${REPORT_KEY}, " +
-                "t.remote_key ${TRANSACTION_KEY}, " +
+                "t.id $TRANSACTION_ID, " +
+                "r.id $REPORT_ID, " +
+                "t.tax $TAX, " +
+                "a.remote_key $ACCOUNT_KEY, " +
+                "r.remote_key $REPORT_KEY, " +
+                "t.remote_key $TRANSACTION_KEY, " +
                 "t.sync_at $SYNC_AT " +
                 "FROM `transaction` t " +
-                "LEFT JOIN account a ON a.id = t.account_id " +
                 "LEFT JOIN report r ON r.id = t.report_id " +
+                "LEFT JOIN account a ON a.id = r.account_id " +
                 "WHERE t.report_id = :reportId"
     )
-    fun getTransactionsKeys(reportId: Int): List<GetTransactionKeys>
-
-    @Query("SELECT * FROM `transaction` WHERE account_id = :accountId AND report_id = :reportId")
-    fun getTransactions(accountId: Int, reportId: Int): List<LocalTransactionEntity?>
+    fun getKeysTransactions(reportId: Int): List<GetKeysTransaction>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(localTransactionEntity: LocalTransactionEntity): Long
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveTransactions(transactionEntities: List<LocalTransactionEntity>): List<Long>
-
-    @Query("DELETE FROM `transaction` WHERE account_id = :accountId AND report_id = :reportId")
-    fun deleteTransactions(accountId: Int, reportId: Int): Int
 
     @Query("DELETE FROM `transaction` WHERE id = :transactionId")
     fun delete(transactionId: Int): Int

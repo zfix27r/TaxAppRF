@@ -24,6 +24,7 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
 
     override fun onSuccess() {
         super.onSuccess()
+        mainViewModel.updateUserWithAccounts()
         navToReports()
     }
 
@@ -40,7 +41,6 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
     }
 
     private fun navToReports() {
-        mainActivity.observeUser()
         findNavController().navigate(R.id.action_global_reports)
     }
 }

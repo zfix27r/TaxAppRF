@@ -2,9 +2,10 @@ package com.taxapprf.taxapp.ui.activity
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.main.SaveTransaction1Model
+import com.taxapprf.domain.main.SaveTransaction1UseCase
 import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.transaction.SaveTransactionModel
-import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.user.ObserveUserWithAccountsModel
 import com.taxapprf.domain.user.ObserveUserWithAccountsUseCase
 import com.taxapprf.domain.user.SignOutUseCase
@@ -16,8 +17,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,9 +27,10 @@ class MainViewModel @Inject constructor(
     private val observeUserWithAccountsUseCase: ObserveUserWithAccountsUseCase,
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private val saveTransactionUseCase: SaveTransactionUseCase,
-    private val syncAllUseCase: SyncAllUseCase
+    private val syncAllUseCase: SyncAllUseCase,
+    private val saveTransaction1UseCase: SaveTransaction1UseCase,
 ) : ViewModel() {
+    var defaultAccountName: String? = null
 
     /*
     TODO() сделать загрузку в настройках курса за выбранный период
@@ -40,21 +42,27 @@ class MainViewModel @Inject constructor(
             }
             */
 
-    val sync = syncAllUseCase.execute()
-
-
     private val _userWithAccounts: MutableStateFlow<UserWithAccountsModel?> = MutableStateFlow(null)
     val userWithAccounts = _userWithAccounts.asStateFlow()
 
     var accountId: Int? = null
 
-    fun updateUserWithAccounts(defaultAccountName: String) =
-        viewModelScope.launch(Dispatchers.IO) {
-            val observeUserWithAccountsModel =
-                ObserveUserWithAccountsModel(defaultAccountName)
+    suspend fun syncAll() =
+        syncAllUseCase.execute()
+            .flowOn(Dispatchers.IO)
+            .showLoading()
 
-            observeUserWithAccountsUseCase.execute(observeUserWithAccountsModel)
-                .collectLatest { _userWithAccounts.value = it }
+    fun updateUserWithAccounts() =
+        defaultAccountName?.let { defaultAccountName ->
+            viewModelScope.launch(Dispatchers.IO) {
+                val observeUserWithAccountsModel =
+                    ObserveUserWithAccountsModel(defaultAccountName)
+
+                observeUserWithAccountsUseCase.execute(observeUserWithAccountsModel)
+                    .collectLatest {
+                        _userWithAccounts.value = it
+                    }
+            }
         }
 
     fun switchAccount(accountName: String) =
@@ -71,15 +79,30 @@ class MainViewModel @Inject constructor(
             }
         }
 
-    fun signOut(defaultAccountName: String) = viewModelScope.launch(Dispatchers.IO) {
-        signOutUseCase.execute()
-            .showLoading()
-            .collect()
-        updateUserWithAccounts(defaultAccountName)
-    }
+    fun signOut() =
+        viewModelScope.launch(Dispatchers.IO) {
+            signOutUseCase.execute()
+                .showLoading()
+                .collectLatest {
+                    updateUserWithAccounts()
+                }
+        }
 
     fun saveTransaction(saveTransactionModel: SaveTransactionModel) =
         viewModelScope.launch(Dispatchers.IO) {
-            saveTransactionUseCase.execute(saveTransactionModel)
+            saveTransaction1UseCase.execute(
+                SaveTransaction1Model(
+                    transactionId = saveTransactionModel.transactionId,
+                    reportId = saveTransactionModel.reportId,
+                    accountId = saveTransactionModel.accountId,
+                    transactionTypeOrdinal = saveTransactionModel.type.ordinal,
+                    currencyOrdinal = saveTransactionModel.currencyOrdinal,
+                    name = saveTransactionModel.name,
+                    date = saveTransactionModel.date,
+                    sum = saveTransactionModel.sum,
+                    tax = saveTransactionModel.tax
+                )
+            )
+//            saveTransactionUseCase.execute(saveTransactionModel)
         }
 }

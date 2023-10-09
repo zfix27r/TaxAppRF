@@ -3,7 +3,14 @@ package com.taxapprf.data.local.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity.Companion.TABLE_NAME
+import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.EMPTY_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.TRANSACTION_KEY
+import com.taxapprf.data.sync.SYNC_AT
 
 @Entity(tableName = TABLE_NAME)
 data class LocalDeletedKeyEntity(
@@ -14,24 +21,14 @@ data class LocalDeletedKeyEntity(
     @ColumnInfo(name = ACCOUNT_KEY)
     val accountKey: String,
     @ColumnInfo(name = REPORT_KEY)
-    val reportKey: String?,
+    val reportKey: String? = EMPTY_KEY,
     @ColumnInfo(name = TRANSACTION_KEY)
-    val transactionKey: String?,
+    val transactionKey: String? = EMPTY_KEY,
 
     @ColumnInfo(name = SYNC_AT)
     val syncAt: Long,
 ) {
     companion object {
         const val TABLE_NAME = "deleted_key"
-
-        const val ID = "id"
-
-        const val ACCOUNT_KEY = "account_key"
-        const val REPORT_KEY = "report_key"
-        const val TRANSACTION_KEY = "transaction_key"
-
-        const val SYNC_AT = "sync_at"
-
-        const val DEFAULT_ID = 0
     }
 }

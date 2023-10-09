@@ -4,7 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.taxapprf.data.getEpochTime
+import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.USER_ID
 import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.TABLE_NAME
+import com.taxapprf.data.sync.IS_SYNC
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
 import com.taxapprf.data.sync.SyncLocal
@@ -23,17 +27,14 @@ data class LocalAccountEntity(
 
     @ColumnInfo(name = REMOTE_KEY)
     override val remoteKey: String,
+    @ColumnInfo(name = IS_SYNC)
+    override val isSync: Boolean = false,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long = getEpochTime(),
 ) : SyncLocal {
     companion object {
         const val TABLE_NAME = "account"
 
-        const val ID = "id"
-        const val USER_ID = "user_id"
-
         const val IS_ACTIVE = "is_active"
-
-        const val DEFAULT_ID = 0
     }
 }

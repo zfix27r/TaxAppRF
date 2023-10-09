@@ -1,52 +1,70 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.data.local.room.LocalAccountDao
+import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
+import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
+import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
 import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
-import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseAccountEntity
+import javax.inject.Inject
 
-/*
-class SyncAccounts(
-    private val localDao: LocalAccountDao,
+class SyncAccounts @Inject constructor(
+    private val localDao: LocalSyncDao,
     private val remoteDao: RemoteAccountDao,
-) : SyncManager<LocalAccountEntity, FirebaseAccountModel>() {
-    override fun getLocalList() =
-        localDao.getAll()
+) : SyncManager<LocalAccountEntity, LocalAccountEntity, FirebaseAccountEntity>() {
+    private var currentUserId: Int = 0
 
-    override fun deleteLocalList(locals: List<LocalAccountEntity>) =
-        localDao.deleteAll(locals)
+    suspend fun sync(userId: Int): List<GetSyncResultAccountModel> {
+        currentUserId = userId
+        startSync()
+        return localDao.getSyncResultUserAccounts(currentUserId)
+    }
 
-    override fun saveLocalList(locals: List<LocalAccountEntity>) =
-        localDao.saveAll(locals)
+    override fun getLocalInList() =
+        localDao.getUserAccounts(currentUserId)
+
+    override fun deleteLocalOutList(locals: List<LocalAccountEntity>) =
+        localDao.deleteUserAccounts(locals)
+
+    override fun saveLocalOutList(locals: List<LocalAccountEntity>) =
+        localDao.saveUserAccounts(locals)
 
     override suspend fun getRemoteList() =
         remoteDao.getAll()
 
-    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseAccountModel?>) =
-        remoteDao.updateAll(remoteMap)
-
-    override suspend fun LocalAccountEntity.updateRemoteKey() =
-        remoteDao.getKey()?.let { copy(remoteKey = it) }
-
-    override fun LocalAccountEntity.toRemote(remote: FirebaseAccountModel?) =
-        FirebaseAccountModel(
-            isActive = isActive,
-            syncAt = syncAt
-        )
-
-    override fun FirebaseAccountModel.toLocal(local: LocalAccountEntity?): LocalAccountEntity? {
+    override fun FirebaseAccountEntity.toLocalOut(localIn: LocalAccountEntity?): LocalAccountEntity? {
         val key = key ?: return null
-        val isActive = isActive ?: false
+        val isActive = localIn?.isActive ?: false
         val syncAt = syncAt ?: 0L
 
         return LocalAccountEntity(
-            id = 0,
-            userId = 0,
-            remoteKey = key,
+            id = localIn?.id ?: DEFAULT_ID,
+            userId = currentUserId,
             isActive = isActive,
+            remoteKey = key,
             isSync = true,
-            isDelete = false,
             syncAt = syncAt
         )
     }
-}*/
+
+    override fun LocalAccountEntity.toLocalOut() =
+        LocalAccountEntity(
+            id = id,
+            userId = userId,
+            isActive = isActive,
+            remoteKey = remoteKey,
+            isSync = isSync,
+            syncAt = syncAt
+        )
+
+    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseAccountEntity?>) =
+        remoteDao.updateAll(remoteMap)
+
+    override suspend fun LocalAccountEntity.updateRemoteKey() =
+        this
+
+    override fun LocalAccountEntity.toRemote() =
+        FirebaseAccountEntity(
+            syncAt = syncAt
+        )
+}

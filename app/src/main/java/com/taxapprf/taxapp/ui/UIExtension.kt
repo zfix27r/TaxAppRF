@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.domain.PATTERN_DATE
-import com.taxapprf.domain.transaction.TransactionType
+import com.taxapprf.domain.transaction.TransactionTypes
 import com.taxapprf.taxapp.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +30,6 @@ import java.time.format.ResolverStyle
 import java.util.Calendar
 import java.util.Locale
 import java.util.regex.Pattern
-import kotlin.math.floor
 
 val state: MutableSharedFlow<BaseState> = MutableSharedFlow()
 
@@ -82,11 +81,6 @@ fun Activity.checkStoragePermission(): Boolean {
     }
 }
 
-const val ROUND_TWO = 100.0
-const val ROUND_SIX = 1_000_000.0
-
-fun Double.round(k: Double = ROUND_TWO) = floor(this * k) / k
-
 fun String.toLocalDate() =
     try {
         LocalDate.parse(
@@ -136,16 +130,16 @@ fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
 
 fun Context.convertToTransactionTypeName(typeK: Int) =
     when (typeK) {
-        TransactionType.TRADE.k -> getString(R.string.transaction_type_trade)
-        TransactionType.COMMISSION.k -> getString(R.string.transaction_type_commission)
-        TransactionType.FUNDING_WITHDRAWAL.k -> getString(R.string.transaction_type_funding_withdrawal)
+        TransactionTypes.TRADE.k -> getString(R.string.transaction_type_trade)
+        TransactionTypes.COMMISSION.k -> getString(R.string.transaction_type_commission)
+        TransactionTypes.FUNDING_WITHDRAWAL.k -> getString(R.string.transaction_type_funding_withdrawal)
         else -> null
     }
 
 fun Context.convertToTransactionTypeK(typeName: String) =
     when (typeName) {
-        getString(R.string.transaction_type_trade) -> TransactionType.TRADE.k
-        getString(R.string.transaction_type_commission) -> TransactionType.COMMISSION.k
-        getString(R.string.transaction_type_funding_withdrawal) -> TransactionType.FUNDING_WITHDRAWAL.k
+        getString(R.string.transaction_type_trade) -> TransactionTypes.TRADE.k
+        getString(R.string.transaction_type_commission) -> TransactionTypes.COMMISSION.k
+        getString(R.string.transaction_type_funding_withdrawal) -> TransactionTypes.FUNDING_WITHDRAWAL.k
         else -> null
     }
