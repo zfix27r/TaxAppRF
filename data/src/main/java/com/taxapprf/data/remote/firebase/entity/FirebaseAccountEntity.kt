@@ -1,8 +1,8 @@
-package com.taxapprf.data.remote.firebase.model
+package com.taxapprf.data.remote.firebase.entity
 
 import com.taxapprf.data.sync.SyncRemote
 
-data class FirebaseAccountModel(
+data class FirebaseAccountEntity(
     val active: Boolean? = null,
     override val syncAt: Long? = null,
 ) : SyncRemote {

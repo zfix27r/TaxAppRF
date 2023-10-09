@@ -7,12 +7,12 @@ import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
 import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
-import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseReportEntity
 
 class SyncReports(
     private val localDao: LocalSyncDao,
     private val remoteDao: RemoteReportDao,
-) : SyncManager<LocalReportEntity, LocalReportEntity, FirebaseReportModel>() {
+) : SyncManager<LocalReportEntity, LocalReportEntity, FirebaseReportEntity>() {
     private var currentAccountId: Int = 0
     private var currentAccountKey: String = ""
 
@@ -39,7 +39,7 @@ class SyncReports(
     override suspend fun getRemoteList() =
         remoteDao.getAll(currentAccountKey)
 
-    override fun FirebaseReportModel.toLocalOut(localIn: LocalReportEntity?): LocalReportEntity? {
+    override fun FirebaseReportEntity.toLocalOut(localIn: LocalReportEntity?): LocalReportEntity? {
         val key = key ?: return null
         val tax = this.tax ?: return null
         val size = this.size ?: return null
@@ -67,12 +67,12 @@ class SyncReports(
             syncAt = syncAt
         )
 
-    override fun LocalReportEntity.toRemote(): FirebaseReportModel =
-        FirebaseReportModel(tax, size, syncAt)
+    override fun LocalReportEntity.toRemote(): FirebaseReportEntity =
+        FirebaseReportEntity(tax, size, syncAt)
 
     override suspend fun LocalReportEntity.updateRemoteKey() =
         this
 
-    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseReportModel?>) =
+    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseReportEntity?>) =
         remoteDao.updateAll(currentAccountKey, remoteMap)
 }

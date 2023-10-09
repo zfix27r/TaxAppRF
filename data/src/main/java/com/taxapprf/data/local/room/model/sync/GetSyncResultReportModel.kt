@@ -2,8 +2,8 @@ package com.taxapprf.data.local.room.model.sync
 
 import androidx.room.ColumnInfo
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.ACCOUNT_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.REPORT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
 
 data class GetSyncResultReportModel(
     @ColumnInfo(name = ID)

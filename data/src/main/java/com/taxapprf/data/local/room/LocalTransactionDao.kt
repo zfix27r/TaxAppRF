@@ -17,9 +17,9 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
 import com.taxapprf.data.local.room.model.GetExcelTransaction
 import com.taxapprf.data.local.room.model.GetKeysTransaction
 import com.taxapprf.data.local.room.model.GetTransaction
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.ACCOUNT_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.REPORT_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.TRANSACTION_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.TRANSACTION_KEY
 import com.taxapprf.data.sync.SYNC_AT
 import kotlinx.coroutines.flow.Flow
 

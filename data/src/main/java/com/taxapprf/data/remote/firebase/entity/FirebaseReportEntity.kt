@@ -1,8 +1,8 @@
-package com.taxapprf.data.remote.firebase.model
+package com.taxapprf.data.remote.firebase.entity
 
 import com.taxapprf.data.sync.SyncRemote
 
-data class FirebaseReportModel(
+data class FirebaseReportEntity(
     val tax: Double? = null,
     val size: Int? = null,
     override val syncAt: Long? = null,

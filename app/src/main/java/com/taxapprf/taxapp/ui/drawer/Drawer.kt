@@ -9,9 +9,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.taxapprf.data.UserRepositoryImpl
+import com.taxapprf.data.UserRepositoryImpl.Companion.LOCAL_USER_EMAIL
 import com.taxapprf.domain.user.AccountModel
 import com.taxapprf.domain.user.UserModel
+import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 
 class Drawer(
@@ -58,11 +59,27 @@ class Drawer(
         }
     }
 
-    fun updateUser(
+    fun update(
+        userWithAccountsModel: UserWithAccountsModel?,
+        defaultUserName: String
+    ) {
+        updateUser(
+            user = userWithAccountsModel?.user,
+            defaultUserName = defaultUserName
+        )
+        updateActiveAccount(
+            activeAccount = userWithAccountsModel?.activeAccount
+        )
+        updateOtherAccounts(
+            otherAccounts = userWithAccountsModel?.otherAccounts
+        )
+    }
+
+    private fun updateUser(
         user: UserModel?,
         defaultUserName: String,
     ) {
-        if (user?.email != UserRepositoryImpl.LOCAL_USER_EMAIL) {
+        if (user?.email != LOCAL_USER_EMAIL) {
             showWithAuth()
             userAvatar.setImageURI(user?.avatar)
             userName.text = user?.name
@@ -75,12 +92,16 @@ class Drawer(
         }
     }
 
-    fun updateActiveAccount(activeAccount: AccountModel?) {
-        this.activeAccount.text = activeAccount?.name
+    private fun updateActiveAccount(activeAccount: AccountModel?) {
+        activeAccount?.let {
+            this.activeAccount.text = it.name
+        }
     }
 
-    fun updateOtherAccounts(accounts: List<AccountModel>?) {
-        accountsAdapter.submitList(accounts)
+    private fun updateOtherAccounts(otherAccounts: List<AccountModel>?) {
+        otherAccounts?.let {
+            accountsAdapter.submitList(it)
+        }
     }
 
     private fun showWithAuth() {

@@ -6,14 +6,14 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.local.room.model.sync.GetSyncTransactionModel
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
-import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseTransactionEntity
 import com.taxapprf.domain.cbr.Currencies
 import com.taxapprf.domain.transaction.TransactionTypes
 
 class SyncTransactions(
     private val localDao: LocalSyncDao,
     private val remoteDao: RemoteTransactionDao,
-) : SyncManager<GetSyncTransactionModel, LocalTransactionEntity, FirebaseTransactionModel>() {
+) : SyncManager<GetSyncTransactionModel, LocalTransactionEntity, FirebaseTransactionEntity>() {
     private var currentReportId: Int = 0
 
     private var currentAccountKey: String = ""
@@ -27,9 +27,9 @@ class SyncTransactions(
         startSync()
     }
 
-    override fun GetSyncTransactionModel.toRemote(): FirebaseTransactionModel {
+    override fun GetSyncTransactionModel.toRemote(): FirebaseTransactionEntity {
         val firebaseTransactionModel =
-            FirebaseTransactionModel(
+            FirebaseTransactionEntity(
                 name = name,
                 date = date,
                 type = TransactionTypes.values()[typeOrdinal].name,
@@ -43,7 +43,7 @@ class SyncTransactions(
         return firebaseTransactionModel
     }
 
-    override fun FirebaseTransactionModel.toLocalOut(localIn: GetSyncTransactionModel?): LocalTransactionEntity? {
+    override fun FirebaseTransactionEntity.toLocalOut(localIn: GetSyncTransactionModel?): LocalTransactionEntity? {
         val transactionKey = key ?: return null
         val date = date ?: return null
         val typeOrdinal = type?.findTransactionType()?.ordinal ?: return null
@@ -96,7 +96,7 @@ class SyncTransactions(
     override suspend fun GetSyncTransactionModel.updateRemoteKey() =
         remoteDao.getKey(currentAccountKey, currentReportKey)?.let { copy(remoteKey = it) }
 
-    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseTransactionModel?>) =
+    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseTransactionEntity?>) =
         remoteDao.updateAll(currentAccountKey, currentReportKey, remoteMap)
 
     private fun String.findTransactionType() =

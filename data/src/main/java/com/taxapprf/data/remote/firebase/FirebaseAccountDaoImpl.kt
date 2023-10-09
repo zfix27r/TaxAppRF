@@ -1,14 +1,14 @@
 package com.taxapprf.data.remote.firebase
 
 import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
-import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseAccountEntity
 import com.taxapprf.data.safeCall
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
 class FirebaseAccountDaoImpl @Inject constructor(
-    private val fb: FirebaseAPI,
+    private val fb: Firebase,
 ) : RemoteAccountDao {
     override suspend fun getAll() =
         safeCall {
@@ -17,12 +17,12 @@ class FirebaseAccountDaoImpl @Inject constructor(
                 .await()
                 .children
                 .mapNotNull {
-                    it.getValue(FirebaseAccountModel::class.java)
+                    it.getValue(FirebaseAccountEntity::class.java)
                         ?.apply { key = it.key }
                 }
         }
 
-    override suspend fun updateAll(accountModels: Map<String, FirebaseAccountModel?>) {
+    override suspend fun updateAll(accountModels: Map<String, FirebaseAccountEntity?>) {
         safeCall {
             fb.getAccountsPath()
                 .updateChildren(accountModels)

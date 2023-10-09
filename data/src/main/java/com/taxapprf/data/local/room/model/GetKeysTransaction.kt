@@ -4,9 +4,9 @@ import androidx.room.ColumnInfo
 import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.ACCOUNT_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.REPORT_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.TRANSACTION_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.TRANSACTION_KEY
 import com.taxapprf.data.sync.SYNC_AT
 
 data class GetKeysTransaction(

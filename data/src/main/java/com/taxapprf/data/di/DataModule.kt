@@ -7,7 +7,7 @@ import com.taxapprf.data.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.remote.cbr.RemoteCBRDao
-import com.taxapprf.data.remote.firebase.FirebaseAPI
+import com.taxapprf.data.remote.firebase.Firebase
 import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseTransactionDaoImpl
@@ -145,25 +145,25 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseAPI() = FirebaseAPI()
+    fun provideFirebaseAPI() = Firebase()
 
     @Singleton
     @Provides
-    fun provideFirebaseUserDao(firebaseAPI: FirebaseAPI): RemoteUserDao =
+    fun provideFirebaseUserDao(firebaseAPI: Firebase): RemoteUserDao =
         FirebaseUserDaoImpl(firebaseAPI)
 
     @Singleton
     @Provides
-    fun provideFirebaseAccountDao(firebaseAPI: FirebaseAPI): RemoteAccountDao =
+    fun provideFirebaseAccountDao(firebaseAPI: Firebase): RemoteAccountDao =
         FirebaseAccountDaoImpl(firebaseAPI)
 
     @Singleton
     @Provides
-    fun provideFirebaseReportDao(firebaseAPI: FirebaseAPI): RemoteReportDao =
+    fun provideFirebaseReportDao(firebaseAPI: Firebase): RemoteReportDao =
         FirebaseReportDaoImpl(firebaseAPI)
 
     @Singleton
     @Provides
-    fun provideFirebaseTransactionDao(firebaseAPI: FirebaseAPI): RemoteTransactionDao =
+    fun provideFirebaseTransactionDao(firebaseAPI: Firebase): RemoteTransactionDao =
         FirebaseTransactionDaoImpl(firebaseAPI)
 }

@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity.Companion.TABLE_NAME
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.ACCOUNT_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.EMPTY_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.REPORT_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.TRANSACTION_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.EMPTY_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.TRANSACTION_KEY
 import com.taxapprf.data.sync.SYNC_AT
 
 @Entity(tableName = TABLE_NAME)

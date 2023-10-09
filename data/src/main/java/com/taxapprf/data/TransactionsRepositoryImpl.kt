@@ -2,12 +2,15 @@ package com.taxapprf.data
 
 import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.local.room.LocalTransactionsDao
+import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity
+import com.taxapprf.data.remote.firebase.Firebase
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
-import com.taxapprf.data.remote.firebase.model.FirebaseReportModel
-import com.taxapprf.data.remote.firebase.model.FirebaseTransactionModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseReportEntity
+import com.taxapprf.data.remote.firebase.entity.FirebaseTransactionEntity
 import com.taxapprf.domain.TransactionsRepository
 import javax.inject.Inject
 
@@ -17,16 +20,10 @@ class TransactionsRepositoryImpl @Inject constructor(
 
     private val localDao: LocalTransactionsDao,
 
+    private val firebase: Firebase,
     private val remoteReportDao: RemoteReportDao,
     private val remoteTransactionDao: RemoteTransactionDao,
 ) : TransactionsRepository {
-
-    /*
-    * 1. Получить модели отчета и транзакций
-    * 2. Обновить или удалить отчет включавший транзакцию
-    * 3. Удалить записи транзакций из локальной БД
-    * 4. При наличии интернета выполнить синхронизацию удаленных транзакций и отчета
-    * */
     override suspend fun deleteTransactions(transactionsId: List<Int>) {
         val firstTransactionId = transactionsId.firstOrNull()
             ?: throw DataErrorInternal()
@@ -49,10 +46,18 @@ class TransactionsRepositoryImpl @Inject constructor(
 
         localDao.deleteTransactions(transactions)
 
-        if (networkManager.available) {
+        remoteDeleteTransactions(account, report, transactions)
+    }
+
+    private suspend fun remoteDeleteTransactions(
+        account: LocalAccountEntity,
+        report: LocalReportEntity,
+        transactions: List<LocalTransactionEntity>
+    ) {
+        if (firebase.auth.currentUser != null && networkManager.available) {
             remoteReportDao.updateAll(report.remoteKey, report.toMapFirebaseReportModel())
 
-            val remoteTransactionMap = mutableMapOf<String, FirebaseTransactionModel?>()
+            val remoteTransactionMap = mutableMapOf<String, FirebaseTransactionEntity?>()
 
             transactions.forEach { transaction ->
                 transaction.remoteKey?.let { remoteTransactionMap[it] = null }
@@ -82,6 +87,6 @@ class TransactionsRepositoryImpl @Inject constructor(
 
     private fun LocalReportEntity.toMapFirebaseReportModel() =
         mapOf(
-            remoteKey to FirebaseReportModel(tax, size, syncAt).apply { key = remoteKey }
+            remoteKey to FirebaseReportEntity(tax, size, syncAt).apply { key = remoteKey }
         )
 }

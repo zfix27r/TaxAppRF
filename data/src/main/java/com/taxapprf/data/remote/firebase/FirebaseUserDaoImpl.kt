@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 
 class FirebaseUserDaoImpl @Inject constructor(
-    private val fb: FirebaseAPI,
+    private val fb: Firebase,
 ) : RemoteUserDao {
     override suspend fun signInWithEmailAndPassword(signInModel: SignInModel) {
         safeCall {

@@ -46,13 +46,6 @@ class MainViewModel @Inject constructor(
             }
             */
 
-    /*
-        val sync =
-            flow {
-                emit(syncAllUseCase.execute())
-            }
-    */
-
     private val _userWithAccounts: MutableStateFlow<UserWithAccountsModel?> = MutableStateFlow(null)
     val userWithAccounts = _userWithAccounts.asStateFlow()
 

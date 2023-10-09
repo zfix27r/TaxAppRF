@@ -5,13 +5,13 @@ import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
 import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
-import com.taxapprf.data.remote.firebase.model.FirebaseAccountModel
+import com.taxapprf.data.remote.firebase.entity.FirebaseAccountEntity
 import javax.inject.Inject
 
 class SyncAccounts @Inject constructor(
     private val localDao: LocalSyncDao,
     private val remoteDao: RemoteAccountDao,
-) : SyncManager<LocalAccountEntity, LocalAccountEntity, FirebaseAccountModel>() {
+) : SyncManager<LocalAccountEntity, LocalAccountEntity, FirebaseAccountEntity>() {
     private var currentUserId: Int = 0
 
     suspend fun sync(userId: Int): List<GetSyncResultAccountModel> {
@@ -32,7 +32,7 @@ class SyncAccounts @Inject constructor(
     override suspend fun getRemoteList() =
         remoteDao.getAll()
 
-    override fun FirebaseAccountModel.toLocalOut(localIn: LocalAccountEntity?): LocalAccountEntity? {
+    override fun FirebaseAccountEntity.toLocalOut(localIn: LocalAccountEntity?): LocalAccountEntity? {
         val key = key ?: return null
         val isActive = active ?: false
         val syncAt = syncAt ?: 0L
@@ -57,14 +57,14 @@ class SyncAccounts @Inject constructor(
             syncAt = syncAt
         )
 
-    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseAccountModel?>) =
+    override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseAccountEntity?>) =
         remoteDao.updateAll(remoteMap)
 
     override suspend fun LocalAccountEntity.updateRemoteKey() =
         this
 
     override fun LocalAccountEntity.toRemote() =
-        FirebaseAccountModel(
+        FirebaseAccountEntity(
             active = isActive,
             syncAt = syncAt
         )

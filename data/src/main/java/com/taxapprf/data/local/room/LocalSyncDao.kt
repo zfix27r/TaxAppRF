@@ -20,8 +20,8 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
 import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
 import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.local.room.model.sync.GetSyncTransactionModel
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.ACCOUNT_KEY
-import com.taxapprf.data.remote.firebase.FirebaseAPI.Companion.REPORT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
+import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
 import com.taxapprf.data.sync.IS_SYNC
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT

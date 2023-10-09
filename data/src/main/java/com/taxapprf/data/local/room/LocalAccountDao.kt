@@ -1,8 +1,6 @@
 package com.taxapprf.data.local.room
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import kotlinx.coroutines.flow.Flow
@@ -11,9 +9,6 @@ import kotlinx.coroutines.flow.Flow
 interface LocalAccountDao {
     @Query("SELECT * FROM account WHERE user_id = :userId")
     fun observeUserAccounts(userId: Int): Flow<List<LocalAccountEntity>>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(localAccountEntity: LocalAccountEntity): Long
 
     @Query("UPDATE account SET is_active = 0 WHERE is_active = 1")
     fun resetActiveAccount(): Int

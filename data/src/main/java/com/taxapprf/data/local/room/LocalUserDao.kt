@@ -1,8 +1,6 @@
 package com.taxapprf.data.local.room
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ACCOUNT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.NAME
@@ -36,9 +34,6 @@ interface LocalUserDao {
 
     @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
     fun getByEmail(email: String): LocalUserEntity?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun save(localUserEntity: LocalUserEntity): Long
 
     @Query("DELETE FROM user")
     fun deleteAll()

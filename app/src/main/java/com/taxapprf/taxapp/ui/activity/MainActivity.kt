@@ -150,17 +150,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         R.id.transactions,
     )
 
-    fun observeUser() {
+    private fun observeUser() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userWithAccounts.collectLatest { userWithAccounts ->
-                    drawer.updateUser(
-                        userWithAccounts?.user,
-                        getString(R.string.default_user_name_name)
+                    drawer.update(
+                        userWithAccountsModel = userWithAccounts,
+                        defaultUserName = getString(R.string.default_account_name)
                     )
-                    drawer.updateActiveAccount(userWithAccounts?.activeAccount)
-                    drawer.updateOtherAccounts(userWithAccounts?.otherAccounts)
-
                     onAccountLoaded(userWithAccounts)
                 }
             }
