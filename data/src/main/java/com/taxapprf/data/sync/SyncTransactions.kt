@@ -1,5 +1,6 @@
 package com.taxapprf.data.sync
 
+import com.taxapprf.data.calculateTax
 import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
@@ -7,12 +8,15 @@ import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.local.room.model.sync.GetSyncTransactionModel
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.entity.FirebaseTransactionEntity
+import com.taxapprf.domain.CurrencyRepository
 import com.taxapprf.domain.cbr.Currencies
 import com.taxapprf.domain.transaction.TransactionTypes
+import kotlinx.coroutines.runBlocking
 
 class SyncTransactions(
     private val localDao: LocalSyncDao,
     private val remoteDao: RemoteTransactionDao,
+    private val currencyRepository: CurrencyRepository,
 ) : SyncManager<GetSyncTransactionModel, LocalTransactionEntity, FirebaseTransactionEntity>() {
     private var currentReportId: Int = 0
 
@@ -46,15 +50,22 @@ class SyncTransactions(
     override fun FirebaseTransactionEntity.toLocalOut(localIn: GetSyncTransactionModel?): LocalTransactionEntity? {
         val transactionKey = key ?: return null
         val date = date ?: return null
-        val typeOrdinal = type?.findTransactionType()?.ordinal ?: return null
+        val transactionTypeOrdinal = type?.findTransactionType()?.ordinal ?: return null
         val currencyOrdinal = currency?.findCurrency()?.ordinal ?: return null
         val sum = sum ?: return null
         val syncAt = syncAt ?: 0
 
+        val tax =
+            runBlocking {
+                currencyRepository.getCurrencyRate(currencyOrdinal, date)?.let { rate ->
+                    calculateTax(sum, rate, transactionTypeOrdinal)
+                }
+            }
+
         return LocalTransactionEntity(
             id = localIn?.transactionId ?: DEFAULT_ID,
             reportId = currentReportId,
-            typeOrdinal = typeOrdinal,
+            typeOrdinal = transactionTypeOrdinal,
             currencyOrdinal = currencyOrdinal,
             name = name,
             date = date,
@@ -69,11 +80,11 @@ class SyncTransactions(
     override fun getLocalInList() =
         localDao.getTransactions(currentReportId)
 
-    override fun deleteLocalOutList(locals: List<LocalTransactionEntity>): Int =
-        localDao.deleteTransactions(locals)
+    override fun deleteLocalOutList(locals: List<LocalTransactionEntity>) =
+        localDao.deleteTransactionsWithUpdateReport(currentReportId, locals)
 
-    override fun saveLocalOutList(locals: List<LocalTransactionEntity>): List<Long> =
-        localDao.saveTransactions(locals)
+    override fun saveLocalOutList(locals: List<LocalTransactionEntity>) =
+        localDao.saveTransactionsWithUpdateReport(currentReportId, locals)
 
     override suspend fun getRemoteList() =
         remoteDao.getAll(currentAccountKey, currentReportKey)

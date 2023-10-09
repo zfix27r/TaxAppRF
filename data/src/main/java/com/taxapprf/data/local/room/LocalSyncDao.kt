@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.taxapprf.data.local.room.LocalDatabase.Companion.CURRENCY_ORDINAL
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
@@ -87,6 +88,49 @@ interface LocalSyncDao {
                 "WHERE t.report_id = :reportId"
     )
     fun getTransactions(reportId: Int): List<GetSyncTransactionModel>
+
+    @Query("SELECT * FROM report WHERE id = :reportId LIMIT 1")
+    fun getReport(reportId: Int): LocalReportEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveReport(localReportEntity: LocalReportEntity): Long
+
+    @Delete
+    fun deleteReport(localReportEntity: LocalReportEntity): Int
+
+    @Transaction
+    fun saveTransactionsWithUpdateReport(
+        reportId: Int,
+        localTransactionEntities: List<LocalTransactionEntity>
+    ) =
+        getReport(reportId)?.let { localReportEntity ->
+            val newSize = localReportEntity.size + localTransactionEntities.size
+            var newTax = localReportEntity.tax
+            localTransactionEntities.forEach { localTransactionEntity ->
+                localTransactionEntity.tax?.let { newTax += it }
+            }
+
+            saveReport(localReportEntity.copy( tax = newTax, size = newSize))
+            saveTransactions(localTransactionEntities)
+        } ?: emptyList()
+
+    @Transaction
+    fun deleteTransactionsWithUpdateReport(
+        reportId: Int,
+        localTransactionEntities: List<LocalTransactionEntity>
+    ) =
+        getReport(reportId)?.let { localReportEntity ->
+            val newSize = localReportEntity.size - localTransactionEntities.size
+            var newTax = localReportEntity.tax
+            localTransactionEntities.forEach { localTransactionEntity ->
+                localTransactionEntity.tax?.let { newTax -= it }
+            }
+
+            if (newSize < 1) deleteReport(localReportEntity)
+            else saveReport(localReportEntity.copy( tax = newTax, size = newSize))
+
+            deleteTransactions(localTransactionEntities)
+        } ?: 0
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveTransactions(localTransactionEntities: List<LocalTransactionEntity>): List<Long>

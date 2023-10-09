@@ -7,7 +7,6 @@ import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.domain.MainRepository
 import com.taxapprf.domain.main.SaveTransaction1Model
-import com.taxapprf.domain.transaction.TransactionTypes
 import javax.inject.Inject
 
 class MainRepositoryImpl @Inject constructor(
@@ -37,8 +36,7 @@ class MainRepositoryImpl @Inject constructor(
         val oldTransactionTax = saveTransaction1Model.tax
 
         val updateTransactionTax = saveTransaction1Model.rate?.let { rate ->
-            val k = TransactionTypes.values()[saveTransaction1Model.transactionTypeOrdinal].k
-            saveTransaction1Model.sum * rate * k
+            calculateTax(saveTransaction1Model.sum, rate, saveTransaction1Model.transactionTypeOrdinal)
         }
 
         val updatedReportId = report?.let {

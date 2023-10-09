@@ -34,7 +34,7 @@ class SyncAccounts @Inject constructor(
 
     override fun FirebaseAccountEntity.toLocalOut(localIn: LocalAccountEntity?): LocalAccountEntity? {
         val key = key ?: return null
-        val isActive = active ?: false
+        val isActive = localIn?.isActive ?: false
         val syncAt = syncAt ?: 0L
 
         return LocalAccountEntity(
@@ -65,7 +65,6 @@ class SyncAccounts @Inject constructor(
 
     override fun LocalAccountEntity.toRemote() =
         FirebaseAccountEntity(
-            active = isActive,
             syncAt = syncAt
         )
 }

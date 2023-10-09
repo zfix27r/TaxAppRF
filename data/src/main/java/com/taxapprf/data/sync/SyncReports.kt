@@ -1,9 +1,11 @@
 package com.taxapprf.data.sync
 
+import com.taxapprf.data.ReportRepositoryImpl.Companion.DEFAULT_TAX
 import com.taxapprf.data.getEpochTime
 import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
+import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_SIZE
 import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
 import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
@@ -41,15 +43,13 @@ class SyncReports(
 
     override fun FirebaseReportEntity.toLocalOut(localIn: LocalReportEntity?): LocalReportEntity? {
         val key = key ?: return null
-        val tax = this.tax ?: return null
-        val size = this.size ?: return null
         val syncAt = this.syncAt ?: getEpochTime()
 
         return LocalReportEntity(
             id = localIn?.id ?: DEFAULT_ID,
             accountId = currentAccountId,
-            tax = tax,
-            size = size,
+            tax = localIn?.tax ?: DEFAULT_TAX,
+            size = localIn?.size ?: DEFAULT_SIZE,
             remoteKey = key,
             isSync = true,
             syncAt = syncAt
@@ -68,7 +68,7 @@ class SyncReports(
         )
 
     override fun LocalReportEntity.toRemote(): FirebaseReportEntity =
-        FirebaseReportEntity(tax, size, syncAt)
+        FirebaseReportEntity(syncAt)
 
     override suspend fun LocalReportEntity.updateRemoteKey() =
         this

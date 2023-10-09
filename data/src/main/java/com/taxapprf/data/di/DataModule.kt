@@ -3,6 +3,7 @@ package com.taxapprf.data.di
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.room.Room
+import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.local.room.LocalSyncDao
@@ -118,9 +119,10 @@ object DataModule {
     @Provides
     fun provideSyncTransaction(
         localSyncDao: LocalSyncDao,
-        remoteTransactionDao: RemoteTransactionDao
+        remoteTransactionDao: RemoteTransactionDao,
+        currencyRepositoryImpl: CurrencyRepositoryImpl
     ) =
-        SyncTransactions(localSyncDao, remoteTransactionDao)
+        SyncTransactions(localSyncDao, remoteTransactionDao, currencyRepositoryImpl)
 
     @Singleton
     @Provides

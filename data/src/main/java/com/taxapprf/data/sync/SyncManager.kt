@@ -47,7 +47,7 @@ abstract class SyncManager<LocalIn : SyncLocal, LocalOut : SyncLocal, Remote : S
 
             if (localMap.containsKey(remoteKey)) {
                 localMap.getValue(remoteKey).let { localIn ->
-                    if (localIn.syncAt <= remoteSyncAt)
+                    if (localIn.syncAt < remoteSyncAt)
                         remote.toLocalOut(localIn)?.let { saveLocalList.add(it) }
                     else if (localIn.syncAt > remoteSyncAt)
                         updateRemoteMap[remoteKey] = localIn.toRemote()

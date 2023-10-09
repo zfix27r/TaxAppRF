@@ -87,6 +87,6 @@ class TransactionsRepositoryImpl @Inject constructor(
 
     private fun LocalReportEntity.toMapFirebaseReportModel() =
         mapOf(
-            remoteKey to FirebaseReportEntity(tax, size, syncAt).apply { key = remoteKey }
+            remoteKey to FirebaseReportEntity(syncAt).apply { key = remoteKey }
         )
 }

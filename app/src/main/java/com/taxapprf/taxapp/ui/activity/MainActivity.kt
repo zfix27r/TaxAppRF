@@ -78,8 +78,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         viewModel.defaultAccountName = getString(R.string.default_account_name)
 
         observeUser()
-
-        viewModel.updateUserWithAccounts()
+        startSync()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -149,6 +148,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         R.id.reports,
         R.id.transactions,
     )
+
+    private fun startSync() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.syncAll().collectLatest {
+                    viewModel.updateUserWithAccounts()
+                }
+            }
+        }
+    }
 
     private fun observeUser() {
         lifecycleScope.launch {
