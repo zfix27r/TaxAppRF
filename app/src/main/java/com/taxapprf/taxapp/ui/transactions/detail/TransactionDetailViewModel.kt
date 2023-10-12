@@ -7,8 +7,8 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
 import com.taxapprf.data.round
 import com.taxapprf.domain.cbr.Currencies
+import com.taxapprf.domain.main.SaveTransactionModel
 import com.taxapprf.domain.toAppDate
-import com.taxapprf.domain.transaction.SaveTransactionModel
 import com.taxapprf.domain.transaction.TransactionTypes
 import com.taxapprf.domain.transaction.detail.GetTransactionDetailModel
 import com.taxapprf.domain.transaction.detail.GetTransactionDetailUseCase
@@ -94,10 +94,10 @@ class TransactionDetailViewModel @Inject constructor(
         val date = date.toLocalDate()?.toEpochDay() ?: return null
 
         return SaveTransactionModel(
-            transactionId = transactionId,
-            reportId = reportId,
             accountId = accountId,
-            type = TransactionTypes.values()[transactionTypeOrdinal],
+            reportId = reportId,
+            transactionId = transactionId,
+            transactionTypeOrdinal = transactionTypeOrdinal,
             currencyOrdinal = currencyOrdinal,
             name = name,
             date = date,

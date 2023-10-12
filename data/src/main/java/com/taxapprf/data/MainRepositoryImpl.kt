@@ -7,13 +7,13 @@ import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.domain.MainRepository
-import com.taxapprf.domain.main.SaveTransaction1Model
+import com.taxapprf.domain.main.SaveTransactionModel
 import javax.inject.Inject
 
 class MainRepositoryImpl @Inject constructor(
     private val localDao: LocalMainDao
 ) : MainRepository {
-    override suspend fun saveTransaction(saveTransaction1Model: SaveTransaction1Model) {
+    override suspend fun saveTransaction(saveTransaction1Model: SaveTransactionModel) {
         val accountId = saveTransaction1Model.accountId
         val transactionId = saveTransaction1Model.transactionId
         val reportKey = saveTransaction1Model.date.getYear()
@@ -105,7 +105,7 @@ class MainRepositoryImpl @Inject constructor(
                 localDao.saveReport(newLocalReportEntity)
             }
 
-    private fun SaveTransaction1Model.toLocalTransactionEntity(
+    private fun SaveTransactionModel.toLocalTransactionEntity(
         reportId: Int,
         tax: Double?
     ): LocalTransactionEntity {

@@ -3,7 +3,7 @@ package com.taxapprf.domain
 import android.net.Uri
 import com.taxapprf.domain.excel.ExportExcelModel
 import com.taxapprf.domain.excel.ImportExcelModel
-import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.domain.main.SaveTransactionModel
 
 interface ExcelRepository {
     suspend fun export(exportExcelModel: ExportExcelModel): Uri?

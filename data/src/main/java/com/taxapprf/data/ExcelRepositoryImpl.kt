@@ -8,7 +8,7 @@ import com.taxapprf.data.local.excel.ExcelCreator
 import com.taxapprf.domain.ExcelRepository
 import com.taxapprf.domain.excel.ExportExcelModel
 import com.taxapprf.domain.excel.ImportExcelModel
-import com.taxapprf.domain.transaction.SaveTransactionModel
+import com.taxapprf.domain.main.SaveTransactionModel
 import com.taxapprf.taxapp.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File

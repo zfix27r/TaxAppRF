@@ -1,6 +1,6 @@
 package com.taxapprf.domain.main
 
-data class SaveTransaction1Model(
+data class SaveTransactionModel(
     val accountId: Int,
     val reportId: Int? = null,
     val transactionId: Int? = null,

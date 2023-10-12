@@ -14,12 +14,11 @@ import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
 import com.taxapprf.domain.excel.ExportExcelUseCase
 import com.taxapprf.domain.excel.ImportExcelUseCase
-import com.taxapprf.domain.main.SaveTransaction1UseCase
+import com.taxapprf.domain.main.SaveTransactionUseCase
 import com.taxapprf.domain.reports.DeleteReportsUseCase
 import com.taxapprf.domain.reports.ObserveReportsUseCase
 import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
-import com.taxapprf.domain.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.transaction.detail.GetTransactionDetailUseCase
 import com.taxapprf.domain.transactions.DeleteTransactionsUseCase
 import com.taxapprf.domain.transactions.ObserveReportUseCase
@@ -74,18 +73,6 @@ object DomainModule {
         ObserveTransactionsUseCase(transactionRepositoryImpl)
 
     @Provides
-    fun provideSaveTransactionUseCase(
-        reportRepositoryImpl: ReportRepositoryImpl,
-        transactionRepositoryImpl: TransactionRepositoryImpl,
-        updateTaxUseCase: UpdateReportWithTransactionTaxUseCase,
-    ) =
-        SaveTransactionUseCase(
-            reportRepositoryImpl,
-            transactionRepositoryImpl,
-            updateTaxUseCase
-        )
-
-    @Provides
     fun provideUpdateTaxTransactionUseCase(
         reportRepositoryImpl: ReportRepositoryImpl,
         transactionRepositoryImpl: TransactionRepositoryImpl,
@@ -121,7 +108,7 @@ object DomainModule {
         mainRepositoryImpl: MainRepositoryImpl,
         currencyRepositoryImpl: CurrencyRepositoryImpl
     ) =
-        SaveTransaction1UseCase(
+        SaveTransactionUseCase(
             mainRepositoryImpl,
             currencyRepositoryImpl
         )
