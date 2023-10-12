@@ -1,11 +1,11 @@
 package com.taxapprf.domain.transactions
 
-import com.taxapprf.domain.TransactionsRepository
+import com.taxapprf.domain.DeletedRepository
 import javax.inject.Inject
 
 class DeleteTransactionsUseCase @Inject constructor(
-    private val transactionsRepository: TransactionsRepository
+    private val deletedRepository: DeletedRepository
 ) {
     suspend fun execute(transactionsId: List<Int>) =
-        transactionsRepository.deleteTransactions(transactionsId)
+        deletedRepository.deleteTransactions(transactionsId)
 }

@@ -1,4 +1,4 @@
-package com.taxapprf.domain.report
+package com.taxapprf.domain.transactions
 
 data class ReportModel(
     val id: Int,

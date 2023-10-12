@@ -1,26 +1,28 @@
 package com.taxapprf.taxapp.di
 
 import com.taxapprf.data.CurrencyRepositoryImpl
+import com.taxapprf.data.DeletedRepositoryImpl
 import com.taxapprf.data.ExcelRepositoryImpl
 import com.taxapprf.data.MainRepositoryImpl
 import com.taxapprf.data.ReportRepositoryImpl
+import com.taxapprf.data.ReportsRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
+import com.taxapprf.data.TransactionDetailRepositoryImpl
 import com.taxapprf.data.TransactionRepositoryImpl
 import com.taxapprf.data.TransactionsRepositoryImpl
 import com.taxapprf.data.UserRepositoryImpl
 import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
-import com.taxapprf.domain.delete.DeleteReportWithTransactionsUseCase
-import com.taxapprf.domain.delete.DeleteTransactionWithReportUseCase
 import com.taxapprf.domain.excel.ExportExcelUseCase
 import com.taxapprf.domain.excel.ImportExcelUseCase
 import com.taxapprf.domain.main.SaveTransaction1UseCase
-import com.taxapprf.domain.report.ObserveReportUseCase
-import com.taxapprf.domain.report.ObserveReportsUseCase
+import com.taxapprf.domain.reports.DeleteReportsUseCase
+import com.taxapprf.domain.reports.ObserveReportsUseCase
 import com.taxapprf.domain.sync.SyncAllUseCase
-import com.taxapprf.domain.transaction.ObserveTransactionUseCase
 import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
 import com.taxapprf.domain.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.transaction.detail.GetTransactionDetailUseCase
 import com.taxapprf.domain.transactions.DeleteTransactionsUseCase
+import com.taxapprf.domain.transactions.ObserveReportUseCase
 import com.taxapprf.domain.update.UpdateReportWithTransactionTaxUseCase
 import com.taxapprf.domain.user.ObserveUserWithAccountsUseCase
 import com.taxapprf.domain.user.SignInUseCase
@@ -72,10 +74,6 @@ object DomainModule {
         ObserveTransactionsUseCase(transactionRepositoryImpl)
 
     @Provides
-    fun provideObserveTransactionUseCase(transactionRepositoryImpl: TransactionRepositoryImpl) =
-        ObserveTransactionUseCase(transactionRepositoryImpl)
-
-    @Provides
     fun provideSaveTransactionUseCase(
         reportRepositoryImpl: ReportRepositoryImpl,
         transactionRepositoryImpl: TransactionRepositoryImpl,
@@ -100,28 +98,6 @@ object DomainModule {
         )
 
     @Provides
-    fun provideDeleteTransactionUseCase(
-        transactionRepositoryImpl: TransactionRepositoryImpl,
-        reportRepositoryImpl: ReportRepositoryImpl,
-    ) =
-        DeleteTransactionWithReportUseCase(transactionRepositoryImpl, reportRepositoryImpl)
-
-    @Provides
-    fun provideObserveReportUseCase(repositoryImpl: ReportRepositoryImpl) =
-        ObserveReportUseCase(repositoryImpl)
-
-    @Provides
-    fun provideObserveReportsUseCase(repositoryImpl: ReportRepositoryImpl) =
-        ObserveReportsUseCase(repositoryImpl)
-
-    @Provides
-    fun provideDeleteReportUseCase(
-        repositoryImpl: ReportRepositoryImpl,
-        transactionRepositoryImpl: TransactionRepositoryImpl
-    ) =
-        DeleteReportWithTransactionsUseCase(repositoryImpl, transactionRepositoryImpl)
-
-    @Provides
     fun provideImportExcelUseCase(
         excelRepositoryImpl: ExcelRepositoryImpl,
         saveTransactionUseCase: SaveTransactionUseCase
@@ -141,10 +117,6 @@ object DomainModule {
         )
 
     @Provides
-    fun provideDeleteTransactionsUseCase(transactionsRepositoryImpl: TransactionsRepositoryImpl) =
-        DeleteTransactionsUseCase(transactionsRepositoryImpl)
-
-    @Provides
     fun provideSaveTransaction1UseCase(
         mainRepositoryImpl: MainRepositoryImpl,
         currencyRepositoryImpl: CurrencyRepositoryImpl
@@ -153,4 +125,28 @@ object DomainModule {
             mainRepositoryImpl,
             currencyRepositoryImpl
         )
+
+    // Reports
+    @Provides
+    fun provideObserveReportsUseCase(reportsRepositoryImpl: ReportsRepositoryImpl) =
+        ObserveReportsUseCase(reportsRepositoryImpl)
+
+    // Transactions
+    @Provides
+    fun provideObserveReportUseCase(transactionsRepositoryImpl: TransactionsRepositoryImpl) =
+        ObserveReportUseCase(transactionsRepositoryImpl)
+
+    // TransactionDetail
+    @Provides
+    fun provideGetTransactionDetailUseCase(transactionDetailRepositoryImpl: TransactionDetailRepositoryImpl) =
+        GetTransactionDetailUseCase(transactionDetailRepositoryImpl)
+
+    // Deleted
+    @Provides
+    fun provideDeleteReportsUseCase(deletedRepositoryImpl: DeletedRepositoryImpl) =
+        DeleteReportsUseCase(deletedRepositoryImpl)
+
+    @Provides
+    fun provideDeleteTransactionsUseCase(deletedRepositoryImpl: DeletedRepositoryImpl) =
+        DeleteTransactionsUseCase(deletedRepositoryImpl)
 }

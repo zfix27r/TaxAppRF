@@ -13,7 +13,12 @@ interface RemoteTransactionDao {
         reportKey: String
     ): List<FirebaseTransactionEntity>
 
-    suspend fun updateAll(
+    suspend fun deleteAllTransactions(
+        accountKey: String,
+        reportKey: String
+    )
+
+    suspend fun updateTransactions(
         accountKey: String,
         reportKey: String,
         transactionsModels: Map<String, FirebaseTransactionEntity?>

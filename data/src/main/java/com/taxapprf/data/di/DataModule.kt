@@ -63,7 +63,10 @@ object DataModule {
     @Provides
     fun provideReportDao(db: LocalDatabase) =
         db.reportDao()
-
+    @Singleton
+    @Provides
+    fun provideReportsDao(db: LocalDatabase) =
+        db.reportsDao()
     @Singleton
     @Provides
     fun provideTransactionDao(db: LocalDatabase) =
@@ -73,6 +76,11 @@ object DataModule {
     @Provides
     fun provideTransactionsDao(db: LocalDatabase) =
         db.transactionsDao()
+
+    @Singleton
+    @Provides
+    fun provideTransactionDetailDao(db: LocalDatabase) =
+        db.transactionDetailDao()
 
     @Singleton
     @Provides
@@ -87,7 +95,7 @@ object DataModule {
     @Singleton
     @Provides
     fun provideDeletedKeyDao(db: LocalDatabase) =
-        db.deletedKeyDao()
+        db.deletedDao()
 
     @Singleton
     @Provides

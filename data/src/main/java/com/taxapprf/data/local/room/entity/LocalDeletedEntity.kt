@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
-import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity.Companion.TABLE_NAME
+import com.taxapprf.data.local.room.entity.LocalDeletedEntity.Companion.TABLE_NAME
 import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
 import com.taxapprf.data.remote.firebase.Firebase.Companion.EMPTY_KEY
 import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
@@ -13,7 +13,7 @@ import com.taxapprf.data.remote.firebase.Firebase.Companion.TRANSACTION_KEY
 import com.taxapprf.data.sync.SYNC_AT
 
 @Entity(tableName = TABLE_NAME)
-data class LocalDeletedKeyEntity(
+data class LocalDeletedEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = ID)
     val id: Int = DEFAULT_ID,
@@ -29,6 +29,6 @@ data class LocalDeletedKeyEntity(
     val syncAt: Long,
 ) {
     companion object {
-        const val TABLE_NAME = "deleted_key"
+        const val TABLE_NAME = "deleted"
     }
 }

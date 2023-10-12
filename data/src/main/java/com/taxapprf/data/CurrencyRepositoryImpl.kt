@@ -35,7 +35,7 @@ class CurrencyRepositoryImpl @Inject constructor(
 
     private fun tryGetRemote(date: Long) =
         try {
-            if (networkManager.available) {
+            if (networkManager.isConnection) {
                 val formattedDate = date.toCBRDate()
                 remoteCBRDao.getValCurs(formattedDate).execute().body()
                     ?.cacheResult(date)

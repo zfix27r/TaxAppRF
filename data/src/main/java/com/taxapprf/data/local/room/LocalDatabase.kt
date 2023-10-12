@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.entity.LocalCBRRateEntity
-import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity
+import com.taxapprf.data.local.room.entity.LocalDeletedEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.local.room.entity.LocalUserEntity
@@ -16,7 +16,7 @@ import com.taxapprf.data.local.room.entity.LocalUserEntity
         LocalReportEntity::class,
         LocalTransactionEntity::class,
         LocalCBRRateEntity::class,
-        LocalDeletedKeyEntity::class,
+        LocalDeletedEntity::class,
     ],
     version = 1,
     exportSchema = false
@@ -25,10 +25,12 @@ abstract class LocalDatabase : RoomDatabase() {
     abstract fun userDao(): LocalUserDao
     abstract fun accountDao(): LocalAccountDao
     abstract fun reportDao(): LocalReportDao
+    abstract fun reportsDao(): LocalReportsDao
     abstract fun transactionDao(): LocalTransactionDao
     abstract fun transactionsDao(): LocalTransactionsDao
+    abstract fun transactionDetailDao(): LocalTransactionDetailDao
     abstract fun cbrDao(): LocalCBRDao
-    abstract fun deletedKeyDao(): LocalDeletedKeyDao
+    abstract fun deletedDao(): LocalDeletedDao
     abstract fun syncDao(): LocalSyncDao
     abstract fun mainDao(): LocalMainDao
 

@@ -11,7 +11,7 @@ class NetworkManager @Inject constructor(
     connectivityManager: ConnectivityManager,
 ) {
     private var _available = false
-    val available
+    val isConnection
         get() = _available
 
     private val networkRequest = NetworkRequest.Builder()

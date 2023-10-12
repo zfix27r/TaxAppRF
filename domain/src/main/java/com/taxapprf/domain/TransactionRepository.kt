@@ -1,7 +1,5 @@
 package com.taxapprf.domain
 
-import com.taxapprf.domain.delete.DeleteReportWithTransactionsModel
-import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
 import com.taxapprf.domain.excel.ExcelTransactionModel
 import com.taxapprf.domain.excel.ExportExcelModel
 import com.taxapprf.domain.transaction.SaveTransactionModel
@@ -11,17 +9,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
     fun observeReport(reportId: Int): Flow<List<TransactionModel>>
-    fun observe(transactionId: Int): Flow<TransactionModel?>
 
     suspend fun save(saveTransactionModel: SaveTransactionModel): Long?
     suspend fun updateTax(updateReportWithTransactionTaxModel: UpdateReportWithTransactionTaxModel)
-    suspend fun deleteTransaction(
-        deleteTransactionWithUpdateReportModel: DeleteTransactionWithReportModel
-    ): DeleteTransactionWithReportModel?
-
-    suspend fun deleteReportTransactions(
-        deleteReportWithTransactionsModel: DeleteReportWithTransactionsModel
-    )
 
     suspend fun inflateExcelTransactions(exportExcelModel: ExportExcelModel): List<ExcelTransactionModel>
     suspend fun deleteAll()

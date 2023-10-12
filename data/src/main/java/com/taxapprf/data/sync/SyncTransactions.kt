@@ -108,7 +108,7 @@ class SyncTransactions(
         remoteDao.getKey(currentAccountKey, currentReportKey)?.let { copy(remoteKey = it) }
 
     override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseTransactionEntity?>) =
-        remoteDao.updateAll(currentAccountKey, currentReportKey, remoteMap)
+        remoteDao.updateTransactions(currentAccountKey, currentReportKey, remoteMap)
 
     private fun String.findTransactionType() =
         TransactionTypes.values().find { it.name == this }

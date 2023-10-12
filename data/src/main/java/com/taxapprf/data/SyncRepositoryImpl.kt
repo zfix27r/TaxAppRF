@@ -7,7 +7,6 @@ import com.taxapprf.data.sync.SyncAccounts
 import com.taxapprf.data.sync.SyncReports
 import com.taxapprf.data.sync.SyncTransactions
 import com.taxapprf.domain.SyncRepository
-import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
 import javax.inject.Inject
 
 class SyncRepositoryImpl @Inject constructor(
@@ -19,7 +18,7 @@ class SyncRepositoryImpl @Inject constructor(
     private val remoteUserDao: RemoteUserDao,
 ) : SyncRepository {
     override suspend fun syncAll() {
-        if (networkManager.available) {
+        if (networkManager.isConnection) {
             remoteUserDao.getUser()?.let { firebaseUser ->
                 firebaseUser.email?.let { email ->
                     localMainDao.getUserByEmail(email)?.let { localUserEntity ->
@@ -35,9 +34,5 @@ class SyncRepositoryImpl @Inject constructor(
                 }
             }
         } else throw DataErrorConnection()
-    }
-
-    override suspend fun syncDeleteTransaction(deleteTransactionWithReportModel: DeleteTransactionWithReportModel) {
-        TODO("Not yet implemented")
     }
 }

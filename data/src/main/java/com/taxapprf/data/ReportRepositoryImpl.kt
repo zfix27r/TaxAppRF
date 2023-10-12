@@ -3,9 +3,7 @@ package com.taxapprf.data
 import com.taxapprf.data.local.room.LocalReportDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.domain.ReportRepository
-import com.taxapprf.domain.delete.DeleteReportWithTransactionsModel
-import com.taxapprf.domain.delete.DeleteTransactionWithReportModel
-import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.transactions.ReportModel
 import com.taxapprf.domain.update.UpdateReportWithTransactionTaxModel
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -15,9 +13,6 @@ import javax.inject.Singleton
 class ReportRepositoryImpl @Inject constructor(
     private val localDao: LocalReportDao,
 ) : ReportRepository {
-    override fun observe(reportId: Int) =
-        localDao.observeReport(reportId).map { it?.toReportModel() }
-
     override fun observeAll(accountId: Int) =
         localDao.observeAccountReports(accountId)
             .map { reports -> reports.map { it.toReportModel() } }
@@ -58,17 +53,6 @@ class ReportRepositoryImpl @Inject constructor(
             updateReportWithTransactionTaxModel.tax?.let { transactionTax ->
                 localDao.getReport(reportId)?.updateWithEndUpdateTransaction(transactionTax)
             }
-        }
-    }
-
-    override suspend fun deleteReport(
-        deleteReportWithTransactionsModel: DeleteReportWithTransactionsModel
-    ) =
-        localDao.delete(deleteReportWithTransactionsModel.reportId)
-
-    override suspend fun deleteOrUpdateReport(deleteTransactionWithReportModel: DeleteTransactionWithReportModel) {
-        deleteTransactionWithReportModel.reportId?.let { reportId ->
-            deleteTransactionInReport(reportId, deleteTransactionWithReportModel.transactionTax)
         }
     }
 

@@ -12,7 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.domain.PATTERN_DATE
-import com.taxapprf.domain.transaction.TransactionTypes
 import com.taxapprf.taxapp.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -127,19 +126,3 @@ fun showDatePickerDialog(
 
 fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
     LocalDate.of(year, month + 1, dayOfMonth).toEpochDay()
-
-fun Context.convertToTransactionTypeName(typeK: Int) =
-    when (typeK) {
-        TransactionTypes.TRADE.k -> getString(R.string.transaction_type_trade)
-        TransactionTypes.COMMISSION.k -> getString(R.string.transaction_type_commission)
-        TransactionTypes.FUNDING_WITHDRAWAL.k -> getString(R.string.transaction_type_funding_withdrawal)
-        else -> null
-    }
-
-fun Context.convertToTransactionTypeK(typeName: String) =
-    when (typeName) {
-        getString(R.string.transaction_type_trade) -> TransactionTypes.TRADE.k
-        getString(R.string.transaction_type_commission) -> TransactionTypes.COMMISSION.k
-        getString(R.string.transaction_type_funding_withdrawal) -> TransactionTypes.FUNDING_WITHDRAWAL.k
-        else -> null
-    }
