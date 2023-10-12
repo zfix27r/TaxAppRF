@@ -27,6 +27,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
 
     override fun onSuccess() {
         super.onSuccess()
+        mainViewModel.updateUserWithAccounts()
         navToReports()
     }
 

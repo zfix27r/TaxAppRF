@@ -1,6 +1,7 @@
 package com.taxapprf.taxapp.ui.sign.up
 
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.sync.SyncAllUseCase
 import com.taxapprf.domain.user.SignUpModel
 import com.taxapprf.domain.user.SignUpUseCase
 import com.taxapprf.taxapp.R
@@ -11,29 +12,33 @@ import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
+    private val syncAllUseCase: SyncAllUseCase,
 ) : BaseViewModel() {
     var email = ""
     var name = ""
     var phone = ""
     var password = ""
 
-    fun signUp() {
-        if (isUnlock) {
-            val signUpModel = SignUpModel(name, email, password, phone)
-
-            viewModelScope.launch(Dispatchers.IO) {
-                signUpUseCase.execute(signUpModel)
-                    .showLoading()
-                    .collect()
+    fun signUp() =
+        viewModelScope.launch(Dispatchers.IO) {
+            flow {
+                if (isUnlock) {
+                    val signUpModel = SignUpModel(name, email, password, phone)
+                    signUpUseCase.execute(signUpModel)
+                    syncAllUseCase.execute()
+                    emit(Unit)
+                }
             }
+                .showLoading()
+                .collect()
         }
-    }
 
     fun checkEmail(): Int? {
         return if (email.isEmpty()) R.string.error_email_empty

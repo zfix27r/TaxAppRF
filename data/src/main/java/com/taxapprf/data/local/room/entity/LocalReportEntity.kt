@@ -41,6 +41,6 @@ data class LocalReportEntity(
         const val SIZE = "size"
 
         const val DEFAULT_TAX = 0.0
-        const val DEFAULT_SIZE = 1
+        const val DEFAULT_SIZE = 0
     }
 }

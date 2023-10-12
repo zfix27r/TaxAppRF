@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,7 +49,10 @@ class MainViewModel @Inject constructor(
     var accountId: Int? = null
 
     suspend fun syncAll() =
-        syncAllUseCase.execute()
+        flow {
+            syncAllUseCase.execute()
+            emit(Unit)
+        }
             .flowOn(Dispatchers.IO)
             .showLoading()
 

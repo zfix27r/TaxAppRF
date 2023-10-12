@@ -2,7 +2,6 @@ package com.taxapprf.data
 
 import com.taxapprf.data.local.room.LocalDeletedDao
 import com.taxapprf.data.local.room.entity.LocalDeletedEntity
-import com.taxapprf.data.local.room.model.transaction.GetDeletedReport
 import com.taxapprf.data.local.room.model.transaction.GetDeletedTransaction
 import com.taxapprf.data.remote.firebase.Firebase
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
@@ -20,8 +19,10 @@ class DeletedRepositoryImpl @Inject constructor(
     private val remoteTransactionDao: RemoteTransactionDao,
 ) : DeletedRepository {
     override suspend fun deleteReports(reportIds: List<Int>) {
-        val deleteTransactions = localDeletedDao.getGetDeletedTransactionsByReportIds(reportIds)
-        startLocalDeleteTransactions(deleteTransactions)
+        reportIds.forEach { reportId ->
+            val deleteTransactions = localDeletedDao.getGetDeletedTransactionsByReportId(reportId)
+            startLocalDeleteTransactions(deleteTransactions)
+        }
     }
 
     override suspend fun deleteTransactions(transactionIds: List<Int>) {
@@ -31,50 +32,40 @@ class DeletedRepositoryImpl @Inject constructor(
     }
 
     private fun startLocalDeleteTransactions(deleteTransactions: List<GetDeletedTransaction>) {
-        var currentReport: GetDeletedReport? = null
-        var newTax = 0.0
-        var newSize = 0
-        val localDeletedKeyEntities = mutableListOf<LocalDeletedEntity>()
+        if (deleteTransactions.isNotEmpty()) {
+            localDeletedDao.getGetDeletedReport(deleteTransactions.first().reportId)
+                ?.let { getDeletedReport ->
+                    var newTax = getDeletedReport.tax
+                    var newSize = getDeletedReport.size
+                    val localDeletedKeyEntities = mutableListOf<LocalDeletedEntity>()
 
-        deleteTransactions
-            .forEach { getDeletedTransaction ->
-                if (currentReport == null || getDeletedTransaction.reportId != currentReport!!.id) {
-                    currentReport?.let { getDeletedReport ->
-                        if (newSize > 1) localDeletedDao.updateLocalReportEntity(
-                            getDeletedReport.id,
-                            newTax,
-                            newSize
-                        )
-                        else localDeletedDao.deleteLocalReportEntity(getDeletedReport.id)
-                    }
+                    deleteTransactions
+                        .forEach { getDeletedTransaction ->
+                            getDeletedTransaction.tax?.let { newTax -= it }
+                            newSize--
 
-                    currentReport =
-                        localDeletedDao.getGetDeletedReport(getDeletedTransaction.reportId)
-                    currentReport?.let { getDeletedReport ->
-                        newTax = getDeletedReport.tax
-                        newSize = getDeletedReport.size
-                    }
+                            getDeletedTransaction.remoteKey?.let {
+                                localDeletedKeyEntities.add(
+                                    LocalDeletedEntity(
+                                        accountKey = getDeletedReport.accountKey,
+                                        reportKey = getDeletedReport.reportKey,
+                                        transactionKey = getDeletedTransaction.remoteKey,
+                                        syncAt = getDeletedTransaction.syncAt
+                                    )
+                                )
+                            }
+                        }
+
+                    if (newSize > 1)
+                        localDeletedDao
+                            .updateLocalReportEntity(getDeletedReport.id, newTax, newSize)
+                    else
+                        localDeletedDao.deleteLocalReportEntity(getDeletedReport.id)
+
+                    localDeletedDao.saveLocalDeletedEntity(localDeletedKeyEntities)
+                    localDeletedDao.deleteLocalTransactionEntities(deleteTransactions.map { it.id })
                 }
-
-                currentReport?.let { getDeletedReport ->
-                    getDeletedTransaction.tax?.let { newTax -= it }
-                    newSize--
-
-                    getDeletedTransaction.remoteKey?.let {
-                        localDeletedKeyEntities.add(
-                            LocalDeletedEntity(
-                                accountKey = getDeletedReport.accountKey,
-                                reportKey = getDeletedReport.reportKey,
-                                transactionKey = getDeletedTransaction.remoteKey,
-                                syncAt = getDeletedTransaction.syncAt
-                            )
-                        )
-                    }
-                }
-            }
-
-        localDeletedDao.saveLocalDeletedEntity(localDeletedKeyEntities)
-        localDeletedDao.deleteLocalTransactionEntities(deleteTransactions.map { it.id })
+        }
     }
 
 
@@ -87,41 +78,41 @@ class DeletedRepositoryImpl @Inject constructor(
 
     }
 
-/*    private suspend fun remoteDeleteTransactions(
-        account: LocalAccountEntity,
-        report: LocalReportEntity,
-        transactions: List<LocalTransactionEntity>
-    ) {
-        if (firebase.auth.currentUser != null && networkManager.isConnection) {
-            remoteReportDao.updateAll(report.remoteKey, report.toMapFirebaseReportModel())
+    /*    private suspend fun remoteDeleteTransactions(
+            account: LocalAccountEntity,
+            report: LocalReportEntity,
+            transactions: List<LocalTransactionEntity>
+        ) {
+            if (firebase.auth.currentUser != null && networkManager.isConnection) {
+                remoteReportDao.updateAll(report.remoteKey, report.toMapFirebaseReportModel())
 
-            val remoteTransactionMap = mutableMapOf<String, FirebaseTransactionEntity?>()
+                val remoteTransactionMap = mutableMapOf<String, FirebaseTransactionEntity?>()
 
-            transactions.forEach { transaction ->
-                transaction.remoteKey?.let { remoteTransactionMap[it] = null }
-            }
+                transactions.forEach { transaction ->
+                    transaction.remoteKey?.let { remoteTransactionMap[it] = null }
+                }
 
-            remoteTransactionDao.updateAll(
-                account.remoteKey,
-                report.remoteKey,
-                remoteTransactionMap
-            )
-        } else {
-            val deletedKeys = mutableListOf<LocalDeletedEntity>()
-
-            transactions.forEach { transaction ->
-                val deletedKey = LocalDeletedEntity(
-                    accountKey = account.remoteKey,
-                    reportKey = report.remoteKey,
-                    transactionKey = transaction.remoteKey,
-                    syncAt = transaction.syncAt
+                remoteTransactionDao.updateAll(
+                    account.remoteKey,
+                    report.remoteKey,
+                    remoteTransactionMap
                 )
-                deletedKeys.add(deletedKey)
-            }
+            } else {
+                val deletedKeys = mutableListOf<LocalDeletedEntity>()
 
-            localDeletedDao.saveDeletedKeys(deletedKeys)
-        }
-    }*/
+                transactions.forEach { transaction ->
+                    val deletedKey = LocalDeletedEntity(
+                        accountKey = account.remoteKey,
+                        reportKey = report.remoteKey,
+                        transactionKey = transaction.remoteKey,
+                        syncAt = transaction.syncAt
+                    )
+                    deletedKeys.add(deletedKey)
+                }
+
+                localDeletedDao.saveDeletedKeys(deletedKeys)
+            }
+        }*/
 
     /*    suspend fun deleteReportTransactions(
 

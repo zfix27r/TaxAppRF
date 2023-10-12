@@ -4,6 +4,7 @@ import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.local.room.LocalMainDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
+import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.domain.MainRepository
 import com.taxapprf.domain.main.SaveTransaction1Model
@@ -12,17 +13,6 @@ import javax.inject.Inject
 class MainRepositoryImpl @Inject constructor(
     private val localDao: LocalMainDao
 ) : MainRepository {
-
-    /*
-    * 1. Получить необходимые данные отчетов
-    * 2. Выполнить обновление отчетов в соответствии с операцией
-    * 2.1 Перемещение - "вычесть" транзакцию из старого отчета, "зачесть" в новый отчет
-    * 2.2 Добавление  - "зачесть" в новый отчет
-    * 2.3 Обновление  -  вычесть налоговую базу из нового отчета
-    * 3. Сохранить отчеты
-    * 4. Сохранить транзаакцию
-    * 5. При наличии инернета обновить удаленные данные
-    * */
     override suspend fun saveTransaction(saveTransaction1Model: SaveTransaction1Model) {
         val accountId = saveTransaction1Model.accountId
         val transactionId = saveTransaction1Model.transactionId
@@ -110,6 +100,7 @@ class MainRepositoryImpl @Inject constructor(
                     accountId = accountId,
                     remoteKey = newReportKey,
                     tax = newTransactionTax ?: DEFAULT_TAX,
+                    size = 1
                 )
                 localDao.saveReport(newLocalReportEntity)
             }
@@ -131,9 +122,5 @@ class MainRepositoryImpl @Inject constructor(
             tax = tax,
             syncAt = getEpochTime()
         )
-    }
-
-    companion object {
-        const val DEFAULT_TAX = 0.0
     }
 }

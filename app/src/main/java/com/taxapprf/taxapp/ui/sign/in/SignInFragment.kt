@@ -19,6 +19,10 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
 
         viewModel.attach()
 
+        toolbar.updateTitles()
+        toolbar.updateMenu()
+        updateUI()
+
         binding.buttonSignInCreate.setOnClickListener { checkSignIn() }
     }
 
@@ -26,6 +30,11 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
         super.onSuccess()
         mainViewModel.updateUserWithAccounts()
         navToReports()
+    }
+
+    private fun updateUI() {
+        binding.editSignInEmail.setText(viewModel.email)
+        binding.editSignInPassword.setText(viewModel.password)
     }
 
     private fun checkSignIn() {

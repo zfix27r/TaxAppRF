@@ -40,8 +40,7 @@ interface LocalDeletedDao {
                 "remote_key $REMOTE_KEY, " +
                 "sync_at $SYNC_AT " +
                 "FROM `transaction` " +
-                "WHERE id IN (:transactionsIds) " +
-                "ORDER BY report_id ASC"
+                "WHERE id IN (:transactionsIds)"
     )
     fun getGetDeletedTransactionsByTransactionIds(transactionsIds: List<Int>): List<GetDeletedTransaction>
 
@@ -53,10 +52,9 @@ interface LocalDeletedDao {
                 "remote_key $REMOTE_KEY, " +
                 "sync_at $SYNC_AT " +
                 "FROM `transaction` " +
-                "WHERE report_id IN (:reportIds) " +
-                "ORDER BY report_id ASC"
+                "WHERE report_id = :reportId"
     )
-    fun getGetDeletedTransactionsByReportIds(reportIds: List<Int>): List<GetDeletedTransaction>
+    fun getGetDeletedTransactionsByReportId(reportId: Int): List<GetDeletedTransaction>
 
     @Query("UPDATE report SET tax = :tax, size = :size WHERE id = :reportId")
     fun updateLocalReportEntity(reportId: Int, tax: Double, size: Int): Int

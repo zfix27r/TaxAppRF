@@ -23,11 +23,8 @@ class SyncRepositoryImpl @Inject constructor(
                 firebaseUser.email?.let { email ->
                     localMainDao.getUserByEmail(email)?.let { localUserEntity ->
                         syncAccounts.sync(localUserEntity.id).map { getSyncResultAccountModel ->
-                            println(getSyncResultAccountModel)
                             syncReports.sync(getSyncResultAccountModel).map { getSyncResultReportModel ->
-                                println(getSyncResultReportModel)
                                 syncTransactions.sync(getSyncResultReportModel)
-                                println("TRANSACTION_SYNC")
                             }
                         }
                     }
