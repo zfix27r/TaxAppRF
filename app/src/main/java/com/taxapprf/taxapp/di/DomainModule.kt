@@ -130,10 +130,16 @@ object DomainModule {
 
     // Deleted
     @Provides
-    fun provideDeleteReportsUseCase(deletedRepositoryImpl: DeletedRepositoryImpl) =
-        DeleteReportsUseCase(deletedRepositoryImpl)
+    fun provideDeleteReportsUseCase(
+        deletedRepositoryImpl: DeletedRepositoryImpl,
+        syncRepositoryImpl: SyncRepositoryImpl,
+    ) =
+        DeleteReportsUseCase(deletedRepositoryImpl, syncRepositoryImpl)
 
     @Provides
-    fun provideDeleteTransactionsUseCase(deletedRepositoryImpl: DeletedRepositoryImpl) =
-        DeleteTransactionsUseCase(deletedRepositoryImpl)
+    fun provideDeleteTransactionsUseCase(
+        deletedRepositoryImpl: DeletedRepositoryImpl,
+        syncRepositoryImpl: SyncRepositoryImpl,
+    ) =
+        DeleteTransactionsUseCase(deletedRepositoryImpl, syncRepositoryImpl)
 }

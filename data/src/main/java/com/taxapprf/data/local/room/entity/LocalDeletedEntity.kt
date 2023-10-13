@@ -7,7 +7,6 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.entity.LocalDeletedEntity.Companion.TABLE_NAME
 import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
-import com.taxapprf.data.remote.firebase.Firebase.Companion.EMPTY_KEY
 import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
 import com.taxapprf.data.remote.firebase.Firebase.Companion.TRANSACTION_KEY
 import com.taxapprf.data.sync.SYNC_AT
@@ -21,9 +20,9 @@ data class LocalDeletedEntity(
     @ColumnInfo(name = ACCOUNT_KEY)
     val accountKey: String,
     @ColumnInfo(name = REPORT_KEY)
-    val reportKey: String? = EMPTY_KEY,
+    val reportKey: String,
     @ColumnInfo(name = TRANSACTION_KEY)
-    val transactionKey: String? = EMPTY_KEY,
+    val transactionKey: String,
 
     @ColumnInfo(name = SYNC_AT)
     val syncAt: Long,

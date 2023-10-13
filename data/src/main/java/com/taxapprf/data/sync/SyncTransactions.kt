@@ -6,6 +6,7 @@ import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.local.room.model.sync.GetSyncTransactionModel
+import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.entity.FirebaseTransactionEntity
 import com.taxapprf.domain.CurrencyRepository
@@ -14,8 +15,9 @@ import com.taxapprf.domain.transaction.TransactionTypes
 import kotlinx.coroutines.runBlocking
 
 class SyncTransactions(
-    private val localDao: LocalSyncDao,
-    private val remoteDao: RemoteTransactionDao,
+    private val localSyncDao: LocalSyncDao,
+    private val remoteReportDao: RemoteReportDao,
+    private val remoteTransactionDao: RemoteTransactionDao,
     private val currencyRepository: CurrencyRepository,
 ) : SyncManager<GetSyncTransactionModel, LocalTransactionEntity, FirebaseTransactionEntity>() {
     private var currentReportId: Int = 0
@@ -29,6 +31,7 @@ class SyncTransactions(
         currentReportKey = getSyncResultReportModel.reportKey
 
         startSync()
+        deleteEmptyReport()
     }
 
     override fun GetSyncTransactionModel.toRemote(): FirebaseTransactionEntity {
@@ -78,16 +81,16 @@ class SyncTransactions(
     }
 
     override fun getLocalInList() =
-        localDao.getTransactions(currentReportId)
+        localSyncDao.getTransactions(currentReportId)
 
     override fun deleteLocalOutList(locals: List<LocalTransactionEntity>) =
-        localDao.deleteTransactionsWithUpdateReport(currentReportId, locals)
+        localSyncDao.deleteTransactionsWithUpdateReport(currentReportId, locals)
 
     override fun saveLocalOutList(locals: List<LocalTransactionEntity>) =
-        localDao.saveTransactionsWithUpdateReport(currentReportId, locals)
+        localSyncDao.saveTransactionsWithUpdateReport(currentReportId, locals)
 
     override suspend fun getRemoteList() =
-        remoteDao.getAll(currentAccountKey, currentReportKey)
+        remoteTransactionDao.getAll(currentAccountKey, currentReportKey)
 
     override fun GetSyncTransactionModel.toLocalOut() =
         LocalTransactionEntity(
@@ -100,15 +103,26 @@ class SyncTransactions(
             sum = sum,
             tax = tax,
             remoteKey = remoteKey,
-            isSync = isSync,
+            isSync = true,
             syncAt = syncAt
         )
 
     override suspend fun GetSyncTransactionModel.updateRemoteKey() =
-        remoteDao.getKey(currentAccountKey, currentReportKey)?.let { copy(remoteKey = it) }
+        remoteTransactionDao.getKey(currentAccountKey, currentReportKey)
+            ?.let { copy(remoteKey = it) }
 
     override suspend fun updateRemoteList(remoteMap: Map<String, FirebaseTransactionEntity?>) =
-        remoteDao.updateTransactions(currentAccountKey, currentReportKey, remoteMap)
+        remoteTransactionDao.updateTransactions(currentAccountKey, currentReportKey, remoteMap)
+
+    private suspend fun deleteEmptyReport() {
+        localSyncDao.getReport(currentReportId)?.let { localReportEntity ->
+            if (localReportEntity.size == 0) {
+                val updateRemoteMap = mapOf(localReportEntity.remoteKey to null)
+                remoteReportDao.updateAll(currentAccountKey, updateRemoteMap)
+                localSyncDao.deleteReport(localReportEntity)
+            }
+        }
+    }
 
     private fun String.findTransactionType() =
         TransactionTypes.values().find { it.name == this }

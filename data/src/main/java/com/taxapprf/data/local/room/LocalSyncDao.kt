@@ -12,12 +12,16 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.CURRENCY_RATE
+import com.taxapprf.data.local.room.entity.LocalDeletedEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity
+import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.SIZE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
+import com.taxapprf.data.local.room.entity.LocalUserEntity
+import com.taxapprf.data.local.room.model.sync.CountAndSumTransactionsModel
 import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
 import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.local.room.model.sync.GetSyncTransactionModel
@@ -29,7 +33,18 @@ import com.taxapprf.data.sync.SYNC_AT
 
 @Dao
 interface LocalSyncDao {
-    /* ACCOUNT */
+    /* SYNC ALL */
+    @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
+    fun getUserByEmail(email: String): LocalUserEntity?
+
+    /* SYNC DELETED */
+    @Query("SELECT * FROM deleted ORDER BY account_key, report_key")
+    fun getAllDeleted(): List<LocalDeletedEntity>
+
+    @Query("DELETE FROM deleted")
+    fun deleteAllDeleted()
+
+    /* ACCOUNT SYNC */
     @Query("SELECT * FROM account WHERE user_id = :userId")
     fun getUserAccounts(userId: Int): List<LocalAccountEntity>
 
@@ -47,7 +62,7 @@ interface LocalSyncDao {
     )
     fun getSyncResultUserAccounts(userId: Int): List<GetSyncResultAccountModel>
 
-    /* REPORT */
+    /* REPORT SYNC */
 
     @Query("SELECT * FROM report WHERE account_id = :accountId")
     fun getAccountReports(accountId: Int): List<LocalReportEntity>
@@ -69,7 +84,7 @@ interface LocalSyncDao {
     )
     fun getSyncResultAccountReports(accountId: Int): List<GetSyncResultReportModel>
 
-    /* TRANSACTION */
+    /* TRANSACTION SYNC */
     @Query(
         "SELECT " +
                 "t.id ${TRANSACTION_ID}, " +
@@ -102,17 +117,16 @@ interface LocalSyncDao {
     fun saveTransactionsWithUpdateReport(
         reportId: Int,
         localTransactionEntities: List<LocalTransactionEntity>
-    ) =
-        getReport(reportId)?.let { localReportEntity ->
-            val newSize = localReportEntity.size + localTransactionEntities.size
-            var newTax = localReportEntity.tax
-            localTransactionEntities.forEach { localTransactionEntity ->
-                localTransactionEntity.tax?.let { newTax += it }
-            }
+    ): List<Long> {
+        val result = saveTransactions(localTransactionEntities)
 
-            saveReport(localReportEntity.copy( tax = newTax, size = newSize))
-            saveTransactions(localTransactionEntities)
+        return getReport(reportId)?.let { localReportEntity ->
+            countAndSumTransactions(reportId)?.let {
+                saveReport(localReportEntity.copy(tax = it.tax, size = it.size))
+                result
+            } ?: emptyList()
         } ?: emptyList()
+    }
 
     @Transaction
     fun deleteTransactionsWithUpdateReport(
@@ -127,7 +141,7 @@ interface LocalSyncDao {
             }
 
             if (newSize < 1) deleteReport(localReportEntity)
-            else saveReport(localReportEntity.copy( tax = newTax, size = newSize))
+            else saveReport(localReportEntity.copy(tax = newTax, size = newSize))
 
             deleteTransactions(localTransactionEntities)
         } ?: 0
@@ -137,4 +151,7 @@ interface LocalSyncDao {
 
     @Delete
     fun deleteTransactions(localTransactionEntities: List<LocalTransactionEntity>): Int
+
+    @Query("SELECT COUNT(*) $SIZE, SUM(tax) $TAX FROM `transaction` WHERE report_id = :reportId")
+    fun countAndSumTransactions(reportId: Int): CountAndSumTransactionsModel?
 }

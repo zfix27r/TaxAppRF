@@ -40,7 +40,7 @@ interface LocalMainDao {
         saveAccountEntity(defaultLocalAccountEntity)
     }
 
-    /* < DELETE TRANSACTION */
+    /* SAVE TRANSACTION */
     @Query("SELECT * FROM report WHERE id = :reportId LIMIT 1")
     fun getLocalReportEntity(reportId: Int): LocalReportEntity?
 
@@ -55,5 +55,4 @@ interface LocalMainDao {
 
     @Delete
     fun deleteReport(localReportEntity: LocalReportEntity): Int
-    /* DELETE TRANSACTION /> */
 }

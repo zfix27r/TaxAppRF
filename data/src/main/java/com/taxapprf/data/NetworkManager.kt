@@ -4,6 +4,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import com.taxapprf.data.error.DataErrorConnection
 import javax.inject.Inject
 
 
@@ -31,6 +32,8 @@ class NetworkManager @Inject constructor(
             _available = false
         }
     }
+
+    fun isConnectionOrThrow() = if (isConnection) isConnection else throw DataErrorConnection()
 
     init {
         connectivityManager.requestNetwork(networkRequest, networkCallback)

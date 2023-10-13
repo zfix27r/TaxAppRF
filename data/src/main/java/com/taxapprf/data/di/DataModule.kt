@@ -127,10 +127,11 @@ object DataModule {
     @Provides
     fun provideSyncTransaction(
         localSyncDao: LocalSyncDao,
+        remoteReportDao: RemoteReportDao,
         remoteTransactionDao: RemoteTransactionDao,
         currencyRepositoryImpl: CurrencyRepositoryImpl
     ) =
-        SyncTransactions(localSyncDao, remoteTransactionDao, currencyRepositoryImpl)
+        SyncTransactions(localSyncDao, remoteReportDao, remoteTransactionDao, currencyRepositoryImpl)
 
     @Singleton
     @Provides
