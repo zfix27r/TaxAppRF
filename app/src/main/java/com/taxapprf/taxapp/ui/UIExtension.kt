@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
@@ -99,7 +100,7 @@ fun String.showDatePickerDialog(
             DatePickerDialog(
                 context, listener,
                 it.year,
-                it.monthValue - 1 ,
+                it.monthValue - 1,
                 it.dayOfMonth
             ).show()
         }
@@ -123,3 +124,6 @@ fun showDatePickerDialog(
 
 fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
     LocalDate.of(year, month + 1, dayOfMonth).toEpochDay()
+
+val appDoubleFormatter = DecimalFormat("#,###.00")
+fun Double.toAppDouble(): String = appDoubleFormatter.format(this)

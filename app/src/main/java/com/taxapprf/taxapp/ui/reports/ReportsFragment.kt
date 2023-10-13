@@ -52,11 +52,17 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     private val reportTouchHelper = ReportAdapterTouchHelper(reportsAdapterTouchHelperCallback)
     private val itemTouchHelper = ItemTouchHelper(reportTouchHelper)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
 
-        mainViewModel.userWithAccounts.value?.activeAccount?.let {
-            viewModel.updateReports(it.id)
+        lifecycleScope.launch {
+            mainViewModel.userWithAccounts.collectLatest { userWithAccountsModel ->
+                userWithAccountsModel?.let {
+                    userWithAccountsModel.activeAccount?.let {
+                        viewModel.updateReports(it.id)
+                    }
+                }
+            }
         }
     }
 
