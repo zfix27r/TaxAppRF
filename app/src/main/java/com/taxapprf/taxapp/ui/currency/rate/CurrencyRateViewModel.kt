@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -22,8 +23,7 @@ class CurrencyRateViewModel @Inject constructor(
     private val now
         get() = LocalDate.now().toEpochDay()
 
-    private val _ratesWithCurrency: MutableStateFlow<List<CurrencyRateModel>?> =
-        MutableStateFlow(null)
+    private val _ratesWithCurrency = MutableStateFlow<List<CurrencyRateModel>>(emptyList())
     val ratesWithCurrency = _ratesWithCurrency.asStateFlow()
 
     var date = now
@@ -35,7 +35,9 @@ class CurrencyRateViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             flow {
                 emit(getCurrencyRateModelsUseCase.execute(date))
-            }.showLoading()
+            }
+                .flowOn(Dispatchers.IO)
+                .showLoading()
                 .collectLatest { _ratesWithCurrency.value = it }
         }
 

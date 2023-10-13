@@ -33,17 +33,28 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         viewModel.updateRatesWithCurrency()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel.attach()
+        observeRateWithCurrencies()
 
         prepToolbar()
         prepView()
+    }
 
-        observeRateWithCurrencies()
+    private fun observeRateWithCurrencies() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.ratesWithCurrency.collectLatest {
+                    adapter.submitList(it)
+                }
+            }
+        }
     }
 
     private fun prepToolbar() {
@@ -73,15 +84,5 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
     private fun prepView() {
         adapter.currencyNames = resources.getStringArray(R.array.currencies).toList()
         binding.recyclerCurrencyRate.adapter = adapter
-    }
-
-    private fun observeRateWithCurrencies() {
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.ratesWithCurrency.collectLatest { rateWithCurrencies ->
-                    rateWithCurrencies?.let { adapter.submitList(it) }
-                }
-            }
-        }
     }
 }

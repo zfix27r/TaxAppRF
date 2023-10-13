@@ -38,6 +38,15 @@ class ReportsViewModel @Inject constructor(
         }
 
 
+    init {
+        println("ReportsViewModel onStart")
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        println("ReportsViewModel onCleared")
+    }
+
     fun deleteReport(reportModel: ReportModel) {
         deleteReports(listOf(reportModel.id))
     }

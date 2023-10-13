@@ -54,7 +54,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        println("ReportsFragment OnCreate")
         mainViewModel.userWithAccounts.value?.activeAccount?.let {
             viewModel.updateReports(it.id)
         }
@@ -62,7 +62,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        println("ReportsFragment OnViewCreated")
         viewModel.attach()
 
         prepToolbar()
@@ -76,6 +76,21 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        println("ReportsFragment OnPause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("ReportsFragment OnResume")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        println("ReportsFragment OnStop")
     }
 
     private fun prepToolbar() {
@@ -93,8 +108,8 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun prepViews() {
-        binding.recyclerYearStatements.adapter = adapter
-        itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+        binding.recyclerReports.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(binding.recyclerReports)
     }
 
     private fun setListeners() {
@@ -134,7 +149,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
             .setNegativeButton(R.string.delete_dialog_cancel) { _, _ ->
                 reportTouchHelper.cancelSwipe()
                 itemTouchHelper.attachToRecyclerView(null)
-                itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+                itemTouchHelper.attachToRecyclerView(binding.recyclerReports)
             }
             .show()
     }

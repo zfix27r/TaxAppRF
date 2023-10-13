@@ -75,10 +75,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         )
         setupWithNavController(binding.navView, navController)
 
-        viewModel.defaultAccountName = getString(R.string.default_account_name)
+        navController.setGraph(R.navigation.mobile_navigation)
 
         observeUser()
         startSync()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.defaultAccountName = getString(R.string.default_account_name)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -95,8 +100,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         userWithAccountsModel?.let {
             userWithAccountsModel.activeAccount?.let {
                 viewModel.accountId = it.id
-
-                navController.setGraph(R.navigation.mobile_navigation)
                 navController.observeCurrentBackStack()
             }
         }
