@@ -9,13 +9,14 @@ import com.taxapprf.taxapp.databinding.FragmentCurrencyRateAdapterItemBinding
 
 class CurrencyRateAdapter
     : ListAdapter<CurrencyRateModel, CurrencyRateAdapterViewHolder>(DiffCallback()) {
+    var currencyNames: List<String> = emptyList()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): CurrencyRateAdapterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = FragmentCurrencyRateAdapterItemBinding.inflate(inflater, parent, false)
-        return CurrencyRateAdapterViewHolder(binding)
+        return CurrencyRateAdapterViewHolder(binding, currencyNames)
     }
 
     override fun onBindViewHolder(holder: CurrencyRateAdapterViewHolder, position: Int) {

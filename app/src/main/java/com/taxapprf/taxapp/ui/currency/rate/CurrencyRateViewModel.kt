@@ -1,24 +1,29 @@
 package com.taxapprf.taxapp.ui.currency.rate
 
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
 import com.taxapprf.domain.cbr.CurrencyRateModel
+import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
+import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class CurrencyRateViewModel @Inject constructor(
-    private val getCBRRatesUseCase: GetCurrencyRateModelsUseCase,
+    private val getCurrencyRateModelsUseCase: GetCurrencyRateModelsUseCase,
 ) : BaseViewModel() {
-    private val now = LocalDate.now().toEpochDay()
+    private val now
+        get() = LocalDate.now().toEpochDay()
 
-    private val _ratesWithCurrency: MutableStateFlow<List<CurrencyRateModel>?> = MutableStateFlow(null)
+    private val _ratesWithCurrency: MutableStateFlow<List<CurrencyRateModel>?> =
+        MutableStateFlow(null)
     val ratesWithCurrency = _ratesWithCurrency.asStateFlow()
 
     var date = now
@@ -26,10 +31,14 @@ class CurrencyRateViewModel @Inject constructor(
             field = if (value.isDateRangeIncorrect()) now else value
         }
 
-    fun updateRatesWithCurrency() = viewModelScope.launch(Dispatchers.IO) {
-        _ratesWithCurrency.value = getCBRRatesUseCase.execute(date)
-        success()
-    }
+    fun updateRatesWithCurrency() =
+        viewModelScope.launch(Dispatchers.IO) {
+            flow {
+                emit(getCurrencyRateModelsUseCase.execute(date))
+            }.showLoading()
+                .collectLatest { _ratesWithCurrency.value = it }
+        }
+
     private fun Long.isDateRangeIncorrect() =
         this > now
 }
