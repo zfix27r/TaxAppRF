@@ -47,14 +47,6 @@ class MainViewModel @Inject constructor(
 
     var accountId: Int? = null
 
-    init {
-        println("MainViewModel onStart")
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        println("MainViewModel onCleared")
-    }
     suspend fun syncAll() =
         flow {
             syncAllUseCase.execute()

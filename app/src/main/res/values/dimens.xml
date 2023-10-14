@@ -42,6 +42,7 @@
     <dimen name="offset_32dp">32dp</dimen>
     <dimen name="default_card_top_offset">12dp</dimen>
     <dimen name="default_card_corner_radius">12dp</dimen>
+    <dimen name="offset_2">2dp</dimen>
 
     <!-- На удаление -->
 

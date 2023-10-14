@@ -37,21 +37,11 @@ class ReportsViewModel @Inject constructor(
                 .collectLatest { _reports.value = it }
         }
 
-
-    init {
-        println("ReportsViewModel onStart")
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        println("ReportsViewModel onCleared")
-    }
-
     fun deleteReport(reportModel: ReportModel) {
         deleteReports(listOf(reportModel.id))
     }
 
-    fun deleteReports(reportIds: List<Int>) =
+    private fun deleteReports(reportIds: List<Int>) =
         viewModelScope.launch(Dispatchers.IO) {
             deleteReportsUseCase.execute(reportIds)
         }

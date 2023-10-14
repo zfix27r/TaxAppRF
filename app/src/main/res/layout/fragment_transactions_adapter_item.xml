@@ -6,37 +6,33 @@
     style="@style/Widget.Material3.CardView.Filled"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/offset_8"
-    android:layout_marginTop="@dimen/offset_8">
+    android:layout_marginTop="@dimen/default_card_top_offset"
+    app:cardCornerRadius="@dimen/default_card_corner_radius">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/offset_8"
-        android:paddingStart="@dimen/offset_8">
+        android:layout_height="match_parent"
+        android:minHeight="@dimen/main_item_height"
+        android:paddingBottom="@dimen/offset_16">
 
         <TextView
-            android:id="@+id/text_view_transactions_adapter_item_date"
+            android:id="@+id/textview_transactions_adapter_item_currency_rate_title2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            android:layout_marginTop="@dimen/offset_8"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="DD/MM/YYYY" />
+            android:text="@string/transactions_adapter_item_tax_title"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:layout_constraintBottom_toTopOf="@+id/textview_transactions_adapter_item_tax_symbol"
+            app:layout_constraintEnd_toEndOf="@+id/textview_transactions_adapter_item_tax_symbol" />
 
         <TextView
-            android:id="@+id/text_view_transactions_adapter_item_name"
-            android:layout_width="@dimen/zero"
+            android:id="@+id/textview_transactions_adapter_item_date"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/offset_8"
-            android:ellipsize="end"
-            android:lines="1"
+            android:layout_marginTop="@dimen/offset_24"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:layout_constraintEnd_toStartOf="@+id/button_transactions_adapter_item_more"
-            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_date"
-            app:layout_constraintBottom_toBottomOf="@+id/text_view_transactions_adapter_item_date"
-            tools:text="name" />
+            app:layout_constraintStart_toStartOf="@+id/textview_transactions_adapter_item_type"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="DD/MM/YYYY" />
 
         <Button
             android:id="@+id/button_transactions_adapter_item_more"
@@ -48,102 +44,97 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/text_view_transactions_adapter_item_type"
+            android:id="@+id/textview_transactions_adapter_item_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/offset_8"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:layout_constraintEnd_toStartOf="@+id/text_view_transactions_adapter_item_sum"
-            app:layout_constraintStart_toStartOf="@+id/text_view_transactions_adapter_item_date"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_date"
-            tools:text="type" />
+            android:layout_marginStart="@dimen/offset_24"
+            android:layout_marginTop="@dimen/offset_8"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textview_transactions_adapter_item_date"
+            tools:text="Trade" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_sum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            android:layout_marginStart="@dimen/offset_8"
-            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_type"
-            app:layout_constraintBottom_toBottomOf="@+id/text_view_transactions_adapter_item_type"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintStart_toStartOf="@+id/textview_transactions_adapter_item_type"
+            app:layout_constraintTop_toBottomOf="@+id/textview_transactions_adapter_item_type"
             tools:text="1000.00" />
 
         <TextView
             android:id="@+id/text_view_transactions_adapter_item_currency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             android:layout_marginStart="@dimen/offset_4"
-            app:layout_constraintBottom_toBottomOf="@+id/text_view_transactions_adapter_item_type"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintBottom_toBottomOf="@+id/text_view_transactions_adapter_item_sum"
             app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_sum"
             tools:text="CUR" />
 
         <TextView
-            android:id="@+id/text_view_transactions_adapter_item_cbr_title"
+            android:id="@+id/textview_transactions_adapter_item_currency_rate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/offset_4"
-            android:text="@string/textCB"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:layout_constraintStart_toStartOf="@+id/text_view_transactions_adapter_item_type"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="@dimen/offset_2"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            app:layout_constraintEnd_toStartOf="@+id/textview_transactions_adapter_item_currency_rate_symbol"
+            app:layout_constraintTop_toTopOf="@+id/textview_transactions_adapter_item_currency_rate_symbol"
             tools:text="95.44" />
 
         <TextView
-            android:id="@+id/text_view_transactions_adapter_item_rate_cbr"
+            android:id="@+id/textview_transactions_adapter_item_currency_rate_symbol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/offset_8"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_cbr_title"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="95.44"
-            />
-
-        <TextView
-            android:id="@+id/text_view_transactions_adapter_item_tax_symbol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/offset_8"
             android:text="@string/symbol_rub"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            android:layout_marginStart="@dimen/offset_4"
-            app:layout_constraintStart_toEndOf="@+id/text_view_transactions_adapter_item_rate_cbr"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+            app:layout_constraintEnd_toEndOf="@+id/textview_transactions_adapter_item_tax_symbol"
+            app:layout_constraintTop_toBottomOf="@+id/textview_transactions_adapter_item_tax_symbol" />
 
         <TextView
-            android:id="@+id/text_view_transactions_tax"
+            android:id="@+id/textview_transactions_adapter_item_currency_rate_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            android:layout_marginEnd="@dimen/offset_8"
-            app:layout_constraintEnd_toStartOf="@+id/text_view_transactions_adapter_item_tax"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_transactions_adapter_item_sum"
-            android:text="@string/textTax"
-            />
-
-        <TextView
-            android:id="@+id/text_view_transactions_adapter_item_tax"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             android:layout_marginEnd="@dimen/offset_4"
-            app:layout_constraintEnd_toStartOf="@+id/text_view_transactions_adapter_item_tax_symbol2"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/transactions_adapter_item_rate_title"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:layout_constraintEnd_toStartOf="@+id/textview_transactions_adapter_item_currency_rate"
+            app:layout_constraintTop_toTopOf="@+id/textview_transactions_adapter_item_currency_rate" />
+
+        <TextView
+            android:id="@+id/textview_transactions_adapter_item_tax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/offset_4"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            app:layout_constraintBottom_toBottomOf="@+id/text_view_transactions_adapter_item_sum"
+            app:layout_constraintEnd_toStartOf="@+id/textview_transactions_adapter_item_tax_symbol"
             tools:text="1000.34" />
 
-
         <TextView
-            android:id="@+id/text_view_transactions_adapter_item_tax_symbol2"
+            android:id="@+id/textview_transactions_adapter_item_tax_symbol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/offset_24"
             android:text="@string/symbol_rub"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            android:layout_marginEnd="@dimen/offset_8"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textview_transactions_adapter_item_tax" />
 
+        <TextView
+            android:id="@+id/textview_transactions_adapter_item_name"
+            android:layout_width="@dimen/zero"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/offset_8"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            app:layout_constraintEnd_toStartOf="@+id/textview_transactions_adapter_item_currency_rate_title"
+            app:layout_constraintStart_toStartOf="@+id/textview_transactions_adapter_item_date"
+            app:layout_constraintTop_toTopOf="@+id/textview_transactions_adapter_item_currency_rate_symbol"
+            tools:text="name" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

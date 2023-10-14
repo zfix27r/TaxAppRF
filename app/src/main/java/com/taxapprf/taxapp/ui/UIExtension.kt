@@ -14,10 +14,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.domain.PATTERN_DATE
 import com.taxapprf.taxapp.R
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -39,6 +41,7 @@ fun <T> Flow<T>.showLoading() =
 
 fun <T> Flow<T>.makeHot(coroutineScope: CoroutineScope, initialValue: T? = null) =
     this
+        .flowOn(Dispatchers.IO)
         .stateIn(
             coroutineScope,
             SharingStarted.WhileSubscribed(5000L),
@@ -125,5 +128,5 @@ fun showDatePickerDialog(
 fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
     LocalDate.of(year, month + 1, dayOfMonth).toEpochDay()
 
-val appDoubleFormatter = DecimalFormat("#,###.00")
+val appDoubleFormatter = DecimalFormat("#,##0.00")
 fun Double.toAppDouble(): String = appDoubleFormatter.format(this)

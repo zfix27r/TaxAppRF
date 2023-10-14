@@ -2,11 +2,11 @@ package com.taxapprf.taxapp.ui.transactions
 
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.data.round
 import com.taxapprf.domain.toAppDate
 import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
+import com.taxapprf.taxapp.ui.toAppDouble
 
 class TransactionAdapterViewHolder(
     private val binding: FragmentTransactionsAdapterItemBinding,
@@ -31,35 +31,37 @@ class TransactionAdapterViewHolder(
     fun bind(transactionModel: TransactionModel) {
         _transaction = transactionModel
 
-        _transaction.name?.let {
-            with(binding.textViewTransactionsAdapterItemName) {
-                if (it.isEmpty()) isVisible = false
-                else {
-                    text = _transaction.name
-                    isVisible = true
-                }
-            }
-        }
-        binding.textViewTransactionsAdapterItemType.text = localTypeNames[_transaction.type.ordinal]
-        binding.textViewTransactionsAdapterItemDate.text = _transaction.date.toAppDate()
-        binding.textViewTransactionsAdapterItemSum.text = _transaction.sum.round().toString()
+        updateName()
+        updateTaxAndCurrencyRate()
+
+        binding.textviewTransactionsAdapterItemType.text = localTypeNames[_transaction.type.ordinal]
+        binding.textviewTransactionsAdapterItemDate.text = _transaction.date.toAppDate()
+        binding.textViewTransactionsAdapterItemSum.text = _transaction.sum.toAppDouble()
         binding.textViewTransactionsAdapterItemCurrency.text = _transaction.currency.name
+    }
 
+    private fun updateName() {
+        binding.textviewTransactionsAdapterItemName.text = _transaction.name
+        binding.textviewTransactionsAdapterItemName.isVisible = _transaction.name != ""
+    }
+
+    private fun updateTaxAndCurrencyRate() {
         _transaction.tax?.let {
-            binding.textViewTransactionsAdapterItemRateCbr.text =
-                _transaction.currencyRate?.round().toString()
-            binding.textViewTransactionsAdapterItemTax.text = _transaction.tax?.round().toString()
+            binding.textviewTransactionsAdapterItemCurrencyRate.text =
+                _transaction.currencyRate?.toAppDouble()
+            binding.textviewTransactionsAdapterItemTax.text =
+                _transaction.tax?.toAppDouble()
 
-            binding.textViewTransactionsAdapterItemRateCbr.isVisible = true
-            binding.textViewTransactionsAdapterItemTaxSymbol.isVisible = true
-            binding.textViewTransactionsAdapterItemTaxSymbol2.isVisible = true
+            binding.textviewTransactionsAdapterItemCurrencyRate.isVisible = true
+            binding.textviewTransactionsAdapterItemCurrencyRateSymbol.isVisible = true
+            binding.textviewTransactionsAdapterItemTaxSymbol.isVisible = true
         } ?: run {
-            binding.textViewTransactionsAdapterItemTax.text =
+            binding.textviewTransactionsAdapterItemTax.text =
                 context.getString(R.string.transaction_tax_is_empty)
 
-            binding.textViewTransactionsAdapterItemRateCbr.isVisible = false
-            binding.textViewTransactionsAdapterItemTaxSymbol.isVisible = false
-            binding.textViewTransactionsAdapterItemTaxSymbol2.isVisible = false
+            binding.textviewTransactionsAdapterItemCurrencyRate.isVisible = false
+            binding.textviewTransactionsAdapterItemCurrencyRateSymbol.isVisible = false
+            binding.textviewTransactionsAdapterItemTaxSymbol.isVisible = false
         }
     }
 }

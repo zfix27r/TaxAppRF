@@ -5,7 +5,6 @@ import com.taxapprf.data.getEpochDate
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ACCOUNT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
-import com.taxapprf.data.round
 import com.taxapprf.domain.cbr.Currencies
 import com.taxapprf.domain.main.SaveTransactionModel
 import com.taxapprf.domain.toAppDate
@@ -53,7 +52,7 @@ class TransactionDetailViewModel @Inject constructor(
                 transactionDetailModel.date?.let { date = it.toAppDate() }
                 transactionDetailModel.transactionTypeOrdinal?.let { transactionTypeOrdinal = it }
                 transactionDetailModel.currencyOrdinal?.let { currencyOrdinal = it }
-                transactionDetailModel.sum?.let { sum = it.round().toString() }
+                transactionDetailModel.sum?.let { sum = it.toString() }
                 transactionDetailModel.tax?.let { transactionTax = it }
             }
         }.flowOn(Dispatchers.IO)

@@ -69,11 +69,14 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.attach()
+        observeReports()
 
         prepToolbar()
         prepViews()
         setListeners()
+    }
 
+    private fun observeReports() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.reports.collectLatest { reports ->
