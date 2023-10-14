@@ -59,12 +59,6 @@ class TransactionsAdapterTouchHelper(
     }
 
     fun cancelSwipe() {
-        viewHolder?.let {
-            it.itemView
-                .animate()
-                .translationX(0f)
-                .alpha(1.0f)
-                .start()
-        }
+        viewHolder?.itemView?.animate()?.translationX(0f)?.alpha(1.0f)?.start()
     }
 }

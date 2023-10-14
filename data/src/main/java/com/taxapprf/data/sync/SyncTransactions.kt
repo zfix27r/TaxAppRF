@@ -10,8 +10,8 @@ import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.dao.RemoteTransactionDao
 import com.taxapprf.data.remote.firebase.entity.FirebaseTransactionEntity
 import com.taxapprf.domain.CurrencyRepository
-import com.taxapprf.domain.cbr.Currencies
-import com.taxapprf.domain.transaction.TransactionTypes
+import com.taxapprf.domain.currency.Currencies
+import com.taxapprf.domain.transactions.TransactionTypes
 import kotlinx.coroutines.runBlocking
 
 class SyncTransactions(

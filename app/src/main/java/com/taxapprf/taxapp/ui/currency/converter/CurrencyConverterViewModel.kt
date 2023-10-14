@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.getEpochDate
 import com.taxapprf.data.round
-import com.taxapprf.domain.cbr.CurrencyConverterModel
-import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
+import com.taxapprf.domain.currency.CurrencyConverterModel
+import com.taxapprf.domain.currency.GetCurrencyRateModelsUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

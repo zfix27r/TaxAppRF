@@ -1,11 +1,12 @@
 package com.taxapprf.data.sync
 
-import com.taxapprf.data.ReportRepositoryImpl.Companion.DEFAULT_TAX
+
 import com.taxapprf.data.getEpochTime
 import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_SIZE
+import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX
 import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
 import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao

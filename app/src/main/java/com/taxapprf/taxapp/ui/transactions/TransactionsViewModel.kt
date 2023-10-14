@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
 import com.taxapprf.domain.excel.ExportExcelModel
 import com.taxapprf.domain.excel.ExportExcelUseCase
-import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
-import com.taxapprf.domain.transaction.TransactionModel
 import com.taxapprf.domain.transactions.DeleteTransactionsUseCase
 import com.taxapprf.domain.transactions.ObserveReportUseCase
+import com.taxapprf.domain.transactions.ObserveTransactionsUseCase
+import com.taxapprf.domain.transactions.TransactionModel
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.makeHot
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class TransactionsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val observeReportUseCase: ObserveReportUseCase,
-    private val getTransactionsUseCase: ObserveTransactionsUseCase,
+    private val observeTransactionsUseCase: ObserveTransactionsUseCase,
     private val exportExcelUseCase: ExportExcelUseCase,
     private val deleteTransactionsUseCase: DeleteTransactionsUseCase,
 ) : BaseViewModel() {
@@ -34,8 +34,10 @@ class TransactionsViewModel @Inject constructor(
         }
 
     fun observeTransactions() =
-        getTransactionsUseCase.execute(reportId)
-            ?.makeHot(viewModelScope)
+        reportId?.let { reportId ->
+            observeTransactionsUseCase.execute(reportId)
+                .makeHot(viewModelScope)
+        }
 
     fun deleteTransaction(transactionModel: TransactionModel) =
         viewModelScope.launch(Dispatchers.IO) {

@@ -11,7 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.domain.cbr.Currencies
+import com.taxapprf.domain.currency.Currencies
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BaseBottomSheetFragment
@@ -38,7 +38,6 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.attach()
-
         observeTransactionDetail()
 
         prepTransactionTypes()

@@ -2,8 +2,8 @@ package com.taxapprf.taxapp.ui.sign.up
 
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.domain.sync.SyncAllUseCase
-import com.taxapprf.domain.user.SignUpModel
-import com.taxapprf.domain.user.SignUpUseCase
+import com.taxapprf.domain.main.user.SignUpModel
+import com.taxapprf.domain.main.user.SignUpUseCase
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.isEmailIncorrect

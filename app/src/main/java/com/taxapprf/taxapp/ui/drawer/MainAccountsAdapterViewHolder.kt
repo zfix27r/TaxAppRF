@@ -1,7 +1,7 @@
 package com.taxapprf.taxapp.ui.drawer
 
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.domain.user.AccountModel
+import com.taxapprf.domain.main.account.AccountModel
 import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderItemBinding
 
 class MainAccountsAdapterViewHolder(

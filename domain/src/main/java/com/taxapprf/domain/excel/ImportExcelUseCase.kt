@@ -1,7 +1,7 @@
 package com.taxapprf.domain.excel
 
 import com.taxapprf.domain.ExcelRepository
-import com.taxapprf.domain.main.SaveTransactionUseCase
+import com.taxapprf.domain.main.transaction.SaveTransactionUseCase
 import javax.inject.Inject
 
 class ImportExcelUseCase @Inject constructor(

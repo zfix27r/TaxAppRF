@@ -7,7 +7,7 @@ import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.local.room.LocalSyncDao
-import com.taxapprf.data.remote.cbr.RemoteCBRDao
+import com.taxapprf.data.remote.cbr.RemoteCurrencyDao
 import com.taxapprf.data.remote.firebase.Firebase
 import com.taxapprf.data.remote.firebase.FirebaseAccountDaoImpl
 import com.taxapprf.data.remote.firebase.FirebaseReportDaoImpl
@@ -46,31 +46,18 @@ object DataModule {
 
     @Singleton
     @Provides
+    fun provideMainDao(db: LocalDatabase) =
+        db.mainDao()
+
+    @Singleton
+    @Provides
     fun provideSyncDao(db: LocalDatabase) =
         db.syncDao()
 
     @Singleton
     @Provides
-    fun provideUserDao(db: LocalDatabase) =
-        db.userDao()
-
-    @Singleton
-    @Provides
-    fun provideAccountDao(db: LocalDatabase) =
-        db.accountDao()
-
-    @Singleton
-    @Provides
-    fun provideReportDao(db: LocalDatabase) =
-        db.reportDao()
-    @Singleton
-    @Provides
     fun provideReportsDao(db: LocalDatabase) =
         db.reportsDao()
-    @Singleton
-    @Provides
-    fun provideTransactionDao(db: LocalDatabase) =
-        db.transactionDao()
 
     @Singleton
     @Provides
@@ -82,20 +69,21 @@ object DataModule {
     fun provideTransactionDetailDao(db: LocalDatabase) =
         db.transactionDetailDao()
 
-    @Singleton
-    @Provides
-    fun provideMainDao(db: LocalDatabase) =
-        db.mainDao()
 
     @Singleton
     @Provides
-    fun provideCBRDao(db: LocalDatabase) =
-        db.cbrDao()
+    fun provideCurrencyDao(db: LocalDatabase) =
+        db.currencyDao()
 
     @Singleton
     @Provides
-    fun provideDeletedKeyDao(db: LocalDatabase) =
+    fun provideDeletedDao(db: LocalDatabase) =
         db.deletedDao()
+
+    @Singleton
+    @Provides
+    fun provideExcelDao(db: LocalDatabase) =
+        db.excelDao()
 
     @Singleton
     @Provides
@@ -131,7 +119,12 @@ object DataModule {
         remoteTransactionDao: RemoteTransactionDao,
         currencyRepositoryImpl: CurrencyRepositoryImpl
     ) =
-        SyncTransactions(localSyncDao, remoteReportDao, remoteTransactionDao, currencyRepositoryImpl)
+        SyncTransactions(
+            localSyncDao,
+            remoteReportDao,
+            remoteTransactionDao,
+            currencyRepositoryImpl
+        )
 
     @Singleton
     @Provides
@@ -151,12 +144,12 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideRemoteCBRDao(retrofit: Retrofit): RemoteCBRDao =
-        retrofit.create(RemoteCBRDao::class.java)
+    fun provideRemoteCurrencyDao(retrofit: Retrofit): RemoteCurrencyDao =
+        retrofit.create(RemoteCurrencyDao::class.java)
 
     @Singleton
     @Provides
-    fun provideFirebaseAPI() = Firebase()
+    fun provideFirebase() = Firebase()
 
     @Singleton
     @Provides

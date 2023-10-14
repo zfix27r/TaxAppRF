@@ -1,8 +1,8 @@
 package com.taxapprf.taxapp.ui.currency.rate
 
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.cbr.CurrencyRateModel
-import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
+import com.taxapprf.domain.currency.CurrencyRateModel
+import com.taxapprf.domain.currency.GetCurrencyRateModelsUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
 import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel

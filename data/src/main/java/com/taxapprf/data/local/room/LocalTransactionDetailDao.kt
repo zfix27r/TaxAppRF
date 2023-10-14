@@ -5,7 +5,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
-import com.taxapprf.domain.transaction.detail.TransactionDetailModel
+import com.taxapprf.domain.transactions.detail.TransactionDetailModel
 import java.time.LocalDate
 
 @Dao

@@ -1,8 +1,8 @@
 package com.taxapprf.domain
 
-import com.taxapprf.domain.transaction.detail.GetTransactionDetailModel
-import com.taxapprf.domain.transaction.detail.TransactionDetailModel
+import com.taxapprf.domain.transactions.detail.GetTransactionDetailModel
+import com.taxapprf.domain.transactions.detail.TransactionDetailModel
 
 interface TransactionDetailRepository {
-    fun getTransactionDetail(getTransactionDetailModel: GetTransactionDetailModel): TransactionDetailModel?
+    suspend fun getTransactionDetail(getTransactionDetailModel: GetTransactionDetailModel): TransactionDetailModel?
 }

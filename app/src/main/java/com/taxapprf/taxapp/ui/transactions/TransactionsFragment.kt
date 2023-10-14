@@ -15,9 +15,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.TransactionTypes
 import com.taxapprf.domain.transactions.ReportModel
+import com.taxapprf.domain.transactions.TransactionModel
+import com.taxapprf.domain.transactions.TransactionTypes
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback

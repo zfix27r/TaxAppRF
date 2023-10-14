@@ -2,15 +2,15 @@ package com.taxapprf.taxapp.ui.activity
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.main.SaveTransactionModel
-import com.taxapprf.domain.main.SaveTransactionUseCase
+import com.taxapprf.domain.main.account.SwitchAccountModel
+import com.taxapprf.domain.main.account.SwitchAccountUseCase
+import com.taxapprf.domain.main.transaction.SaveTransactionModel
+import com.taxapprf.domain.main.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.main.user.ObserveUserWithAccountsModel
+import com.taxapprf.domain.main.user.ObserveUserWithAccountsUseCase
+import com.taxapprf.domain.main.user.SignOutUseCase
+import com.taxapprf.domain.main.user.UserWithAccountsModel
 import com.taxapprf.domain.sync.SyncAllUseCase
-import com.taxapprf.domain.user.ObserveUserWithAccountsModel
-import com.taxapprf.domain.user.ObserveUserWithAccountsUseCase
-import com.taxapprf.domain.user.SignOutUseCase
-import com.taxapprf.domain.user.SwitchAccountModel
-import com.taxapprf.domain.user.SwitchAccountUseCase
-import com.taxapprf.domain.user.UserWithAccountsModel
 import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -84,7 +84,9 @@ class MainViewModel @Inject constructor(
 
     fun signOut() =
         viewModelScope.launch(Dispatchers.IO) {
-            signOutUseCase.execute()
+            flow {
+                emit(signOutUseCase.execute())
+            }
                 .showLoading()
                 .collectLatest {
                     updateUserWithAccounts()

@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.transactions.TransactionModel
 import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
 
 class TransactionsAdapter(

@@ -3,7 +3,7 @@ package com.taxapprf.taxapp.ui.transactions
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.toAppDate
-import com.taxapprf.domain.transaction.TransactionModel
+import com.taxapprf.domain.transactions.TransactionModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
 import com.taxapprf.taxapp.ui.toAppDouble

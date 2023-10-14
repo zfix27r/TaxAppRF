@@ -11,7 +11,7 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
-import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.CURRENCY_RATE
+import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity.Companion.CURRENCY_RATE
 import com.taxapprf.data.local.room.entity.LocalDeletedEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.SIZE

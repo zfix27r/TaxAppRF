@@ -9,10 +9,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.taxapprf.data.UserRepositoryImpl.Companion.LOCAL_USER_EMAIL
-import com.taxapprf.domain.user.AccountModel
-import com.taxapprf.domain.user.UserModel
-import com.taxapprf.domain.user.UserWithAccountsModel
+import com.taxapprf.data.MainRepositoryImpl.Companion.LOCAL_USER_EMAIL
+import com.taxapprf.domain.main.account.AccountModel
+import com.taxapprf.domain.main.user.UserModel
+import com.taxapprf.domain.main.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 
 class Drawer(

@@ -4,11 +4,18 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
+import com.taxapprf.data.error.DataErrorExcel
 import com.taxapprf.data.local.excel.ExcelCreator
+import com.taxapprf.data.local.room.LocalExcelDao
+import com.taxapprf.data.local.room.model.GetExcelTransaction
 import com.taxapprf.domain.ExcelRepository
+import com.taxapprf.domain.currency.Currencies
+import com.taxapprf.domain.excel.ExcelTransactionModel
 import com.taxapprf.domain.excel.ExportExcelModel
 import com.taxapprf.domain.excel.ImportExcelModel
-import com.taxapprf.domain.main.SaveTransactionModel
+import com.taxapprf.domain.main.transaction.SaveTransactionModel
+import com.taxapprf.domain.toAppDate
+import com.taxapprf.domain.transactions.TransactionTypes
 import com.taxapprf.taxapp.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -21,9 +28,20 @@ import javax.inject.Inject
 
 class ExcelRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val localExcelDao: LocalExcelDao,
 ) : ExcelRepository {
     override suspend fun export(exportExcelModel: ExportExcelModel): Uri? {
         with(exportExcelModel) {
+            val localReportEntity = localExcelDao.getLocalReportEntity(reportId)
+                ?: throw DataErrorExcel()
+            val localTransactionModels = localExcelDao.getExcelTransactions(reportId)
+
+            if (localTransactionModels.isEmpty()) throw DataErrorExcel()
+
+            reportName = localReportEntity.remoteKey
+            reportTax = localReportEntity.tax
+            transactions = localTransactionModels.map { it.toExcelTransactionModel() }
+
             reportTitle = context.getString(R.string.excel_report_title)
             reportInfo = context.getString(R.string.excel_report_info)
 
@@ -69,4 +87,15 @@ class ExcelRepositoryImpl @Inject constructor(
         val dateText = dateFormat.format(currentDate)
         return "Statement-$dateText.xls"
     }
+
+    private fun GetExcelTransaction.toExcelTransactionModel() =
+        ExcelTransactionModel(
+            name = name,
+            appDate = date.toAppDate(),
+            typeName = TransactionTypes.values()[typeOrdinal].name,
+            sum = sum,
+            currencyCharCode = Currencies.values()[currencyOrdinal].name,
+            currencyRate = currencyRate,
+            tax = tax
+        )
 }

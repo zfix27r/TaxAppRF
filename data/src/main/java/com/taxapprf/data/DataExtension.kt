@@ -10,7 +10,7 @@ import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
-import com.taxapprf.domain.transaction.TransactionTypes
+import com.taxapprf.domain.transactions.TransactionTypes
 import java.net.SocketTimeoutException
 import java.time.LocalDate
 import java.time.LocalDateTime

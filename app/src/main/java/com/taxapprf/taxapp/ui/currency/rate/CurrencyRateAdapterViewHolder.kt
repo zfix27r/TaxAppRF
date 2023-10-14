@@ -1,7 +1,7 @@
 package com.taxapprf.taxapp.ui.currency.rate
 
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.domain.cbr.CurrencyRateModel
+import com.taxapprf.domain.currency.CurrencyRateModel
 import com.taxapprf.taxapp.databinding.FragmentCurrencyRateAdapterItemBinding
 
 class CurrencyRateAdapterViewHolder(

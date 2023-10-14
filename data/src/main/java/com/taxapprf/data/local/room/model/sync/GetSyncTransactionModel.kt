@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import com.taxapprf.data.local.room.LocalDatabase.Companion.CURRENCY_ORDINAL
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
-import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.CURRENCY_RATE
+import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity.Companion.CURRENCY_RATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM

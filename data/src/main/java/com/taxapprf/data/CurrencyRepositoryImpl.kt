@@ -1,13 +1,13 @@
 package com.taxapprf.data
 
-import com.taxapprf.data.local.room.LocalCBRDao
-import com.taxapprf.data.local.room.entity.LocalCBRRateEntity
-import com.taxapprf.data.remote.cbr.RemoteCBRDao
+import com.taxapprf.data.local.room.LocalCurrencyDao
+import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity
+import com.taxapprf.data.remote.cbr.RemoteCurrencyDao
 import com.taxapprf.data.remote.cbr.entity.RemoteValCursEntity
 import com.taxapprf.data.remote.cbr.entity.RemoteValuteEntity
 import com.taxapprf.domain.CurrencyRepository
-import com.taxapprf.domain.cbr.Currencies
-import com.taxapprf.domain.cbr.CurrencyRateModel
+import com.taxapprf.domain.currency.Currencies
+import com.taxapprf.domain.currency.CurrencyRateModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -17,8 +17,8 @@ import javax.inject.Singleton
 @Singleton
 class CurrencyRepositoryImpl @Inject constructor(
     private val networkManager: NetworkManager,
-    private val localCBRDao: LocalCBRDao,
-    private val remoteCBRDao: RemoteCBRDao,
+    private val localCBRDao: LocalCurrencyDao,
+    private val remoteCBRDao: RemoteCurrencyDao,
 ) : CurrencyRepository {
     override suspend fun getCurrencyRate(currencyOrdinal: Int, date: Long) =
         localCBRDao.getCurrencyRate(currencyOrdinal, date)?.rate
@@ -49,8 +49,8 @@ class CurrencyRepositoryImpl @Inject constructor(
 
     private fun RemoteValCursEntity.cacheResult(
         date: Long
-    ): List<LocalCBRRateEntity> {
-        val localRates = mutableListOf<LocalCBRRateEntity>()
+    ): List<LocalCurrencyRateEntity> {
+        val localRates = mutableListOf<LocalCurrencyRateEntity>()
 
         currencies?.forEach { valute ->
             valute.charCode?.let { charCode ->
@@ -69,13 +69,13 @@ class CurrencyRepositoryImpl @Inject constructor(
         return localRates
     }
 
-    private fun List<LocalCBRRateEntity>.getCurrencyRate(currencyOrdinal: Int) =
+    private fun List<LocalCurrencyRateEntity>.getCurrencyRate(currencyOrdinal: Int) =
         find { it.currencyOrdinal == currencyOrdinal }
 
     private fun RemoteValuteEntity.toLocalCBRRateEntity(
         cbrCurrencyId: Int,
         date: Long,
-    ): LocalCBRRateEntity? {
+    ): LocalCurrencyRateEntity? {
         try {
             val nominal = nominal ?: return null
             val value = value ?: return null
@@ -88,7 +88,7 @@ class CurrencyRepositoryImpl @Inject constructor(
     }
 
     private fun getLocalCBRRateEntity(cbrCurrencyId: Int, date: Long, rate: Double? = null) =
-        LocalCBRRateEntity(
+        LocalCurrencyRateEntity(
             currencyOrdinal = cbrCurrencyId,
             date = date,
             rate = rate
@@ -96,7 +96,7 @@ class CurrencyRepositoryImpl @Inject constructor(
 
     private fun String.formatValueDot() = replace(',', '.')
 
-    private fun LocalCBRRateEntity.toCurrencyRateModel() =
+    private fun LocalCurrencyRateEntity.toCurrencyRateModel() =
         CurrencyRateModel(
             currency = Currencies.values()[currencyOrdinal],
             rate = rate?.round(ROUND_SIX)
