@@ -1,7 +1,11 @@
 package com.taxapprf.taxapp.ui.activity
 
+import android.net.ConnectivityManager
+import android.net.Network
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.data.NetworkManager
+import com.taxapprf.domain.currency.UpdateNotLoadedCurrenciesUseCase
 import com.taxapprf.domain.main.account.SwitchAccountModel
 import com.taxapprf.domain.main.account.SwitchAccountUseCase
 import com.taxapprf.domain.main.transaction.SaveTransactionModel
@@ -24,13 +28,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val networkManager: NetworkManager,
     private val observeUserWithAccountsUseCase: ObserveUserWithAccountsUseCase,
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val syncAllUseCase: SyncAllUseCase,
+    private val updateNotLoadedCurrenciesUseCase: UpdateNotLoadedCurrenciesUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
 ) : ViewModel() {
     var defaultAccountName: String? = null
+    var accountId: Int? = null
 
     /*
     TODO() сделать загрузку в настройках курса за выбранный период
@@ -42,10 +49,32 @@ class MainViewModel @Inject constructor(
             }
             */
 
-    private val _userWithAccounts: MutableStateFlow<UserWithAccountsModel?> = MutableStateFlow(null)
+    private val _userWithAccounts = MutableStateFlow<UserWithAccountsModel?>(null)
     val userWithAccounts = _userWithAccounts.asStateFlow()
 
-    var accountId: Int? = null
+    private var isSynced = false
+    private val networkCallback =
+        object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                viewModelScope.launch(Dispatchers.IO) {
+                    if (!isSynced) syncAll()
+                    isSynced = true
+
+                    updateNotLoadedCurrenciesUseCase.execute()
+                }
+                networkManager.isConnection = true
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                networkManager.isConnection = false
+            }
+        }
+
+    fun observeConnection() {
+        networkManager.observeConnection(networkCallback)
+    }
 
     suspend fun syncAll() =
         flow {

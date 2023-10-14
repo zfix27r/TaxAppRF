@@ -22,11 +22,11 @@ class SyncRepositoryImpl @Inject constructor(
     private val syncTransactions: SyncTransactions,
 ) : SyncRepository {
     override suspend fun syncAll() {
-        networkManager.isConnectionOrThrow()
-
-        syncDeleted()
+        if (!networkManager.isConnection) return
 
         remoteUserDao.getUser()?.let { firebaseUser ->
+            syncDeleted()
+
             firebaseUser.email?.let { email ->
                 localSyncDao.getUserByEmail(email)?.let { localUserEntity ->
                     syncAccounts.sync(localUserEntity.id).map { getSyncResultAccountModel ->
@@ -41,29 +41,31 @@ class SyncRepositoryImpl @Inject constructor(
     }
 
     override suspend fun syncDeleted() {
-        networkManager.isConnectionOrThrow()
+        if (!networkManager.isConnection) return
 
-        val updateRemoteMap = mutableMapOf<String, FirebaseTransactionEntity?>()
-        var accountKey = ""
-        var reportKey = ""
+        remoteUserDao.getUser()?.let {
+            val updateRemoteMap = mutableMapOf<String, FirebaseTransactionEntity?>()
+            var accountKey = ""
+            var reportKey = ""
 
-        localSyncDao.getAllDeleted().forEach { localDeletedEntity ->
-            if (localDeletedEntity.accountKey != accountKey || localDeletedEntity.reportKey != reportKey) {
-                if (updateRemoteMap.isNotEmpty()) {
-                    remoteTransactionDao.updateTransactions(accountKey, reportKey, updateRemoteMap)
-                    updateRemoteMap.clear()
+            localSyncDao.getAllDeleted().forEach { localDeletedEntity ->
+                if (localDeletedEntity.accountKey != accountKey || localDeletedEntity.reportKey != reportKey) {
+                    if (updateRemoteMap.isNotEmpty()) {
+                        remoteTransactionDao.updateTransactions(accountKey, reportKey, updateRemoteMap)
+                        updateRemoteMap.clear()
+                    }
+
+                    accountKey = localDeletedEntity.accountKey
+                    reportKey = localDeletedEntity.reportKey
                 }
 
-                accountKey = localDeletedEntity.accountKey
-                reportKey = localDeletedEntity.reportKey
+                updateRemoteMap[localDeletedEntity.transactionKey] = null
             }
 
-            updateRemoteMap[localDeletedEntity.transactionKey] = null
-        }
-
-        if (updateRemoteMap.isNotEmpty()) {
-            remoteTransactionDao.updateTransactions(accountKey, reportKey, updateRemoteMap)
-            localSyncDao.deleteAllDeleted()
+            if (updateRemoteMap.isNotEmpty()) {
+                remoteTransactionDao.updateTransactions(accountKey, reportKey, updateRemoteMap)
+                localSyncDao.deleteAllDeleted()
+            }
         }
     }
 }

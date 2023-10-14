@@ -9,6 +9,7 @@ import com.taxapprf.data.SyncRepositoryImpl
 import com.taxapprf.data.TransactionDetailRepositoryImpl
 import com.taxapprf.data.TransactionsRepositoryImpl
 import com.taxapprf.domain.currency.GetCurrencyRateModelsUseCase
+import com.taxapprf.domain.currency.UpdateNotLoadedCurrenciesUseCase
 import com.taxapprf.domain.excel.ExportExcelUseCase
 import com.taxapprf.domain.excel.ImportExcelUseCase
 import com.taxapprf.domain.main.account.SwitchAccountUseCase
@@ -80,6 +81,10 @@ object DomainModule {
     @Provides
     fun provideGetCurrencyRateTodayFromCBRUseCase(currencyRepositoryImpl: CurrencyRepositoryImpl) =
         GetCurrencyRateModelsUseCase(currencyRepositoryImpl)
+
+    @Provides
+    fun provideUpdateNotLoadedCurrenciesUseCase(currencyRepositoryImpl: CurrencyRepositoryImpl) =
+        UpdateNotLoadedCurrenciesUseCase(currencyRepositoryImpl)
 
 
     /* Reports repository */

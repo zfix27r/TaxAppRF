@@ -77,13 +77,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
         navController.setGraph(R.navigation.mobile_navigation)
 
+        viewModel.observeConnection()
         observeUser()
-        startSync()
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.defaultAccountName = getString(R.string.default_account_name)
+        viewModel.updateUserWithAccounts()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -151,16 +152,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         R.id.reports,
         R.id.transactions,
     )
-
-    private fun startSync() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.syncAll().collectLatest {
-                    viewModel.updateUserWithAccounts()
-                }
-            }
-        }
-    }
 
     private fun observeUser() {
         lifecycleScope.launch {

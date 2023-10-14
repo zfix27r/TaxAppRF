@@ -43,7 +43,15 @@ const val ROUND_SIX = 1_000_000.0
 
 fun Double.round(k: Double = ROUND_TWO) = floor(this * k) / k
 
-fun calculateTax(sum: Double, rate: Double, transactionTypeOrdinal: Int): Double {
-    val k = TransactionTypes.values()[transactionTypeOrdinal].k
-    return sum * rate * k
+fun calculateTax(sum: Double, rate: Double, transactionTypeOrdinal: Int): Double? {
+    if (rate.isRateNotFoundOnCBR()) return null
+
+    return try {
+        val k = TransactionTypes.values()[transactionTypeOrdinal].k
+        sum * rate * k
+    } catch (_: Exception) {
+        null
+    }
 }
+
+private fun Double.isRateNotFoundOnCBR() = this < 0.0

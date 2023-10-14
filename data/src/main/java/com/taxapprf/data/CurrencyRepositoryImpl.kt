@@ -2,6 +2,8 @@ package com.taxapprf.data
 
 import com.taxapprf.data.local.room.LocalCurrencyDao
 import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity
+import com.taxapprf.data.local.room.entity.LocalReportEntity
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.cbr.RemoteCurrencyDao
 import com.taxapprf.data.remote.cbr.entity.RemoteValCursEntity
 import com.taxapprf.data.remote.cbr.entity.RemoteValuteEntity
@@ -17,28 +19,57 @@ import javax.inject.Singleton
 @Singleton
 class CurrencyRepositoryImpl @Inject constructor(
     private val networkManager: NetworkManager,
-    private val localCBRDao: LocalCurrencyDao,
-    private val remoteCBRDao: RemoteCurrencyDao,
+    private val localCurrencyDao: LocalCurrencyDao,
+    private val remoteCurrencyDao: RemoteCurrencyDao,
 ) : CurrencyRepository {
     override suspend fun getCurrencyRate(currencyOrdinal: Int, date: Long) =
-        localCBRDao.getCurrencyRate(currencyOrdinal, date)?.rate
-            ?: tryGetRemote(date)
+        localCurrencyDao.getCurrencyRate(currencyOrdinal, date)?.rate
+            ?: tryGetRemote(date, currencyOrdinal)
                 ?.getCurrencyRate(currencyOrdinal)?.rate
 
     override suspend fun getCurrencyRateModels(date: Long) =
-        localCBRDao.getCurrenciesRate(date).let { ratesWithCurrency ->
+        localCurrencyDao.getCurrenciesRate(date).let { ratesWithCurrency ->
             ratesWithCurrency.ifEmpty {
                 tryGetRemote(date)
-                localCBRDao.getCurrenciesRate(date)
+                localCurrencyDao.getCurrenciesRate(date)
             }
         }.map { it.toCurrencyRateModel() }
 
-    private fun tryGetRemote(date: Long) =
+    override suspend fun updateNotLoadedCurrencies() {
+        if (!networkManager.isConnection) return
+
+        val localReportEntities = mutableListOf<LocalReportEntity>()
+        val localTransactionEntities = mutableListOf<LocalTransactionEntity>()
+
+        localCurrencyDao.getNotLoadedLocalTransactionEntities().forEach { localTransactionEntity ->
+            getCurrencyRate(
+                localTransactionEntity.currencyOrdinal,
+                localTransactionEntity.date
+            )?.let { rate ->
+                localReportEntities.find { it.id == localTransactionEntity.reportId }
+                    ?: localCurrencyDao.getLocalReportEntity(localTransactionEntity.reportId)
+                        ?.let { localReportEntity ->
+                            calculateTax(
+                                localTransactionEntity.sum,
+                                rate,
+                                localTransactionEntity.typeOrdinal
+                            )?.let { newTax ->
+                                localReportEntities.add(localReportEntity.copy(tax = localReportEntity.tax + newTax))
+                                localTransactionEntities.add(localTransactionEntity.copy(tax = newTax))
+                            }
+                        }
+            }
+        }
+
+        localCurrencyDao.saveUpdatedEntities(localReportEntities, localTransactionEntities)
+    }
+
+    private fun tryGetRemote(date: Long, currencyOrdinal: Int? = null) =
         try {
             if (networkManager.isConnection) {
                 val formattedDate = date.toCBRDate()
-                remoteCBRDao.getValCurs(formattedDate).execute().body()
-                    ?.cacheResult(date)
+                remoteCurrencyDao.getValCurs(formattedDate).execute().body()
+                    .cacheResult(date, currencyOrdinal)
             } else null
         } catch (_: Exception) {
             null
@@ -47,24 +78,35 @@ class CurrencyRepositoryImpl @Inject constructor(
     private fun Long.toCBRDate() =
         LocalDate.ofEpochDay(this).format(formatter_cbr_date)
 
-    private fun RemoteValCursEntity.cacheResult(
-        date: Long
+    private fun RemoteValCursEntity?.cacheResult(
+        date: Long,
+        currencyOrdinal: Int?
     ): List<LocalCurrencyRateEntity> {
         val localRates = mutableListOf<LocalCurrencyRateEntity>()
 
-        currencies?.forEach { valute ->
+        this?.currencies?.forEach { valute ->
             valute.charCode?.let { charCode ->
                 try {
-                    val currencyOrdinal = Currencies.valueOf(charCode).ordinal
-                    valute.toLocalCBRRateEntity(currencyOrdinal, date)
+                    val ordinal = Currencies.valueOf(charCode).ordinal
+                    valute.toLocalCBRRateEntity(ordinal, date)
                         ?.let { localRates.add(it) }
                 } catch (_: Exception) {
 
                 }
             }
+        } ?: run {
+            currencyOrdinal?.let {
+                localRates.add(
+                    getLocalCurrencyRateEntity(
+                        currencyOrdinal,
+                        date,
+                        RATE_NOT_LOADED_ON_CBR
+                    )
+                )
+            }
         }
 
-        localCBRDao.saveRates(localRates)
+        localCurrencyDao.saveRates(localRates)
 
         return localRates
     }
@@ -81,15 +123,15 @@ class CurrencyRepositoryImpl @Inject constructor(
             val value = value ?: return null
             val rate = value.formatValueDot().toDouble() / nominal
 
-            return getLocalCBRRateEntity(cbrCurrencyId, date, rate)
+            return getLocalCurrencyRateEntity(cbrCurrencyId, date, rate)
         } catch (_: Exception) {
             return null
         }
     }
 
-    private fun getLocalCBRRateEntity(cbrCurrencyId: Int, date: Long, rate: Double? = null) =
+    private fun getLocalCurrencyRateEntity(currencyOrdinal: Int, date: Long, rate: Double? = null) =
         LocalCurrencyRateEntity(
-            currencyOrdinal = cbrCurrencyId,
+            currencyOrdinal = currencyOrdinal,
             date = date,
             rate = rate
         )
@@ -105,5 +147,6 @@ class CurrencyRepositoryImpl @Inject constructor(
     companion object {
         private const val PATTERN_CBR_DATE = "dd/MM/uuuu"
         private val formatter_cbr_date = DateTimeFormatter.ofPattern(PATTERN_CBR_DATE)
+        private const val RATE_NOT_LOADED_ON_CBR = -1.0
     }
 }

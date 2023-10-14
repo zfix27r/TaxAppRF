@@ -15,6 +15,8 @@ class TransactionAdapterViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     private val context = binding.root.context
     private lateinit var _transaction: TransactionModel
+    private val rateNotFound = context.getString(R.string.transactions_rate_not_found)
+    private val rateNotLoaded = context.getString(R.string.transactions_rate_not_loaded)
     val transaction
         get() = _transaction
 
@@ -46,22 +48,21 @@ class TransactionAdapterViewHolder(
     }
 
     private fun updateTaxAndCurrencyRate() {
-        _transaction.tax?.let {
+        if (_transaction.currencyRate == null) {
+            binding.textviewTransactionsAdapterItemTax.text = rateNotLoaded
+            binding.textviewTransactionsAdapterItemCurrencyRate.isVisible = false
+            binding.textviewTransactionsAdapterItemTaxSymbol.isVisible = false
+        } else if (_transaction.currencyRate!! < 0.0) {
+            binding.textviewTransactionsAdapterItemTax.text = rateNotFound
+            binding.textviewTransactionsAdapterItemCurrencyRate.isVisible = false
+            binding.textviewTransactionsAdapterItemTaxSymbol.isVisible = false
+        } else {
             binding.textviewTransactionsAdapterItemCurrencyRate.text =
                 _transaction.currencyRate?.toAppDouble()
             binding.textviewTransactionsAdapterItemTax.text =
                 _transaction.tax?.toAppDouble()
-
             binding.textviewTransactionsAdapterItemCurrencyRate.isVisible = true
-            binding.textviewTransactionsAdapterItemCurrencyRateSymbol.isVisible = true
             binding.textviewTransactionsAdapterItemTaxSymbol.isVisible = true
-        } ?: run {
-            binding.textviewTransactionsAdapterItemTax.text =
-                context.getString(R.string.transaction_tax_is_empty)
-
-            binding.textviewTransactionsAdapterItemCurrencyRate.isVisible = false
-            binding.textviewTransactionsAdapterItemCurrencyRateSymbol.isVisible = false
-            binding.textviewTransactionsAdapterItemTaxSymbol.isVisible = false
         }
     }
 }

@@ -164,9 +164,16 @@ class MainRepositoryImpl @Inject constructor(
         val report = localMainDao.getLocalReportEntity(transaction.reportId)
             ?: return null
 
-        val tax = calculateTax(transaction.sum, rate, transaction.typeOrdinal)
+        calculateTax(transaction.sum, rate, transaction.typeOrdinal)?.let { tax ->
+            return if (localMainDao.updateTax(
+                    report,
+                    transaction,
+                    tax
+                ) == 0
+            ) null else transaction.id
+        }
 
-        return if (localMainDao.updateTax(report, transaction, tax) == 0) null else transaction.id
+        return null
     }
 
     private fun LocalReportEntity.isMoveTransaction(newRemoteKey: String) =
