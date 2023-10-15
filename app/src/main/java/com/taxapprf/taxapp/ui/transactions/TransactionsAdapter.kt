@@ -11,14 +11,14 @@ class TransactionsAdapter(
     private val callback: TransactionsAdapterCallback,
 ) : ListAdapter<TransactionModel, TransactionAdapterViewHolder>(DiffCallback()) {
     var localTransactionTypes: List<String> = emptyList()
-
+    var reportTax: Double = 0.0
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): TransactionAdapterViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = FragmentTransactionsAdapterItemBinding.inflate(inflater, parent, false)
-        return TransactionAdapterViewHolder(binding, callback, localTransactionTypes)
+        return TransactionAdapterViewHolder(binding, callback, localTransactionTypes, reportTax)
     }
 
     override fun onBindViewHolder(holder: TransactionAdapterViewHolder, position: Int) {
