@@ -7,7 +7,6 @@ import androidx.core.content.FileProvider
 import com.taxapprf.data.error.DataErrorExcel
 import com.taxapprf.data.local.excel.ExcelCreator
 import com.taxapprf.data.local.room.LocalExcelDao
-import com.taxapprf.data.local.room.model.GetExcelTransaction
 import com.taxapprf.domain.ExcelRepository
 import com.taxapprf.domain.currency.Currencies
 import com.taxapprf.domain.excel.ExcelTransactionModel
@@ -39,7 +38,7 @@ class ExcelRepositoryImpl @Inject constructor(
             if (localTransactionModels.isEmpty()) throw DataErrorExcel()
 
             reportName = localReportEntity.remoteKey
-            reportTax = localReportEntity.tax
+            reportTax = localReportEntity.taxRUB
             transactions = localTransactionModels.map { it.toExcelTransactionModel() }
 
             reportTitle = context.getString(R.string.excel_report_title)
@@ -88,7 +87,7 @@ class ExcelRepositoryImpl @Inject constructor(
         return "Statement-$dateText.xls"
     }
 
-    private fun GetExcelTransaction.toExcelTransactionModel() =
+    private fun com.taxapprf.data.local.room.model.excel.ExcelTransactionDataModel.toExcelTransactionModel() =
         ExcelTransactionModel(
             name = name,
             appDate = date.toAppDate(),
@@ -96,6 +95,6 @@ class ExcelRepositoryImpl @Inject constructor(
             sum = sum,
             currencyCharCode = Currencies.values()[currencyOrdinal].name,
             currencyRate = currencyRate,
-            tax = tax
+            tax = taxRUB
         )
 }

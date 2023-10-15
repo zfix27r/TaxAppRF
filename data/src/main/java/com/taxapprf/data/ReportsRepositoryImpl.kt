@@ -15,5 +15,5 @@ class ReportsRepositoryImpl @Inject constructor(
             .map { reports -> reports.map { it.toReportModel() } }
 
     private fun LocalReportEntity.toReportModel() =
-        ReportModel(id, remoteKey, tax, size)
+        ReportModel(id, remoteKey, sumRUB, taxRUB, size)
 }

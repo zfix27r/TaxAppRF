@@ -2,8 +2,6 @@ package com.taxapprf.data
 
 import com.taxapprf.data.local.room.LocalCurrencyDao
 import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity
-import com.taxapprf.data.local.room.entity.LocalReportEntity
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.remote.cbr.RemoteCurrencyDao
 import com.taxapprf.data.remote.cbr.entity.RemoteValCursEntity
 import com.taxapprf.data.remote.cbr.entity.RemoteValuteEntity
@@ -35,7 +33,7 @@ class CurrencyRepositoryImpl @Inject constructor(
             }
         }.map { it.toCurrencyRateModel() }
 
-    override suspend fun updateNotLoadedCurrencies() {
+/*    override suspend fun updateNotLoadedCurrencies() {
         if (!networkManager.isConnection) return
 
         val localReportEntities = mutableListOf<LocalReportEntity>()
@@ -50,6 +48,7 @@ class CurrencyRepositoryImpl @Inject constructor(
                     ?: localCurrencyDao.getLocalReportEntity(localTransactionEntity.reportId)
                         ?.let { localReportEntity ->
                             calculateTax(
+                                localReportEntities,
                                 localTransactionEntity.sum,
                                 rate,
                                 localTransactionEntity.typeOrdinal
@@ -63,6 +62,13 @@ class CurrencyRepositoryImpl @Inject constructor(
 
         localCurrencyDao.saveUpdatedEntities(localReportEntities, localTransactionEntities)
     }
+
+    private fun saveTransaction() {
+        // saveTransaction
+        // updateTax
+        // SyncTransactions
+        // deleteTransaction
+    }*/
 
     private fun tryGetRemote(date: Long, currencyOrdinal: Int? = null) =
         try {
@@ -141,7 +147,7 @@ class CurrencyRepositoryImpl @Inject constructor(
     private fun LocalCurrencyRateEntity.toCurrencyRateModel() =
         CurrencyRateModel(
             currency = Currencies.values()[currencyOrdinal],
-            rate = rate?.round(ROUND_SIX)
+            rate = rate
         )
 
     companion object {

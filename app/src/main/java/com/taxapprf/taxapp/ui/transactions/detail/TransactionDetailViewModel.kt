@@ -55,7 +55,7 @@ class TransactionDetailViewModel @Inject constructor(
                     }
                     transactionDetailModel.currencyOrdinal?.let { currencyOrdinal = it }
                     transactionDetailModel.sum?.let { sum = it.toString() }
-                    transactionDetailModel.tax?.let { transactionTax = it }
+                    transactionDetailModel.taxRUB?.let { transactionTax = it }
                 }
             emit(Unit)
         }

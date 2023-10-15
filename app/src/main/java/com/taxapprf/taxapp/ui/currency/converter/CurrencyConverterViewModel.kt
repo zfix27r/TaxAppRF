@@ -3,7 +3,6 @@ package com.taxapprf.taxapp.ui.currency.converter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.getEpochDate
-import com.taxapprf.data.round
 import com.taxapprf.domain.currency.CurrencyConverterModel
 import com.taxapprf.domain.currency.GetCurrencyRateModelsUseCase
 import com.taxapprf.taxapp.ui.BaseViewModel
@@ -59,8 +58,8 @@ class CurrencyConverterViewModel @Inject constructor(
 
     private fun calculate() {
         with(converter) {
-            if (isModeSum) sumRub = (sum * currencyRate).round()
-            else sum = (sumRub / currencyRate).round()
+            if (isModeSum) sumRub = (sum * currencyRate)
+            else sum = (sumRub / currencyRate)
         }
     }
 }

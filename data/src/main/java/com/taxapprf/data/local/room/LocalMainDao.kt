@@ -12,7 +12,7 @@ import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.local.room.entity.LocalUserEntity
-import com.taxapprf.data.local.room.model.GetUser
+import com.taxapprf.data.local.room.model.UserDataModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -25,13 +25,13 @@ interface LocalMainDao {
                 "u.phone ${LocalUserEntity.PHONE}, " +
                 "a.id ${LocalDatabase.ACCOUNT_ID}, " +
                 "a.user_id ${LocalDatabase.USER_ID}, " +
-                "a.remote_key ${GetUser.ACCOUNT_NAME}, " +
+                "a.remote_key ${UserDataModel.ACCOUNT_NAME}, " +
                 "a.is_active ${LocalAccountEntity.IS_ACTIVE} " +
                 "FROM user u " +
                 "LEFT JOIN account a ON a.user_id = u.id " +
                 "WHERE email = :email"
     )
-    fun observeUsers(email: String): Flow<List<GetUser>>
+    fun observeUsers(email: String): Flow<List<UserDataModel>>
 
     @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
     fun getUserByEmail(email: String): LocalUserEntity?
@@ -104,8 +104,8 @@ interface LocalMainDao {
         localTransactionEntity: LocalTransactionEntity,
         newTax: Double
     ): Int {
-        updateReport(localReportEntity.copy(tax = localReportEntity.tax + newTax))
-        return updateTransaction(localTransactionEntity.copy(tax = newTax))
+        updateReport(localReportEntity.copy(taxRUB = localReportEntity.taxRUB + newTax))
+        return updateTransaction(localTransactionEntity.copy(taxRUB = newTax))
     }
 
     /* SIGN OUT */

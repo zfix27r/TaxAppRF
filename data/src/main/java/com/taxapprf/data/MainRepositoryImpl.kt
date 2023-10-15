@@ -6,15 +6,13 @@ import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.local.room.LocalMainDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity
-import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX
+import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX_RUB
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
-import com.taxapprf.data.local.room.model.GetUser
 import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.domain.MainRepository
 import com.taxapprf.domain.main.account.AccountModel
 import com.taxapprf.domain.main.account.SwitchAccountModel
 import com.taxapprf.domain.main.transaction.SaveTransactionModel
-import com.taxapprf.domain.main.transaction.UpdateTransactionTaxModel
 import com.taxapprf.domain.main.user.ObserveUserWithAccountsModel
 import com.taxapprf.domain.main.user.SignInModel
 import com.taxapprf.domain.main.user.SignUpModel
@@ -105,10 +103,10 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun GetUser.toUserModel() =
+    private fun com.taxapprf.data.local.room.model.UserDataModel.toUserModel() =
         UserModel(userId, email, avatar?.let { Uri.parse(it) }, name, phone)
 
-    private fun GetUser.toAccountModel() =
+    private fun com.taxapprf.data.local.room.model.UserDataModel.toAccountModel() =
         AccountModel(accountId, accountName)
 
     /* SAVE TRANSACTIONS */
@@ -124,14 +122,6 @@ class MainRepositoryImpl @Inject constructor(
             }
         val oldTransactionTax = saveTransactionModel.tax
 
-        val updateTransactionTax = saveTransactionModel.rate?.let { rate ->
-            calculateTax(
-                saveTransactionModel.sum,
-                rate,
-                saveTransactionModel.transactionTypeOrdinal
-            )
-        }
-
         val updatedReportId = report?.let {
             if (report.isMoveTransaction(reportKey)) {
                 if (report.size.isTransactionLast())
@@ -139,41 +129,20 @@ class MainRepositoryImpl @Inject constructor(
                 else
                     report.updateWithDeleteTransaction(oldTransactionTax)
 
-                addOrUpdateNewReportWithAddTransaction(accountId, reportKey, updateTransactionTax)
+                addOrUpdateNewReportWithAddTransaction(accountId, reportKey)
             } else {
                 if (transactionId.isUpdateTransaction())
-                    report.updateWithUpdateTransaction(oldTransactionTax, updateTransactionTax)
+                    report.updateWithUpdateTransaction(oldTransactionTax)
                 else
-                    report.updateWithAddTransaction(updateTransactionTax)
+                    report.updateWithAddTransaction()
             }
-        } ?: addOrUpdateNewReportWithAddTransaction(accountId, reportKey, updateTransactionTax)
+        } ?: addOrUpdateNewReportWithAddTransaction(accountId, reportKey)
 
         val transaction = saveTransactionModel
-            .toLocalTransactionEntity(updatedReportId.toInt(), updateTransactionTax)
+            .toLocalTransactionEntity(updatedReportId.toInt())
 
         val id = localMainDao.saveTransaction(transaction).toInt()
         return if (id == 0) null else id
-    }
-
-    override suspend fun updateTransaction(updateTransactionTaxModel: UpdateTransactionTaxModel): Int? {
-        val rate = updateTransactionTaxModel.rate
-            ?: return null
-        val transaction =
-            localMainDao.getLocalTransactionEntity(updateTransactionTaxModel.transactionId)
-                ?: return null
-        val report = localMainDao.getLocalReportEntity(transaction.reportId)
-            ?: return null
-
-        calculateTax(transaction.sum, rate, transaction.typeOrdinal)?.let { tax ->
-            return if (localMainDao.updateTax(
-                    report,
-                    transaction,
-                    tax
-                ) == 0
-            ) null else transaction.id
-        }
-
-        return null
     }
 
     private fun LocalReportEntity.isMoveTransaction(newRemoteKey: String) =
@@ -185,54 +154,48 @@ class MainRepositoryImpl @Inject constructor(
     private fun LocalReportEntity.delete() =
         localMainDao.deleteReport(this)
 
-    private fun LocalReportEntity.updateWithDeleteTransaction(transactionTax: Double?) =
-        transactionTax?.let {
-            val newTax = tax - transactionTax
+    private fun LocalReportEntity.updateWithDeleteTransaction(transactionTaxRUB: Double?) =
+        transactionTaxRUB?.let {
+            val newTaxRUB = taxRUB - transactionTaxRUB
             val newSize = size - 1
-            localMainDao.saveReport(copy(tax = newTax, size = newSize))
+            localMainDao.saveReport(copy(taxRUB = newTaxRUB, size = newSize))
         }
 
-    private fun LocalReportEntity.updateWithUpdateTransaction(
-        oldTransactionTax: Double?,
-        updateTransactionTax: Double?
-    ) =
+    private fun LocalReportEntity.updateWithUpdateTransaction(oldTransactionTaxRUB: Double?) =
         let {
-            val oldTax = oldTransactionTax ?: DEFAULT_TAX
-            val updateTax = updateTransactionTax ?: DEFAULT_TAX
-            val newTax = tax - oldTax + updateTax
-            localMainDao.saveReport(copy(tax = newTax))
+            val oldTaxRUB = oldTransactionTaxRUB ?: DEFAULT_TAX_RUB
+            val newTaxRUB = taxRUB - oldTaxRUB
+            localMainDao.saveReport(copy(taxRUB = newTaxRUB))
         }
 
-    private fun LocalReportEntity.updateWithAddTransaction(updateTransactionTax: Double?) =
+    private fun LocalReportEntity.updateWithAddTransaction(updateTransactionTaxRUB: Double? = null) =
         let {
-            val updateTax = updateTransactionTax ?: DEFAULT_TAX
-            val newTax = tax + updateTax
+            val updateTaxRUB = updateTransactionTaxRUB ?: DEFAULT_TAX_RUB
+            val newTaxRUB = taxRUB + updateTaxRUB
             val newSize = size + 1
-            localMainDao.saveReport(copy(tax = newTax, size = newSize))
+            localMainDao.saveReport(copy(taxRUB = newTaxRUB, size = newSize))
         }
 
     private fun Int?.isUpdateTransaction() = this != null
 
     private fun addOrUpdateNewReportWithAddTransaction(
         accountId: Int,
-        newReportKey: String,
-        newTransactionTax: Double?
+        newReportKey: String
     ) =
         localMainDao.getLocalReportEntity(accountId, newReportKey)
-            ?.updateWithAddTransaction(newTransactionTax)
+            ?.updateWithAddTransaction()
             ?: run {
                 val newLocalReportEntity = LocalReportEntity(
                     accountId = accountId,
                     remoteKey = newReportKey,
-                    tax = newTransactionTax ?: DEFAULT_TAX,
+                    taxRUB = DEFAULT_TAX_RUB,
                     size = 1
                 )
                 localMainDao.saveReport(newLocalReportEntity)
             }
 
     private fun SaveTransactionModel.toLocalTransactionEntity(
-        reportId: Int,
-        tax: Double?
+        reportId: Int
     ): LocalTransactionEntity {
         val transactionId = transactionId ?: LocalDatabase.DEFAULT_ID
 
@@ -244,7 +207,6 @@ class MainRepositoryImpl @Inject constructor(
             name = name,
             date = date,
             sum = sum,
-            tax = tax,
             syncAt = getEpochTime()
         )
     }

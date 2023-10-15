@@ -7,5 +7,5 @@ data class TransactionDetailModel(
     val transactionTypeOrdinal: Int?,
     val currencyOrdinal: Int?,
     val sum: Double?,
-    val tax: Double?,
+    val taxRUB: Double?,
 )

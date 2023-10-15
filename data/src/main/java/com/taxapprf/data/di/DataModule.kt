@@ -3,7 +3,6 @@ package com.taxapprf.data.di
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.room.Room
-import com.taxapprf.data.CurrencyRepositoryImpl
 import com.taxapprf.data.NetworkManager
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.local.room.LocalSyncDao
@@ -87,6 +86,11 @@ object DataModule {
 
     @Singleton
     @Provides
+    fun provideTaxDao(db: LocalDatabase) =
+        db.taxDao()
+
+    @Singleton
+    @Provides
     fun provideConnectivityManager(@ApplicationContext context: Context) =
         context.getSystemService(ConnectivityManager::class.java) as ConnectivityManager
 
@@ -115,16 +119,9 @@ object DataModule {
     @Provides
     fun provideSyncTransaction(
         localSyncDao: LocalSyncDao,
-        remoteReportDao: RemoteReportDao,
         remoteTransactionDao: RemoteTransactionDao,
-        currencyRepositoryImpl: CurrencyRepositoryImpl
     ) =
-        SyncTransactions(
-            localSyncDao,
-            remoteReportDao,
-            remoteTransactionDao,
-            currencyRepositoryImpl
-        )
+        SyncTransactions(localSyncDao, remoteTransactionDao)
 
     @Singleton
     @Provides

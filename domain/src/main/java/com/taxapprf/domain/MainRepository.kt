@@ -2,7 +2,6 @@ package com.taxapprf.domain
 
 import com.taxapprf.domain.main.account.SwitchAccountModel
 import com.taxapprf.domain.main.transaction.SaveTransactionModel
-import com.taxapprf.domain.main.transaction.UpdateTransactionTaxModel
 import com.taxapprf.domain.main.user.ObserveUserWithAccountsModel
 import com.taxapprf.domain.main.user.SignInModel
 import com.taxapprf.domain.main.user.SignUpModel
@@ -18,5 +17,4 @@ interface MainRepository {
     suspend fun saveUser(userModel: UserModel)
     suspend fun switchAccount(switchAccountModel: SwitchAccountModel)
     suspend fun saveTransaction(saveTransactionModel: SaveTransactionModel): Int?
-    suspend fun updateTransaction(updateTransactionTaxModel: UpdateTransactionTaxModel): Int?
 }

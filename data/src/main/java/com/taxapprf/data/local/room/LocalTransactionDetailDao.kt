@@ -32,7 +32,7 @@ interface LocalTransactionDetailDao {
             transactionTypeOrdinal = transaction?.typeOrdinal,
             currencyOrdinal = transaction?.currencyOrdinal,
             sum = transaction?.sum,
-            tax = transaction?.tax
+            taxRUB = transaction?.taxRUB
         )
     }
 }

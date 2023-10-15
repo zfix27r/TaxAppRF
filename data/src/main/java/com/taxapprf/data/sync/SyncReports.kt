@@ -6,9 +6,9 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_SIZE
-import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX
-import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
-import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
+import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.DEFAULT_TAX_RUB
+import com.taxapprf.data.local.room.model.sync.SyncResultAccountDataModel
+import com.taxapprf.data.local.room.model.sync.SyncResultReportDataModel
 import com.taxapprf.data.remote.firebase.dao.RemoteReportDao
 import com.taxapprf.data.remote.firebase.entity.FirebaseReportEntity
 
@@ -19,7 +19,7 @@ class SyncReports(
     private var currentAccountId: Int = 0
     private var currentAccountKey: String = ""
 
-    suspend fun sync(getSyncResultAccountModel: GetSyncResultAccountModel): List<GetSyncResultReportModel> {
+    suspend fun sync(getSyncResultAccountModel: SyncResultAccountDataModel): List<SyncResultReportDataModel> {
         getSyncResultAccountModel.accountKey?.let {
             currentAccountId = getSyncResultAccountModel.accountId
             currentAccountKey = getSyncResultAccountModel.accountKey
@@ -49,7 +49,7 @@ class SyncReports(
         return LocalReportEntity(
             id = localIn?.id ?: DEFAULT_ID,
             accountId = currentAccountId,
-            tax = localIn?.tax ?: DEFAULT_TAX,
+            taxRUB = localIn?.taxRUB ?: DEFAULT_TAX_RUB,
             size = localIn?.size ?: DEFAULT_SIZE,
             remoteKey = key,
             isSync = true,
@@ -61,7 +61,7 @@ class SyncReports(
         LocalReportEntity(
             id = id,
             accountId = accountId,
-            tax = tax,
+            taxRUB = taxRUB,
             size = size,
             remoteKey = remoteKey,
             isSync = isSync,

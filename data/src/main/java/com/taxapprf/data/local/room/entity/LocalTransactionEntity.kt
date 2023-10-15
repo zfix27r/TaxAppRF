@@ -11,9 +11,9 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TABLE_NAME
 import com.taxapprf.data.sync.IS_SYNC
+import com.taxapprf.data.sync.ISyncLocalModel
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
-import com.taxapprf.data.sync.SyncLocal
 
 @Entity(tableName = TABLE_NAME)
 data class LocalTransactionEntity(
@@ -35,8 +35,10 @@ data class LocalTransactionEntity(
     val date: Long,
     @ColumnInfo(name = SUM)
     val sum: Double,
-    @ColumnInfo(name = TAX)
-    val tax: Double? = null,
+    @ColumnInfo(name = SUM_RUB)
+    val sumRUB: Double? = null,
+    @ColumnInfo(name = TAX_RUB)
+    val taxRUB: Double? = null,
 
     @ColumnInfo(name = REMOTE_KEY)
     override val remoteKey: String? = null,
@@ -44,13 +46,14 @@ data class LocalTransactionEntity(
     override val isSync: Boolean = false,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long = getEpochTime(),
-) : SyncLocal {
+) : ISyncLocalModel {
     companion object {
         const val TABLE_NAME = "transaction"
 
         const val NAME = "name"
         const val DATE = "date"
         const val SUM = "sum"
-        const val TAX = "tax"
+        const val SUM_RUB = "sum_rub"
+        const val TAX_RUB = "tax_rub"
     }
 }

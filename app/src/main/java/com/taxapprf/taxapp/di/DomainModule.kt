@@ -6,15 +6,14 @@ import com.taxapprf.data.ExcelRepositoryImpl
 import com.taxapprf.data.MainRepositoryImpl
 import com.taxapprf.data.ReportsRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
+import com.taxapprf.data.TaxRepositoryImpl
 import com.taxapprf.data.TransactionDetailRepositoryImpl
 import com.taxapprf.data.TransactionsRepositoryImpl
 import com.taxapprf.domain.currency.GetCurrencyRateModelsUseCase
-import com.taxapprf.domain.currency.UpdateNotLoadedCurrenciesUseCase
 import com.taxapprf.domain.excel.ExportExcelUseCase
 import com.taxapprf.domain.excel.ImportExcelUseCase
 import com.taxapprf.domain.main.account.SwitchAccountUseCase
 import com.taxapprf.domain.main.transaction.SaveTransactionUseCase
-import com.taxapprf.domain.main.transaction.UpdateTransactionTaxUseCase
 import com.taxapprf.domain.main.user.ObserveUserWithAccountsUseCase
 import com.taxapprf.domain.main.user.SignInUseCase
 import com.taxapprf.domain.main.user.SignOutUseCase
@@ -22,6 +21,8 @@ import com.taxapprf.domain.main.user.SignUpUseCase
 import com.taxapprf.domain.reports.DeleteReportsUseCase
 import com.taxapprf.domain.reports.ObserveReportsUseCase
 import com.taxapprf.domain.sync.SyncAllUseCase
+import com.taxapprf.domain.tax.UpdateAllEmptySumUseCase
+import com.taxapprf.domain.tax.UpdateAllEmptyTaxUseCase
 import com.taxapprf.domain.transactions.DeleteTransactionsUseCase
 import com.taxapprf.domain.transactions.ObserveReportUseCase
 import com.taxapprf.domain.transactions.ObserveTransactionsUseCase
@@ -56,19 +57,16 @@ object DomainModule {
         SwitchAccountUseCase(mainRepositoryImpl)
 
     @Provides
-    fun provideSaveTransaction1UseCase(
+    fun provideSaveTransactionUseCase(
         mainRepositoryImpl: MainRepositoryImpl,
-        currencyRepositoryImpl: CurrencyRepositoryImpl
+        updateAllEmptySumUseCase: UpdateAllEmptySumUseCase,
+        updateAllEmptyTaxUseCase: UpdateAllEmptyTaxUseCase
     ) =
-        SaveTransactionUseCase(mainRepositoryImpl, currencyRepositoryImpl)
-
-    @Provides
-    fun provideUpdateTransactionTaxUseCase(
-        currencyRepositoryImpl: CurrencyRepositoryImpl,
-        mainRepositoryImpl: MainRepositoryImpl,
-        syncRepositoryImpl: SyncRepositoryImpl
-    ) =
-        UpdateTransactionTaxUseCase(currencyRepositoryImpl, mainRepositoryImpl, syncRepositoryImpl)
+        SaveTransactionUseCase(
+            mainRepositoryImpl,
+            updateAllEmptySumUseCase,
+            updateAllEmptyTaxUseCase
+        )
 
 
     /* Sync repository */
@@ -81,10 +79,6 @@ object DomainModule {
     @Provides
     fun provideGetCurrencyRateTodayFromCBRUseCase(currencyRepositoryImpl: CurrencyRepositoryImpl) =
         GetCurrencyRateModelsUseCase(currencyRepositoryImpl)
-
-    @Provides
-    fun provideUpdateNotLoadedCurrenciesUseCase(currencyRepositoryImpl: CurrencyRepositoryImpl) =
-        UpdateNotLoadedCurrenciesUseCase(currencyRepositoryImpl)
 
 
     /* Reports repository */
@@ -136,4 +130,14 @@ object DomainModule {
         syncRepositoryImpl: SyncRepositoryImpl,
     ) =
         DeleteTransactionsUseCase(deletedRepositoryImpl, syncRepositoryImpl)
+
+
+    /* Tax repository */
+    @Provides
+    fun provideUpdateAllEmptySumUseCase(taxRepositoryImpl: TaxRepositoryImpl) =
+        UpdateAllEmptySumUseCase(taxRepositoryImpl)
+
+    @Provides
+    fun provideUpdateAllEmptyTaxUseCase(taxRepositoryImpl: TaxRepositoryImpl) =
+        UpdateAllEmptyTaxUseCase(taxRepositoryImpl)
 }

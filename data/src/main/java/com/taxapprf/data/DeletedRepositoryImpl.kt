@@ -2,7 +2,7 @@ package com.taxapprf.data
 
 import com.taxapprf.data.local.room.LocalDeletedDao
 import com.taxapprf.data.local.room.entity.LocalDeletedEntity
-import com.taxapprf.data.local.room.model.transaction.GetDeletedTransaction
+import com.taxapprf.data.local.room.model.transaction.DeletedTransactionDataModel
 import com.taxapprf.domain.DeletedRepository
 import javax.inject.Inject
 
@@ -22,17 +22,17 @@ class DeletedRepositoryImpl @Inject constructor(
         startLocalDeleteTransactions(deleteTransactions)
     }
 
-    private fun startLocalDeleteTransactions(deleteTransactions: List<GetDeletedTransaction>) {
+    private fun startLocalDeleteTransactions(deleteTransactions: List<DeletedTransactionDataModel>) {
         if (deleteTransactions.isNotEmpty()) {
             localDeletedDao.getGetDeletedReport(deleteTransactions.first().reportId)
                 ?.let { getDeletedReport ->
-                    var newTax = getDeletedReport.tax
+                    var newTax = getDeletedReport.taxRUB
                     var newSize = getDeletedReport.size
                     val localDeletedKeyEntities = mutableListOf<LocalDeletedEntity>()
 
                     deleteTransactions
                         .forEach { getDeletedTransaction ->
-                            getDeletedTransaction.tax?.let { newTax -= it }
+                            getDeletedTransaction.taxRUB?.let { newTax -= it }
                             newSize--
 
                             getDeletedTransaction.remoteKey?.let {

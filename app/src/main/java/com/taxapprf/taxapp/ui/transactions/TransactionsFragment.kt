@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.taxapprf.domain.toTaxRF
 import com.taxapprf.domain.transactions.ReportModel
 import com.taxapprf.domain.transactions.TransactionModel
 import com.taxapprf.domain.transactions.TransactionTypes
@@ -104,7 +103,6 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.observeReport()?.let { flow ->
                     flow.collectLatest { report ->
-                        report?.tax?.let { adapter.reportTax = it }
                         report?.updateToolbar()
                     }
                 } ?: findNavController().popBackStack()
@@ -135,7 +133,7 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
     private fun ReportModel.updateToolbar() {
         val title = String.format(getString(R.string.transactions_title), name)
         val subtitle =
-            String.format(getString(R.string.transactions_subtitle), tax.toTaxRF(tax).toAppDouble())
+            String.format(getString(R.string.transactions_subtitle), taxRUB.toAppDouble())
         toolbar.updateTitles(title, subtitle)
     }
 

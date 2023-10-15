@@ -27,6 +27,7 @@ abstract class LocalDatabase : RoomDatabase() {
     abstract fun reportsDao(): LocalReportsDao
     abstract fun transactionsDao(): LocalTransactionsDao
     abstract fun transactionDetailDao(): LocalTransactionDetailDao
+    abstract fun taxDao(): LocalTaxDao
     abstract fun currencyDao(): LocalCurrencyDao
     abstract fun deletedDao(): LocalDeletedDao
     abstract fun excelDao(): LocalExcelDao

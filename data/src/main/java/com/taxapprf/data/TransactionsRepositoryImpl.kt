@@ -2,7 +2,7 @@ package com.taxapprf.data
 
 import com.taxapprf.data.local.room.LocalTransactionsDao
 import com.taxapprf.data.local.room.entity.LocalReportEntity
-import com.taxapprf.data.local.room.model.GetTransaction
+import com.taxapprf.data.local.room.model.ObserveTransactionDataModel
 import com.taxapprf.domain.TransactionsRepository
 import com.taxapprf.domain.currency.Currencies
 import com.taxapprf.domain.transactions.ReportModel
@@ -29,19 +29,20 @@ class TransactionsRepositoryImpl @Inject constructor(
         ReportModel(
             id = id,
             name = remoteKey,
-            tax = tax,
+            sumRUB = sumRUB,
+            taxRUB = taxRUB,
             size = size
         )
 
-    private fun GetTransaction.toTransactionModel() =
+    private fun ObserveTransactionDataModel.toTransactionModel() =
         TransactionModel(
-            id,
-            name,
-            date,
-            sum,
-            tax,
-            TransactionTypes.values()[typeOrdinal],
-            Currencies.values()[currencyOrdinal],
-            currencyRate
+            id = id,
+            name = name,
+            date = date,
+            sum = sum,
+            taxRUB = taxRUB,
+            type = TransactionTypes.values()[typeOrdinal],
+            currency = Currencies.values()[currencyOrdinal],
+            currencyRate = currencyRate
         )
 }

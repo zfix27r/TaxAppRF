@@ -8,13 +8,14 @@ import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity.Companion.CUR
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM_RUB
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX_RUB
 import com.taxapprf.data.sync.IS_SYNC
+import com.taxapprf.data.sync.ISyncLocalModel
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
-import com.taxapprf.data.sync.SyncLocal
 
-data class GetSyncTransactionModel(
+data class SyncTransactionDataModel(
     @ColumnInfo(name = TRANSACTION_ID)
     val transactionId: Int,
 
@@ -30,12 +31,14 @@ data class GetSyncTransactionModel(
     val currencyRate: Double?,
     @ColumnInfo(name = SUM)
     val sum: Double,
-    @ColumnInfo(name = TAX)
-    val tax: Double?,
+    @ColumnInfo(name = SUM_RUB)
+    val sumRUB: Double?,
+    @ColumnInfo(name = TAX_RUB)
+    val taxRUB: Double?,
     @ColumnInfo(name = REMOTE_KEY)
     override val remoteKey: String?,
     @ColumnInfo(name = IS_SYNC)
     override val isSync: Boolean,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long,
-) : SyncLocal
+) : ISyncLocalModel

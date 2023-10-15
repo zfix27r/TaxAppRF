@@ -11,6 +11,4 @@ data class SaveTransactionModel(
     val date: Long,
     val sum: Double,
     val tax: Double? = null,
-) {
-    var rate: Double? = null
-}
+)

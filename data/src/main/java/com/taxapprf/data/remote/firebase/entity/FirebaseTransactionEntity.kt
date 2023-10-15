@@ -1,6 +1,6 @@
 package com.taxapprf.data.remote.firebase.entity
 
-import com.taxapprf.data.sync.SyncRemote
+import com.taxapprf.data.sync.ISyncRemoteModel
 
 data class FirebaseTransactionEntity(
     val name: String? = null,
@@ -11,6 +11,6 @@ data class FirebaseTransactionEntity(
     val sum: Double? = null,
     val tax: Double? = null,
     override val syncAt: Long? = null,
-) : SyncRemote {
+) : ISyncRemoteModel {
     override var key: String? = null
 }

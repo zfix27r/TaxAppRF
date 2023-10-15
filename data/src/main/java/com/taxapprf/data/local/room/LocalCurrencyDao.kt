@@ -4,10 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity
-import com.taxapprf.data.local.room.entity.LocalReportEntity
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 
 @Dao
 interface LocalCurrencyDao {
@@ -20,7 +17,7 @@ interface LocalCurrencyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveRates(localCBRRateEntities: List<LocalCurrencyRateEntity>): List<Long>
 
-    /* updateNotLoadedCurrencies */
+/*    *//* updateNotLoadedCurrencies *//*
     @Query("SELECT * FROM `transaction` WHERE tax IS NULL")
     fun getNotLoadedLocalTransactionEntities(): List<LocalTransactionEntity>
 
@@ -40,5 +37,5 @@ interface LocalCurrencyDao {
     ) {
         saveLocalReportEntities(localReportEntities)
         saveLocalTransactionEntities(localTransactionEntities)
-    }
+    }*/
 }

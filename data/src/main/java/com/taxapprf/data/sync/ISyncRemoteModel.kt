@@ -1,6 +1,6 @@
 package com.taxapprf.data.sync
 
-interface SyncRemote {
+interface ISyncRemoteModel {
     var key: String?
     val syncAt: Long?
 }

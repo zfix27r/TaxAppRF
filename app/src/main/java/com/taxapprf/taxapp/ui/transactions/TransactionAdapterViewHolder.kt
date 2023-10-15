@@ -3,7 +3,6 @@ package com.taxapprf.taxapp.ui.transactions
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.toAppDate
-import com.taxapprf.domain.toTaxRF
 import com.taxapprf.domain.transactions.TransactionModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsAdapterItemBinding
@@ -13,7 +12,6 @@ class TransactionAdapterViewHolder(
     private val binding: FragmentTransactionsAdapterItemBinding,
     private val callback: TransactionsAdapterCallback,
     private val localTypeNames: List<String>,
-    private val reportTax: Double,
 ) : RecyclerView.ViewHolder(binding.root) {
     private val context = binding.root.context
     private lateinit var _transaction: TransactionModel
@@ -62,7 +60,7 @@ class TransactionAdapterViewHolder(
             binding.textviewTransactionsAdapterItemCurrencyRate.text =
                 _transaction.currencyRate?.toAppDouble()
             binding.textviewTransactionsAdapterItemTax.text =
-                _transaction.tax?.toTaxRF(reportTax)?.toAppDouble()
+                _transaction.taxRUB?.toAppDouble()
             binding.textviewTransactionsAdapterItemCurrencyRate.isVisible = true
             binding.textviewTransactionsAdapterItemTaxSymbol.isVisible = true
         }

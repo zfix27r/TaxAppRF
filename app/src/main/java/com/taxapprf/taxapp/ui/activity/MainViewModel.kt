@@ -5,7 +5,6 @@ import android.net.Network
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.NetworkManager
-import com.taxapprf.domain.currency.UpdateNotLoadedCurrenciesUseCase
 import com.taxapprf.domain.main.account.SwitchAccountModel
 import com.taxapprf.domain.main.account.SwitchAccountUseCase
 import com.taxapprf.domain.main.transaction.SaveTransactionModel
@@ -15,6 +14,8 @@ import com.taxapprf.domain.main.user.ObserveUserWithAccountsUseCase
 import com.taxapprf.domain.main.user.SignOutUseCase
 import com.taxapprf.domain.main.user.UserWithAccountsModel
 import com.taxapprf.domain.sync.SyncAllUseCase
+import com.taxapprf.domain.tax.UpdateAllEmptySumUseCase
+import com.taxapprf.domain.tax.UpdateAllEmptyTaxUseCase
 import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,8 @@ class MainViewModel @Inject constructor(
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val syncAllUseCase: SyncAllUseCase,
-    private val updateNotLoadedCurrenciesUseCase: UpdateNotLoadedCurrenciesUseCase,
+    private val updateAllEmptySumUseCase: UpdateAllEmptySumUseCase,
+    private val updateAllEmptyTaxUseCase: UpdateAllEmptyTaxUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
 ) : ViewModel() {
     var defaultAccountName: String? = null
@@ -61,7 +63,8 @@ class MainViewModel @Inject constructor(
                     if (!isSynced) syncAll()
                     isSynced = true
 
-                    updateNotLoadedCurrenciesUseCase.execute()
+                    updateAllEmptySumUseCase.execute()
+                    updateAllEmptyTaxUseCase.execute()
                 }
                 networkManager.isConnection = true
             }

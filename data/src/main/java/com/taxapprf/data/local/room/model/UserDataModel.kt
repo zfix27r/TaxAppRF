@@ -9,7 +9,7 @@ import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.AVATAR
 import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.EMAIL
 import com.taxapprf.data.local.room.entity.LocalUserEntity.Companion.PHONE
 
-data class GetUser(
+data class UserDataModel(
     @ColumnInfo(name = USER_ID)
     val userId: Int,
     @ColumnInfo(name = EMAIL)
