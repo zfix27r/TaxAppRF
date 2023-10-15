@@ -31,7 +31,8 @@ interface LocalTransactionsDao {
                 "r.currency_rate $CURRENCY_RATE " +
                 "FROM `transaction` t " +
                 "LEFT JOIN cbr_rate r ON r.currency_ordinal = t.currency_ordinal AND r.date = t.date " +
-                "WHERE report_id = :reportId"
+                "WHERE t.report_id = :reportId " +
+                "ORDER BY t.date ASC"
     )
     fun observeListGetTransaction(reportId: Int): Flow<List<GetTransaction>>
 }
