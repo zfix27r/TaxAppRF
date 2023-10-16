@@ -14,8 +14,7 @@ import com.taxapprf.domain.main.user.ObserveUserWithAccountsUseCase
 import com.taxapprf.domain.main.user.SignOutUseCase
 import com.taxapprf.domain.main.user.UserWithAccountsModel
 import com.taxapprf.domain.sync.SyncAllUseCase
-import com.taxapprf.domain.tax.UpdateAllEmptySumUseCase
-import com.taxapprf.domain.tax.UpdateAllEmptyTaxUseCase
+import com.taxapprf.domain.tax.UpdateAllEmptySumRUBAndTaxRUBUseCase
 import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -34,8 +33,7 @@ class MainViewModel @Inject constructor(
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val syncAllUseCase: SyncAllUseCase,
-    private val updateAllEmptySumUseCase: UpdateAllEmptySumUseCase,
-    private val updateAllEmptyTaxUseCase: UpdateAllEmptyTaxUseCase,
+    private val updateAllEmptySumRUBAndTaxRUBUseCase: UpdateAllEmptySumRUBAndTaxRUBUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
 ) : ViewModel() {
     var defaultAccountName: String? = null
@@ -62,9 +60,7 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     if (!isSynced) syncAll()
                     isSynced = true
-
-                    updateAllEmptySumUseCase.execute()
-                    updateAllEmptyTaxUseCase.execute()
+                    updateAllEmptySumRUBAndTaxRUBUseCase.execute()
                 }
                 networkManager.isConnection = true
             }

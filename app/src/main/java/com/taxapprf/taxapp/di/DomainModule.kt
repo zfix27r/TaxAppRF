@@ -21,8 +21,7 @@ import com.taxapprf.domain.main.user.SignUpUseCase
 import com.taxapprf.domain.reports.DeleteReportsUseCase
 import com.taxapprf.domain.reports.ObserveReportsUseCase
 import com.taxapprf.domain.sync.SyncAllUseCase
-import com.taxapprf.domain.tax.UpdateAllEmptySumUseCase
-import com.taxapprf.domain.tax.UpdateAllEmptyTaxUseCase
+import com.taxapprf.domain.tax.UpdateAllEmptySumRUBAndTaxRUBUseCase
 import com.taxapprf.domain.transactions.DeleteTransactionsUseCase
 import com.taxapprf.domain.transactions.ObserveReportUseCase
 import com.taxapprf.domain.transactions.ObserveTransactionsUseCase
@@ -59,13 +58,11 @@ object DomainModule {
     @Provides
     fun provideSaveTransactionUseCase(
         mainRepositoryImpl: MainRepositoryImpl,
-        updateAllEmptySumUseCase: UpdateAllEmptySumUseCase,
-        updateAllEmptyTaxUseCase: UpdateAllEmptyTaxUseCase
+        updateAllEmptySumRUBAndTaxRUBUseCase: UpdateAllEmptySumRUBAndTaxRUBUseCase
     ) =
         SaveTransactionUseCase(
             mainRepositoryImpl,
-            updateAllEmptySumUseCase,
-            updateAllEmptyTaxUseCase
+            updateAllEmptySumRUBAndTaxRUBUseCase
         )
 
 
@@ -134,10 +131,7 @@ object DomainModule {
 
     /* Tax repository */
     @Provides
-    fun provideUpdateAllEmptySumUseCase(taxRepositoryImpl: TaxRepositoryImpl) =
-        UpdateAllEmptySumUseCase(taxRepositoryImpl)
+    fun provideUpdateAllEmptySumRUBAndTaxRUBUseCase(taxRepositoryImpl: TaxRepositoryImpl) =
+        UpdateAllEmptySumRUBAndTaxRUBUseCase(taxRepositoryImpl)
 
-    @Provides
-    fun provideUpdateAllEmptyTaxUseCase(taxRepositoryImpl: TaxRepositoryImpl) =
-        UpdateAllEmptyTaxUseCase(taxRepositoryImpl)
 }

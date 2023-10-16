@@ -1,8 +1,7 @@
 package com.taxapprf.data
 
 import com.taxapprf.data.local.room.LocalTaxDao
-import com.taxapprf.data.local.room.model.tax.TransactionSumRUBDataModel
-import com.taxapprf.data.local.room.model.tax.TransactionTaxRUBDataModel
+import com.taxapprf.data.local.room.model.tax.TransactionSumRUBAndTaxRUBDataModel
 import com.taxapprf.domain.TaxRepository
 import com.taxapprf.domain.transactions.TransactionTypes
 import javax.inject.Inject
@@ -12,49 +11,79 @@ class TaxRepositoryImpl @Inject constructor(
     private val currencyRepository: CurrencyRepositoryImpl,
     private val localTaxDao: LocalTaxDao,
 ) : TaxRepository {
-    override suspend fun updateAllEmptySumRUB() {
-        val updatedReports = mutableSetOf<Int>()
+    override suspend fun updateAllEmptySumRUBAndTaxRUB() {
+        val reports = mutableMapOf<Int, Double>()
+        val transactions = localTaxDao.getTransactionSumRUBAndTaxRUBDataModels()
 
-        val transactionSumRUBModels = localTaxDao.getTransactionSumRUBModels()
-        transactionSumRUBModels.forEach { transactionSumRUBModel ->
-            calculateSumRUB(transactionSumRUBModel)?.let { sumRUB ->
-                transactionSumRUBModel.sumRUB = sumRUB
-                transactionSumRUBModel.taxRUB = null
-                updatedReports.add(transactionSumRUBModel.reportId)
+        transactions.forEach { transaction ->
+            calculateSumRUB(transaction)?.let { sumRUB ->
+                transaction.sumRUB = sumRUB
+
+                if (!reports.containsKey(transaction.reportId))
+                    localTaxDao.getReportSumRUB(transaction.reportId)?.let {
+                        reports[transaction.reportId] = it
+                    }
             }
         }
 
-        if (updatedReports.isNotEmpty())
-            localTaxDao.updateAllUpdatedSumRUB(updatedReports, transactionSumRUBModels)
-    }
+        if (reports.isNotEmpty())
+            localTaxDao.updateTransactionSumRUBAndTaxRUBDataModels(transactions)
+        else return
 
-    override fun updateAllEmptyTaxRUB() {
-        val updatedReports = mutableMapOf<Int, Double>()
-
-        val transactionTaxRUBModels = localTaxDao.getTransactionTaxRUBModels()
-        transactionTaxRUBModels.forEach { transactionTaxRUBModel ->
-            updatedReports[transactionTaxRUBModel.reportId]
-                ?: localTaxDao.getReportSumRUB(transactionTaxRUBModel.reportId)
-                    ?.let { reportSumRUB ->
-                        calculateTaxRUB(reportSumRUB, transactionTaxRUBModel)?.let { taxRUB ->
-                            transactionTaxRUBModel.taxRUB = taxRUB
-                            updatedReports[transactionTaxRUBModel.reportId] = reportSumRUB
-                        }
-                    }
+        reports.forEach { report ->
+            localTaxDao.updateReportSumRUB(report.key)
         }
 
-        if (updatedReports.isNotEmpty())
-            localTaxDao.updateAllUpdatedTaxRUB(updatedReports, transactionTaxRUBModels)
+        reports.forEach { report ->
+            localTaxDao.getReportSumRUB(report.key)?.let { newReportSumRUB ->
+                if (isSumRUBMoreThenLuxury(newReportSumRUB, report.value) ||
+                    isSumRUBLessThenLuxury(newReportSumRUB, report.value)
+                ) {
+                    val reportTransactions =
+                        localTaxDao.getTransactionSumRUBAndTaxRUBDataModels(report.key)
+                    reportTransactions.forEach {
+                        calculateTaxRUB(newReportSumRUB, it)?.let { taxRUB ->
+                            it.taxRUB = taxRUB
+                        }
+                    }
+                    localTaxDao.updateTransactionSumRUBAndTaxRUBDataModels(reportTransactions)
+                    reports[report.key] = newReportSumRUB
+                }
+            }
+        }
+
+
+        transactions.forEach { transaction ->
+            if (reports.containsKey(transaction.reportId)) {
+                calculateTaxRUB(reports[transaction.reportId]!!, transaction)?.let { taxRUB ->
+                    transaction.taxRUB = taxRUB
+                }
+            }
+        }
+
+        localTaxDao.updateTransactionSumRUBAndTaxRUBDataModels(transactions)
+
+        reports.forEach { report ->
+            localTaxDao.updateReportTaxRUB(report.key)
+        }
     }
 
-    private suspend fun calculateSumRUB(transactionSumRUBModel: TransactionSumRUBDataModel) =
+    private fun isSumRUBMoreThenLuxury(newSumRUB: Double, oldSumRUB: Double) =
+        newSumRUB > SUM_RUB_LUXURY && oldSumRUB <= SUM_RUB_LUXURY
+
+    private fun isSumRUBLessThenLuxury(newSumRUB: Double, oldSumRUB: Double) =
+        newSumRUB <= SUM_RUB_LUXURY && oldSumRUB > SUM_RUB_LUXURY
+
+    private suspend fun calculateSumRUB(
+        transactionSumRUBAndTaxRUBDataModel: TransactionSumRUBAndTaxRUBDataModel
+    ) =
         try {
             currencyRepository.getCurrencyRate(
-                transactionSumRUBModel.currencyOrdinal,
-                transactionSumRUBModel.date
+                transactionSumRUBAndTaxRUBDataModel.currencyOrdinal,
+                transactionSumRUBAndTaxRUBDataModel.date
             )?.let { currencyRate ->
                 if (currencyRate.isRateNotFoundOnCBR()) null
-                else transactionSumRUBModel.sum * currencyRate
+                else transactionSumRUBAndTaxRUBDataModel.sum * currencyRate
             }
         } catch (_: Exception) {
             null
@@ -64,14 +93,14 @@ class TaxRepositoryImpl @Inject constructor(
 
     private fun calculateTaxRUB(
         reportSumRUB: Double,
-        transactionTaxRUBModel: TransactionTaxRUBDataModel
+        transactionSumRUBAndTaxRUBDataModel: TransactionSumRUBAndTaxRUBDataModel
     ) =
         try {
-            val k = TransactionTypes.values()[transactionTaxRUBModel.typeOrdinal].k
+            val k = TransactionTypes.values()[transactionSumRUBAndTaxRUBDataModel.typeOrdinal].k
             if (k != 0) {
                 val taxRF =
-                    if (reportSumRUB > RUB_SUM_LUXURY) RUB_TAX_LUXURY else RUB_TAX_BASE
-                transactionTaxRUBModel.sumRUB!! * taxRF * k
+                    if (reportSumRUB > SUM_RUB_LUXURY) RUB_TAX_LUXURY else RUB_TAX_BASE
+                transactionSumRUBAndTaxRUBDataModel.sumRUB!! * taxRF * k
             } else 0.0
         } catch (_: Exception) {
             null
@@ -80,6 +109,6 @@ class TaxRepositoryImpl @Inject constructor(
     companion object {
         const val RUB_TAX_BASE = 0.13
         const val RUB_TAX_LUXURY = 0.15
-        const val RUB_SUM_LUXURY = 5_000_000
+        const val SUM_RUB_LUXURY = 5_000_000.0
     }
 }
