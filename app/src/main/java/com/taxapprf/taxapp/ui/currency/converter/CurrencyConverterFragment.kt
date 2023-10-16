@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.domain.cbr.Currencies
+import com.taxapprf.domain.currency.Currencies
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentCurrencyConverterBinding
 import com.taxapprf.taxapp.ui.BaseFragment

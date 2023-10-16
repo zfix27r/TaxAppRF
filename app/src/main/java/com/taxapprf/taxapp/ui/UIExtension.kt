@@ -12,7 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.domain.PATTERN_DATE
-import com.taxapprf.domain.transaction.TransactionTypes
 import com.taxapprf.taxapp.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +23,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.ResolverStyle
@@ -103,7 +103,7 @@ fun String.showDatePickerDialog(
             DatePickerDialog(
                 context, listener,
                 it.year,
-                it.monthValue - 1 ,
+                it.monthValue - 1,
                 it.dayOfMonth
             ).show()
         }
@@ -128,18 +128,5 @@ fun showDatePickerDialog(
 fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
     LocalDate.of(year, month + 1, dayOfMonth).toEpochDay()
 
-fun Context.convertToTransactionTypeName(typeK: Int) =
-    when (typeK) {
-        TransactionTypes.TRADE.k -> getString(R.string.transaction_type_trade)
-        TransactionTypes.COMMISSION.k -> getString(R.string.transaction_type_commission)
-        TransactionTypes.FUNDING_WITHDRAWAL.k -> getString(R.string.transaction_type_funding_withdrawal)
-        else -> null
-    }
-
-fun Context.convertToTransactionTypeK(typeName: String) =
-    when (typeName) {
-        getString(R.string.transaction_type_trade) -> TransactionTypes.TRADE.k
-        getString(R.string.transaction_type_commission) -> TransactionTypes.COMMISSION.k
-        getString(R.string.transaction_type_funding_withdrawal) -> TransactionTypes.FUNDING_WITHDRAWAL.k
-        else -> null
-    }
+val appDoubleFormatter = DecimalFormat("#,##0.00")
+fun Double.toAppDouble(): String = appDoubleFormatter.format(this)

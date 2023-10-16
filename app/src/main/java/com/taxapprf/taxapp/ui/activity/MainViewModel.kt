@@ -1,36 +1,43 @@
 package com.taxapprf.taxapp.ui.activity
 
+import android.net.ConnectivityManager
+import android.net.Network
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taxapprf.domain.main.SaveTransaction1Model
-import com.taxapprf.domain.main.SaveTransaction1UseCase
+import com.taxapprf.data.NetworkManager
+import com.taxapprf.domain.main.account.SwitchAccountModel
+import com.taxapprf.domain.main.account.SwitchAccountUseCase
+import com.taxapprf.domain.main.transaction.SaveTransactionModel
+import com.taxapprf.domain.main.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.main.user.ObserveUserWithAccountsModel
+import com.taxapprf.domain.main.user.ObserveUserWithAccountsUseCase
+import com.taxapprf.domain.main.user.SignOutUseCase
+import com.taxapprf.domain.main.user.UserWithAccountsModel
 import com.taxapprf.domain.sync.SyncAllUseCase
-import com.taxapprf.domain.transaction.SaveTransactionModel
-import com.taxapprf.domain.user.ObserveUserWithAccountsModel
-import com.taxapprf.domain.user.ObserveUserWithAccountsUseCase
-import com.taxapprf.domain.user.SignOutUseCase
-import com.taxapprf.domain.user.SwitchAccountModel
-import com.taxapprf.domain.user.SwitchAccountUseCase
-import com.taxapprf.domain.user.UserWithAccountsModel
+import com.taxapprf.domain.tax.UpdateAllEmptySumRUBAndTaxRUBUseCase
 import com.taxapprf.taxapp.ui.showLoading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val networkManager: NetworkManager,
     private val observeUserWithAccountsUseCase: ObserveUserWithAccountsUseCase,
     private val switchAccountUseCase: SwitchAccountUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val syncAllUseCase: SyncAllUseCase,
-    private val saveTransaction1UseCase: SaveTransaction1UseCase,
+    private val updateAllEmptySumRUBAndTaxRUBUseCase: UpdateAllEmptySumRUBAndTaxRUBUseCase,
+    private val saveTransactionUseCase: SaveTransactionUseCase,
 ) : ViewModel() {
     var defaultAccountName: String? = null
+    var accountId: Int? = null
 
     /*
     TODO() сделать загрузку в настройках курса за выбранный период
@@ -42,13 +49,37 @@ class MainViewModel @Inject constructor(
             }
             */
 
-    private val _userWithAccounts: MutableStateFlow<UserWithAccountsModel?> = MutableStateFlow(null)
+    private val _userWithAccounts = MutableStateFlow<UserWithAccountsModel?>(null)
     val userWithAccounts = _userWithAccounts.asStateFlow()
 
-    var accountId: Int? = null
+    private var isSynced = false
+    private val networkCallback =
+        object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                viewModelScope.launch(Dispatchers.IO) {
+                    if (!isSynced) syncAll()
+                    isSynced = true
+                    updateAllEmptySumRUBAndTaxRUBUseCase.execute()
+                }
+                networkManager.isConnection = true
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                networkManager.isConnection = false
+            }
+        }
+
+    fun observeConnection() {
+        networkManager.observeConnection(networkCallback)
+    }
 
     suspend fun syncAll() =
-        syncAllUseCase.execute()
+        flow {
+            syncAllUseCase.execute()
+            emit(Unit)
+        }
             .flowOn(Dispatchers.IO)
             .showLoading()
 
@@ -81,7 +112,9 @@ class MainViewModel @Inject constructor(
 
     fun signOut() =
         viewModelScope.launch(Dispatchers.IO) {
-            signOutUseCase.execute()
+            flow {
+                emit(signOutUseCase.execute())
+            }
                 .showLoading()
                 .collectLatest {
                     updateUserWithAccounts()
@@ -90,19 +123,6 @@ class MainViewModel @Inject constructor(
 
     fun saveTransaction(saveTransactionModel: SaveTransactionModel) =
         viewModelScope.launch(Dispatchers.IO) {
-            saveTransaction1UseCase.execute(
-                SaveTransaction1Model(
-                    transactionId = saveTransactionModel.transactionId,
-                    reportId = saveTransactionModel.reportId,
-                    accountId = saveTransactionModel.accountId,
-                    transactionTypeOrdinal = saveTransactionModel.type.ordinal,
-                    currencyOrdinal = saveTransactionModel.currencyOrdinal,
-                    name = saveTransactionModel.name,
-                    date = saveTransactionModel.date,
-                    sum = saveTransactionModel.sum,
-                    tax = saveTransactionModel.tax
-                )
-            )
-//            saveTransactionUseCase.execute(saveTransactionModel)
+            saveTransactionUseCase.execute(saveTransactionModel)
         }
 }

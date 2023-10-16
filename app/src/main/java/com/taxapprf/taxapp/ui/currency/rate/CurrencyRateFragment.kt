@@ -27,39 +27,38 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
     private val datePickerListener =
         DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             viewModel.date = getEpochDay(year, month, dayOfMonth)
-
-            toolbar.updateTitles(
-                title = String.format(
-                    getString(R.string.currency_rate_toolbar),
-                    viewModel.date.toAppDate()
-                )
-            )
-
+            updateToolbarTitles()
             viewModel.updateRatesWithCurrency()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         viewModel.updateRatesWithCurrency()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel.attach()
+        observeRateWithCurrencies()
 
         prepToolbar()
         prepView()
+    }
 
-        observeRateWithCurrencies()
+    private fun observeRateWithCurrencies() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.ratesWithCurrency.collectLatest {
+                    adapter.submitList(it)
+                }
+            }
+        }
     }
 
     private fun prepToolbar() {
-        toolbar.updateTitles(
-            title = String.format(
-                getString(R.string.currency_rate_toolbar),
-                viewModel.date.toAppDate()
-            )
-        )
+        updateToolbarTitles()
 
         toolbar.updateMenu(R.menu.toolbar_currency_rate) {
             when (it.itemId) {
@@ -73,19 +72,17 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
         }
     }
 
-    private fun prepView() {
-        binding.recyclerCurrencyRate.adapter = adapter
+    private fun updateToolbarTitles() {
+        toolbar.updateTitles(
+            title = String.format(
+                getString(R.string.currency_rate_toolbar),
+                viewModel.date.toAppDate()
+            )
+        )
     }
 
-    private fun observeRateWithCurrencies() {
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.ratesWithCurrency.collectLatest { rateWithCurrencies ->
-                    rateWithCurrencies?.let {
-                        adapter.submitList(it)
-                    }
-                }
-            }
-        }
+    private fun prepView() {
+        adapter.currencyNames = resources.getStringArray(R.array.currencies).toList()
+        binding.recyclerCurrencyRate.adapter = adapter
     }
 }

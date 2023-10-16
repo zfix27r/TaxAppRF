@@ -11,7 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.domain.cbr.Currencies
+import com.taxapprf.domain.currency.Currencies
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BaseBottomSheetFragment
@@ -29,28 +29,20 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
     private lateinit var typeAdapter: ArrayAdapter<String>
     private lateinit var transactionTypes: List<String>
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        return dialog.wrapHeight()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.attach()
+        observeTransactionDetail()
 
-        prepTypes()
+        prepTransactionTypes()
         prepCurrencies()
         prepListeners()
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.transaction?.collectLatest {
-                    updateUI()
-                } ?: updateUI()
-            }
-        }
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.report?.collectLatest { updateUI() }
-            }
-        }
     }
 
     override fun onPause() {
@@ -60,10 +52,21 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         viewModel.sum = binding.editTextTransactionDetailSum.text.toString()
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState)
+    private fun observeTransactionDetail() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.transactionDetailModel.collectLatest {
+                    updateUI()
+                }
+            }
+        }
+    }
 
-        return dialog.wrapHeight()
+    private fun prepTransactionTypes() {
+        transactionTypes = resources.getStringArray(R.array.transaction_types).toList()
+        typeAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, transactionTypes)
+        binding.spinnerTransactionDetailType.setAdapter(typeAdapter)
+        updateSelectedTransactionTypeSpinner()
     }
 
     private fun prepCurrencies() {
@@ -72,19 +75,6 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         binding.spinnerTransactionDetailCurrencies.setAdapter(currenciesAdapter)
         updateSelectedCurrencySpinner()
     }
-
-    private fun prepTypes() {
-        transactionTypes = resources.getStringArray(R.array.transaction_types).toList()
-        typeAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, transactionTypes)
-        binding.spinnerTransactionDetailType.setAdapter(typeAdapter)
-        updateSelectedTypeSpinner()
-    }
-
-    private val datePickerListener =
-        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            viewModel.checkDate(year, month, dayOfMonth)
-            updateDateText()
-        }
 
     private fun prepListeners() {
         binding.buttonTransactionDetailDatePicker.setOnClickListener {
@@ -115,7 +105,7 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
 
         binding.spinnerTransactionDetailType.onItemClickListener =
             AdapterView.OnItemClickListener { _, _, position, _ ->
-                viewModel.typeOrdinal = position
+                viewModel.transactionTypeOrdinal = position
             }
 
         binding.spinnerTransactionDetailCurrencies.onItemClickListener =
@@ -128,16 +118,22 @@ class TransactionDetailFragment : BaseBottomSheetFragment(R.layout.fragment_tran
         }
     }
 
+    private val datePickerListener =
+        DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            viewModel.checkDate(year, month, dayOfMonth)
+            updateDateText()
+        }
+
     private fun updateUI() {
         binding.editTextTransactionDetailName.setText(viewModel.name)
         binding.editTextTransactionDetailSum.setText(viewModel.sum)
         updateDateText()
-        updateSelectedTypeSpinner()
+        updateSelectedTransactionTypeSpinner()
         updateSelectedCurrencySpinner()
     }
 
-    private fun updateSelectedTypeSpinner() {
-        binding.spinnerTransactionDetailType.setText(transactionTypes[viewModel.typeOrdinal], false)
+    private fun updateSelectedTransactionTypeSpinner() {
+        binding.spinnerTransactionDetailType.setText(transactionTypes[viewModel.transactionTypeOrdinal], false)
     }
 
     private fun updateSelectedCurrencySpinner() {

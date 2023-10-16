@@ -3,7 +3,7 @@ package com.taxapprf.data.sync
 import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalSyncDao
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
-import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
+import com.taxapprf.data.local.room.model.sync.SyncResultAccountDataModel
 import com.taxapprf.data.remote.firebase.dao.RemoteAccountDao
 import com.taxapprf.data.remote.firebase.entity.FirebaseAccountEntity
 import javax.inject.Inject
@@ -14,7 +14,7 @@ class SyncAccounts @Inject constructor(
 ) : SyncManager<LocalAccountEntity, LocalAccountEntity, FirebaseAccountEntity>() {
     private var currentUserId: Int = 0
 
-    suspend fun sync(userId: Int): List<GetSyncResultAccountModel> {
+    suspend fun sync(userId: Int): List<SyncResultAccountDataModel> {
         currentUserId = userId
         startSync()
         return localDao.getSyncResultUserAccounts(currentUserId)

@@ -10,12 +10,10 @@ import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
-import com.taxapprf.domain.transaction.TransactionTypes
 import java.net.SocketTimeoutException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import kotlin.math.floor
 
 
 inline fun <T> safeCall(call: () -> T): T {
@@ -37,13 +35,3 @@ inline fun <T> safeCall(call: () -> T): T {
 fun getEpochDate() = LocalDate.now().toEpochDay()
 fun getEpochTime() = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
 fun Long.getYear() = LocalDate.ofEpochDay(this).year.toString()
-
-const val ROUND_TWO = 100.0
-const val ROUND_SIX = 1_000_000.0
-
-fun Double.round(k: Double = ROUND_TWO) = floor(this * k) / k
-
-fun calculateTax(sum: Double, rate: Double, transactionTypeOrdinal: Int): Double {
-    val k = TransactionTypes.values()[transactionTypeOrdinal].k
-    return sum * rate * k
-}

@@ -4,8 +4,8 @@ import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.remote.firebase.dao.RemoteUserDao
 import com.taxapprf.data.safeCall
-import com.taxapprf.domain.user.SignInModel
-import com.taxapprf.domain.user.SignUpModel
+import com.taxapprf.domain.main.user.SignInModel
+import com.taxapprf.domain.main.user.SignUpModel
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

@@ -1,6 +1,6 @@
 package com.taxapprf.domain
 
-import com.taxapprf.domain.cbr.CurrencyRateModel
+import com.taxapprf.domain.currency.CurrencyRateModel
 
 interface CurrencyRepository {
     suspend fun getCurrencyRate(currencyOrdinal: Int, date: Long): Double?

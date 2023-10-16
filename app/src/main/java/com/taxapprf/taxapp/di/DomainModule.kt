@@ -1,32 +1,31 @@
 package com.taxapprf.taxapp.di
 
 import com.taxapprf.data.CurrencyRepositoryImpl
+import com.taxapprf.data.DeletedRepositoryImpl
 import com.taxapprf.data.ExcelRepositoryImpl
 import com.taxapprf.data.MainRepositoryImpl
-import com.taxapprf.data.ReportRepositoryImpl
+import com.taxapprf.data.ReportsRepositoryImpl
 import com.taxapprf.data.SyncRepositoryImpl
-import com.taxapprf.data.TransactionRepositoryImpl
+import com.taxapprf.data.TaxRepositoryImpl
+import com.taxapprf.data.TransactionDetailRepositoryImpl
 import com.taxapprf.data.TransactionsRepositoryImpl
-import com.taxapprf.data.UserRepositoryImpl
-import com.taxapprf.domain.cbr.GetCurrencyRateModelsUseCase
-import com.taxapprf.domain.delete.DeleteReportWithTransactionsUseCase
-import com.taxapprf.domain.delete.DeleteTransactionWithReportUseCase
+import com.taxapprf.domain.currency.GetCurrencyRateModelsUseCase
 import com.taxapprf.domain.excel.ExportExcelUseCase
 import com.taxapprf.domain.excel.ImportExcelUseCase
-import com.taxapprf.domain.main.SaveTransaction1UseCase
-import com.taxapprf.domain.report.ObserveReportUseCase
-import com.taxapprf.domain.report.ObserveReportsUseCase
+import com.taxapprf.domain.main.account.SwitchAccountUseCase
+import com.taxapprf.domain.main.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.main.user.ObserveUserWithAccountsUseCase
+import com.taxapprf.domain.main.user.SignInUseCase
+import com.taxapprf.domain.main.user.SignOutUseCase
+import com.taxapprf.domain.main.user.SignUpUseCase
+import com.taxapprf.domain.reports.DeleteReportsUseCase
+import com.taxapprf.domain.reports.ObserveReportsUseCase
 import com.taxapprf.domain.sync.SyncAllUseCase
-import com.taxapprf.domain.transaction.ObserveTransactionUseCase
-import com.taxapprf.domain.transaction.ObserveTransactionsUseCase
-import com.taxapprf.domain.transaction.SaveTransactionUseCase
+import com.taxapprf.domain.tax.UpdateAllEmptySumRUBAndTaxRUBUseCase
 import com.taxapprf.domain.transactions.DeleteTransactionsUseCase
-import com.taxapprf.domain.update.UpdateReportWithTransactionTaxUseCase
-import com.taxapprf.domain.user.ObserveUserWithAccountsUseCase
-import com.taxapprf.domain.user.SignInUseCase
-import com.taxapprf.domain.user.SignOutUseCase
-import com.taxapprf.domain.user.SignUpUseCase
-import com.taxapprf.domain.user.SwitchAccountUseCase
+import com.taxapprf.domain.transactions.ObserveReportUseCase
+import com.taxapprf.domain.transactions.ObserveTransactionsUseCase
+import com.taxapprf.domain.transactions.detail.GetTransactionDetailUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,92 +34,73 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 @InstallIn(ViewModelComponent::class)
 object DomainModule {
+    /* Main repository */
     @Provides
-    fun provideSignInUseCase(userRepositoryImpl: UserRepositoryImpl) =
-        SignInUseCase(userRepositoryImpl)
+    fun provideSignInUseCase(mainRepositoryImpl: MainRepositoryImpl) =
+        SignInUseCase(mainRepositoryImpl)
 
     @Provides
-    fun provideSignUpUseCase(userRepositoryImpl: UserRepositoryImpl) =
-        SignUpUseCase(userRepositoryImpl)
+    fun provideSignUpUseCase(mainRepositoryImpl: MainRepositoryImpl) =
+        SignUpUseCase(mainRepositoryImpl)
 
     @Provides
-    fun provideSignOutUseCase(
-        userRepositoryImpl: UserRepositoryImpl,
-        reportRepositoryImpl: ReportRepositoryImpl,
-        transactionRepositoryImpl: TransactionRepositoryImpl
+    fun provideSignOutUseCase(mainRepositoryImpl: MainRepositoryImpl) =
+        SignOutUseCase(mainRepositoryImpl)
+
+    @Provides
+    fun provideGetUserUseCase(mainRepositoryImpl: MainRepositoryImpl) =
+        ObserveUserWithAccountsUseCase(mainRepositoryImpl)
+
+    @Provides
+    fun provideSwitchAccountUseCase(mainRepositoryImpl: MainRepositoryImpl) =
+        SwitchAccountUseCase(mainRepositoryImpl)
+
+    @Provides
+    fun provideSaveTransactionUseCase(
+        mainRepositoryImpl: MainRepositoryImpl,
+        updateAllEmptySumRUBAndTaxRUBUseCase: UpdateAllEmptySumRUBAndTaxRUBUseCase
     ) =
-        SignOutUseCase(userRepositoryImpl, reportRepositoryImpl, transactionRepositoryImpl)
+        SaveTransactionUseCase(
+            mainRepositoryImpl,
+            updateAllEmptySumRUBAndTaxRUBUseCase
+        )
 
-    @Provides
-    fun provideGetUserUseCase(userRepositoryImpl: UserRepositoryImpl) =
-        ObserveUserWithAccountsUseCase(userRepositoryImpl)
 
-    @Provides
-    fun provideSwitchAccountUseCase(userRepositoryImpl: UserRepositoryImpl) =
-        SwitchAccountUseCase(userRepositoryImpl)
-
+    /* Sync repository */
     @Provides
     fun provideSyncAllUseCase(syncRepositoryImpl: SyncRepositoryImpl) =
         SyncAllUseCase(syncRepositoryImpl)
 
+
+    /* Currency repository */
     @Provides
     fun provideGetCurrencyRateTodayFromCBRUseCase(currencyRepositoryImpl: CurrencyRepositoryImpl) =
         GetCurrencyRateModelsUseCase(currencyRepositoryImpl)
 
+
+    /* Reports repository */
     @Provides
-    fun provideObserveTransactionsUseCase(transactionRepositoryImpl: TransactionRepositoryImpl) =
-        ObserveTransactionsUseCase(transactionRepositoryImpl)
+    fun provideObserveReportsUseCase(reportsRepositoryImpl: ReportsRepositoryImpl) =
+        ObserveReportsUseCase(reportsRepositoryImpl)
+
+
+    /* Transactions repository */
+    @Provides
+    fun provideObserveReportUseCase(transactionsRepositoryImpl: TransactionsRepositoryImpl) =
+        ObserveReportUseCase(transactionsRepositoryImpl)
 
     @Provides
-    fun provideObserveTransactionUseCase(transactionRepositoryImpl: TransactionRepositoryImpl) =
-        ObserveTransactionUseCase(transactionRepositoryImpl)
+    fun provideObserveTransactionsUseCase(transactionsRepositoryImpl: TransactionsRepositoryImpl) =
+        ObserveTransactionsUseCase(transactionsRepositoryImpl)
 
+
+    /* Transaction detail repository*/
     @Provides
-    fun provideSaveTransactionUseCase(
-        reportRepositoryImpl: ReportRepositoryImpl,
-        transactionRepositoryImpl: TransactionRepositoryImpl,
-        updateTaxUseCase: UpdateReportWithTransactionTaxUseCase,
-    ) =
-        SaveTransactionUseCase(
-            reportRepositoryImpl,
-            transactionRepositoryImpl,
-            updateTaxUseCase
-        )
+    fun provideGetTransactionDetailUseCase(transactionDetailRepositoryImpl: TransactionDetailRepositoryImpl) =
+        GetTransactionDetailUseCase(transactionDetailRepositoryImpl)
 
-    @Provides
-    fun provideUpdateTaxTransactionUseCase(
-        reportRepositoryImpl: ReportRepositoryImpl,
-        transactionRepositoryImpl: TransactionRepositoryImpl,
-        currencyRepositoryImpl: CurrencyRepositoryImpl
-    ) =
-        UpdateReportWithTransactionTaxUseCase(
-            reportRepositoryImpl,
-            transactionRepositoryImpl,
-            currencyRepositoryImpl
-        )
 
-    @Provides
-    fun provideDeleteTransactionUseCase(
-        transactionRepositoryImpl: TransactionRepositoryImpl,
-        reportRepositoryImpl: ReportRepositoryImpl,
-    ) =
-        DeleteTransactionWithReportUseCase(transactionRepositoryImpl, reportRepositoryImpl)
-
-    @Provides
-    fun provideObserveReportUseCase(repositoryImpl: ReportRepositoryImpl) =
-        ObserveReportUseCase(repositoryImpl)
-
-    @Provides
-    fun provideObserveReportsUseCase(repositoryImpl: ReportRepositoryImpl) =
-        ObserveReportsUseCase(repositoryImpl)
-
-    @Provides
-    fun provideDeleteReportUseCase(
-        repositoryImpl: ReportRepositoryImpl,
-        transactionRepositoryImpl: TransactionRepositoryImpl
-    ) =
-        DeleteReportWithTransactionsUseCase(repositoryImpl, transactionRepositoryImpl)
-
+    /* Excel repository */
     @Provides
     fun provideImportExcelUseCase(
         excelRepositoryImpl: ExcelRepositoryImpl,
@@ -129,28 +109,29 @@ object DomainModule {
         ImportExcelUseCase(excelRepositoryImpl, saveTransactionUseCase)
 
     @Provides
-    fun provideExportExcelUseCase(
-        reportRepositoryImpl: ReportRepositoryImpl,
-        transactionRepositoryImpl: TransactionRepositoryImpl,
-        excelRepositoryImpl: ExcelRepositoryImpl
+    fun provideExportExcelUseCase(excelRepositoryImpl: ExcelRepositoryImpl) =
+        ExportExcelUseCase(excelRepositoryImpl)
+
+
+    /* Deleted repository */
+    @Provides
+    fun provideDeleteReportsUseCase(
+        deletedRepositoryImpl: DeletedRepositoryImpl,
+        syncRepositoryImpl: SyncRepositoryImpl,
     ) =
-        ExportExcelUseCase(
-            reportRepositoryImpl,
-            transactionRepositoryImpl,
-            excelRepositoryImpl
-        )
+        DeleteReportsUseCase(deletedRepositoryImpl, syncRepositoryImpl)
 
     @Provides
-    fun provideDeleteTransactionsUseCase(transactionsRepositoryImpl: TransactionsRepositoryImpl) =
-        DeleteTransactionsUseCase(transactionsRepositoryImpl)
-
-    @Provides
-    fun provideSaveTransaction1UseCase(
-        mainRepositoryImpl: MainRepositoryImpl,
-        currencyRepositoryImpl: CurrencyRepositoryImpl
+    fun provideDeleteTransactionsUseCase(
+        deletedRepositoryImpl: DeletedRepositoryImpl,
+        syncRepositoryImpl: SyncRepositoryImpl,
     ) =
-        SaveTransaction1UseCase(
-            mainRepositoryImpl,
-            currencyRepositoryImpl
-        )
+        DeleteTransactionsUseCase(deletedRepositoryImpl, syncRepositoryImpl)
+
+
+    /* Tax repository */
+    @Provides
+    fun provideUpdateAllEmptySumRUBAndTaxRUBUseCase(taxRepositoryImpl: TaxRepositoryImpl) =
+        UpdateAllEmptySumRUBAndTaxRUBUseCase(taxRepositoryImpl)
+
 }

@@ -28,7 +28,18 @@ class FirebaseTransactionDaoImpl @Inject constructor(
                 }
         }
 
-    override suspend fun updateAll(
+    override suspend fun deleteAllTransactions(
+        accountKey: String,
+        reportKey: String
+    ) {
+        safeCall {
+            fb.getTransactionsPath(accountKey, reportKey)
+                .setValue(null)
+                .await()
+        }
+    }
+
+    override suspend fun updateTransactions(
         accountKey: String,
         reportKey: String,
         transactionsModels: Map<String, FirebaseTransactionEntity?>

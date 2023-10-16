@@ -25,8 +25,8 @@ import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.error.DataErrorUser
 import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.DataErrorUserWrongPassword
-import com.taxapprf.domain.user.AccountModel
-import com.taxapprf.domain.user.UserWithAccountsModel
+import com.taxapprf.domain.main.account.AccountModel
+import com.taxapprf.domain.main.user.UserWithAccountsModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.ui.MainToolbar
@@ -75,10 +75,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         )
         setupWithNavController(binding.navView, navController)
 
-        viewModel.defaultAccountName = getString(R.string.default_account_name)
+        navController.setGraph(R.navigation.mobile_navigation)
 
+        viewModel.observeConnection()
         observeUser()
-        startSync()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.defaultAccountName = getString(R.string.default_account_name)
+        viewModel.updateUserWithAccounts()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -95,8 +101,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         userWithAccountsModel?.let {
             userWithAccountsModel.activeAccount?.let {
                 viewModel.accountId = it.id
-
-                navController.setGraph(R.navigation.mobile_navigation)
                 navController.observeCurrentBackStack()
             }
         }
@@ -148,16 +152,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
         R.id.reports,
         R.id.transactions,
     )
-
-    private fun startSync() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.syncAll().collectLatest {
-                    viewModel.updateUserWithAccounts()
-                }
-            }
-        }
-    }
 
     private fun observeUser() {
         lifecycleScope.launch {

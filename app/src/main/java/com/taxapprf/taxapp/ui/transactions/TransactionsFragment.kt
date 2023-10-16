@@ -15,15 +15,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.taxapprf.data.round
-import com.taxapprf.domain.report.ReportModel
-import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.TransactionTypes
+import com.taxapprf.domain.transactions.ReportModel
+import com.taxapprf.domain.transactions.TransactionModel
+import com.taxapprf.domain.transactions.TransactionTypes
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.checkStoragePermission
+import com.taxapprf.taxapp.ui.toAppDouble
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -132,7 +132,8 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
 
     private fun ReportModel.updateToolbar() {
         val title = String.format(getString(R.string.transactions_title), name)
-        val subtitle = String.format(getString(R.string.transactions_subtitle), tax.round())
+        val subtitle =
+            String.format(getString(R.string.transactions_subtitle), taxRUB.toAppDouble())
         toolbar.updateTitles(title, subtitle)
     }
 

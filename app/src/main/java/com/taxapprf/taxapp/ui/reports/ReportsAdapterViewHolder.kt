@@ -1,9 +1,9 @@
 package com.taxapprf.taxapp.ui.reports
 
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.data.round
-import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.transactions.ReportModel
 import com.taxapprf.taxapp.databinding.FragmentReportsAdapterItemBinding
+import com.taxapprf.taxapp.ui.toAppDouble
 
 class ReportsAdapterViewHolder(
     private val binding: FragmentReportsAdapterItemBinding,
@@ -27,6 +27,6 @@ class ReportsAdapterViewHolder(
         _report = reportAdapterModel
 
         binding.textReportsAdapterItemYear.text = _report.name
-        binding.textReportsAdapterItemTax.text = _report.tax.round().toString()
+        binding.textReportsAdapterItemTax.text = _report.taxRUB.toAppDouble()
     }
 }

@@ -14,7 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.transactions.ReportModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
@@ -52,23 +52,33 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     private val reportTouchHelper = ReportAdapterTouchHelper(reportsAdapterTouchHelperCallback)
     private val itemTouchHelper = ItemTouchHelper(reportTouchHelper)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        mainViewModel.userWithAccounts.value?.activeAccount?.let {
-            viewModel.updateReports(it.id)
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         viewModel.attach()
+        observeAccount()
+        observeReports()
 
         prepToolbar()
         prepViews()
         setListeners()
+    }
 
+    private fun observeAccount() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.userWithAccounts.collectLatest { userWithAccountsModel ->
+                    userWithAccountsModel?.let {
+                        userWithAccountsModel.activeAccount?.let {
+                            viewModel.updateReports(it.id)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeReports() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.reports.collectLatest { reports ->
@@ -93,8 +103,8 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun prepViews() {
-        binding.recyclerYearStatements.adapter = adapter
-        itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+        binding.recyclerReports.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(binding.recyclerReports)
     }
 
     private fun setListeners() {
@@ -134,7 +144,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
             .setNegativeButton(R.string.delete_dialog_cancel) { _, _ ->
                 reportTouchHelper.cancelSwipe()
                 itemTouchHelper.attachToRecyclerView(null)
-                itemTouchHelper.attachToRecyclerView(binding.recyclerYearStatements)
+                itemTouchHelper.attachToRecyclerView(binding.recyclerReports)
             }
             .show()
     }

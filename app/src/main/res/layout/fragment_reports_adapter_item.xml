@@ -6,22 +6,22 @@
     style="@style/Widget.Material3.CardView.Filled"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/offset_8"
-    android:layout_marginTop="@dimen/offset_8">
+    android:layout_marginTop="@dimen/default_card_top_offset"
+    app:cardCornerRadius="@dimen/default_card_corner_radius">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/offset_8"
+        android:minHeight="@dimen/main_item_height">
 
         <TextView
             android:id="@+id/text_reports_adapter_item_year"
-            android:layout_width="@dimen/zero"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/offset_24"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/offset_24"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="2000" />
@@ -29,32 +29,29 @@
         <TextView
             android:id="@+id/text_reports_adapter_item_tax"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/offset_16"
-            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/offset_8"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintEnd_toStartOf="@+id/button_reports_adapter_item_more"
-            app:layout_constraintStart_toEndOf="@+id/text_reports_adapter_item_year"
-            app:layout_constraintTop_toTopOf="@+id/text_reports_adapter_item_year"
-            tools:text="1000.00" />
+            app:layout_constraintBottom_toBottomOf="@+id/text_reports_adapter_item_symbol"
+            app:layout_constraintEnd_toStartOf="@+id/text_reports_adapter_item_symbol"
+            tools:text="1 000.00" />
 
         <TextView
             android:id="@+id/text_reports_adapter_item_symbol"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/offset_4"
-            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/offset_24"
             android:text="@string/symbol_rub"
             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-            app:layout_constraintBottom_toBottomOf="@+id/text_reports_adapter_item_tax"
-            app:layout_constraintStart_toEndOf="@+id/text_reports_adapter_item_tax" />
+            app:layout_constraintBottom_toBottomOf="@+id/text_reports_adapter_item_year"
+            app:layout_constraintEnd_toStartOf="@+id/button_reports_adapter_item_more" />
 
         <Button
             android:id="@+id/button_reports_adapter_item_more"
             style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:icon="@drawable/baseline_more_horiz_24"
+            app:icon="@drawable/baseline_more_vert_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

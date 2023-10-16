@@ -9,9 +9,9 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.DEFAULT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.entity.LocalReportEntity.Companion.TABLE_NAME
 import com.taxapprf.data.sync.IS_SYNC
+import com.taxapprf.data.sync.ISyncLocalModel
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
-import com.taxapprf.data.sync.SyncLocal
 
 @Entity(tableName = TABLE_NAME)
 data class LocalReportEntity(
@@ -22,8 +22,10 @@ data class LocalReportEntity(
     @ColumnInfo(name = ACCOUNT_ID)
     val accountId: Int,
 
-    @ColumnInfo(name = TAX)
-    val tax: Double = DEFAULT_TAX,
+    @ColumnInfo(name = SUM_RUB)
+    val sumRUB: Double = DEFAULT_SUM_RUB,
+    @ColumnInfo(name = TAX_RUB)
+    val taxRUB: Double = DEFAULT_TAX_RUB,
     @ColumnInfo(name = SIZE)
     val size: Int = DEFAULT_SIZE,
 
@@ -33,14 +35,16 @@ data class LocalReportEntity(
     override val isSync: Boolean = false,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long = getEpochTime(),
-) : SyncLocal {
+) : ISyncLocalModel {
     companion object {
         const val TABLE_NAME = "report"
 
-        const val TAX = "tax"
+        const val SUM_RUB = "sum_rub"
+        const val TAX_RUB = "tax_rub"
         const val SIZE = "size"
 
-        const val DEFAULT_TAX = 0.0
-        const val DEFAULT_SIZE = 1
+        const val DEFAULT_SUM_RUB = 0.0
+        const val DEFAULT_TAX_RUB = 0.0
+        const val DEFAULT_SIZE = 0
     }
 }

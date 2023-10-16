@@ -5,7 +5,7 @@ const val REMOTE_KEY = "remote_key"
 const val IS_SYNC = "is_sync"
 const val SYNC_AT = "sync_at"
 
-abstract class SyncManager<LocalIn : SyncLocal, LocalOut : SyncLocal, Remote : SyncRemote> {
+abstract class SyncManager<LocalIn : ISyncLocalModel, LocalOut : ISyncLocalModel, Remote : ISyncRemoteModel> {
     protected abstract fun getLocalInList(): List<LocalIn>
     protected abstract fun saveLocalOutList(locals: List<LocalOut>): List<Long>
     protected abstract fun deleteLocalOutList(locals: List<LocalOut>): Int

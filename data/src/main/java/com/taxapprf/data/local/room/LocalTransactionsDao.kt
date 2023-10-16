@@ -1,46 +1,38 @@
 package com.taxapprf.data.local.room
 
 import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.taxapprf.data.local.room.entity.LocalAccountEntity
-import com.taxapprf.data.local.room.entity.LocalDeletedKeyEntity
+import com.taxapprf.data.local.room.LocalDatabase.Companion.CURRENCY_ORDINAL
+import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
+import com.taxapprf.data.local.room.LocalDatabase.Companion.NAME
+import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
+import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity.Companion.CURRENCY_RATE
 import com.taxapprf.data.local.room.entity.LocalReportEntity
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX_RUB
+import com.taxapprf.data.local.room.model.ObserveTransactionDataModel
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalTransactionsDao {
-    @Query(
-        "SELECT a.* " +
-                "FROM `transaction` t " +
-                "JOIN report r ON r.id = t.report_id " +
-                "JOIN account a ON a.id = r.account_id " +
-                "WHERE t.id = :transactionsId"
-    )
-    fun getLocalAccountEntity(transactionsId: Int): LocalAccountEntity?
+    @Query("SELECT * FROM report WHERE id = :reportId LIMIT 1")
+    fun observeLocalReportEntity(reportId: Int): Flow<LocalReportEntity?>
 
     @Query(
-        "SELECT r.* " +
+        "SELECT " +
+                "t.id $ID, " +
+                "t.name $NAME, " +
+                "t.date $DATE, " +
+                "t.type_ordinal $TYPE_ORDINAL, " +
+                "t.sum $SUM, " +
+                "t.tax_rub $TAX_RUB, " +
+                "t.currency_ordinal $CURRENCY_ORDINAL, " +
+                "r.currency_rate $CURRENCY_RATE " +
                 "FROM `transaction` t " +
-                "JOIN report r ON r.id = t.report_id " +
-                "WHERE t.id = :transactionsId"
+                "LEFT JOIN cbr_rate r ON r.currency_ordinal = t.currency_ordinal AND r.date = t.date " +
+                "WHERE t.report_id = :reportId " +
+                "ORDER BY t.date ASC"
     )
-    fun getLocalReportEntity(transactionsId: Int): LocalReportEntity?
-
-    @Query("SELECT * FROM `transaction` WHERE id IN (:transactionsId)")
-    fun getLocalTransactionEntities(transactionsId: List<Int>): List<LocalTransactionEntity>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveReport(localReportEntity: LocalReportEntity): Long
-
-    @Delete
-    fun deleteReport(localReportEntity: LocalReportEntity): Int
-
-    @Delete
-    fun deleteTransactions(localTransactionEntities: List<LocalTransactionEntity>): Int
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveDeletedKeys(localDeletedKeyEntities: List<LocalDeletedKeyEntity>): List<Long>
+    fun observeListGetTransaction(reportId: Int): Flow<List<ObserveTransactionDataModel>>
 }

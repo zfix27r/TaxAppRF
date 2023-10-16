@@ -1,34 +1,30 @@
 package com.taxapprf.taxapp.ui.transactions.detail
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.getEpochDate
 import com.taxapprf.data.local.room.LocalDatabase.Companion.ACCOUNT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.REPORT_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
-import com.taxapprf.data.round
-import com.taxapprf.domain.cbr.Currencies
-import com.taxapprf.domain.report.ObserveReportUseCase
-import com.taxapprf.domain.report.ReportModel
+import com.taxapprf.domain.currency.Currencies
+import com.taxapprf.domain.main.transaction.SaveTransactionModel
 import com.taxapprf.domain.toAppDate
-import com.taxapprf.domain.transaction.ObserveTransactionUseCase
-import com.taxapprf.domain.transaction.SaveTransactionModel
-import com.taxapprf.domain.transaction.TransactionModel
-import com.taxapprf.domain.transaction.TransactionTypes
+import com.taxapprf.domain.transactions.TransactionTypes
+import com.taxapprf.domain.transactions.detail.GetTransactionDetailModel
+import com.taxapprf.domain.transactions.detail.GetTransactionDetailUseCase
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.BaseViewModel
-import com.taxapprf.taxapp.ui.makeHot
 import com.taxapprf.taxapp.ui.toLocalDate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class TransactionDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    observeReportUseCase: ObserveReportUseCase,
-    observeTransactionUseCase: ObserveTransactionUseCase,
+    private val getTransactionDetailUseCase: GetTransactionDetailUseCase,
 ) : BaseViewModel() {
     private val accountId = savedStateHandle.get<Int>(ACCOUNT_ID)
     private val reportId = savedStateHandle.get<Int>(REPORT_ID)
@@ -36,47 +32,34 @@ class TransactionDetailViewModel @Inject constructor(
     private val transactionId = savedStateHandle.get<Int>(TRANSACTION_ID)
         ?.let { if (it == 0) null else it }
 
-    private var transactionTax: Double? = null
 
     var name: String = EMPTY_STRING
     var date: String = getEpochDate().toAppDate()
-    var typeOrdinal: Int = TransactionTypes.TRADE.ordinal
+    var transactionTypeOrdinal: Int = TransactionTypes.TRADE.ordinal
     var currencyOrdinal: Int = Currencies.USD.ordinal
     var sum: String = EMPTY_STRING
+    private var transactionTax: Double? = null
 
     val currencyCharCode: String
         get() = Currencies.values()[currencyOrdinal].name
 
-    val report =
-        if (transactionId == null) {
-            observeReportUseCase.execute(reportId)
-                ?.onEach { setFromReportModel(it) }
-                ?.makeHot(viewModelScope)
-        } else null
-
-    val transaction =
-        observeTransactionUseCase.execute(transactionId)
-            ?.onEach { setFromTransactionModel(it) }
-            ?.makeHot(viewModelScope)
-
-    private fun setFromReportModel(reportModel: ReportModel?) {
-        reportModel?.name?.let {
-            val shiftDate = LocalDate.now().withYear(it.toInt())
-            date = shiftDate.toEpochDay().toAppDate()
+    val transactionDetailModel =
+        flow {
+            val getTransactionDetailModel = GetTransactionDetailModel(reportId, transactionId)
+            getTransactionDetailUseCase.execute(getTransactionDetailModel)
+                ?.let { transactionDetailModel ->
+                    transactionDetailModel.name?.let { name = it }
+                    transactionDetailModel.date?.let { date = it.toAppDate() }
+                    transactionDetailModel.transactionTypeOrdinal?.let {
+                        transactionTypeOrdinal = it
+                    }
+                    transactionDetailModel.currencyOrdinal?.let { currencyOrdinal = it }
+                    transactionDetailModel.sum?.let { sum = it.toString() }
+                    transactionDetailModel.taxRUB?.let { transactionTax = it }
+                }
+            emit(Unit)
         }
-    }
-
-    private fun setFromTransactionModel(transactionModel: TransactionModel?) {
-        transactionModel?.let { transaction ->
-            date = transaction.date.toAppDate()
-            typeOrdinal = transaction.type.ordinal
-            currencyOrdinal = transaction.currency.ordinal
-            sum = transaction.sum.round().toString()
-
-            transaction.tax?.let { transactionTax = it }
-            transaction.name?.let { name = it }
-        }
-    }
+            .flowOn(Dispatchers.IO)
 
     fun checkDate(year: Int, month: Int, dayOfMonth: Int): Int? {
         val dayFormatted = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
@@ -114,10 +97,10 @@ class TransactionDetailViewModel @Inject constructor(
         val date = date.toLocalDate()?.toEpochDay() ?: return null
 
         return SaveTransactionModel(
-            transactionId = transactionId,
-            reportId = reportId,
             accountId = accountId,
-            type = TransactionTypes.values()[typeOrdinal],
+            reportId = reportId,
+            transactionId = transactionId,
+            transactionTypeOrdinal = transactionTypeOrdinal,
             currencyOrdinal = currencyOrdinal,
             name = name,
             date = date,

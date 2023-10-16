@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.taxapprf.domain.user.AccountModel
+import com.taxapprf.domain.main.account.AccountModel
 import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderAddBinding
 import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderItemBinding
 

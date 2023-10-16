@@ -16,6 +16,7 @@ class SignFragment : BaseFragment(R.layout.fragment_sign) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        toolbar.updateTitles()
         toolbar.updateMenu()
 
         binding.buttonSignSignIn.setOnClickListener { navToSignIn() }

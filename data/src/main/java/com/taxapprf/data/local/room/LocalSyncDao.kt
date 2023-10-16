@@ -11,16 +11,18 @@ import com.taxapprf.data.local.room.LocalDatabase.Companion.ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TRANSACTION_ID
 import com.taxapprf.data.local.room.LocalDatabase.Companion.TYPE_ORDINAL
 import com.taxapprf.data.local.room.entity.LocalAccountEntity
-import com.taxapprf.data.local.room.entity.LocalCBRRateEntity.Companion.CURRENCY_RATE
+import com.taxapprf.data.local.room.entity.LocalCurrencyRateEntity.Companion.CURRENCY_RATE
+import com.taxapprf.data.local.room.entity.LocalDeletedEntity
 import com.taxapprf.data.local.room.entity.LocalReportEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
-import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX
-import com.taxapprf.data.local.room.model.sync.GetSyncResultAccountModel
-import com.taxapprf.data.local.room.model.sync.GetSyncResultReportModel
-import com.taxapprf.data.local.room.model.sync.GetSyncTransactionModel
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX_RUB
+import com.taxapprf.data.local.room.entity.LocalUserEntity
+import com.taxapprf.data.local.room.model.sync.SyncResultAccountDataModel
+import com.taxapprf.data.local.room.model.sync.SyncResultReportDataModel
+import com.taxapprf.data.local.room.model.sync.SyncTransactionDataModel
 import com.taxapprf.data.remote.firebase.Firebase.Companion.ACCOUNT_KEY
 import com.taxapprf.data.remote.firebase.Firebase.Companion.REPORT_KEY
 import com.taxapprf.data.sync.IS_SYNC
@@ -29,7 +31,18 @@ import com.taxapprf.data.sync.SYNC_AT
 
 @Dao
 interface LocalSyncDao {
-    /* ACCOUNT */
+    /* SYNC ALL */
+    @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
+    fun getUserByEmail(email: String): LocalUserEntity?
+
+    /* SYNC DELETED */
+    @Query("SELECT * FROM deleted ORDER BY account_key, report_key")
+    fun getAllDeleted(): List<LocalDeletedEntity>
+
+    @Query("DELETE FROM deleted")
+    fun deleteAllDeleted()
+
+    /* ACCOUNT SYNC */
     @Query("SELECT * FROM account WHERE user_id = :userId")
     fun getUserAccounts(userId: Int): List<LocalAccountEntity>
 
@@ -45,9 +58,9 @@ interface LocalSyncDao {
                 "remote_key $ACCOUNT_KEY " +
                 "FROM account WHERE user_id = :userId"
     )
-    fun getSyncResultUserAccounts(userId: Int): List<GetSyncResultAccountModel>
+    fun getSyncResultUserAccounts(userId: Int): List<SyncResultAccountDataModel>
 
-    /* REPORT */
+    /* REPORT SYNC */
 
     @Query("SELECT * FROM report WHERE account_id = :accountId")
     fun getAccountReports(accountId: Int): List<LocalReportEntity>
@@ -67,19 +80,19 @@ interface LocalSyncDao {
                 "LEFT JOIN account a ON a.id = r.account_id " +
                 "WHERE r.account_id = :accountId"
     )
-    fun getSyncResultAccountReports(accountId: Int): List<GetSyncResultReportModel>
+    fun getSyncResultAccountReports(accountId: Int): List<SyncResultReportDataModel>
 
-    /* TRANSACTION */
+    /* TRANSACTION SYNC */
     @Query(
         "SELECT " +
-                "t.id ${TRANSACTION_ID}, " +
+                "t.id $TRANSACTION_ID, " +
                 "t.name $NAME, " +
                 "t.date $DATE, " +
                 "t.type_ordinal $TYPE_ORDINAL, " +
                 "t.currency_ordinal $CURRENCY_ORDINAL, " +
                 "r.currency_rate $CURRENCY_RATE, " +
                 "t.sum $SUM, " +
-                "t.tax $TAX, " +
+                "t.tax_rub $TAX_RUB, " +
                 "t.remote_key $REMOTE_KEY, " +
                 "t.is_sync $IS_SYNC, " +
                 "t.sync_at $SYNC_AT " +
@@ -87,54 +100,45 @@ interface LocalSyncDao {
                 "LEFT JOIN cbr_rate r ON r.currency_ordinal = t.currency_ordinal AND r.date = t.date " +
                 "WHERE t.report_id = :reportId"
     )
-    fun getTransactions(reportId: Int): List<GetSyncTransactionModel>
-
-    @Query("SELECT * FROM report WHERE id = :reportId LIMIT 1")
-    fun getReport(reportId: Int): LocalReportEntity?
+    fun getTransactions(reportId: Int): List<SyncTransactionDataModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveReport(localReportEntity: LocalReportEntity): Long
+    fun saveLocalTransactionEntities(localTransactionEntities: List<LocalTransactionEntity>): List<Long>
 
     @Delete
-    fun deleteReport(localReportEntity: LocalReportEntity): Int
+    fun deleteLocalTransactionEntities(localTransactionEntities: List<LocalTransactionEntity>): Int
+
+    @Query(
+        "UPDATE report " +
+                "SET " +
+                "size = (SELECT COUNT(*) FROM `transaction` WHERE report_id = :reportId), " +
+                "tax_rub = (SELECT SUM(tax_rub) FROM `transaction` WHERE report_id = :reportId) " +
+                "WHERE id = :reportId"
+    )
+    fun updateReportTaxAndSumRUB(reportId: Int)
+
+    @Query("DELETE FROM report WHERE size = 0")
+    fun deleteAllEmptyReport()
 
     @Transaction
     fun saveTransactionsWithUpdateReport(
         reportId: Int,
         localTransactionEntities: List<LocalTransactionEntity>
-    ) =
-        getReport(reportId)?.let { localReportEntity ->
-            val newSize = localReportEntity.size + localTransactionEntities.size
-            var newTax = localReportEntity.tax
-            localTransactionEntities.forEach { localTransactionEntity ->
-                localTransactionEntity.tax?.let { newTax += it }
-            }
-
-            saveReport(localReportEntity.copy( tax = newTax, size = newSize))
-            saveTransactions(localTransactionEntities)
-        } ?: emptyList()
+    ): List<Long> {
+        val result = saveLocalTransactionEntities(localTransactionEntities)
+        updateReportTaxAndSumRUB(reportId)
+        return result
+    }
 
     @Transaction
     fun deleteTransactionsWithUpdateReport(
         reportId: Int,
         localTransactionEntities: List<LocalTransactionEntity>
     ) =
-        getReport(reportId)?.let { localReportEntity ->
-            val newSize = localReportEntity.size - localTransactionEntities.size
-            var newTax = localReportEntity.tax
-            localTransactionEntities.forEach { localTransactionEntity ->
-                localTransactionEntity.tax?.let { newTax -= it }
-            }
-
-            if (newSize < 1) deleteReport(localReportEntity)
-            else saveReport(localReportEntity.copy( tax = newTax, size = newSize))
-
-            deleteTransactions(localTransactionEntities)
-        } ?: 0
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveTransactions(localTransactionEntities: List<LocalTransactionEntity>): List<Long>
-
-    @Delete
-    fun deleteTransactions(localTransactionEntities: List<LocalTransactionEntity>): Int
+        if (localTransactionEntities.isNotEmpty()) {
+            val result = deleteLocalTransactionEntities(localTransactionEntities)
+            updateReportTaxAndSumRUB(reportId)
+            deleteAllEmptyReport()
+            result
+        } else 0
 }

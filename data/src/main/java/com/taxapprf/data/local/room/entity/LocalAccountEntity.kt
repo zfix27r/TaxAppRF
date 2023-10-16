@@ -11,7 +11,7 @@ import com.taxapprf.data.local.room.entity.LocalAccountEntity.Companion.TABLE_NA
 import com.taxapprf.data.sync.IS_SYNC
 import com.taxapprf.data.sync.REMOTE_KEY
 import com.taxapprf.data.sync.SYNC_AT
-import com.taxapprf.data.sync.SyncLocal
+import com.taxapprf.data.sync.ISyncLocalModel
 
 @Entity(tableName = TABLE_NAME)
 data class LocalAccountEntity(
@@ -31,7 +31,7 @@ data class LocalAccountEntity(
     override val isSync: Boolean = false,
     @ColumnInfo(name = SYNC_AT)
     override val syncAt: Long = getEpochTime(),
-) : SyncLocal {
+) : ISyncLocalModel {
     companion object {
         const val TABLE_NAME = "account"
 
