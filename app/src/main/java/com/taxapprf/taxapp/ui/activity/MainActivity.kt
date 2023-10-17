@@ -169,16 +169,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     private fun NavController.observeCurrentBackStack() {
         lifecycle.coroutineScope.launch {
-            currentBackStack.collectLatest {
-                fabVisibilityManager()
+            currentBackStack.collectLatest { navBackStackEntries ->
+                binding.appBarMain.fab
+                    .animate()
+                    .translationY(0f)
+
+                if (fabVisibleDestinations.contains(navBackStackEntries.last().destination.id))
+                    binding.appBarMain.fab.show()
+                else
+                    binding.appBarMain.fab.hide()
             }
         }
-    }
-
-    private fun fabVisibilityManager() {
-        val currentDestination = navController.currentBackStack.value.last().destination.id
-        if (fabVisibleDestinations.contains(currentDestination)) binding.appBarMain.fab.show()
-        else binding.appBarMain.fab.hide()
     }
 
     private val drawerCallback =
