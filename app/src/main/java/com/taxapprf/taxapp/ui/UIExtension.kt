@@ -1,15 +1,10 @@
 package com.taxapprf.taxapp.ui
 
-import android.Manifest
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.pm.PackageManager
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.data.toLocalDate
 import com.taxapprf.taxapp.R
@@ -61,21 +56,6 @@ fun String.isErrorPasswordRange() = length < 8 || length > 16
 fun View.hideKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(windowToken, 0)
-}
-
-fun Activity.checkStoragePermission(): Boolean {
-    val permissionWrite = Manifest.permission.WRITE_EXTERNAL_STORAGE
-    val permissionRead = Manifest.permission.READ_EXTERNAL_STORAGE
-    return if (
-        ContextCompat.checkSelfPermission(
-            this,
-            permissionWrite
-        ) == PackageManager.PERMISSION_GRANTED
-    ) true
-    else {
-        ActivityCompat.requestPermissions(this, arrayOf(permissionRead, permissionWrite), 1)
-        false
-    }
 }
 
 fun String.showDatePickerDialog(

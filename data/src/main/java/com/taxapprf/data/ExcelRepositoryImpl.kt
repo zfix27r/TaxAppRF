@@ -22,10 +22,8 @@ import com.taxapprf.taxapp.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileOutputStream
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
@@ -86,10 +84,8 @@ class ExcelRepositoryImpl @Inject constructor(
     }
 
     private fun getExcelFileName(): String {
-        val currentDate = Date()
-        val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm", Locale.getDefault())
-        val dateText = dateFormat.format(currentDate)
-        return "Statement-$dateText.xls"
+        val date = LocalDateTime.now().format(formatter)
+        return "Statement-$date.xls"
     }
 
     private fun ExcelTransactionDataModel.toExcelTransactionModel() =
@@ -102,4 +98,9 @@ class ExcelRepositoryImpl @Inject constructor(
             currencyRate = currencyRate,
             tax = taxRUB
         )
+
+    companion object {
+        private const val PATTERN_EXCEL_DATE_TIME = "uuuu-MM-dd_HH-mm-ss"
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern(PATTERN_EXCEL_DATE_TIME)
+    }
 }

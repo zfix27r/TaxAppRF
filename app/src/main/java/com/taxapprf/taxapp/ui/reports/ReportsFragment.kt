@@ -19,7 +19,6 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
-import com.taxapprf.taxapp.ui.checkStoragePermission
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -156,11 +155,11 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
     private fun launchImportExcelIntent() {
         with(requireActivity()) {
-            if (checkStoragePermission()) {
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "application/vnd.ms-excel"
-                importExcelRegisterForActivityResult.launch(intent)
-            }
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "application/vnd.ms-excel"
+            importExcelRegisterForActivityResult.launch(intent)
+/*            if (checkStoragePermission()) {
+            }*/
         }
     }
 

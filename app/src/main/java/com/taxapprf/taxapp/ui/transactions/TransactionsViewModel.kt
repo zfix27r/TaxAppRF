@@ -51,20 +51,20 @@ class TransactionsViewModel @Inject constructor(
             }
         }
 
-    fun exportReport(transactionTypes: Map<Int, String>) =
+    fun exportReport() =
         reportId?.let {
             viewModelScope.launch(Dispatchers.IO) {
-                val getExcelReportModel = ExportExcelModel(reportId, transactionTypes)
+                val getExcelReportModel = ExportExcelModel(reportId)
                 exportExcelUseCase.execute(getExcelReportModel)?.let {
                     successExport(it)
                 }
             }
         }
 
-    fun shareReport(transactionTypes: Map<Int, String>) {
+    fun shareReport() {
         reportId?.let {
             viewModelScope.launch(Dispatchers.IO) {
-                val getExcelReportModel = ExportExcelModel(reportId, transactionTypes)
+                val getExcelReportModel = ExportExcelModel(reportId)
                 exportExcelUseCase.execute(getExcelReportModel)?.let {
                     successShare(it)
                 }
