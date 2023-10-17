@@ -20,6 +20,7 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX_RUB
 import com.taxapprf.data.local.room.entity.LocalUserEntity
+import com.taxapprf.data.local.room.model.sync.EmptyReportKeysDataModel
 import com.taxapprf.data.local.room.model.sync.SyncResultAccountDataModel
 import com.taxapprf.data.local.room.model.sync.SyncResultReportDataModel
 import com.taxapprf.data.local.room.model.sync.SyncTransactionDataModel
@@ -41,6 +42,15 @@ interface LocalSyncDao {
 
     @Query("DELETE FROM deleted")
     fun deleteAllDeleted()
+
+    @Query("SELECT " +
+            "r.id $ID, " +
+            "r.remote_key $REPORT_KEY, " +
+            "a.remote_key $ACCOUNT_KEY " +
+            "FROM report r " +
+            "LEFT JOIN account a ON a.id = r.account_id " +
+            "WHERE r.size = 0")
+    fun getEmptyReportKeysDataModels(): List<EmptyReportKeysDataModel>
 
     /* ACCOUNT SYNC */
     @Query("SELECT * FROM account WHERE user_id = :userId")
