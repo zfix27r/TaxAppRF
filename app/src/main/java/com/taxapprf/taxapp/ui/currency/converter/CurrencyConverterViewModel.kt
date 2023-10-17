@@ -39,7 +39,7 @@ class CurrencyConverterViewModel @Inject constructor(
     fun recalculateSum(textSumRUB: String? = null) {
         try {
             textSumRUB?.let { sumRUB = it.toDouble() }
-            sum = sumRUB * currencyRates[currencyOrdinal].rate!!
+            sum = sumRUB / currencyRates[currencyOrdinal].rate!!
         } catch (e: Exception) {
             error(DataErrorInternalCurrencyConverterCalculate())
         }

@@ -15,7 +15,7 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentCurrencyConverterBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.hideKeyboard
-import com.taxapprf.taxapp.ui.toAppDouble
+import com.taxapprf.taxapp.ui.toEditorDouble
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -84,11 +84,11 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
     }
 
     private fun updateSum() {
-        binding.textInputEditCurrencyConverterSum.setText(viewModel.sum.toAppDouble())
+        binding.textInputEditCurrencyConverterSum.setText(viewModel.sum.toEditorDouble())
     }
 
     private fun updateSumRUB() {
-        binding.textInputEditCurrencyConverterSumRub.setText(viewModel.sumRUB.toAppDouble())
+        binding.textInputEditCurrencyConverterSumRub.setText(viewModel.sumRUB.toEditorDouble())
     }
 
     override fun onLoading() {

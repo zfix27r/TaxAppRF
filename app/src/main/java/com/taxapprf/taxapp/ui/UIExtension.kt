@@ -94,3 +94,6 @@ fun getEpochDay(year: Int, month: Int, dayOfMonth: Int) =
 
 val appDoubleFormatter = DecimalFormat("#,##0.00")
 fun Double.toAppDouble(): String = appDoubleFormatter.format(this)
+
+val editorDoubleFormatter = DecimalFormat("###.##")
+fun Double.toEditorDouble(): String = editorDoubleFormatter.format(this).replace(",", ".")
