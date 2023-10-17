@@ -45,6 +45,8 @@
     <dimen name="default_card_top_offset">12dp</dimen>
     <dimen name="default_card_corner_radius">12dp</dimen>
     <dimen name="offset_2">2dp</dimen>
+    <dimen name="currency_converter_input_layout_horizontal_offset">80dp</dimen>
+    <dimen name="currency_converter_button_convert_size">80dp</dimen>
 
     <!-- На удаление -->
 

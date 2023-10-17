@@ -8,8 +8,8 @@ import com.google.firebase.database.DatabaseException
 import com.taxapprf.data.error.DataErrorConnection
 import com.taxapprf.data.error.DataErrorExternal
 import com.taxapprf.data.error.DataErrorUser
-import com.taxapprf.data.error.DataErrorUserEmailAlreadyUse
-import com.taxapprf.data.error.DataErrorUserWrongPassword
+import com.taxapprf.data.error.user.DataErrorUserEmailAlreadyUse
+import com.taxapprf.data.error.user.DataErrorUserWrongPassword
 import com.taxapprf.domain.PATTERN_DATE
 import java.net.SocketTimeoutException
 import java.time.LocalDate

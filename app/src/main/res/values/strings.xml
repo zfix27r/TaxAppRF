@@ -51,22 +51,16 @@
     <string name="sign_error_phone_empty">Введите телефон</string>
     <string name="sign_error_password_length">Введите пароль (от 8 до 16 символов)</string>
 
-    <!--SelectAccountFragment-->
-    <string name="buttonSelectOpen">Открыть</string>
-    <string name="buttonSelectCreate">Создать</string>
-    <string name="buttonSelectExit">Выйти</string>
-    <string name="textSelectUnderBottom">Выберете существующий или создайте новый счет</string>
-    <string name="account_select_accounts_loading">Идет загрузка доступных счетов. Пожалуйста, подождите.</string>
-
-    <!--AccountAddFragment-->
+    <!--Account -->
     <string name="account_add_name_hint">Имя счета</string>
 
-    <!--CurrencyRateFragment-->
-    <string name="currency_rate_toolbar">Курс %s</string>
+    <!--Currency -->
+    <string name="currency_rate_toolbar">Курс на %s</string>
 
-    <!--ConverterFragment-->
-    <string name="currency">Валюта</string>
+    <string name="currency_converter_currency_hint">Валюта</string>
 
+    <string name="currency_error_converter_calculate">Ошибка при расчете суммы</string>
+    <string name="currency_error_load">Ошибка загрузки курса валют</string>
 
 
     <!--FirstAccountFragment-->
@@ -143,8 +137,7 @@
     <string name="data_error_cbr">Курс ЦБ РФ не найден</string>
     <string name="data_error_socket_timeout">Превышено время ожидания. Повторите попытку.</string>
     <string name="currency_converter_sum_rub">RUB</string>
-    <string name="currency_converter_sum_hint">0.00</string>
-    <string name="currency_converter_sum_default">1</string>
+
     <string name="sign_title_name">Вход</string>
     <string name="sign_out_name">Выход</string>
     <string name="drawer_header_user_account_expand_content_description">expand</string>
