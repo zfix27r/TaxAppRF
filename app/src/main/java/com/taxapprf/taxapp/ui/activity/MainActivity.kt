@@ -127,17 +127,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     private fun getErrorMessage(t: Throwable) =
         when (t) {
-            is SocketTimeoutException -> R.string.data_error_socket_timeout
+            is DataErrorConnection -> R.string.data_error_connection
+            is SocketTimeoutException -> R.string.data_error_connection
             is DataErrorUserWrongPassword -> R.string.sign_error_auth
-            is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use
-            is DataErrorUser -> R.string.auth_error
+            is DataErrorUserEmailAlreadyUse -> R.string.sign_error_email_already_use
+            is DataErrorUser -> R.string.data_auth_error
             is DataErrorInternalCurrencyLoad -> R.string.currency_error_load
             is DataErrorInternalCurrencyConverterCalculate -> R.string.currency_error_converter_calculate
-            is DataErrorInternal -> R.string.data_error_internal
+            is DataErrorInternal -> R.string.data_internal_error
             is DataErrorExternal -> R.string.data_external_error
-            is DataErrorExcel -> R.string.data_error_excel
-            is DataErrorCBR -> R.string.data_error_cbr
-            is DataErrorConnection -> R.string.data_error_connection
+            is DataErrorExcel -> R.string.data_excel_error
+            is DataErrorCBR -> R.string.data_cbr_error
             else -> throw t//R.string.data_error.showErrorInShackBar()
         }
 

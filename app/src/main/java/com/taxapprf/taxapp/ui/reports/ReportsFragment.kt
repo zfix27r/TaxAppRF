@@ -88,7 +88,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun prepToolbar() {
-        toolbar.updateTitles(getString(R.string.taxes_name))
+        toolbar.updateTitles(getString(R.string.menu_reports))
         toolbar.updateMenu(R.menu.toolbar_reports) {
             when (it.itemId) {
                 R.id.toolbar_import_excel -> {

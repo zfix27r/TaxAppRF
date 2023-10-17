@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TaxApp</string>
 
@@ -30,7 +31,7 @@
     <string name="sign_error_name_range">Введите имя (от 3 до 16 символов)</string>
     <string name="sign_error_phone_empty">Введите телефон</string>
     <string name="sign_error_password_length">Введите пароль (от 8 до 16 символов)</string>
-    <string name="sign_error_email_already_use">Введенный email занят</string>
+    <string name="sign_error_email_already_use">The email address is already in use by another account.</string>
 
     <!--Account -->
     <string name="account_add_name_hint">Имя счета</string>
@@ -100,5 +101,4 @@
 
     <string name="default_user_name">Локальная запись</string>
     <string name="default_account_name">Основной аккаунт</string>
-
 </resources>
