@@ -51,7 +51,12 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
             OnFocusChangeListener { _, hasFocus ->
                 if (!hasFocus) {
                     binding.root.hideKeyboard()
-                    viewModel.recalculateSumRUB(binding.textInputEditCurrencyConverterSum.text.toString())
+                    var sum = binding.textInputEditCurrencyConverterSum.text.toString()
+                    sum.ifEmpty {
+                        sum = "0"
+                        binding.textInputEditCurrencyConverterSum.setText(sum)
+                    }
+                    viewModel.recalculateSumRUB(sum)
                     updateSumRUB()
                 }
             }
@@ -60,7 +65,12 @@ class CurrencyConverterFragment : BaseFragment(R.layout.fragment_currency_conver
             OnFocusChangeListener { _, hasFocus ->
                 if (!hasFocus) {
                     binding.root.hideKeyboard()
-                    viewModel.recalculateSum(binding.textInputEditCurrencyConverterSumRub.text.toString())
+                    var sumRUB = binding.textInputEditCurrencyConverterSumRub.text.toString()
+                    sumRUB.ifEmpty {
+                        sumRUB = "0"
+                        binding.textInputEditCurrencyConverterSumRub.setText(sumRUB)
+                    }
+                    viewModel.recalculateSum(sumRUB)
                     updateSum()
                 }
             }
