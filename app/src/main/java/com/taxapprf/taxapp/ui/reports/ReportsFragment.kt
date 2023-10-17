@@ -93,7 +93,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         toolbar.updateMenu(R.menu.toolbar_reports) {
             when (it.itemId) {
                 R.id.toolbar_import_excel -> {
-                    launchExportExcelToFirebaseIntent()
+                    launchImportExcelIntent()
                     true
                 }
 
@@ -149,17 +149,17 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
             .show()
     }
 
-    private val exportExcelToFirebaseIntent =
+    private val importExcelRegisterForActivityResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            viewModel.saveReportsFromExcel(it.data)
+            viewModel.importExcel(it.data)
         }
 
-    private fun launchExportExcelToFirebaseIntent() {
+    private fun launchImportExcelIntent() {
         with(requireActivity()) {
             if (checkStoragePermission()) {
                 val intent = Intent(Intent.ACTION_GET_CONTENT)
                 intent.type = "application/vnd.ms-excel"
-                exportExcelToFirebaseIntent.launch(intent)
+                importExcelRegisterForActivityResult.launch(intent)
             }
         }
     }

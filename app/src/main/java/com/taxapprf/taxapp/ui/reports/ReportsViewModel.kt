@@ -46,8 +46,8 @@ class ReportsViewModel @Inject constructor(
             deleteReportsUseCase.execute(reportIds)
         }
 
-    fun saveReportsFromExcel(intent: Intent?) =
-        intent?.data?.path?.let { uri ->
+    fun importExcel(intent: Intent?) =
+        intent?.data?.let { uri ->
             viewModelScope.launch(Dispatchers.IO) {
                 val importExcelModel = ImportExcelModel(accountId, uri)
                 importExcelUseCase.execute(importExcelModel)

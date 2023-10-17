@@ -11,7 +11,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
-import com.taxapprf.domain.PATTERN_DATE
+import com.taxapprf.data.toLocalDate
 import com.taxapprf.taxapp.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,10 +25,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import java.text.DecimalFormat
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.ResolverStyle
 import java.util.Calendar
-import java.util.Locale
 import java.util.regex.Pattern
 
 val state: MutableSharedFlow<BaseState> = MutableSharedFlow()
@@ -80,19 +77,6 @@ fun Activity.checkStoragePermission(): Boolean {
         false
     }
 }
-
-fun String.toLocalDate() =
-    try {
-        LocalDate.parse(
-            this,
-            DateTimeFormatter
-                .ofPattern(PATTERN_DATE)
-                .withLocale(Locale.ROOT)
-                .withResolverStyle(ResolverStyle.STRICT)
-        )
-    } catch (e: Exception) {
-        null
-    }
 
 fun String.showDatePickerDialog(
     context: Context,

@@ -2,11 +2,14 @@ package com.taxapprf.data
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
 import androidx.core.content.FileProvider
-import com.taxapprf.data.error.DataErrorExcel
+import com.taxapprf.data.error.excel.DataErrorExcelRead
+import com.taxapprf.data.error.excel.DataErrorExcelWrite
 import com.taxapprf.data.local.excel.ExcelCreator
+import com.taxapprf.data.local.excel.ExcelParser
+import com.taxapprf.data.local.excel.getFilePathInSystemDownload
 import com.taxapprf.data.local.room.LocalExcelDao
+import com.taxapprf.data.local.room.model.excel.ExcelTransactionDataModel
 import com.taxapprf.domain.ExcelRepository
 import com.taxapprf.domain.currency.Currencies
 import com.taxapprf.domain.excel.ExcelTransactionModel
@@ -25,6 +28,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
+
 class ExcelRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val localExcelDao: LocalExcelDao,
@@ -32,10 +36,10 @@ class ExcelRepositoryImpl @Inject constructor(
     override suspend fun export(exportExcelModel: ExportExcelModel): Uri? {
         with(exportExcelModel) {
             val localReportEntity = localExcelDao.getLocalReportEntity(reportId)
-                ?: throw DataErrorExcel()
+                ?: throw DataErrorExcelWrite()
             val localTransactionModels = localExcelDao.getExcelTransactions(reportId)
 
-            if (localTransactionModels.isEmpty()) throw DataErrorExcel()
+            if (localTransactionModels.isEmpty()) throw DataErrorExcelWrite()
 
             reportName = localReportEntity.remoteKey
             reportTax = localReportEntity.taxRUB
@@ -58,11 +62,7 @@ class ExcelRepositoryImpl @Inject constructor(
         return ExcelCreator().createWorkbook(exportExcelModel)?.let { book ->
             val fileName = getExcelFileName()
 
-            val downloadFilePath = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                .path + "/" + fileName
-
-            val file = File(downloadFilePath)
+            val file = File(getFilePathInSystemDownload(fileName))
             val outFile = FileOutputStream(file)
 
             book.write(outFile)
@@ -77,7 +77,12 @@ class ExcelRepositoryImpl @Inject constructor(
     }
 
     override suspend fun import(importExcelModel: ImportExcelModel): List<SaveTransactionModel> {
-        TODO("Not yet implemented")
+        val contentResolver = context.contentResolver
+        contentResolver.openInputStream(importExcelModel.uri)?.use {
+            return ExcelParser().parse(it, importExcelModel.accountId)
+        }
+
+        throw DataErrorExcelRead()
     }
 
     private fun getExcelFileName(): String {
@@ -87,7 +92,7 @@ class ExcelRepositoryImpl @Inject constructor(
         return "Statement-$dateText.xls"
     }
 
-    private fun com.taxapprf.data.local.room.model.excel.ExcelTransactionDataModel.toExcelTransactionModel() =
+    private fun ExcelTransactionDataModel.toExcelTransactionModel() =
         ExcelTransactionModel(
             name = name,
             appDate = date.toAppDate(),
