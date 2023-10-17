@@ -30,6 +30,7 @@ class SignInViewModel @Inject constructor(
                 if (isUnlock) {
                     val signInModel = SignInModel(email, password)
                     singInUseCase.execute(signInModel)
+                    syncAllUseCase.execute()
                     emit(Unit)
                 }
             }
