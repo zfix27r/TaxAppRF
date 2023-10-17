@@ -111,11 +111,10 @@ interface LocalSyncDao {
     @Query(
         "UPDATE report " +
                 "SET " +
-                "size = (SELECT COUNT(*) FROM `transaction` WHERE report_id = :reportId), " +
-                "tax_rub = (SELECT SUM(tax_rub) FROM `transaction` WHERE report_id = :reportId) " +
+                "size = (SELECT COUNT(*) FROM `transaction` WHERE report_id = :reportId) " +
                 "WHERE id = :reportId"
     )
-    fun updateReportTaxAndSumRUB(reportId: Int)
+    fun updateReportSize(reportId: Int)
 
     @Query("DELETE FROM report WHERE size = 0")
     fun deleteAllEmptyReport()
@@ -125,8 +124,9 @@ interface LocalSyncDao {
         reportId: Int,
         localTransactionEntities: List<LocalTransactionEntity>
     ): List<Long> {
+        println(localTransactionEntities)
         val result = saveLocalTransactionEntities(localTransactionEntities)
-        updateReportTaxAndSumRUB(reportId)
+        updateReportSize(reportId)
         return result
     }
 
@@ -137,7 +137,7 @@ interface LocalSyncDao {
     ) =
         if (localTransactionEntities.isNotEmpty()) {
             val result = deleteLocalTransactionEntities(localTransactionEntities)
-            updateReportTaxAndSumRUB(reportId)
+            updateReportSize(reportId)
             deleteAllEmptyReport()
             result
         } else 0

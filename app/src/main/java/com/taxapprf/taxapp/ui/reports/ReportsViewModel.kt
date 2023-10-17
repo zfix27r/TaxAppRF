@@ -2,9 +2,10 @@ package com.taxapprf.taxapp.ui.reports
 
 import android.content.Intent
 import androidx.lifecycle.viewModelScope
+import com.taxapprf.domain.deleted.DeleteReportsModel
+import com.taxapprf.domain.deleted.DeleteReportsUseCase
 import com.taxapprf.domain.excel.ImportExcelModel
 import com.taxapprf.domain.excel.ImportExcelUseCase
-import com.taxapprf.domain.reports.DeleteReportsUseCase
 import com.taxapprf.domain.reports.ObserveReportsUseCase
 import com.taxapprf.domain.transactions.ReportModel
 import com.taxapprf.taxapp.ui.BaseViewModel
@@ -43,7 +44,8 @@ class ReportsViewModel @Inject constructor(
 
     private fun deleteReports(reportIds: List<Int>) =
         viewModelScope.launch(Dispatchers.IO) {
-            deleteReportsUseCase.execute(reportIds)
+            val deleteReportsModel = DeleteReportsModel(reportIds)
+            deleteReportsUseCase.execute(deleteReportsModel)
         }
 
     fun importExcel(intent: Intent?) =
