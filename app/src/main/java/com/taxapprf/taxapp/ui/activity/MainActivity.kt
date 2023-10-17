@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
             is DataErrorExcel -> R.string.data_error_excel.showErrorInShackBar()
             is DataErrorCBR -> R.string.data_error_cbr.showErrorInShackBar()
             is DataErrorConnection -> R.string.data_error_connection.showErrorInShackBar()
-            is DataErrorUserWrongPassword -> R.string.error_sign_in.showErrorInShackBar()
+            is DataErrorUserWrongPassword -> R.string.sign_error_auth.showErrorInShackBar()
             is DataErrorUserEmailAlreadyUse -> R.string.sign_up_error_email_already_use.showErrorInShackBar()
             else -> throw t//R.string.data_error.showErrorInShackBar()
         }

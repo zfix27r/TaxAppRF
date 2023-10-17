@@ -1,14 +1,5 @@
 <resources>
     <string name="app_name">TaxApp</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="drawer_header_user_avatar_content_description">Navigation header</string>
-    <string name="action_settings">Settings</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="error_not_found">Не найдено</string>
     <string name="sign_up_error_email_already_use">The email address is already in use by another account.</string>
@@ -42,20 +33,23 @@
     <string name="taxes_name">Налоги</string>
 
 
-    <!--LoginFragment-->
-    <string name="button_sign_in">Войти</string>
-    <string name="button_sign_up">Зарегистрироваться</string>
-    <string name="text_sign_under_bottom">Войдите в свою учетную запись</string>
+    <!--Sign-->
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="sign_ok">Войти</string>
 
-    <!--SignInFragment-->
-    <string name="edit_sign_in_email">E-mail</string>
-    <string name="edit_sign_in_password">Пароль</string>
-    <string name="button_sign_in_ok">Войти</string>
-    <string name="button_sign_in_cancel">Отменить</string>
-    <string name="text_sign_in_under_bottom">Войдите в свою учетную запись</string>
-    <string name="authSuccess">Пользователь авторизован</string>
-    <string name="authFailure">Ошибка авторизации. %s</string>
-    <string name="error_sign_in">Неверные параметры входа! Повторите попытку.</string>
+    <string name="sign_email">Email</string>
+    <string name="sign_password">Пароль</string>
+
+    <string name="sign_up_name">Имя</string>
+    <string name="sign_up_phone">Телефон</string>
+
+    <string name="sign_error_auth">Неверные параметры входа. Повторите попытку.</string>
+    <string name="sign_error_email_empty">Введите email</string>
+    <string name="sign_error_email_incorrect">Некорректный email</string>
+    <string name="sign_error_name_range">Введите имя (от 3 до 16 символов)</string>
+    <string name="sign_error_phone_empty">Введите телефон</string>
+    <string name="sign_error_password_length">Введите пароль (от 8 до 16 символов)</string>
 
     <!--SelectAccountFragment-->
     <string name="buttonSelectOpen">Открыть</string>
@@ -73,20 +67,7 @@
     <!--ConverterFragment-->
     <string name="currency">Валюта</string>
 
-    <!--Registration Fragment-->
-    <string name="edit_sign_up_name">Имя</string>
-    <string name="edit_sign_up_tel">Телефон</string>
-    <string name="edit_sign_up_email">E-mail</string>
-    <string name="edit_sign_up_password">Пароль</string>
-    <string name="button_sign_up_ok">Подтвердить</string>
-    <string name="button_sign_up_cancel">Отменить</string>
-    <string name="text_sign_up_under_button">Заполните все поля</string>
-    <string name="error_email_empty">Введите ваш email</string>
-    <string name="error_email_incorrect">Некорректный email</string>
-    <string name="error_name_range">Введите ваше имя (от 3 до 16 символов)</string>
-    <string name="error_phone_empty">Введите ваш телефон</string>
-    <string name="error_password_length">Введите пароль (от 8 до 16 символов)</string>
-    <string name="message__sign_up_success">"Пользователь добавлен!"</string>
+
 
     <!--FirstAccountFragment-->
     <string name="edit_first_account">№ счета</string>
@@ -167,6 +148,7 @@
     <string name="sign_title_name">Вход</string>
     <string name="sign_out_name">Выход</string>
     <string name="drawer_header_user_account_expand_content_description">expand</string>
+    <string name="drawer_header_user_avatar_content_description">avatar</string>
 
     <!-- share -->
     <string name="share_message_name">Расчёт налога от TaxApp</string>

@@ -154,13 +154,9 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
         }
 
     private fun launchImportExcelIntent() {
-        with(requireActivity()) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "application/vnd.ms-excel"
-            importExcelRegisterForActivityResult.launch(intent)
-/*            if (checkStoragePermission()) {
-            }*/
-        }
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "application/vnd.ms-excel"
+        importExcelRegisterForActivityResult.launch(intent)
     }
 
     private fun navToTransactions(reportModel: ReportModel) {
