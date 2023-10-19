@@ -1,6 +1,6 @@
 # TaxApp
 
-<a href="https://imgbb.com/"><img src="https://ibb.co/3C6pnN6" alt="icon-rounded" border="0"></a>
+<a href="https://imgbb.com/"><img src="https://i.ibb.co/sVxKZwx/ic-launcher-round.webp" alt="icon-rounded" border="0"></a>
 
 ## Приложение для расчета подоходного налога по операциям с фьючерсами и опционами на иностранных биржах
 
