@@ -18,6 +18,7 @@ import com.taxapprf.data.local.room.entity.LocalTransactionEntity
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.DATE
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.NAME
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM
+import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.SUM_RUB
 import com.taxapprf.data.local.room.entity.LocalTransactionEntity.Companion.TAX_RUB
 import com.taxapprf.data.local.room.entity.LocalUserEntity
 import com.taxapprf.data.local.room.model.sync.EmptyReportKeysDataModel
@@ -102,6 +103,7 @@ interface LocalSyncDao {
                 "t.currency_ordinal $CURRENCY_ORDINAL, " +
                 "r.currency_rate $CURRENCY_RATE, " +
                 "t.sum $SUM, " +
+                "t.sum_rub $SUM_RUB, " +
                 "t.tax_rub $TAX_RUB, " +
                 "t.remote_key $REMOTE_KEY, " +
                 "t.is_sync $IS_SYNC, " +

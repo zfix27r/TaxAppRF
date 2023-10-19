@@ -32,7 +32,9 @@
 
         <item name="actionModeCloseDrawable">@drawable/baseline_close_24</item>
 
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.TaxApp.Logo">
@@ -45,4 +47,8 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="Theme.TaxApp.ImageCircle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>
