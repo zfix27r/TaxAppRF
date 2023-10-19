@@ -135,14 +135,14 @@ class Drawer(
                 animate()
                     .alpha(0f)
                     .withEndAction {
-                        expandAccounts.setImageResource(R.drawable.ic_baseline_expand_less_24)
+                        expandAccounts.setImageResource(R.drawable.ic_baseline_expand_more_24)
                         isVisible = false
                     }
             } else {
                 animate()
                     .alpha(1f)
                     .withStartAction {
-                        expandAccounts.setImageResource(R.drawable.ic_baseline_expand_more_24)
+                        expandAccounts.setImageResource(R.drawable.ic_baseline_expand_less_24)
                         alpha = 0f
                         isVisible = true
                     }
