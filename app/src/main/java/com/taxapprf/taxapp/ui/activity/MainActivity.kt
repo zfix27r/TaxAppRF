@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     override fun onStart() {
         super.onStart()
+        viewModel.defaultUserName = getString(R.string.default_user_name)
         viewModel.defaultAccountName = getString(R.string.default_account_name)
         viewModel.updateUserWithAccounts()
     }
@@ -138,7 +139,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
             is DataErrorExternal -> R.string.data_external_error
             is DataErrorExcel -> R.string.data_excel_error
             is DataErrorCBR -> R.string.data_cbr_error
-            else -> throw t//R.string.data_error.showErrorInShackBar()
+            else -> throw t// TODO комментарий для вывода крашей, после вернуть R.string.data_error.showErrorInShackBar()
         }
 
     fun onLoadingErrorShowInUIWithRetry(t: Throwable) {
@@ -173,7 +174,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
                 viewModel.userWithAccounts.collectLatest { userWithAccounts ->
                     drawer.update(
                         userWithAccountsModel = userWithAccounts,
-                        defaultUserName = getString(R.string.default_account_name)
+                        defaultUserName = viewModel.defaultUserName
                     )
                     onAccountLoaded(userWithAccounts)
                 }
