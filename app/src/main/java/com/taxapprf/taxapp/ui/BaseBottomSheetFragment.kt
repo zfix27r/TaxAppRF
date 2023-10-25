@@ -26,6 +26,7 @@ open class BaseBottomSheetFragment(layoutId: Int) : BottomSheetDialogFragment(la
                 ?.let {
                     val behavior = BottomSheetBehavior.from(it)
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    behavior.isDraggable = false
                 }
         }
 
