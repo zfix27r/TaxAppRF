@@ -89,6 +89,7 @@
 
     <string name="symbol_rub">₽</string>
 
+    <string name="data_error">Неизвестная ошибка</string>
     <string name="data_internal_error">Внутренняя ошибка</string>
     <string name="data_external_error">Внешняя ошибка</string>
     <string name="data_excel_error">Ошибка импорта\экспорта</string>

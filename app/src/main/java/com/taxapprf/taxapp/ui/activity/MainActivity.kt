@@ -72,6 +72,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        viewModel.startAnalytics()
+
         setSupportActionBar(binding.appBarMain.toolbar)
         setupActionBarWithNavController(
             this@MainActivity, navController, mAppBarConfiguration
@@ -139,7 +141,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
             is DataErrorExternal -> R.string.data_external_error
             is DataErrorExcel -> R.string.data_excel_error
             is DataErrorCBR -> R.string.data_cbr_error
-            else -> throw t// TODO комментарий для вывода крашей, после вернуть R.string.data_error.showErrorInShackBar()
+            else -> R.string.data_error
         }
 
     fun onLoadingErrorShowInUIWithRetry(t: Throwable) {

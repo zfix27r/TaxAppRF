@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.taxapprf.data.NetworkManager
 import com.taxapprf.domain.main.account.SwitchAccountModel
 import com.taxapprf.domain.main.account.SwitchAccountUseCase
+import com.taxapprf.domain.main.analytics.StartFirebaseAnalyticsUseCase
 import com.taxapprf.domain.main.transaction.SaveTransactionModel
 import com.taxapprf.domain.main.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.main.user.ObserveUserWithAccountsModel
@@ -35,6 +36,7 @@ class MainViewModel @Inject constructor(
     private val syncAllUseCase: SyncAllUseCase,
     private val updateAllEmptySumRUBAndTaxRUBUseCase: UpdateAllEmptySumRUBAndTaxRUBUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
+    private val startFirebaseAnalyticsUseCase: StartFirebaseAnalyticsUseCase,
 ) : ViewModel() {
     var defaultUserName: String? = null
     var defaultAccountName: String? = null
@@ -71,6 +73,9 @@ class MainViewModel @Inject constructor(
                 networkManager.isConnection = false
             }
         }
+
+    fun startAnalytics() =
+        startFirebaseAnalyticsUseCase.execute()
 
     fun observeConnection() {
         networkManager.observeConnection(networkCallback)

@@ -1,6 +1,8 @@
 package com.taxapprf.data
 
 import android.net.Uri
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.taxapprf.data.error.DataErrorInternal
 import com.taxapprf.data.local.room.LocalDatabase
 import com.taxapprf.data.local.room.LocalMainDao
@@ -143,6 +145,10 @@ class MainRepositoryImpl @Inject constructor(
 
         val id = localMainDao.saveTransaction(transaction).toInt()
         return if (id == 0) null else id
+    }
+
+    override fun startFirebaseAnalytics() {
+        Firebase.analytics
     }
 
     private fun LocalReportEntity.isMoveTransaction(newRemoteKey: String) =

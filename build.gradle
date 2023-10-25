@@ -1,5 +1,9 @@
 buildscript {
     ext {
+        compileSdkVersion = 34
+        minSdkVersion = 26
+        targetSdkVersion = 34
+
         gradleVersion = '8.1.1'
 
         kotlinVersion = '1.8.20'
@@ -27,6 +31,7 @@ buildscript {
         firebaseBomVersion = '32.2.0'
         firebaseDatabaseVersrion = '20.2.2'
         firebaseAuthVersrion = '22.1.0'
+        firebaseAnalyticsVersion = '21.4.0'
 
         viewBindingDelegateVersion = '1.5.9'
     }
@@ -46,6 +51,6 @@ buildscript {
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

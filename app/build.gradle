@@ -9,13 +9,12 @@ plugins {
 
 android {
     namespace 'com.taxapprf.taxapp'
-
-    compileSdk 33
+    compileSdk project.compileSdkVersion
 
     defaultConfig {
         applicationId "com.taxapprf.taxapp"
-        minSdk 26
-        targetSdk 33
+        minSdk project.minSdkVersion
+        targetSdk project.targetSdkVersion
 
         versionCode 1
         versionName "1.0"
@@ -56,8 +55,6 @@ android {
 dependencies {
     implementation project(path: ':data')
     implementation project(path: ':domain')
-
-    implementation "androidx.legacy:legacy-support-v4:$androidxLegacyVersion"
 
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"

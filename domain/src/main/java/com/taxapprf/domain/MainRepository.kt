@@ -17,4 +17,5 @@ interface MainRepository {
     suspend fun saveUser(userModel: UserModel)
     suspend fun switchAccount(switchAccountModel: SwitchAccountModel)
     suspend fun saveTransaction(saveTransactionModel: SaveTransactionModel): Int?
+    fun startFirebaseAnalytics()
 }

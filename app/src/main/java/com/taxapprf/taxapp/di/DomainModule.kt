@@ -15,6 +15,7 @@ import com.taxapprf.domain.deleted.DeleteTransactionsUseCase
 import com.taxapprf.domain.excel.ExportExcelUseCase
 import com.taxapprf.domain.excel.ImportExcelUseCase
 import com.taxapprf.domain.main.account.SwitchAccountUseCase
+import com.taxapprf.domain.main.analytics.StartFirebaseAnalyticsUseCase
 import com.taxapprf.domain.main.transaction.SaveTransactionUseCase
 import com.taxapprf.domain.main.user.ObserveUserWithAccountsUseCase
 import com.taxapprf.domain.main.user.SignInUseCase
@@ -65,12 +66,17 @@ object DomainModule {
             updateAllEmptySumRUBAndTaxRUBUseCase
         )
 
+    @Provides
+    fun provideStartFirebaseAnalyticsUseCase(mainRepositoryImpl: MainRepositoryImpl) =
+        StartFirebaseAnalyticsUseCase(mainRepositoryImpl)
+
 
     /* Sync repository */
     @Provides
     fun provideSyncAllUseCase(
         syncRepositoryImpl: SyncRepositoryImpl,
-        updateAllEmptySumRUBAndTaxRUBUseCase: UpdateAllEmptySumRUBAndTaxRUBUseCase) =
+        updateAllEmptySumRUBAndTaxRUBUseCase: UpdateAllEmptySumRUBAndTaxRUBUseCase
+    ) =
         SyncAllUseCase(syncRepositoryImpl, updateAllEmptySumRUBAndTaxRUBUseCase)
 
 
