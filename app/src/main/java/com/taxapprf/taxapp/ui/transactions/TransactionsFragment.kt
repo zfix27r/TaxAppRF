@@ -14,8 +14,8 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.taxapprf.domain.transactions.ReportModel
 import com.taxapprf.domain.transactions.TransactionModel
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.extension.checkStoragePermission

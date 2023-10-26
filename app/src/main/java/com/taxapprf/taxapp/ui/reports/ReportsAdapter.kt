@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.taxapprf.domain.transactions.ReportModel
-import com.taxapprf.taxapp.databinding.FragmentReportsAdapterItemBinding
+import com.taxapprf.taxapp.app.databinding.FragmentReportsAdapterItemBinding
 
 class ReportsAdapter(
     private val callback: ReportsAdapterCallback,

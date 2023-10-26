@@ -29,8 +29,8 @@ import com.taxapprf.data.error.user.DataErrorUserEmailAlreadyUse
 import com.taxapprf.data.error.user.DataErrorUserWrongPassword
 import com.taxapprf.domain.main.account.AccountModel
 import com.taxapprf.domain.main.user.UserWithAccountsModel
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.ActivityMainBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.ActivityMainBinding
 import com.taxapprf.taxapp.ui.MainToolbar
 import com.taxapprf.taxapp.ui.account.add.AccountAddFragment
 import com.taxapprf.taxapp.ui.drawer.Drawer

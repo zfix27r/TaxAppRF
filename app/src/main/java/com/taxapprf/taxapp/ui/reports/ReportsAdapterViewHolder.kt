@@ -2,7 +2,7 @@ package com.taxapprf.taxapp.ui.reports
 
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.transactions.ReportModel
-import com.taxapprf.taxapp.databinding.FragmentReportsAdapterItemBinding
+import com.taxapprf.taxapp.app.databinding.FragmentReportsAdapterItemBinding
 import com.taxapprf.taxapp.ui.toAppDouble
 
 class ReportsAdapterViewHolder(

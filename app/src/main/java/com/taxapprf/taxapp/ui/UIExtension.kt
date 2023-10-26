@@ -7,7 +7,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.snackbar.Snackbar
 import com.taxapprf.data.toLocalDate
-import com.taxapprf.taxapp.R
+import com.taxapprf.taxapp.app.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

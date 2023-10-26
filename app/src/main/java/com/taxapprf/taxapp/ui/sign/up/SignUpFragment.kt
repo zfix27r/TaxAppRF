@@ -5,8 +5,8 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.FragmentSignUpBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.FragmentSignUpBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 

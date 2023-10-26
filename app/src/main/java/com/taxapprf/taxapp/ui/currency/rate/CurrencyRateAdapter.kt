@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.taxapprf.domain.currency.CurrencyRateModel
-import com.taxapprf.taxapp.databinding.FragmentCurrencyRateAdapterItemBinding
+import com.taxapprf.taxapp.app.databinding.FragmentCurrencyRateAdapterItemBinding
 
 class CurrencyRateAdapter
     : ListAdapter<CurrencyRateModel, CurrencyRateAdapterViewHolder>(DiffCallback()) {

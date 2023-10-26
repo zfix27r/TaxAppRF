@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.FragmentSignBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.FragmentSignBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 

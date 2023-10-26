@@ -11,8 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.data.error.internal.currency.converter.DataErrorInternalCurrencyLoad
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.FragmentCurrencyConverterBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.FragmentCurrencyConverterBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.hideKeyboard
 import com.taxapprf.taxapp.ui.toEditorDouble

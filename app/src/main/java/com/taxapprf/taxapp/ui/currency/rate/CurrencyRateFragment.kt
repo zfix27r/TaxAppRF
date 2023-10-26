@@ -9,8 +9,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.toAppDate
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.FragmentCurrencyRateBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.FragmentCurrencyRateBinding
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.getEpochDay
 import com.taxapprf.taxapp.ui.showDatePickerDialog

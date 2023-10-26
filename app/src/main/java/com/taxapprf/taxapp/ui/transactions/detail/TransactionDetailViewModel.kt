@@ -12,7 +12,7 @@ import com.taxapprf.domain.toAppDate
 import com.taxapprf.domain.transactions.TransactionTypes
 import com.taxapprf.domain.transactions.detail.GetTransactionDetailModel
 import com.taxapprf.domain.transactions.detail.GetTransactionDetailUseCase
-import com.taxapprf.taxapp.R
+import com.taxapprf.taxapp.app.R
 import com.taxapprf.taxapp.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

@@ -12,8 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.taxapprf.domain.currency.Currencies
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.FragmentTransactionDetailBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.FragmentTransactionDetailBinding
 import com.taxapprf.taxapp.ui.BaseBottomSheetFragment
 import com.taxapprf.taxapp.ui.showDatePickerDialog
 import dagger.hilt.android.AndroidEntryPoint

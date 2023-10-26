@@ -14,7 +14,7 @@ import com.taxapprf.data.MainRepositoryImpl.Companion.LOCAL_USER_EMAIL
 import com.taxapprf.domain.main.account.AccountModel
 import com.taxapprf.domain.main.user.UserModel
 import com.taxapprf.domain.main.user.UserWithAccountsModel
-import com.taxapprf.taxapp.R
+import com.taxapprf.taxapp.app.R
 
 class Drawer(
     private val drawerLayout: DrawerLayout,

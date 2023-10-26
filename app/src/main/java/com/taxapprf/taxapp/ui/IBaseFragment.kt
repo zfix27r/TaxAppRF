@@ -11,7 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.textfield.TextInputEditText
-import com.taxapprf.taxapp.R
+import com.taxapprf.taxapp.app.R
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
 import com.taxapprf.taxapp.ui.extension.EXCEL_MIME_TYPE

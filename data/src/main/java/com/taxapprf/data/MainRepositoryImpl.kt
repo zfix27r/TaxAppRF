@@ -148,7 +148,9 @@ class MainRepositoryImpl @Inject constructor(
     }
 
     override fun startFirebaseAnalytics() {
+        println("start")
         Firebase.analytics
+        println("started")
     }
 
     private fun LocalReportEntity.isMoveTransaction(newRemoteKey: String) =

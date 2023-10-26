@@ -17,8 +17,8 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.taxapprf.data.local.excel.getSystemDownloadPath
 import com.taxapprf.domain.transactions.ReportModel
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.FragmentReportsBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
 import com.taxapprf.taxapp.ui.extension.EXCEL_MIME_TYPE

@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.taxapprf.taxapp.R
-import com.taxapprf.taxapp.databinding.FragmentAccountAddBinding
+import com.taxapprf.taxapp.app.R
+import com.taxapprf.taxapp.app.databinding.FragmentAccountAddBinding
 import com.taxapprf.taxapp.ui.BaseBottomSheetFragment
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.taxapprf.domain.main.account.AccountModel
-import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderAddBinding
-import com.taxapprf.taxapp.databinding.ActivityMainDrawerHeaderItemBinding
+import com.taxapprf.taxapp.app.databinding.ActivityMainDrawerHeaderAddBinding
+import com.taxapprf.taxapp.app.databinding.ActivityMainDrawerHeaderItemBinding
 
 class MainAccountsAdapter(
     private val callback: DrawerAccountsAdapterCallback,
