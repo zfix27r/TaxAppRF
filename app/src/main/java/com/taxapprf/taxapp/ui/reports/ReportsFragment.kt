@@ -105,8 +105,8 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
     }
 
     private fun prepViews() {
-        binding.recyclerReports.adapter = adapter
-        itemTouchHelper.attachToRecyclerView(binding.recyclerReports)
+        binding.recyclerViewReports.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(binding.recyclerViewReports)
     }
 
     private fun setListeners() {
@@ -146,7 +146,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
             .setNegativeButton(R.string.delete_dialog_cancel) { _, _ ->
                 reportTouchHelper.cancelSwipe()
                 itemTouchHelper.attachToRecyclerView(null)
-                itemTouchHelper.attachToRecyclerView(binding.recyclerReports)
+                itemTouchHelper.attachToRecyclerView(binding.recyclerViewReports)
             }
             .show()
     }
