@@ -55,7 +55,7 @@
         android:layout_height="@dimen/currency_converter_button_convert_size"
         android:layout_marginBottom="@dimen/offset_24"
         android:background="@drawable/rounded_shape"
-        android:elevation="10dp"
+        android:elevation="@dimen/currency_converter_button_convert_elevation"
         android:focusable="true"
         android:focusableInTouchMode="true"
         app:layout_constraintBottom_toTopOf="@+id/text_input_layout_currency_converter_sum_rub"

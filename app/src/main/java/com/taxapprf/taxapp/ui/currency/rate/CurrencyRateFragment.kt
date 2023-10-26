@@ -83,6 +83,6 @@ class CurrencyRateFragment : BaseFragment(R.layout.fragment_currency_rate) {
 
     private fun prepView() {
         adapter.currencyNames = resources.getStringArray(R.array.currencies).toList()
-        binding.recyclerCurrencyRate.adapter = adapter
+        binding.recyclerViewCurrencyRate.adapter = adapter
     }
 }

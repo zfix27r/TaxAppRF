@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_header_item"
+    android:id="@+id/drawer_header_item_title"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/main_item_height"
-    android:foreground="?attr/selectableItemBackground">
-
-    <TextView
-        android:id="@+id/drawer_header_item_title"
-        android:layout_width="@dimen/zero"
-        android:gravity="center_vertical"
-        android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/drawer_header_item_title_start_offset"
-        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Account" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    android:layout_height="@dimen/drawer_header_item_title_height"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="@dimen/drawer_header_item_title_start_offset"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    tools:text="Account" />

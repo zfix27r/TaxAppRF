@@ -55,7 +55,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/offset_16"
                 android:layout_marginEnd="@dimen/offset_16"
-                android:layout_marginBottom="@dimen/margin_vertical_20dp"
                 app:layout_constraintBottom_toTopOf="@+id/text_input_layout_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -131,8 +130,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/transaction_detail_sum"
-                    android:inputType="numberDecimal|numberSigned"
-                    android:textSize="@dimen/text_size_16sp" />
+                    android:inputType="numberDecimal|numberSigned" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout

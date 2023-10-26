@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/offset_8"
-        android:minHeight="@dimen/main_item_height">
+        android:minHeight="@dimen/default_card_min_height">
 
         <TextView
             android:id="@+id/text_reports_adapter_item_year"

@@ -13,18 +13,18 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image_drawer_header_user_avatar"
-            app:shapeAppearance="@style/Theme.TaxApp.ImageCircle"
-            android:layout_width="@dimen/drawer_avatar_size"
-            android:layout_height="@dimen/drawer_avatar_size"
-            android:padding="@dimen/image_circle_stroke_width"
-            app:strokeWidth="@dimen/image_circle_stroke_width"
-            app:strokeColor="?attr/colorControlNormal"
+            android:layout_width="@dimen/drawer_header_avatar_image_size"
+            android:layout_height="@dimen/drawer_header_avatar_image_size"
             android:layout_marginStart="@dimen/offset_8"
             android:layout_marginTop="@dimen/offset_16"
             android:contentDescription="@string/drawer_header_user_avatar_content_description"
+            android:padding="@dimen/image_circle_stroke_width"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/ic_launcher" />
+            app:shapeAppearance="@style/Theme.TaxApp.ImageCircle"
+            app:srcCompat="@mipmap/ic_launcher"
+            app:strokeColor="?attr/colorControlNormal"
+            app:strokeWidth="@dimen/image_circle_stroke_width" />
 
         <TextView
             android:id="@+id/text_drawer_header_user_name"
@@ -65,7 +65,7 @@
             android:id="@+id/text_drawer_header_user_active_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
+            android:layout_marginStart="@dimen/drawer_header_account_add_margin_start"
             android:layout_marginTop="@dimen/offset_8"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -95,4 +95,5 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/activity_main_drawer_header_item"
         tools:visibility="visible" />
+
 </LinearLayout>

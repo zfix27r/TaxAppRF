@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:minHeight="@dimen/main_item_height"
+        android:minHeight="@dimen/default_card_min_height"
         android:paddingBottom="@dimen/offset_16">
 
         <TextView

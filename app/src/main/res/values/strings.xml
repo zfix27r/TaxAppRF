@@ -8,7 +8,8 @@
     <string name="menu_sign">Вход</string>
     <string name="menu_sign_out">Выход</string>
 
-    <string name="drawer_header_add">Добавить аккаунт</string>
+    <string name="drawer_header_add_account">Добавить аккаунт</string>
+    <string name="drawer_header_add_account_icon_content_description">Иконка добавить аккаунт</string>
 
     <string name="drawer_header_user_account_expand_content_description">Раскрыть меню</string>
     <string name="drawer_header_user_avatar_content_description">Аватар</string>
@@ -105,5 +106,6 @@
 
     <string name="default_user_name">Локальная запись</string>
     <string name="default_account_name">Основной аккаунт</string>
+
 
 </resources>

@@ -11,7 +11,7 @@ class MainAccountsAdapterViewHolder(
     private lateinit var account: AccountModel
 
     init {
-        binding.drawerHeaderItem.setOnClickListener {
+        binding.drawerHeaderItemTitle.setOnClickListener {
             callback.switchAccount(account)
         }
     }
