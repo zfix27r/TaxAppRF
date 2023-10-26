@@ -51,6 +51,13 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     protected fun successExport(uri: Uri) {
         loaded()
         viewModelScope.launch {
+            state.emit(SuccessExport(uri))
+        }
+    }
+
+    protected fun successImport(uri: Uri) {
+        loaded()
+        viewModelScope.launch {
             state.emit(SuccessImport(uri))
         }
     }

@@ -3,7 +3,6 @@ package com.taxapprf.taxapp.ui
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
 
@@ -20,9 +19,6 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId), IBaseFragment {
 
     override var actionMode: ActionMode? = null
 
-    protected val currentStackSavedState
-        get() = findNavController().currentBackStackEntry!!.savedStateHandle
-
     protected val fab
         get() = mainActivity.fab
 
@@ -31,4 +27,7 @@ open class BaseFragment(layoutId: Int) : Fragment(layoutId), IBaseFragment {
 
     protected val drawer
         get() = mainActivity.drawer
+
+    protected val coordinator
+        get() = mainActivity.coordinatorLayout
 }

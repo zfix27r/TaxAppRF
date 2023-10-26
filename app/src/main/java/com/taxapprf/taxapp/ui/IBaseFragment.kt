@@ -2,6 +2,7 @@ package com.taxapprf.taxapp.ui
 
 import android.content.Intent
 import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -13,8 +14,10 @@ import com.google.android.material.textfield.TextInputEditText
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.ui.activity.MainActivity
 import com.taxapprf.taxapp.ui.activity.MainViewModel
+import com.taxapprf.taxapp.ui.extension.EXCEL_MIME_TYPE
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
 
 interface IBaseFragment {
     val mainActivity: MainActivity
@@ -50,6 +53,7 @@ interface IBaseFragment {
                         is Success -> onSuccess()
                         is SignOut -> mainViewModel.signOut()
                         is SuccessShare -> onSuccessShare(it.uri)
+                        is SuccessExport -> onSuccessExport(it.uri)
                         is SuccessImport -> onSuccessImport(it.uri)
                     }
                 }
@@ -73,19 +77,22 @@ interface IBaseFragment {
         mainActivity.onLoadingSuccess()
     }
 
+    fun onSuccessExport(uri: Uri) {
+        mainActivity.onLoadingSuccess()
+
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri, DocumentsContract.Document.MIME_TYPE_DIR)
+        fragment.startActivity(intent)
+    }
+
     fun onSuccessShare(uri: Uri) {
         mainActivity.onLoadingSuccess()
 
-        val emailIntent = Intent(Intent.ACTION_SEND)
-        emailIntent.type = "vnd.android.cursor.dir/email"
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, fragment.getString(R.string.share_message_name))
-        fragment.startActivity(
-            Intent.createChooser(
-                emailIntent,
-                fragment.getString(R.string.share_message_description)
-            )
-        )
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = EXCEL_MIME_TYPE
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        intent.putExtra(Intent.EXTRA_SUBJECT, fragment.getString(R.string.share_message_name))
+        fragment.startActivity(intent)
     }
 
     fun onSuccessImport(uri: Uri) {

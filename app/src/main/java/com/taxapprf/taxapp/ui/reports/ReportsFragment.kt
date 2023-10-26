@@ -1,6 +1,7 @@
 package com.taxapprf.taxapp.ui.reports
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -14,11 +15,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.taxapprf.data.local.excel.getSystemDownloadPath
 import com.taxapprf.domain.transactions.ReportModel
 import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentReportsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
+import com.taxapprf.taxapp.ui.extension.EXCEL_MIME_TYPE
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -155,7 +158,7 @@ class ReportsFragment : BaseFragment(R.layout.fragment_reports) {
 
     private fun launchImportExcelIntent() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "application/vnd.ms-excel"
+        intent.setDataAndType(Uri.parse(getSystemDownloadPath()), EXCEL_MIME_TYPE)
         importExcelRegisterForActivityResult.launch(intent)
     }
 

@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     val toolbar by lazy { MainToolbar(binding.appBarMain.toolbar) }
     val fab by lazy { binding.appBarMain.fab }
     val retryButton by lazy { binding.appBarMain.content.loadingRetry }
+    val coordinatorLayout by lazy { binding.appBarMain.root }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

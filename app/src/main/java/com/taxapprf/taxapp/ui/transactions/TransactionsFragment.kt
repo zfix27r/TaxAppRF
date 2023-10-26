@@ -1,11 +1,8 @@
 package com.taxapprf.taxapp.ui.transactions
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -21,6 +18,7 @@ import com.taxapprf.taxapp.R
 import com.taxapprf.taxapp.databinding.FragmentTransactionsBinding
 import com.taxapprf.taxapp.ui.BaseActionModeCallback
 import com.taxapprf.taxapp.ui.BaseFragment
+import com.taxapprf.taxapp.ui.extension.checkStoragePermission
 import com.taxapprf.taxapp.ui.toAppDouble
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -72,12 +70,12 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         toolbar.updateMenu(R.menu.toolbar_transactions) { menuItem ->
             when (menuItem.itemId) {
                 R.id.toolbar_share_excel -> {
-                    viewModel.shareReport()
+                    onShareReport()
                     true
                 }
 
                 R.id.toolbar_export_excel -> {
-                    viewModel.exportReport()
+                    onExportReport()
                     true
                 }
 
@@ -123,30 +121,11 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
         }
     }
 
-    override fun onSuccessImport(uri: Uri) {
-        super.onSuccessImport(uri)
-        launchImportExcelIntent(uri)
-    }
-
     private fun ReportModel.updateToolbar() {
         val title = String.format(getString(R.string.transactions_title), name)
         val subtitle =
             String.format(getString(R.string.transactions_subtitle), taxRUB.toAppDouble())
         toolbar.updateTitles(title, subtitle)
-    }
-
-    private val importExcelIntent =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-
-        }
-
-    private fun launchImportExcelIntent(uri: Uri) {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.action = Intent.ACTION_VIEW
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        intent.type = "application/vnd.ms-excel"
-        intent.setDataAndType(uri, "application/vnd.ms-excel")
-        importExcelIntent.launch(intent)
     }
 
     private fun onShowMoreClick(transactionModel: TransactionModel) {
@@ -167,6 +146,18 @@ class TransactionsFragment : BaseFragment(R.layout.fragment_transactions) {
                     else -> false
                 }
             }
+        }
+    }
+
+    private fun onShareReport() {
+        if (requireActivity().checkStoragePermission()) {
+            viewModel.shareReport()
+        }
+    }
+
+    private fun onExportReport() {
+        if (requireActivity().checkStoragePermission()) {
+            viewModel.exportReport()
         }
     }
 

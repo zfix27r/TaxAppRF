@@ -74,6 +74,11 @@
     <string name="transaction_detail_error_date_range">Допустимы диапазон от 1992 года до сегодня</string>
 
 
+    <!--Permission-->
+    <string name="permission_allow">Доступ к файлам запрещен. Обратитесь в поддержку.</string>
+    <string name="permission_denied">Доступ получен. Повторите попытку.</string>
+
+
     <!--Shared-->
     <string name="import_excel">Импорт</string>
     <string name="export_excel">Экспорт</string>
@@ -97,7 +102,6 @@
     <string name="data_auth_error">Ошибка авторизации</string>
 
     <string name="share_message_name">Расчёт налога от TaxApp</string>
-    <string name="share_message_description">Отправка…</string>
 
     <string name="default_user_name">Локальная запись</string>
     <string name="default_account_name">Основной аккаунт</string>
