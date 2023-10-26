@@ -106,6 +106,7 @@
 
     <string name="default_user_name">Локальная запись</string>
     <string name="default_account_name">Основной аккаунт</string>
+    <string name="currency_rate_title_with_num_code">%1$s (%2$s)</string>
 
 
 </resources>
